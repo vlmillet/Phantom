@@ -297,10 +297,7 @@ void Class::addBaseClass(Class* a_pClass, Access a_Access)
 {
     ExtraData* pExtraData = getExtraData();
     PHANTOM_ASSERT(pExtraData);
-    if (m_uiSize)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "class has been sized, cannot add base class anymore");
-    }
+    PHANTOM_ASSERT(m_uiSize == 0, "class has been sized, cannot add base class anymore");
     _addBaseClass(a_pClass, ~size_t(0), a_Access);
 }
 
@@ -1528,7 +1525,7 @@ ptrdiff_t Class::getPointerAdjustmentOffset(Class* a_pClass) const
     if (o0 != -1)
         return (int)o0;
     ptrdiff_t o1 = a_pClass->getBaseClassOffsetCascade(const_cast<Class*>(this));
-    return o1 != -1 ? -(int)o1 : -INT_MAX;
+    return o1 != -1 ? -ptrdiff_t(o1) : std::numeric_limits<ptrdiff_t>::min();
 }
 
 ptrdiff_t Class::getPointerAdjustmentOffset(Type* a_pType) const

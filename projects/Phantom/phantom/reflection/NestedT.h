@@ -27,10 +27,9 @@ struct TplNestedModifiersFilterCopier
 {
     static void copy(t_Ty* a_pDest, t_Ty const* a_pSrc)
     {
-        PHANTOM_THROW_EXCEPTION(
-        exception::UnsupportedMethodException,
-        "copy forbidden for the given type, remove an eventual 'PHANTOM_R_FLAG_NO_COPY' meta "
-        "specifier to enable this member_function for your class");
+        PHANTOM_ASSERT(false,
+                       "copy forbidden for the given type, remove an eventual 'PHANTOM_R_FLAG_NO_COPY' meta "
+                       "specifier to enable this member_function for your class");
     }
 };
 template<typename t_Ty>
@@ -40,8 +39,7 @@ struct TplNestedModifiersFilterCopier<t_Ty, false> : public phantom::Copier<t_Ty
 
 template<typename t_Ty, int t_meta_flags>
 struct TplNestedModifiersFilter<phantom::Copier<t_Ty>, t_meta_flags>
-    : public TplNestedModifiersFilterCopier<
-      t_Ty, (t_meta_flags & PHANTOM_R_FLAG_NO_COPY) == PHANTOM_R_FLAG_NO_COPY>
+    : public TplNestedModifiersFilterCopier<t_Ty, (t_meta_flags & PHANTOM_R_FLAG_NO_COPY) == PHANTOM_R_FLAG_NO_COPY>
 {
 };
 
@@ -59,14 +57,13 @@ public:
 
     virtual bool hasCopyDisabled() const
     {
-        return HasCopyDisabled<t_Ty>::value OR((t_meta_flags & PHANTOM_R_FLAG_NO_COPY) ==
-                                               PHANTOM_R_FLAG_NO_COPY);
+        return HasCopyDisabled<t_Ty>::value OR((t_meta_flags & PHANTOM_R_FLAG_NO_COPY) == PHANTOM_R_FLAG_NO_COPY);
     }
 
     virtual void copy(void* a_pDest, void const* a_pSrc) const
     {
-        TplNestedModifiersFilter<phantom::Copier<t_Ty>, t_meta_flags>::copy(
-        static_cast<t_Ty*>(a_pDest), static_cast<t_Ty const*>(a_pSrc));
+        TplNestedModifiersFilter<phantom::Copier<t_Ty>, t_meta_flags>::copy(static_cast<t_Ty*>(a_pDest),
+                                                                            static_cast<t_Ty const*>(a_pSrc));
     }
 };
 

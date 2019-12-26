@@ -1,5 +1,10 @@
 #pragma once
 
+namespace phantom
+{
+	using nullptr_t = std::nullptr_t;
+}
+
 // haunt {
 
 #include "StringConverter.h"

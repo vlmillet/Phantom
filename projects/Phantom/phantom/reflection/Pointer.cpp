@@ -55,7 +55,7 @@ void Pointer::onReferencedElementRemoved(LanguageElement* a_pElement)
 
 void Pointer::valueToLiteral(StringBuffer&, const void*) const
 {
-    PHANTOM_THROW_EXCEPTION(UnsupportedMethodException, "not implemented");
+    PHANTOM_ASSERT_NO_IMPL();
 }
 
 uint Pointer::getDataPointerLevel() const

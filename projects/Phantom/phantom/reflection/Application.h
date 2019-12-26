@@ -574,30 +574,6 @@ public:
     Type* findType(StringView a_strUniqueName, LanguageElement* a_pScope = nullptr) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add/Set meta Data to a symbol, both given as a String with format : "symbol.meta".
-    ///
-    /// \param  a_SymbolDotMeta The symbol.meta name.
-    /// \param  a_Value         The meta Data value as Variant.
-    /// \param  a_pScope        (optional) [in,out] If non-null, the scope where to start the search
-    /// from.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setMetaData(StringView a_SymbolDotMeta, const Variant& a_Value, LanguageElement* a_pScope = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add/Set meta Data to a symbol, both given as a String with format : "symbol.meta".
-    ///
-    /// \param  a_SymbolDotMeta The symbol.meta name.
-    /// \param  a_pScope        (optional) [in,out] If non-null, the scope where to start the search
-    /// from.
-    ///
-    /// \return null Variant if no meta found matching the given symbol.meta name, else the meta
-    /// Data value as Variant.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const Variant& getMetaData(StringView a_SymbolDotMeta, LanguageElement* a_pScope /*= nullptr*/) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Find all the classes derived from the given optional base class.
     ///
     /// \param [in,out] a_Classes       [in,out] The classes found are stored in this container.

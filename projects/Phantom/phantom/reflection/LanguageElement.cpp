@@ -47,7 +47,7 @@ LanguageElement::~LanguageElement()
 int LanguageElement::destructionPriority() const
 {
     if (this == PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass || this == Application::Get())
-        return INT_MAX;
+        return std::numeric_limits<int>::max();
     return static_cast<LanguageElement*>(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass)->destructionPriority() - 1;
 }
 

@@ -356,7 +356,7 @@ inline std::nullptr_t lexical_cast<std::nullptr_t, StringView>(StringView arg)
 {
     if (arg != "nullptr")
     {
-        PHANTOM_THROW_EXCEPTION(exception::Exception, "parsing nullptr value failed");
+        PHANTOM_LOG(Error, "parsing nullptr value failed");
     }
     return nullptr;
 }

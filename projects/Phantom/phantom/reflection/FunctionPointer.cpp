@@ -35,19 +35,23 @@ void FunctionPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
     Type::onReferencedElementRemoved(a_pElement);
 }
 
+#if defined(PHANTOM_DEV)
+#    pragma message(PHANTOM_TODO "cleanup these asserts")
+#endif
+
 void FunctionPointer::valueToLiteral(StringBuffer&, const void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueToLiteral not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueToLiteral not defined for member function pointer types");
 }
 
 void FunctionPointer::valueToString(StringBuffer&, const void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueToString not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueToString not defined for member function pointer types");
 }
 
 void FunctionPointer::valueFromString(StringView, void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueFromString not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueFromString not defined for member function pointer types");
 }
 
 /// Non native function pointers contains the meta function they point to

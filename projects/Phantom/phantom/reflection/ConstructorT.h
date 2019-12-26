@@ -62,26 +62,18 @@ public:
 
     void invoke(void* a_pThis, void** a_ppArgs, void* a_pReturnAddress) const override
     {
-        if (a_pReturnAddress)
-        {
-            PHANTOM_THROW_EXCEPTION(exception::Exception,
-                                    "Expecting return address from a constructor call, use "
-                                    "placementCall(void*, void**) instead");
-        }
-        else
-            ConstructorCaller<t_Class, t_Signature>::apply(a_pThis, a_ppArgs);
+        PHANTOM_ASSERT(!a_pReturnAddress,
+                       "Expecting return address from a constructor call, use "
+                       "placementCall(void*, void**) instead");
+        ConstructorCaller<t_Class, t_Signature>::apply(a_pThis, a_ppArgs);
     }
 
     void placementInvoke(void* a_pThis, void** a_ppArgs, void* a_pReturnAddress) const override
     {
-        if (a_pReturnAddress)
-        {
-            PHANTOM_THROW_EXCEPTION(exception::Exception,
-                                    "Expecting return address from a constructor call, use "
-                                    "placementCall(void*, void**) instead");
-        }
-        else
-            ConstructorCaller<t_Class, t_Signature>::apply(a_pThis, a_ppArgs);
+        PHANTOM_ASSERT(!a_pReturnAddress,
+                       "Expecting return address from a constructor call, use "
+                       "placementCall(void*, void**) instead");
+        ConstructorCaller<t_Class, t_Signature>::apply(a_pThis, a_ppArgs);
     }
 
     void call(void** a_ppArgs, void* a_pReturnAddress) const override

@@ -309,10 +309,7 @@ bool TemplateSpecialization::matches(LanguageElementsView a_Arguments) const
 void TemplateSpecialization::checkCompleteness() const
 {
     PHANTOM_ASSERT(m_pTemplate);
-    if (m_pTemplate->getModule() == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "Template not registered for this template specialization");
-    }
+    PHANTOM_ASSERT(m_pTemplate->getModule() != nullptr, "Template not registered for this template specialization");
 }
 
 bool TemplateSpecialization::canBeDestroyed() const

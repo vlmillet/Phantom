@@ -219,15 +219,15 @@ struct StringConverter<void>
 {
     PHANTOM_NORETURN static void to(const reflection::Type*, StringBuffer&, const void*)
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
     PHANTOM_NORETURN static void toLiteral(const reflection::Type*, StringBuffer&, const void*)
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
     PHANTOM_NORETURN static void from(const reflection::Type*, StringView, void*)
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
 };
 
@@ -242,7 +242,7 @@ struct StringConverter<std::nullptr_t>
     {
         if (*a_pSrc != nullptr)
         {
-            PHANTOM_THROW_EXCEPTION(RuntimeException, "parsing nullptr value failed");
+            PHANTOM_LOG(Error, "parsing nullptr value failed");
         }
         a_Buf += "nullptr";
     }
@@ -250,7 +250,7 @@ struct StringConverter<std::nullptr_t>
     {
         if (a_strIn != "nullptr")
         {
-            PHANTOM_THROW_EXCEPTION(RuntimeException, "parsing nullptr value failed");
+            PHANTOM_LOG(Error, "parsing nullptr value failed");
         }
         *a_pDest = nullptr;
     }

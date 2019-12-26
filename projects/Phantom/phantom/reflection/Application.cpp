@@ -1074,7 +1074,7 @@ PackageFolder* Application::rootPackageFolder() const
     if (m_pRootPackageFolder == nullptr)
     {
         const_cast<Application*>(this)->m_pRootPackageFolder = PHANTOM_DEFERRED_NEW(PackageFolder);
-		const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
+        const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
     }
     return m_pRootPackageFolder;
 }
@@ -1598,13 +1598,15 @@ void Application::setMetaData(StringView a_SymbolDotMeta, const Variant& a_Value
     size_t lastDotPos = a_SymbolDotMeta.find_last_of('.');
     if (lastDotPos == String::npos)
     {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "invalid metadata argument");
+        PHANTOM_LOG(Error, "invalid metadata argument");
+        return;
     }
     String  symbol = a_SymbolDotMeta.substr(0, lastDotPos);
     Symbol* pSymbol = findSymbol(symbol, a_pScope);
     if (pSymbol == nullptr)
     {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "symbol not found '%s'", symbol.c_str());
+        PHANTOM_LOG(Error, "symbol not found '%s'", symbol.c_str());
+        return;
     }
     pSymbol->setMetaData(a_SymbolDotMeta.substr(lastDotPos + 1), a_Value);
 }

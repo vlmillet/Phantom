@@ -14,9 +14,9 @@
 #    include <windows.h>
 #else
 #    include <sys/stat.h>
+#    include <unistd.h>
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_ORBIS
 #        include <sys/dirent.h>
-#        include <unistd.h>
 #    else
 #        include <dirent.h>
 #    endif
@@ -370,13 +370,7 @@ Path Path::absolute() const
 {
     if (isAbsolute())
         return *this;
-    char buffer[1024] = "/";
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-    _getcwd(buffer, 1024);
-#elif PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
-    getcwd(buffer, 1024);
-#endif
-    Path abs(buffer);
+    Path abs = GetCurrentWorkingDir();
     abs.parts.insert(abs.parts.end(), parts.begin(), parts.end());
     return abs;
 }
@@ -552,7 +546,7 @@ bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::e
 
     if (dp != NULL)
     {
-        while (ep = readdir(dp))
+        while ((ep = readdir(dp)))
         {
             Type type = (ep->d_type == DT_DIR)
             ? Type::directory
@@ -718,21 +712,24 @@ bool Path::ResizeFile(const Path& p, size_t size)
 
 Path Path::GetCurrentWorkingDir()
 {
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_ORBIS
-    PHANTOM_ASSERT_NO_IMPL();
-    return "";
-#else
     char buffer[512];
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
     return _getcwd(buffer, 512);
+#elif PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
+    return getcwd(buffer, 512);
+#else
+    return "/";
 #endif
 }
 
 void Path::SetCurrentWorkingDir(const Path& _path)
 {
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_ORBIS
-    PHANTOM_ASSERT_NO_IMPL();
-#else
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
     _chdir(_path.absolute().genericString().c_str());
+#elif PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
+    chdir(_path.absolute().genericString().c_str());
+#else
+    PHANTOM_LOG(Error, "no chdir on this platform");
 #endif
 }
 

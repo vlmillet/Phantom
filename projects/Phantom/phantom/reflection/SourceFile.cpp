@@ -18,6 +18,9 @@
 #    include <phantom/Path.h>
 #endif
 #include "phantom/new.h"
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_LINUX
+#    include <sys/stat.h>
+#endif
 /* *********************************************** */
 namespace phantom
 {

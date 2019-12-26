@@ -193,8 +193,8 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
 PHANTOM_OPERATING_SYSTEM_ORBIS // ===================================================================================================
 
     SceKernelModule dlhandle = -1;
-    const char*     argv[1] = {m_pModule->getDynamicLibraryPath().data()};
-    if ((dlhandle = sceKernelLoadStartModule(m_pModule->getDynamicLibraryPath().data(), 1, argv, 0, NULL, NULL)) >= 0)
+    const char*     argv[1] = {m_pModule->getLibraryFullName().data()};
+    if ((dlhandle = sceKernelLoadStartModule(m_pModule->getLibraryFullName().data(), 1, argv, 0, NULL, NULL)) >= 0)
     {
         detail::pushInstallation();
         detail::installModules();
@@ -283,13 +283,13 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
 #elif PHANTOM_OPERATING_SYSTEM_FAMILY ==                                                                               \
 PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ===================================================================================================
     void* dlhandle = nullptr;
-    if (dlhandle = dlopen(a_strPath.c_str(), RTLD_NOW))
+    if ((dlhandle = dlopen(String(a_strPath).c_str(), RTLD_NOW)))
     {
         detail::pushInstallation();
         detail::installModules();
         detail::popInstallation();
         if (a_pMessage)
-            a_pMessage->success("Module loaded : %s", m_strName.c_str());
+            a_pMessage->success("Module loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
         PHANTOM_ASSERT(m_pModule == nullptr);
         m_pModule = Application::Get()->getModule(m_strName);
         if (m_pModule == nullptr)
@@ -298,8 +298,8 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
                 Application::Get()->_pluginLoadingFailed(this);
             PHANTOM_LOG(Error,
                         "'PHANTOM_PLUGIN(\"...\");' declaration for the current loaded module does "
-                        "not match the plugin module file name '%s'",
-                        m_strName.c_str());
+                        "not match the plugin module file name '%.*s'",
+                        PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
             dlclose(dlhandle);
             return false;
         }
@@ -307,11 +307,11 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
     }
     else
     {
-        result = false;
         if (a_pMessage)
         {
             if (pMessageLoadFailed == nullptr)
-                pMessageLoadFailed = a_pMessage->error("Cannot load module : %s", m_strName.c_str());
+                pMessageLoadFailed =
+                a_pMessage->error("Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
             pMessageLoadFailed->error("System DLL loading failed : %s", dlerror());
         }
         return false;
@@ -408,19 +408,19 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     }
 
 #elif PHANTOM_OPERATING_SYSTEM_FAMILY == PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX
-    if (dlclose((void*)pModule->getHandle()))
+    if (dlclose((void*)m_pModule->getHandle()))
     {
         if (a_pMessage)
-            a_pMessage->success("Module unloaded : %s", a_strName.c_str());
+            a_pMessage->success("Module unloaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
         return true;
     }
     else
     {
-        result = false;
         if (a_pMessage)
         {
             if (pMessageUnloadFailed == nullptr)
-                pMessageUnloadFailed = a_pMessage->error("Cannot unload module : %s", a_strName.c_str());
+                pMessageUnloadFailed =
+                a_pMessage->error("Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
             pMessageUnloadFailed->error("System dynamic library unloading failed : %s", dlerror());
         }
         return false;

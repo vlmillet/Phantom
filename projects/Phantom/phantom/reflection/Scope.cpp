@@ -521,7 +521,7 @@ void Scope::addSubroutine(Subroutine* a_pSubroutine)
     if (a_pSubroutine->asFunction())
         addFunction(a_pSubroutine->asFunction());
     else
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
 }
 
 Subroutine* Scope::getSubroutine(StringView a_strName, TypesView a_ParameterTypes, Modifiers a_Modifiers) const
@@ -797,11 +797,12 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
                                                          const LanguageElements& a_Arguments, Symbol* a_pBody)
 {
     TemplateSpecialization* pTemplateSpecialization;
+
     if (NOT(m_pThisElement->isNative())
         AND(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
         AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "template already instantiated in this module");
+        PHANTOM_ASSERT(false);
         return nullptr;
     }
     addTemplateSpecialization(pTemplateSpecialization =
@@ -819,7 +820,7 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
         AND(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
         AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "template already instantiated in this module");
+        PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
     addTemplateSpecialization(pTemplateSpecialization = PHANTOM_NEW(TemplateSpecialization)(
@@ -838,7 +839,7 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
         pTemplateSpecialization = a_pInstantiationSpecialization->getTemplate()->getTemplateSpecialization(a_Arguments))
         AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "template already instantiated in this module");
+        PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
     addTemplateSpecialization(pTemplateSpecialization = PHANTOM_NEW(TemplateSpecialization)(

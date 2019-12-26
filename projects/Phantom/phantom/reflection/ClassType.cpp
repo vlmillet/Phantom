@@ -731,10 +731,7 @@ void ClassType::destroy(void* a_pInstance) const
     PHANTOM_ASSERT(m_pExtraData);
 
     Method* pDestructor = getDestructor();
-    if (pDestructor == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "no destructor available for this class type");
-    }
+    PHANTOM_ASSERT(pDestructor, "no destructor available for this class type");
     pDestructor->invoke(a_pInstance, nullptr);
 }
 

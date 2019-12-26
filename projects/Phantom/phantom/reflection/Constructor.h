@@ -30,8 +30,7 @@ public:
 
 public:
     Constructor();
-    Constructor(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0,
-                uint a_uiFlags = 0);
+    Constructor(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a single instance at a given place address.
@@ -68,16 +67,16 @@ public:
     }
 
 protected:
-    Constructor(ClassType* a_pClassType, StringView a_strName, StringView a_strSignature,
-                Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Constructor(ClassType* a_pClassType, StringView a_strName, StringView a_strSignature, Modifiers a_Modifiers = 0,
+                uint a_uiFlags = 0);
     virtual void** getNativeVTablePointer() const
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
         return nullptr;
     }
     virtual size_t getNativeVTableSize() const
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
         return 0;
     }
 };

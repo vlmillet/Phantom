@@ -46,25 +46,25 @@ public:
     }
     void getValue(void*) const override
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
     bool hasValue(const void*) const override
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
         return false;
     }
     bool isZero() const override
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
         return false;
     }
     void toString(StringBuffer&) const override
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
     void toLiteral(StringBuffer&) const override
     {
-        PHANTOM_EXCEPTION_NO_IMPLEM();
+        PHANTOM_ASSERT_NO_IMPL();
     }
 
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override

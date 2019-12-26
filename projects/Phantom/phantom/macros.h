@@ -578,8 +578,6 @@ struct converter<0> : public false_type
 #define PHANTOM_UNUSED(var) (void)var
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
-#    define PHANTOM_THROW_EXCEPTION(...)                                                                               \
-        PHANTOM_PP_CAT(PHANTOM_PP_CAT(_PHNTM_EXCEPT_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__)), (__VA_ARGS__))
 #    define PHANTOM_ASSERT(...)                                                                                        \
         PHANTOM_PP_CAT(PHANTOM_PP_CAT(_PHNTM_ASSERT_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__)), (__VA_ARGS__))
 #    define PHANTOM_ERROR(...)                                                                                         \
@@ -589,8 +587,6 @@ struct converter<0> : public false_type
 #    define PHANTOM_STATIC_ASSERT(...)                                                                                 \
         PHANTOM_PP_CAT(PHANTOM_PP_CAT(PHANTOM_STATIC_ASSERT_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__)), (__VA_ARGS__))
 #else
-#    define PHANTOM_THROW_EXCEPTION(...)                                                                               \
-        PHANTOM_PP_CAT(_PHNTM_EXCEPT_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__))(__VA_ARGS__)
 #    define PHANTOM_ASSERT(...) PHANTOM_PP_CAT(_PHNTM_ASSERT_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__))(__VA_ARGS__)
 #    define PHANTOM_ERROR(...) PHANTOM_PP_CAT(_PHNTM_ERROR_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__))(__VA_ARGS__)
 #    define PHANTOM_WARNING(...) PHANTOM_PP_CAT(_PHNTM_WARNING_, PHANTOM_PP_ARGCOUNT_1_X(__VA_ARGS__))(__VA_ARGS__)
@@ -615,21 +611,6 @@ struct converter<0> : public false_type
 #else
 #    define PHANTOM_ASSERT_DEBUG(...)
 #endif
-
-// EXCEPTION
-#if PHANTOM_CUSTOM_ENABLE_EXCEPTIONS
-#    define _PHNTM_EXCEPT_1(exception) throw exception()
-#    define _PHNTM_EXCEPT_X(exception, ...) throw exception(__VA_ARGS__)
-#else
-#    define _PHNTM_EXCEPT_1(exception) PHANTOM_ERROR(false, #    exception)
-#    define _PHNTM_EXCEPT_X(exception, ...)                                                                            \
-        {                                                                                                              \
-            PHANTOM_ERROR(false, #exception ": " __VA_ARGS__);                                                         \
-        }
-#endif
-
-#define PHANTOM_EXCEPTION_NO_IMPLEM()                                                                                  \
-    _PHNTM_EXCEPT_X(phantom::RuntimeException, PHANTOM_CURRENT_FUNCTION " : no implementation available")
 
 #if PHANTOM_DEBUG_LEVEL
 

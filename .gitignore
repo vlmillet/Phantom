@@ -1,1 +1,6 @@
 /build/**
+/projects/phantom.lang
+/projects/phantom.state
+/projects/phantom.serialization
+/projects/llvmjit
+/projects/soul

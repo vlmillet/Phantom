@@ -123,7 +123,7 @@ PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align, 
 
 #if !defined(PHANTOM_STATIC_LINK_PHANTOM)
 
-void* operator new(size_t _size) noexcept
+void* operator new(size_t _size) throw(std::bad_alloc)
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED
@@ -133,7 +133,7 @@ void* operator new(size_t _size) noexcept
     return std::malloc(_size);
 }
 
-void* operator new[](size_t _size) noexcept
+void* operator new[](size_t _size) throw(std::bad_alloc)
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED
@@ -153,7 +153,7 @@ void operator delete[](void* _ptr) throw()
     std::free(_ptr);
 }
 
-void* operator new(size_t _size, const std::nothrow_t&)
+void* operator new(size_t _size, const std::nothrow_t&) noexcept
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED
@@ -163,7 +163,7 @@ void* operator new(size_t _size, const std::nothrow_t&)
     return std::malloc(_size);
 }
 
-void* operator new[](size_t _size, const std::nothrow_t&)
+void* operator new[](size_t _size, const std::nothrow_t&) noexcept
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED
@@ -173,12 +173,12 @@ void* operator new[](size_t _size, const std::nothrow_t&)
     return std::malloc(_size);
 }
 
-void operator delete(void* _ptr, const std::nothrow_t&)
+void operator delete(void* _ptr, const std::nothrow_t&)noexcept
 {
     std::free(_ptr);
 }
 
-void operator delete[](void* _ptr, const std::nothrow_t&)
+void operator delete[](void* _ptr, const std::nothrow_t&) noexcept
 {
     std::free(_ptr);
 }

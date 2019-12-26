@@ -134,8 +134,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Type*(hash64) const>("findType", &_::findType)
             .method<Symbol*(StringView, LanguageElement*) const>("findSymbol", &_::findSymbol)["nullptr"]
             .method<Type*(StringView, LanguageElement*) const>("findType", &_::findType)["nullptr"]
-            .method<void(StringView, const Variant&, LanguageElement*)>("setMetaData", &_::setMetaData)["nullptr"]
-            .method<const Variant&(StringView, LanguageElement*) const>("getMetaData", &_::getMetaData)
             .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<Undefineds*(StringView) const>("getUndefineds", &_::getUndefineds)
             .method<Undefineds*(StringView)>("undefineds", &_::undefineds)

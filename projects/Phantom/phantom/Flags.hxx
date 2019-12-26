@@ -2,7 +2,7 @@
 
 // haunt {
 
-#include "flags.h"
+#include "Flags.h"
 
 #if defined(_MSC_VER)
 #   pragma warning(push, 0)
@@ -25,7 +25,7 @@
 
 namespace phantom {
 PHANTOM_PACKAGE("phantom")
-    PHANTOM_SOURCE("flags")
+    PHANTOM_SOURCE("Flags")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Flag)
@@ -117,7 +117,7 @@ PHANTOM_PACKAGE("phantom")
             .PHANTOM_T method<ConstBit(Enum) const>("operator[]", &_::operator[])
             ;
         }
-    PHANTOM_END("flags")
+    PHANTOM_END("Flags")
 PHANTOM_END("phantom")
 }
 

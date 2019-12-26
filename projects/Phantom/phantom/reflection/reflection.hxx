@@ -29,8 +29,8 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/Flags.hxx>
 #include <phantom/SmallVector.hxx>
-#include <phantom/flags.hxx>
 
 #include <phantom/template-only-pop>
 

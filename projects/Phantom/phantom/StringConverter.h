@@ -217,15 +217,15 @@ struct StringConverter
 template<>
 struct StringConverter<void>
 {
-    PHANTOM_NORETURN static void to(const reflection::Type*, StringBuffer&, const void*)
+    static void to(const reflection::Type*, StringBuffer&, const void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }
-    PHANTOM_NORETURN static void toLiteral(const reflection::Type*, StringBuffer&, const void*)
+    static void toLiteral(const reflection::Type*, StringBuffer&, const void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }
-    PHANTOM_NORETURN static void from(const reflection::Type*, StringView, void*)
+    static void from(const reflection::Type*, StringView, void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }

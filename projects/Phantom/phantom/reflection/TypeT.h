@@ -9,8 +9,8 @@
 #include <haunt>
 HAUNT_STOP;
 
-#include <phantom/Allocate.h>
 #include <phantom/StringConverter.h>
+#include <phantom/allocate.h>
 #include <phantom/extension.h>
 #include <phantom/hasher.h>
 #include <phantom/reflection/ClassType.h>

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Allocate.h"
 #include "Constructor.h"
+#include "allocate.h"
 #include "new.h"
 #include "newImpl.h"
 #include "phantom_priv.h"

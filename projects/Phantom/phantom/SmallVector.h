@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Allocate.h"
 #include "ArrayView.h"
+#include "allocate.h"
 #include "phantom.h"
 #include "traits/CopyTraits.h"
 #include "traits/MoveTraits.h"

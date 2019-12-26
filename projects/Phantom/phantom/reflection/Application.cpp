@@ -1592,41 +1592,6 @@ Type* Application::findType(StringView a_strUniqueName, LanguageElement* a_pScop
     return pSymbol ? pSymbol->asType() : nullptr;
 }
 
-void Application::setMetaData(StringView a_SymbolDotMeta, const Variant& a_Value,
-                              LanguageElement* a_pScope /*= nullptr*/)
-{
-    size_t lastDotPos = a_SymbolDotMeta.find_last_of('.');
-    if (lastDotPos == String::npos)
-    {
-        PHANTOM_LOG(Error, "invalid metadata argument");
-        return;
-    }
-    String  symbol = a_SymbolDotMeta.substr(0, lastDotPos);
-    Symbol* pSymbol = findSymbol(symbol, a_pScope);
-    if (pSymbol == nullptr)
-    {
-        PHANTOM_LOG(Error, "symbol not found '%s'", symbol.c_str());
-        return;
-    }
-    pSymbol->setMetaData(a_SymbolDotMeta.substr(lastDotPos + 1), a_Value);
-}
-
-const Variant& Application::getMetaData(StringView a_SymbolDotMeta, LanguageElement* a_pScope /*= nullptr*/) const
-{
-    size_t lastDotPos = a_SymbolDotMeta.find_last_of('.');
-    if (lastDotPos == String::npos)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "invalid metadata argument");
-    }
-    String  symbol = a_SymbolDotMeta.substr(0, lastDotPos);
-    Symbol* pSymbol = findSymbol(symbol, a_pScope);
-    if (pSymbol == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "symbol not found '%s'", symbol.c_str());
-    }
-    return pSymbol->getMetaData(a_SymbolDotMeta.substr(lastDotPos + 1));
-}
-
 void Application::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullptr*/,
                               bool a_bDefaultInstanciable /*= false*/) const
 {

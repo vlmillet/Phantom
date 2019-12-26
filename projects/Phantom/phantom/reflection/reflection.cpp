@@ -16,9 +16,10 @@
 #include "FundamentalsT.h"
 
 /// META META TYPES
-#include "..\phantom_priv.h"
-#include "..\thread\RecursiveMutex.h"
 #include "Pointer.h"
+
+#include <phantom/phantom_priv.h>
+#include <phantom/thread/RecursiveMutex.h>
 
 namespace phantom
 {

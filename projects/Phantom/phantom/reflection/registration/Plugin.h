@@ -128,6 +128,8 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
             }                                                                                                          \
             __attribute__((destructor(500))) static void _shared_library_posix_unload()                                \
             {                                                                                                          \
+                static Dl_info info;                                                                                   \
+                dladdr((const void*)&_shared_library_posix_unload, &info);                                             \
                 ::phantom::reflection::detail::unregisterModule((size_t)info.dli_fbase);                               \
             }
 #    else

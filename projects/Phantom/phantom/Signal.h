@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "Allocate.h"
 #include "Functor.h"
 #include "LambdaCapture.h"
 #include "MethodClosure.h"
+#include "allocate.h"
 #include "detail/Signal.h"
 #include "thread/RecursiveSpinMutex.h"
 

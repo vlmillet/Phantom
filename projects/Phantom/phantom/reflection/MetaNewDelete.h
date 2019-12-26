@@ -10,8 +10,8 @@
 
 HAUNT_STOP;
 
-#include <phantom/Allocate.h>
 #include <phantom/RttiMapData.h>
+#include <phantom/allocate.h>
 #include <phantom/traits/HasEmbeddedRtti.h>
 
 // --------------------------------------------------------------------------------------------

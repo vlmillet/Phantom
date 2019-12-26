@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Allocate.h"
 #include "Constructor.h"
 #include "TypeOf.h"
+#include "allocate.h"
 #include "mostDerivedOfImpl.h"
 
 HAUNT_STOP;

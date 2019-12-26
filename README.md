@@ -14,8 +14,6 @@ It comes with bêta extensions providing scripting features : [Phantom.Lang](#ph
 
 | [Compilers / Platforms](#compilers--platforms) \| [Donations / Support](#support--donations) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
 :----------------------------------------------------------: |
-| [Upcoming changes](#upcoming-changes) - [Gallery](#gallery) - [Support, FAQ](#support-frequently-asked-questions-faq) -  [How to help](#how-to-help) - [Sponsors](#sponsors) - [Credits](#credits) - [License](#license) |
-| [Wiki](https://github.com/vlmillet/phantom/wiki) - [User quotes](https://github.com/vlmillet/phantom/wiki/Quotes) |
 
 ### Compilers / Platforms 
 - Microsoft Visual Studio 2015 / 2017 / 2019 (requires at least C++11)

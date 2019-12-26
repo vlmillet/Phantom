@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  
+  <!-- VC 2013 -->
+  <Type Name="phantom::SmallVector&lt;*,*,*&gt;">
+      <DisplayString>{{ size={m_size} }}</DisplayString>
+      <Expand>
+          <Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
+          <ArrayItems>
+              <Size>m_size</Size>
+              <ValuePointer>m_data</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+  <Type Name="phantom::ArrayView&lt;*&gt;">
+      <DisplayString>{{ size={m_pEnd - m_pBegin} }}</DisplayString>
+      <Expand>
+          <ArrayItems>
+              <Size>m_pEnd - m_pBegin</Size>
+              <ValuePointer>m_pBegin</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+    
+  <Type Name="phantom::SmallMap&lt;*,*,*,*,*&gt;">
+    <DisplayString>{{ size={m_storage.m_size} }}</DisplayString>
+    <Expand>
+      <Item Name="[capacity]" ExcludeView="simple">m_storage.m_capacity</Item>
+      <ArrayItems>
+        <Size>m_storage.m_size</Size>
+        <ValuePointer>m_storage.m_data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="phantom::SmallSet&lt;*,*,*,*&gt;">
+    <DisplayString>{{ size={m_storage.m_size} }}</DisplayString>
+    <Expand>
+      <Item Name="[capacity]" ExcludeView="simple">m_storage.m_capacity</Item>
+      <ArrayItems>
+        <Size>m_storage.m_size</Size>
+        <ValuePointer>m_storage.m_data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="phantom::SmallString&lt;*,*,*&gt;">
+    <DisplayString>{m_Chars.m_data,s}</DisplayString>
+    <Expand>
+      <Item Name="length">m_Chars.m_size-1</Item>
+      <Item Name="capacity">m_Chars.m_capacity</Item>
+    </Expand>
+  </Type>
+
+    <Type Name="phantom::BasicStringView&lt;*&gt;">
+        <DisplayString>{m_pBegin,[m_pEnd - m_pBegin]}</DisplayString>
+        <Expand>
+            <Item Name="length">m_pEnd - m_pBegin</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="phantom::Functor&lt;*&gt;">
+        <Expand>
+            <Item Name="DynDelegate" Condition="m_Type == phantom::_FunctorInternalType::DynDelegate">
+                *(phantom::Functor&lt;$T1&gt;::DynDelegateType*)&amp;m_DynDelegate
+            </Item>
+            <Item Name="Delegate" Condition="m_Type == phantom::_FunctorInternalType::Delegate">
+                *(phantom::Functor&lt;$T1&gt;::DelegateType*)&amp;m_Delegate
+            </Item>
+            <Item Name="StdFunction" Condition="m_Type == phantom::_FunctorInternalType::StdFunction">
+                *(phantom::Functor&lt;$T1&gt;::StdFuncType*)&amp;m_StdFunction
+            </Item>
+        </Expand>
+    </Type>
+
+    <Type Name="phantom::Delegate&lt;*&gt;">
+        <Expand>
+            <Item Name="Function" Condition="m_Closure.m_pFunction == nullptr">
+                m_Closure.m_pThis
+            </Item>
+            <Item Name="This" Condition="m_Closure.m_pFunction != nullptr">
+                m_Closure.m_pThis
+            </Item>
+            <Item Name="Method" Condition="m_Closure.m_pFunction != nullptr">
+                m_Closure.m_pFunction
+            </Item>
+        </Expand>
+    </Type>
+ 
+    <Type Name="phantom::reflection::ConstantT&lt;*&gt;">
+        <DisplayString Condition="m_strName.m_Chars.m_size == 1">{m_Value}</DisplayString>
+        <DisplayString Condition="m_strName.m_Chars.m_size > 1">{m_strName}({m_Value})</DisplayString>
+    </Type>
+
+    <Type Name="phantom::reflection::ValueMember">
+        <DisplayString>{m_strName, sb} ({*m_pValueType})</DisplayString>
+        <Expand>
+            <Item Name="Type">
+                m_pValueType
+            </Item>
+            <Item Name="Name">
+                m_strName
+            </Item>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::LocalVariable">
+        <DisplayString>{*m_pValueType} {m_strName, sb}</DisplayString>
+        <Expand>
+            <Item Name="Type">
+                m_pValueType
+            </Item>
+            <Item Name="Name">
+                m_strName
+            </Item>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::Subroutine">
+        <DisplayString IncludeView="is_template"></DisplayString>
+        <DisplayString>{*m_pSignature, view(retType)nd} {m_strName,sb} ({*m_pSignature,view(parm0)})</DisplayString>
+        <Expand>
+            <Item Name="Signature">
+                *m_pSignature
+            </Item>
+            <CustomListItems>
+            </CustomListItems>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::Symbol">
+        <DisplayString IncludeView="is_template"></DisplayString>
+        <DisplayString>{m_strName,sb}</DisplayString>
+    </Type>
+    <Type Name="phantom::reflection::Signature">
+        <DisplayString IncludeView="retType">{*m_pReturnType}</DisplayString>
+        <DisplayString IncludeView="parm0" Condition="m_Parameters.m_size &lt; 1"></DisplayString>
+        <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0]}{*this,view(parm1)nd}</DisplayString>
+        <DisplayString IncludeView="parm1" Condition="m_Parameters.m_size &lt; 2"></DisplayString>
+        <DisplayString IncludeView="parm1">, {*m_Parameters.m_data[1]}{*this,view(parm2)nd}</DisplayString>
+        <DisplayString IncludeView="parm2" Condition="m_Parameters.m_size &lt; 3"></DisplayString>
+        <DisplayString IncludeView="parm2">, {*m_Parameters.m_data[2]}{*this,view(parm3)nd}</DisplayString>
+        <DisplayString IncludeView="parm3" Condition="m_Parameters.m_size &lt; 4"></DisplayString>
+        <DisplayString IncludeView="parm3">, {*m_Parameters.m_data[3]}{*this,view(parm4)nd}</DisplayString>
+        <DisplayString IncludeView="parm4" Condition="m_Parameters.m_size &lt; 5"></DisplayString>
+        <DisplayString IncludeView="parm4">, {*m_Parameters.m_data[4]}{*this,view(parm5)nd}</DisplayString>
+        <DisplayString>{*this,view(retType)nd} ({*this,view(parm0)nd})</DisplayString>
+        <Expand>
+            <Item Name="Parameters">
+                m_Parameters
+            </Item>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::TemplateSignature">
+        <DisplayString IncludeView="parm0" Condition="m_TemplateParameters.m_size &lt; 1"></DisplayString>
+        <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0]}{*this,view(parm1)nd}</DisplayString>
+        <DisplayString IncludeView="parm1" Condition="m_TemplateParameters.m_size &lt; 2"></DisplayString>
+        <DisplayString IncludeView="parm1">{*m_Parameters.m_data[1]}{*this,view(parm2)nd}</DisplayString>
+        <DisplayString IncludeView="parm2" Condition="m_TemplateParameters.m_size &lt; 3"></DisplayString>
+        <DisplayString IncludeView="parm2">{*m_Parameters.m_data[2]}{*this,view(parm3)nd}</DisplayString>
+        <DisplayString IncludeView="parm3" Condition="m_TemplateParameters.m_size &lt; 4"></DisplayString>
+        <DisplayString IncludeView="parm3">{*m_TemplateParameters.m_data[3]}{*this,view(parm4)nd}</DisplayString>
+        <DisplayString IncludeView="parm4" Condition="m_TemplateParameters.m_size &lt; 5"></DisplayString>
+        <DisplayString IncludeView="parm4">{*m_TemplateParameters.m_data[4]}{*this,view(parm5)nd}</DisplayString>
+        <DisplayString>&lt;{*this,view(parm0)nd}&gt;</DisplayString>
+        <Expand>
+            <Item Name="Parameters">
+                m_TemplateParameters
+            </Item>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::TemplateSpecialization">
+        <DisplayString IncludeView="sign">&lt;{*this,view(tparm0)}&gt;</DisplayString>
+        <DisplayString IncludeView="tparm0" Condition="m_Arguments.m_size &lt; 1"></DisplayString>
+        <DisplayString IncludeView="tparm0">{*m_Arguments.m_data[0]}{*this,view(tparm1)nd}</DisplayString>
+        <DisplayString IncludeView="tparm1" Condition="m_Arguments.m_size &lt; 2"></DisplayString>
+        <DisplayString IncludeView="tparm1">, {*m_Arguments.m_data[1]}{*this,view(tparm2)nd}</DisplayString>
+        <DisplayString IncludeView="tparm2" Condition="m_Arguments.m_size &lt; 3"></DisplayString>
+        <DisplayString IncludeView="tparm2">, {*m_Arguments.m_data[2]}{*this,view(tparm3)nd}</DisplayString>
+        <DisplayString IncludeView="tparm3" Condition="m_Arguments.m_size &lt; 4"></DisplayString>
+        <DisplayString IncludeView="tparm3">, {*m_Arguments.m_data[3]}{*this,view(tparm4)nd}</DisplayString>
+        <DisplayString IncludeView="tparm4" Condition="m_Arguments.m_size &lt; 5"></DisplayString>
+        <DisplayString IncludeView="tparm4">, {*m_Arguments.m_data[4]}{*this,view(tparm5)nd}</DisplayString>
+        <DisplayString>{m_strName, sb}{*this,view(sign)}</DisplayString>
+        <Expand>
+            <Item Name="Arguments">
+                m_Arguments
+            </Item>
+        </Expand>
+    </Type>
+    <Type Name="phantom::reflection::Type">
+        <DisplayString IncludeView="template" Condition="(m_uiFlags &amp; 0x01000000) == 0"></DisplayString>
+        <DisplayString IncludeView="template" Condition="m_uiFlags &amp; 0x01000000">{*m_pOwner,view(sign)}</DisplayString>
+        <DisplayString>{m_strName, sb}{*this,view(template)}</DisplayString>
+    </Type>
+    <Type Name="phantom::reflection::ExtendedType">
+        <DisplayString IncludeView="is_template"></DisplayString>
+        <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+    </Type>
+    <Type Name="phantom::reflection::QualifiedType">
+        <DisplayString IncludeView="is_template"></DisplayString>
+        <DisplayString>{*m_pUnderlyingType} {m_strName,sb}</DisplayString>
+    </Type>
+    <Type Name="phantom::reflection::Expression">
+        <DisplayString>Eval As : {*m_pValueType} ({*_PHNTM_Rtti.metaClass})</DisplayString>
+    </Type>
+
+</AutoVisualizer>

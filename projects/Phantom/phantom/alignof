@@ -1,0 +1,10 @@
+#pragma once
+
+#include <phantom/config.h>
+
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO && PHANTOM_COMPILER_MAJOR_VERSION <= PHANTOM_COMPILER_VISUAL_STUDIO_MAJOR_VERSION_14
+#include <phantom/traits/SafeAlignOf.h>
+#define PHANTOM_ALIGNOF(...) (phantom::SafeAlignOf<__VA_ARGS__>::value)
+#else 
+#define PHANTOM_ALIGNOF(...) alignof(__VA_ARGS__)
+#endif 

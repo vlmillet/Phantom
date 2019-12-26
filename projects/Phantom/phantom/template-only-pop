@@ -1,0 +1,2 @@
+#pragma pop_macro("PHANTOM_NOT_TEMPLATE")
+#pragma pop_macro("PHANTOM_IF_NOT_TEMPLATE_ONLY")

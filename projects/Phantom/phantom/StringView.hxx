@@ -1,0 +1,111 @@
+#pragma once
+
+// haunt {
+
+#include "StringView.h"
+
+#if defined(_MSC_VER)
+#   pragma warning(push, 0)
+#elif defined(__clang__)
+#   pragma clang diagnostic push
+#   pragma clang diagnostic ignored "-Wall"
+#   pragma clang diagnostic ignored "-Wextra"
+#endif
+
+#include <phantom/namespace>
+#include <phantom/package>
+#include <phantom/source>
+#include <phantom/class>
+#include <phantom/struct>
+#include <phantom/static_constant>
+#include <phantom/function>
+#include <phantom/method>
+#include <phantom/constructor>
+#include <phantom/field>
+#include <phantom/typedef>
+
+#include <phantom/template-only-push>
+
+#include "SmallString.hxx"
+
+#include <phantom/template-only-pop>
+
+namespace phantom {
+PHANTOM_PACKAGE("phantom")
+    PHANTOM_SOURCE("StringView")
+
+        PHANTOM_STRUCT_T((class), (CharT), NullTerminatedBasicStringView)
+        {
+            this_()
+            .PHANTOM_T constant("null", _::null)
+            .PHANTOM_T constructor<void(BasicStringView<CharT>)>()
+            .PHANTOM_T method<const char*()>("operator const char*", &_::operator notypedef<const char*>)
+            .PHANTOM_T field("nullTerminated", &_::nullTerminated)
+            .PHANTOM_T field("notNullTerminated", &_::notNullTerminated)
+            ;
+        }
+        PHANTOM_CLASS_T((class), (CharT), BasicStringView)
+        {
+            using NullTerminatedType = typedef_<PHANTOM_TYPENAME _::NullTerminatedType>;
+            using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
+            this_()
+        .public_()
+            .PHANTOM_T constant("npos", _::npos)
+            .PHANTOM_T typedef_<SelfType>("SelfType")
+            .PHANTOM_T typedef_<NullTerminatedType>("NullTerminatedType")
+            .PHANTOM_T constructor<void(const CharT*)>()
+            .PHANTOM_T constructor<void(const CharT*, const CharT*)>()
+            .PHANTOM_T constructor<void(const CharT*, size_t)>()
+            PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
+            .PHANTOM_T constructor<void()>()
+            )
+            .PHANTOM_T method<void()>("clear", &_::clear)
+            .PHANTOM_T method<SelfType(size_t, size_t)>("substr", &_::substr)["npos"]
+            .PHANTOM_T method<CharT()>("dropFront", &_::dropFront)
+            .PHANTOM_T method<void(size_t)>("dropFront", &_::dropFront)
+            .PHANTOM_T method<bool(SelfType) const>("startsWith", &_::startsWith)
+            .PHANTOM_T method<const CharT&(size_t) const>("operator[]", &_::operator[])
+            .PHANTOM_T method<const CharT*() const>("data", &_::data)
+            .PHANTOM_T method<const CharT*() const>("begin", &_::begin)
+            .PHANTOM_T method<const CharT*() const>("end", &_::end)
+            .PHANTOM_T method<size_t() const>("size", &_::size)
+            .PHANTOM_T method<bool() const>("empty", &_::empty)
+            .PHANTOM_T method<NullTerminatedType() const>("nullTerminated", &_::nullTerminated)
+            .PHANTOM_T method<CharT() const>("front", &_::front)
+            .PHANTOM_T method<CharT() const>("back", &_::back)
+            .PHANTOM_T method<size_t(CharT) const>("find", &_::find)
+            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find", &_::find)["0"]
+            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<size_t(const ::std::string &, size_t) const>("find", &_::find)["0"]
+            .PHANTOM_T method<size_t(SelfType, size_t) const>("find", &_::find)["0"]
+            .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_of", &_::find_first_of)["0"]
+            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_of", &_::find_first_of)["0"]
+            .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_of", &_::find_last_of)["0"]
+            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_of", &_::find_last_of)["0"]
+            .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+            .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+            .PHANTOM_T method<int(SelfType) const>("compare", &_::compare)
+            ;
+        }
+        #if PHANTOM_NOT_TEMPLATE
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator==", operator==);}
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator!=", operator!=);}
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator<", operator<);}
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator>", operator>);}
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator<=", operator<=);}
+        PHANTOM_REGISTER(Functions) { this_().function<bool(BasicStringView<char>, BasicStringView<char>)>("operator>=", operator>=);}
+        PHANTOM_REGISTER(Functions) { this_().function<const char*(StringView)>("cstr", cstr);}
+        #endif // PHANTOM_NOT_TEMPLATE
+    PHANTOM_END("StringView")
+PHANTOM_END("phantom")
+}
+
+#if defined(_MSC_VER)
+#   pragma warning(pop)
+#elif defined(__clang__)
+#   pragma clang diagnostic pop
+#endif
+
+// haunt }

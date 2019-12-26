@@ -1,0 +1,10 @@
+// license [
+// This file is part of the Phantom project. Copyright 2015-2016 Vivien Millet. 
+// Distributed under the Lesser GNU Lesser General Public License, Version 3.0. (See 
+// the LICENSE file which comes along with this source code or a copy at 
+// http://www.wiwila.com/tools/phantom/license/) 
+// ]
+
+#pragma once
+
+#include "phantom/haunt.h"

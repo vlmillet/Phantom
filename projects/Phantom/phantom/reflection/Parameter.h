@@ -1,0 +1,118 @@
+// license [
+// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// Distributed under the MIT license. Text available here at
+// http://www.wiwila.com/tools/phantom/license/
+// ]
+
+#pragma once
+// #pragma __PragmaPrintFile__
+
+/* ****************** Includes ******************* */
+#include <phantom/reflection/LocalVariable.h>
+/* **************** Declarations ***************** */
+/* *********************************************** */
+
+namespace phantom
+{
+namespace reflection
+{
+class Block;
+
+/// \brief  Represents a function parameter.
+class PHANTOM_EXPORT_PHANTOM Parameter : public LocalVariable
+{
+    PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
+
+    friend class Signature;
+
+    PHANTOM_DECLARE_META_CLASS(Parameter);
+
+public:
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Constructs a parameter with given value type and optionals name, default value
+    ///         expression and modifiers.
+    ///
+    /// \param [in,out] a_pType             The parameter's type.
+    /// \param  a_strName                   (optional) The parameter's name.
+    /// \param  a_pDefaultValueExpression   (optional) The default value expression.
+    /// \param  a_Modifiers                 (optional) The modifiers.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Parameter(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Parameter(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Parameter(Type* a_pType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+
+    /// \brief  Destructor.
+    ~Parameter() override
+    {
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the definition name of this parameter (by opposition to declaration name).
+    ///
+    /// \param  a_strName   The name.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setDefinitionName(StringView a_strName);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets if this parameter has a default argument defined (either as a native string, or
+    /// an expression).
+    ///
+    /// \return The default argument expression.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool hasDefaultArgument() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the default argument expression of this parameter.
+    ///
+    /// \return The default argument expression.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Expression* getDefaultArgumentExpression() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the default argument expression of this parameter.
+    ///
+    /// \param  a_pDefaultArgumentExpression The default argument expression.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setDefaultArgumentExpression(Expression* a_pDefaultArgumentExpression);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the native default argument string
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    StringView getNativeDefaultArgumentString() const
+    {
+        return m_NativeDefaultArgumentStr;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Is this parameter a '...' parameter ellipsis in a variadic function/method.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool isEllipsis() const;
+
+    // reimplemented
+
+    Parameter* asParameter() const override
+    {
+        return (Parameter*)this;
+    }
+
+    Parameter* cloneImpl() const override;
+
+private:
+    void setNativeDefaultArgumentStr(StringView a_DefaultArgument);
+
+protected:
+    mutable Expression* m_pDefaultArgumentExpression = nullptr;
+
+private:
+    mutable StringView m_NativeDefaultArgumentStr;
+};
+
+} // namespace reflection
+} // namespace phantom

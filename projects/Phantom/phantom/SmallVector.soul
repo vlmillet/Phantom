@@ -1,0 +1,301 @@
+@import c.std;
+@import static std.initializer_list;
+@import phantom.reflection.StlVectorClass;
+ 
+template<typename T, size_t N>
+struct SmallVectorH
+{ 
+    static T* init()
+    {
+        return @alloc(T, N); 
+    }  
+    static T* grow(T* data, size_t old_capacity, size_t new_capacity)
+    { 
+        @free(T, data, old_capacity);
+        return @alloc(T, new_capacity);
+    } 
+    static void clear(T*& data, size_t& capacity)
+    {
+    }
+    static size_t capacity(size_t c)
+    {
+        return (N > c) ? N : c;
+    }
+}
+
+/// For small vectors with 0 init capacity clear deallocates the data
+
+
+template<typename T>
+struct SmallVectorH<T, 0>
+{
+    static T* init()
+    {
+        return nullptr;
+    }
+    static T* grow(T* data, size_t old_capacity, size_t new_capacity)
+    {
+        if(data)
+            @free(T, data, old_capacity);
+        return @alloc(T, new_capacity);
+    }
+    static void clear(T*& data, size_t& capacity)
+    {
+        @free(T, data, capacity);
+        data = nullptr;
+        capacity = 0;
+    }
+    static size_t capacity(size_t c)
+    {
+        return c;
+    }
+}
+
+template<typename T, int N = 5, int Inc = 5>
+class(StlVectorClass("SmallVector")) SmallVector
+{
+public:
+    typedef T const *               			const_iterator;
+    typedef T*                      			iterator;
+    typedef SmallVector<T, N, Inc>       		self_type;
+    typedef T                       			value_type;
+    typedef size_t                  			size_type;
+    typedef SmallVectorH<value_type, N> helper;
+
+    SmallVector()
+        : m_size(0)
+        , m_capacity(N)
+        , m_data(helper::init())
+    {
+
+    }
+    explicit SmallVector(size_t capacity)
+        : m_size(0)
+        , m_capacity(helper::capacity(capacity))
+        , m_data(@alloc(value_type, m_capacity))
+    {
+
+    }
+
+    SmallVector(const self_type& other)
+        : m_size(other.m_size)
+        , m_capacity(helper::capacity(other.m_capacity))
+        , m_data(@alloc(value_type, m_capacity))
+    {
+        for (size_t i = 0; i < m_size; ++i)
+        {
+            new (&m_data[i]) value_type(other.m_data[i]);
+        }
+    }
+
+    ~SmallVector()
+    {
+        while (m_size--)
+        {
+            m_data[m_size].~value_type();
+        }
+        @free(T, m_data, m_capacity);
+    }
+
+    self_type& operator=(const self_type& other)
+    {
+		auto oldCapacity = m_capacity;
+        m_capacity = (m_capacity > other.m_capacity) ? m_capacity : other.m_capacity;
+        for (size_t i = 0; i < m_size; ++i)
+        {
+            m_data[i].~value_type();
+        }
+        m_data = helper.grow(m_data, oldCapacity, m_capacity);
+        m_size = other.m_size;
+        for (size_t i = 0; i < m_size; ++i)
+        {
+            new (&m_data[i]) value_type(other.m_data[i]);
+        }
+        return *this;
+    }
+
+    const_iterator begin() const { return m_data; }
+    const_iterator end() const { return m_data + m_size; }
+
+    iterator begin() { return m_data; }
+    iterator end() { return m_data + m_size; }
+
+    value_type& operator[](size_type index)
+    {
+        return m_data[index];
+    }
+
+    value_type const& operator[](size_type index) const
+    {
+        return m_data[index];
+    }
+
+    size_type size() const { return m_size; }
+    size_type capacity() const { return m_capacity; }
+    bool empty() const { return m_size == 0; }
+    value_type const& front() const { return m_data[0]; }
+    value_type const& back() const { return m_data[m_size - 1]; }
+    value_type& front() { return m_data[0]; }
+    value_type& back() { return m_data[m_size - 1]; }
+    void pop_back() { m_size--; }
+    
+    void reserve(size_t newCapacity)
+    {
+        if (m_capacity < newCapacity)
+        {
+            m_capacity = newCapacity;
+            value_type* pOldData = m_data;
+            m_data = @alloc(value_type, newCapacity);
+            for (size_t i = 0; i < m_size; ++i)
+            {
+                new (m_data + i) value_type((value_type&&)pOldData[i]);
+                pOldData[i].~value_type();
+            }
+            @free(value_type, pOldData, m_size);
+        }
+    }
+    void resize(size_t newSize)
+    {
+        reserve(newSize);
+        for (; m_size < newSize; ++m_size)
+            new (&m_data[m_size]) value_type;
+        m_size = newSize;
+    }
+
+    void resize(size_t newSize, const value_type& init)
+    {
+        reserve(newSize);
+        for (; m_size < newSize; ++m_size)
+            new(&m_data[m_size]) value_type(init);
+        m_size = newSize;
+    }
+
+    void push_back(const value_type& val)
+    {
+        if (m_size == m_capacity)
+        {
+            reserve(m_capacity + Inc);
+        }
+        new (&m_data[m_size++]) value_type(val);
+    }
+
+    value_type* data() { return m_data; }
+
+    value_type const* data() const { return m_data; }
+
+    iterator erase(iterator it)
+    {
+        @assert(it >= m_data && it < end());
+        it->~value_type();
+        size_type index = it - begin();
+        memmove(it, it + 1, (m_size - index - 1)*sizeof(value_type));
+        m_size--;
+        return it;
+    }
+
+    iterator erase(iterator _it, iterator _end)
+    {
+        @assert(_it >= m_data && _end <= end() && _end >= _it);
+        size_t index = _it - m_data;
+        for (auto it = _it; it != _end; ++it)
+            it->~value_type();
+        if (_end != end())
+        {
+            memmove(_it, _end, (end() - _end)*sizeof(value_type));
+        }
+        m_size -= _end - _it;
+        return _it;
+    }
+
+    void insert(iterator _where, const value_type& val)
+    {
+        @assert(_where >= m_data && _where <= end());
+        if (_where == end()) push_back(val);
+        else
+        {
+            size_type index = _where - begin();
+            if (m_size == m_capacity)
+            {
+                reserve(m_capacity + Inc);
+            }
+            memmove(m_data + index + 1, m_data + index, (m_size - index)*sizeof(value_type));
+            new (&m_data[index]) value_type(val);
+            m_size++;
+        }
+    }
+
+    SmallVector(self_type&& temp)
+        : m_data(temp.m_data)
+        , m_size(temp.m_size)
+        , m_capacity(temp.m_capacity)
+    {
+        temp.m_data = nullptr;
+        temp.m_size = temp.m_capacity = 0;
+    }
+
+    self_type& operator=(self_type&& temp)
+    {
+        @free(T, m_data, m_capacity);
+        m_data = temp.m_data;
+        m_size = temp.m_size;
+        m_capacity = temp.m_capacity;
+        temp.m_data = nullptr;
+        temp.m_size = temp.m_capacity = 0;
+        return *this;
+    }
+
+    void push_back(value_type&& val)
+    {
+        if (m_size == m_capacity)
+        {
+            reserve(m_capacity + Inc);
+        }
+        new (&m_data[m_size++]) value_type((value_type&&)val);
+    }
+
+    void insert(iterator _where, value_type&& val)
+    {
+        @assert(_where >= m_data && _where <= end());
+        if (_where == end()) push_back((value_type&&)val);
+        else
+        {
+            size_type index = _where - begin();
+            if (m_size == m_capacity)
+            {
+                reserve(m_capacity + Inc);
+            }
+            memmove(m_data + index + 1, m_data + index, (m_size - index)*sizeof(value_type));
+            new (&m_data[index]) value_type((value_type&&)val);
+            m_size++;
+        }
+    }
+
+    void clear()
+    {
+        while (m_size--)
+        {
+            m_data[m_size].~value_type();
+        }
+        m_size = 0;
+        helper::clear(m_data, m_capacity);
+    }
+
+    void swap(self_type& other)
+    {
+        if (&other == this) return;
+        value_type* other_data = other.m_data;
+        size_t other_size = other.m_size;
+        size_t other_capacity = other.m_capacity;
+        other.m_capacity = m_capacity;
+        other.m_size = m_size;
+        other.m_data = m_data;
+        m_capacity = other_capacity;
+        m_data = other_data;
+        m_size = other_size;
+    }
+
+private:
+    size_type m_capacity;
+    size_type m_size;
+    value_type* m_data;
+}

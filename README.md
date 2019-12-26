@@ -8,7 +8,7 @@ Phantom is a **C++ reflection library**, feature complete (yet bloat-free), self
 
 After years of use inside a professional game studio, it is now made available under a permissive license for whoever want to use it or participate to its development.
 
-It comes with bêta extensions providing scripting features : [Phantom.Lang](#phantomlang) and  [Phantom.JIT](#phantomjit)
+It comes with bêta extensions providing scripting features : [Phantom.Lang](#phantomlang--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
 
 ----
 

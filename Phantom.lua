@@ -33,13 +33,6 @@ solution(PhantomSolutionName)
 
 	location (outputPath)
 	
-	-- filter "platforms:ORBIS"
-	-- 	disablewarnings {
-	-- 		"#pragma-messages", -- too many pragma messages in the code at the moment, they completely hide actual warnings
-	-- 	}
-	
-	-- defining global vars 
-	
 	local Vars = {}
 	
 	Vars["HauntOptions"] = ""
@@ -56,19 +49,11 @@ solution(PhantomSolutionName)
 	Vars["Link"] = "Shared"
 
 	group "Libraries"
-	Vars["Link"] = "Static"
-	-- Phantom_add_project("FContext", Vars)
 	Vars["Link"] = "Shared"
 	Phantom_add_project("Phantom", Vars)
-	-- Phantom_add_project("Phantom.State", Vars)
-	-- Phantom_add_project("Phantom.Serialization", Vars)
-	-- Phantom_add_project("Phantom.Lang", Vars)
-	-- Phantom_add_project("Soul", Vars)
-	-- Phantom_add_project("LLVMJit", Vars)
 	
 	group "Tests"
 	Vars["Exception"] = true
-	-- Phantom_add_project("Phantom.Test", Vars) 
 	Vars["Exception"] = false
 	
 	group "Examples"

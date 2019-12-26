@@ -1073,11 +1073,8 @@ PackageFolder* Application::rootPackageFolder() const
 {
     if (m_pRootPackageFolder == nullptr)
     {
-        ((Application*)this)->m_pRootPackageFolder = PHANTOM_DEFERRED_NEW(PackageFolder);
-        if (Module* module = getModule("Phantom"))
-        {
-            module->addElement(m_pRootPackageFolder);
-        }
+        const_cast<Application*>(this)->m_pRootPackageFolder = PHANTOM_DEFERRED_NEW(PackageFolder);
+		const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
     }
     return m_pRootPackageFolder;
 }

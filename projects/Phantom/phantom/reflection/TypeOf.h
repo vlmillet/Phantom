@@ -386,12 +386,15 @@ struct TypeOfByName
             if (pType)
             {
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-                PHANTOM_LOG(Warning,
-                            "type '%.*s' was found in module '%.*s' which is not a dependency of the current "
-                            "module '%.*s'. This can cause undefined behavior when unloading modules.",
-                            PHANTOM_STRING_AS_PRINTF_ARG(infos.qualifiedDecoratedName()),
-                            PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(pType)),
-                            PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(moduleHandle)));
+				if (detail::getModuleHandle(pType) != moduleHandle)
+				{
+					PHANTOM_LOG(Warning,
+						"type '%.*s' was found in module '%.*s' which is not a dependency of the current "
+						"module '%.*s'. This can cause undefined behavior when unloading modules.",
+						PHANTOM_STRING_AS_PRINTF_ARG(infos.qualifiedDecoratedName()),
+						PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(pType)),
+						PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(moduleHandle)));
+				}
 #endif
             }
             else

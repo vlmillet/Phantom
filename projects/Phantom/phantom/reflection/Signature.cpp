@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Signature.h"
 
 #include "Application.h"
@@ -13,9 +12,8 @@
 #include "Source.h"
 #include "Subroutine.h"
 
-#include <phantom/StringUtil.h>
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
+#include <phantom/utils/StringUtil.h>
 /* *********************************************** */
 namespace phantom
 {

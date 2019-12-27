@@ -7,16 +7,15 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include "phantom/Constructor.h"
-
-#include <phantom/EmbeddedRtti.h>
-#include <phantom/SmallVector.h>
-#include <phantom/StringBuffer.h>
-#include <phantom/newImpl.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/Constructor.h>
+#include <phantom/detail/EmbeddedRtti.h>
+#include <phantom/detail/newImpl.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/reflection/CodeLocation.h>
 #include <phantom/reflection/LanguageElementVisitor.h>
 #include <phantom/reflection/reflection.h>
+#include <phantom/utils/SmallVector.h>
+#include <phantom/utils/StringBuffer.h>
 /* *********************************************** */
 
 namespace phantom
@@ -91,7 +90,7 @@ public:
 
     void* getMostDerived() const
     {
-        return PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance;
+        return RTTI.instance;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,8 +99,14 @@ public:
 
     Class* getMetaClass() const
     {
-        return PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass;
+        return RTTI.metaClass;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  dynamic meta cast.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void* as(Class* a_Class) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets elements owned by this one.
@@ -1236,7 +1241,7 @@ public:
     LanguageElement* getElementAtLine(uint16 a_Line) const;
 
     /// @cond INTERNAL
-    EmbeddedProxyRtti PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD;
+    EmbeddedProxyRtti RTTI;
     /// @endcond
 
     virtual int destructionPriority() const;

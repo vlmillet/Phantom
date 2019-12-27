@@ -7,10 +7,10 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/SmallMap.h>
-#include <phantom/SmallVector.h>
-#include <phantom/String.h>
-#include <phantom/property.h>
+#include <phantom/utils/Property.h>
+#include <phantom/utils/SmallMap.h>
+#include <phantom/utils/SmallVector.h>
+#include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

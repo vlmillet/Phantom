@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/String.h>
 #include <phantom/reflection/reflection.h>
 #include <phantom/reflection/registration/registration.h>
+#include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include <windows.h>

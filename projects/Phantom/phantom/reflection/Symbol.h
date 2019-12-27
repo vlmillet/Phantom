@@ -7,18 +7,18 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/SmallSet.h>
-#include <phantom/StringWithHash.h>
 #include <phantom/UserData.h>
 #include <phantom/reflection/LanguageElement.h>
+#include <phantom/utils/SmallSet.h>
+#include <phantom/utils/StringHash.h>
 /* *********************************************** */
 
 namespace phantom
 {
 namespace reflection
 {
-typedef SmallMap<StringWithHash, Variant> MetaDatas;
-typedef SmallSet<String, 1>               Annotations;
+typedef SmallMap<StringHash, Variant> MetaDatas;
+typedef SmallSet<String, 1>           Annotations;
 
 class PHANTOM_EXPORT_PHANTOM SymbolExtension : public LanguageElement
 {
@@ -254,6 +254,9 @@ public:
     void setMetaData(StringView a_Name, const Variant& a_Value);
     void setMetaData(StringView a_Name, Variant&& a_Value);
 
+    void setMetaData(StringHash a_Hash, const Variant& a_Value);
+    void setMetaData(StringHash a_Hash, Variant&& a_Value);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes the meta data matching the given name.
     ///
@@ -483,19 +486,19 @@ protected:
     void           onAncestorChanged(LanguageElement* a_pAncestor) override;
 
 private:
-    StringHash _computeHash() const;
+    hash64 _computeHash() const;
 
 protected:
     String     m_strName;
     Namespace* m_pNamespace = nullptr; /// Namespace represents the abstract, qualifying container of the element, for
                                        /// example a global function is scoped inside the global namespace
-    MetaDatas*         m_pMetaDatas = nullptr;
-    Annotations*       m_pAnnotations = nullptr;
-    SymbolExtensions*  m_pExtensions = nullptr;
-    Modifiers          m_Modifiers = PHANTOM_R_NONE;
-    mutable StringHash m_Hash = 0;
-    Access             m_eAccess = Access::Undefined;
-    UserData           m_UserData;
+    MetaDatas*        m_pMetaDatas = nullptr;
+    Annotations*      m_pAnnotations = nullptr;
+    SymbolExtensions* m_pExtensions = nullptr;
+    Modifiers         m_Modifiers = PHANTOM_R_NONE;
+    mutable hash64    m_Hash;
+    Access            m_eAccess = Access::Undefined;
+    UserData          m_UserData;
 };
 
 } // namespace reflection

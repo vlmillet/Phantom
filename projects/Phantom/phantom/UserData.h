@@ -6,17 +6,15 @@
 
 #pragma once
 
-#include "Delegate.h"
-
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
+#include <phantom/utils/Delegate.h>
 
 namespace phantom
 {
 struct PHANTOM_EXPORT_PHANTOM UserData
 {
     UserData() = default;
-    UserData(void* a_pData, Delegate<void(void*)> a_Destroy)
-        : m_pData(a_pData), m_Destroy(a_Destroy)
+    UserData(void* a_pData, Delegate<void(void*)> a_Destroy) : m_pData(a_pData), m_Destroy(a_Destroy)
     {
         PHANTOM_ASSERT(a_pData && m_Destroy);
     }

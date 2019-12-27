@@ -26,7 +26,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -44,7 +47,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::reflection::Types>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Type>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -92,8 +95,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .using_("LanguageElement::getQualifiedDecoratedName")
             .using_("LanguageElement::getUniqueName")
             .method<bool() const>("hasEllipsis", &_::hasEllipsis)
-            .method<Types::const_iterator() const>("beginParameterTypes", &_::beginParameterTypes)
-            .method<Types::const_iterator() const>("endParameterTypes", &_::endParameterTypes)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("beginParameterTypes", &_::beginParameterTypes)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("endParameterTypes", &_::endParameterTypes)
             .method<Type*() const, virtual_|override_>("addPointer", &_::addPointer)
         
         .protected_()

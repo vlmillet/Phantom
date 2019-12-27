@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Source.h"
 
 #include "Alias.h"
@@ -17,9 +16,8 @@
 #include "Package.h"
 #include "PackageFolder.h"
 #include "SourceFile.h"
-#include "phantom/Message.h"
 
-#include <phantom/Path.h>
+#include <phantom/utils/Path.h>
 #ifndef __DOXYGEN__
 #    include <fstream>
 #    include <stdarg.h>
@@ -30,11 +28,10 @@
 #include "FieldPointer.h"
 #include "InitializerListType.h"
 #include "MethodPointer.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
-#include <phantom/SmallMap.h>
-#include <phantom/SmallSet.h>
-#include <phantom/new_ex.h>
+#include <phantom/utils/SmallMap.h>
+#include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 #define PHANTOM_DEBUG_PACKAGE 0
 

@@ -12,8 +12,8 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/StaticGlobalRegistrer.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/StaticGlobalRegistrer.h>
+#include <phantom/detail/phantom.h>
 
 namespace phantom
 {
@@ -21,9 +21,8 @@ namespace reflection
 {
 struct NamespaceBuilder;
 
-struct PHANTOM_EXPORT_PHANTOM _PHNTM_GlobalRegistrer
-    : phantom::detail::_PHNTM_StaticGlobalRegistrer,
-      _PHNTM_RegistrerKeyWords
+struct PHANTOM_EXPORT_PHANTOM _PHNTM_GlobalRegistrer : phantom::detail::_PHNTM_StaticGlobalRegistrer,
+                                                       _PHNTM_RegistrerKeyWords
 {
     _PHNTM_REG_FRIENDS_NO_GLOBAL;
     friend struct phantom::reflection::NamespaceBuilder;
@@ -31,13 +30,11 @@ struct PHANTOM_EXPORT_PHANTOM _PHNTM_GlobalRegistrer
 public:
     // never put this function to cpp file
     PHANTOM_FORCEINLINE
-    _PHNTM_GlobalRegistrer(RegistrationSteps a_Steps, TypeInfosGetter a_TypeInfosGetter,
-                           const char* a_pFile, int a_Line, int a_Tag, bool a_bIsTemplateDependant)
+    _PHNTM_GlobalRegistrer(RegistrationSteps a_Steps, TypeInfosGetter a_TypeInfosGetter, const char* a_pFile,
+                           int a_Line, int a_Tag, bool a_bIsTemplateDependant)
         : _PHNTM_StaticGlobalRegistrer(
-          PHANTOM_MODULE_HANDLE(this),
-          a_bIsTemplateDependant ? StringView() : _PHNTM_currentPackageName(),
-          a_bIsTemplateDependant ? StringView() : _PHNTM_currentSourceName(), a_pFile, a_Line,
-          a_Tag, a_Steps),
+          PHANTOM_MODULE_HANDLE(this), a_bIsTemplateDependant ? StringView() : _PHNTM_currentPackageName(),
+          a_bIsTemplateDependant ? StringView() : _PHNTM_currentSourceName(), a_pFile, a_Line, a_Tag, a_Steps),
           _PHNTM_TypeInfosGetter(a_TypeInfosGetter)
     {
     }

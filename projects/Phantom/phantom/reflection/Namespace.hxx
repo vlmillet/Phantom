@@ -19,13 +19,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -44,7 +45,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol, ::phantom::reflection::Scope>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -61,7 +62,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
-            .method<Namespace*() const, virtual_|override_>("asNamespace", &_::asNamespace)
+            .method<Namespace*() const>("asNamespace", &_::asNamespace)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)
             .method<void(Symbol*), virtual_|override_>("addScopeElement", &_::addScopeElement)
             .method<void(Symbol*), virtual_|override_>("removeScopeElement", &_::removeScopeElement)
@@ -79,23 +80,27 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Namespaces const&() const>("getNamespaces", &_::getNamespaces)
             .method<Aliases const&() const>("getNamespaceAliases", &_::getNamespaceAliases)
             .method<String(char) const>("asPath", &_::asPath)["'/'"]
-            .method<bool(Symbol*) const, virtual_|override_>("isSymbolHidden", &_::isSymbolHidden)
+            .method<bool(Symbol*) const>("isSymbolHidden", &_::isSymbolHidden)
             .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)
             .method<void(Symbol*, Symbols&) const, virtual_|override_>("getElementDoubles", &_::getElementDoubles)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(StringBuffer&) const>("getQualifiedName", &_::getQualifiedName)
+            .method<void(StringBuffer&) const>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
         
         .public_()
-            .signal("namespaceAdded", &_::namespaceAdded)
-            .signal("namespaceRemoved", &_::namespaceRemoved)
-            .signal("namespaceAliasAdded", &_::namespaceAliasAdded)
-            .signal("namespaceAliasRemoved", &_::namespaceAliasRemoved)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("namespaceAdded", &_::namespaceAdded)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("namespaceRemoved", &_::namespaceRemoved)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("namespaceAliasAdded", &_::namespaceAliasAdded)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("namespaceAliasRemoved", &_::namespaceAliasRemoved)
         
         .protected_()
             .method<void(Namespace*)>("setParentNamespace", &_::setParentNamespace)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
+            .method<void(LanguageElement*)>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
+            .method<void(LanguageElement*)>("onElementRemoved", &_::onElementRemoved)
         
         .protected_()
             .field("m_Namespaces", &_::m_Namespaces)

@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/SmallVector.h>
-#include <phantom/VirtualDelete.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/VirtualDelete.h>
+#include <phantom/detail/phantom.h>
+#include <phantom/utils/SmallVector.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 

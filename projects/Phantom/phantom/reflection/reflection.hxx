@@ -29,8 +29,8 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Flags.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/Flags.hxx>
+#include <phantom/utils/SmallVector.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -84,8 +84,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<Modifiers>("Modifiers"); }
-        PHANTOM_REGISTER(Functions) { this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, Modifier::Enum)>( "operator|", operator|); }
-        PHANTOM_REGISTER(Functions) { this_() .function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, ::phantom::Flags<Modifier::Enum>)>( "operator|", operator|); }
+        PHANTOM_REGISTER(Functions) { this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, Modifier::Enum)>("operator|", operator|); }
+        PHANTOM_REGISTER(Functions) { this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, ::phantom::Flags<Modifier::Enum>)>( "operator|", operator|); }
         PHANTOM_REGISTER(Functions) { this_().function<::phantom::IncompatibleFlag(Modifier::Enum, int)>("operator|", operator|); }
         PHANTOM_STRUCT(BuiltInTypes)
         {

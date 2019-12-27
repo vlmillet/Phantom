@@ -11,11 +11,10 @@
 #include "PackageFolder.h"
 #include "Parameter.h"
 #include "Source.hxx"
-#include "phantom/Message.h"
 
-#include <phantom/Path.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/dyn_cast>
-#include <phantom/phantom.h>
+#include <phantom/utils/Path.h>
 #ifndef __DOXYGEN__
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #        include "windows.h"
@@ -40,16 +39,13 @@
 #include "RValueReference.h"
 #include "SourceFile.h"
 #include "TemplateSpecialization.h"
-#include "phantom/IValueStream.h"
-#include "phantom/ModuleRegistrationInfo.h"
-#include "phantom/OValueStream.h"
-#include "phantom/Placement.h"
-#include "phantom/StringUtil.h"
-#include "phantom/Value.h"
-#include "phantom/phantom_priv.h"
+#include "phantom/detail/ModuleRegistrationInfo.h"
+#include "phantom/detail/phantom_priv.h"
+#include "phantom/utils/Placement.h"
 
 #include <fstream>
-#include <phantom/SmallSet.h>
+#include <phantom/utils/SmallSet.h>
+#include <phantom/utils/StringUtil.h>
 
 #pragma warning(disable : 4996)
 /* *********************************************** */

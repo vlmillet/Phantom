@@ -5,12 +5,11 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ContainerClass.h"
 
 #include "Method.h"
 #include "Property.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {

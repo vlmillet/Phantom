@@ -20,6 +20,13 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -31,7 +38,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Class, ::phantom::reflection::Placeholder>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

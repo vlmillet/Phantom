@@ -23,7 +23,8 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -40,7 +41,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using MemberAnonymousSections = typedef_< phantom::reflection::MemberAnonymousSections>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol, ::phantom::reflection::DataElement>()
         .public_()
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)

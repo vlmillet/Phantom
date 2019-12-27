@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Method.h"
 
 #include "ConstType.h"
@@ -15,7 +14,7 @@
 #include "RValueReference.h"
 #include "Signature.h"
 #include "VirtualMethodTable.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -128,66 +127,6 @@ bool Method::isOverridableBy(Method* a_pMethod) const
 {
     return a_pMethod->canOverride((Method*)this);
 }
-
-void Method::safeInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        invoke(rttiData.cast(pOwnerClass), a_pArgs, a_pReturnAddress);
-    }
-    else
-    {
-        invoke(a_pCallerAddress, a_pArgs, a_pReturnAddress);
-    }
-}
-
-void Method::safePlacementInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        placementInvoke(rttiData.cast(pOwnerClass), a_pArgs, a_pReturnAddress);
-    }
-    else
-    {
-        placementInvoke(a_pCallerAddress, a_pArgs, a_pReturnAddress);
-    }
-}
-
-void Method::safeInvoke(void* a_pCallerAddress, void** a_pArgs) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        invoke(rttiData.cast(pOwnerClass), a_pArgs);
-    }
-    else
-    {
-        invoke(a_pCallerAddress, a_pArgs);
-    }
-}
-
-/*
-jit_function Method::getVTableFunction( size_t a_uiThisOffset ) const
-{
-    PHANTOM_ASSERT(m_jit_function.function, "Closure not yet created, you must add this Method to a
-Class"); if(a_uiThisOffset == 0) return m_jit_function; auto found =
-m_VTableOffsetFixFunctions.find(a_uiThisOffset); if(found != m_VTableOffsetFixFunctions.end())
-    {
-        return found->second;
-    }
-    jit_function func = compileThisOffsetShiftFunction(a_uiThisOffset);
-    // UNCOMMENT TO TEST APPLY
-//     void* nul = nullptr;
-//     void* null[] = { &nul };
-//     jit_function_apply(func, null, nullptr);
-    //a_pMethod->setVTableOffsetFixClosure[a_uiThisOffset] = func;
-    return func;
-}*/
 
 void Method::setVirtual()
 {

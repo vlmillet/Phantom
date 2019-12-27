@@ -20,14 +20,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
+#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallMap.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -40,7 +40,6 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(Module)
         {
             using Classes = typedef_< phantom::reflection::Classes>;
-            using Dependencies = typedef_<_::Dependencies>;
             using FuncT = typedef_<_::FuncT>;
             using Functions = typedef_< phantom::reflection::Functions>;
             using Modules = typedef_< phantom::reflection::Modules>;
@@ -48,7 +47,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Sources = typedef_< phantom::reflection::Sources>;
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::reflection::Types>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -57,7 +56,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .typedef_<Dependencies>("Dependencies")
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .typedef_<Dependencies>("Dependencies")
         
         .public_()
             .constructor<void(StringView, uint)>()["0"]
@@ -84,7 +84,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<void(Functions&, StringView, const Types*, Type*) const>("findFunctions", &_::findFunctions)["\"\""]["nullptr"]["nullptr"]
             .method<Source*() const>("getAnonymousSource", &_::getAnonymousSource)
-            .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
+            /// missing symbol(s) reflection (phantom::MemoryContext) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
             .method<Type*(hash64) const>("findType", &_::findType)
             .method<Type*(hash64) const>("findUsableType", &_::findUsableType)
             .typedef_<FuncT>("FuncT")
@@ -97,9 +98,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void()>("markUpToDate", &_::markUpToDate)
         
         .public_()
-            .signal("packageAdded", &_::packageAdded)
-            .signal("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
-            .signal("changed", &_::changed)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("packageAdded", &_::packageAdded)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("changed", &_::changed)
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)

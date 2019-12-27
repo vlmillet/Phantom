@@ -5,8 +5,8 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "AnonymousSection.h"
+
 #include "Variable.h"
 /* *********************************************** */
 namespace phantom
@@ -30,15 +30,14 @@ void AnonymousSection::addVariable(Variable* a_pVariable)
 
 void AnonymousSection::addAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
-    PHANTOM_ASSERT(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(),
-                             a_pAnonymousSection) == m_AnonymousSections.end());
+    PHANTOM_ASSERT(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), a_pAnonymousSection) ==
+                   m_AnonymousSections.end());
     addElement(a_pAnonymousSection);
 }
 
 void AnonymousSection::removeAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
-    m_AnonymousSections.erase(
-    std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), a_pAnonymousSection));
+    m_AnonymousSections.erase(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), a_pAnonymousSection));
     removeElement(a_pAnonymousSection);
 }
 
@@ -61,8 +60,8 @@ void AnonymousSection::onElementAdded(LanguageElement* a_pElement)
 
 void AnonymousSection::onElementRemoved(LanguageElement* a_pElement)
 {
-    m_AnonymousSections.erase(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(),
-                                        static_cast<AnonymousSection*>(a_pElement)));
+    m_AnonymousSections.erase(
+    std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), static_cast<AnonymousSection*>(a_pElement)));
     m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), a_pElement));
 }
 

@@ -21,6 +21,12 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -31,7 +37,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Subroutine>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -42,15 +48,18 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             .method<Function*() const, virtual_|override_>("asFunction", &_::asFunction)
             .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)
         
         .protected_()
-            .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

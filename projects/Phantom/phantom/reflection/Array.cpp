@@ -5,10 +5,8 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Array.h"
 
-#include <phantom/value.h>
 /* *********************************************** */
 namespace phantom
 {

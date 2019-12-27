@@ -5,16 +5,15 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Subroutine.h"
 
 #include "Application.h"
 #include "ExecutionContext.h"
 #include "Parameter.h"
 #include "Signature.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
-#include <phantom/Variant.h>
+#include <phantom/utils/Variant.h>
 /* *********************************************** */
 namespace phantom
 {

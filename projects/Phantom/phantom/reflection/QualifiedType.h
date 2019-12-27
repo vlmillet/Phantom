@@ -48,7 +48,7 @@ public:
     void* newInstance() const override;
     void  deleteInstance(void* a_pInstance) const override;
 
-    ERelation getRelationWith(Type* a_pType) const override;
+    TypeRelation getRelationWith(Type* a_pType) const override;
 
     bool equal(void const* a_pSrc0, void const* a_pSrc1) const override;
 

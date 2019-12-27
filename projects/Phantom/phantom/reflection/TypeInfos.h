@@ -8,12 +8,12 @@
 
 #include <haunt>
 HAUNT_STOP;
-#include <phantom/SmallString.h>
-#include <phantom/StringHash.h>
-#include <phantom/StringView.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
+#include <phantom/detail/typedefs.h>
 #include <phantom/reflection/reflection.h>
-#include <phantom/typedefs.h>
+#include <phantom/utils/SmallString.h>
+#include <phantom/utils/StringHash.h>
+#include <phantom/utils/StringView.h>
 
 /// @cond ADVANCED
 
@@ -29,8 +29,7 @@ namespace reflection
 struct TypeInfos
 {
     TypeInfos() = default;
-    TypeInfos(char* buffer)
-        : buffer(buffer)
+    TypeInfos(char* buffer) : buffer(buffer)
     {
     }
     TypeInfos(TypeInfos&& temp)
@@ -57,9 +56,8 @@ struct TypeInfos
     }
     inline StringView scope() const
     {
-        return StringView(
-        buffer, scope_length - ((!!scope_length) << 1)); // 'scope length - 2' if 'scope_length > 0'
-                                                         // ex: "std::" => "std" but "" => ""
+        return StringView(buffer, scope_length - ((!!scope_length) << 1)); // 'scope length - 2' if 'scope_length > 0'
+                                                                           // ex: "std::" => "std" but "" => ""
     }
     inline StringView decoratedName() const
     {
@@ -102,7 +100,7 @@ struct TypeInfos
 
 namespace detail
 {
-PHANTOM_EXPORT_PHANTOM void BuildTypeInfos(StringView a_TypeName, TypeInfos& a_TI);
+PHANTOM_EXPORT_PHANTOM void       BuildTypeInfos(StringView a_TypeName, TypeInfos& a_TI);
 PHANTOM_EXPORT_PHANTOM StringView PrettyFunctionToTypeName(StringView a_TypeName);
 template<class T>
 constexpr const char* TypeIdNameBase()
@@ -144,23 +142,20 @@ struct TypeInfosOf
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty*>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty&>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 #if PHANTOM_HAS_RVALUE_REFERENCES
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty&&>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 #endif
@@ -168,45 +163,41 @@ struct TypeInfosOf<t_Ty&&>
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty const>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty volatile>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 template<typename t_Ty>
 struct TypeInfosOf<t_Ty const volatile>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
 template<typename t_Ty, size_t i>
 struct TypeInfosOf<t_Ty[i]>
 {
-    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value),
-                          "TypeInfosOf only usable on non-compound types");
+    PHANTOM_STATIC_ASSERT((std::is_same<t_Ty, t_Ty*>::value), "TypeInfosOf only usable on non-compound types");
 };
 
-#define PHANTOM_SPEC_FUNDAMENTALS_TYPE_INFOS_OF(_type_)                                            \
-    template<>                                                                                     \
-    struct TypeInfosOf<_type_>                                                                     \
-    {                                                                                              \
-        static const TypeInfos& object()                                                           \
-        {                                                                                          \
-            PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD();                                                \
-            static TypeInfos ti;                                                                   \
-            if (ti.empty())                                                                        \
-            {                                                                                      \
-                detail::BuildTypeInfos(PHANTOM_PP_QUOTE(_type_), ti);                              \
-            }                                                                                      \
-            return ti;                                                                             \
-        }                                                                                          \
+#define PHANTOM_SPEC_FUNDAMENTALS_TYPE_INFOS_OF(_type_)                                                                \
+    template<>                                                                                                         \
+    struct TypeInfosOf<_type_>                                                                                         \
+    {                                                                                                                  \
+        static const TypeInfos& object()                                                                               \
+        {                                                                                                              \
+            PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD();                                                                    \
+            static TypeInfos ti;                                                                                       \
+            if (ti.empty())                                                                                            \
+            {                                                                                                          \
+                detail::BuildTypeInfos(PHANTOM_PP_QUOTE(_type_), ti);                                                  \
+            }                                                                                                          \
+            return ti;                                                                                                 \
+        }                                                                                                              \
     };
 
 PHANTOM_SPEC_FUNDAMENTALS_TYPE_INFOS_OF(char);

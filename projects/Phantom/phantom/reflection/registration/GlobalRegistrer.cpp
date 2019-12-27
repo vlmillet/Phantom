@@ -5,7 +5,8 @@
 // ]
 
 #include "GlobalRegistrer.h"
-#include "phantom/phantom_priv.h"
+
+#include "phantom/detail/phantom_priv.h"
 #include "phantom/reflection/Application.h"
 
 namespace phantom
@@ -22,8 +23,7 @@ reflection::Namespace* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
     {
         StringView scope = _PHNTM_TypeInfosGetter().scope();
         if (!scope.empty())
-            _PHNTM_pNamingScope =
-            phantom::reflection::Namespace::Global()->findOrCreateNamespace(scope);
+            _PHNTM_pNamingScope = phantom::reflection::Namespace::Global()->findOrCreateNamespace(scope);
         else
             _PHNTM_pNamingScope = phantom::reflection::Namespace::Global();
     }

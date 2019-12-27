@@ -7,7 +7,7 @@
 #pragma once
 
 #include <phantom/alignof>
-#include <phantom/fwd.h>
+#include <phantom/detail/fwd.h>
 
 HAUNT_STOP;
 
@@ -26,10 +26,9 @@ struct PHANTOM_EXPORT_PHANTOM MemoryTraits
     static void                Init();
     static void                Release();
 
-    typedef void* (*AllocFunc)(size_t /*size*/, size_t /*align*/, const char* /*file*/,
-                               int /*line*/);
-    typedef void* (*ReallocFunc)(void* /*memory*/, size_t /*size*/, size_t /*align*/,
-                                 const char* /*file*/, int /*line*/);
+    typedef void* (*AllocFunc)(size_t /*size*/, size_t /*align*/, const char* /*file*/, int /*line*/);
+    typedef void* (*ReallocFunc)(void* /*memory*/, size_t /*size*/, size_t /*align*/, const char* /*file*/,
+                                 int /*line*/);
     typedef void (*DeallocFunc)(void* /*memory*/);
 
     AllocFunc   allocFunc;
@@ -38,18 +37,16 @@ struct PHANTOM_EXPORT_PHANTOM MemoryTraits
 
     bool operator==(MemoryTraits const& o) const
     {
-        return (allocFunc == o.allocFunc && deallocFunc == o.deallocFunc &&
-                reallocFunc == o.reallocFunc);
+        return (allocFunc == o.allocFunc && deallocFunc == o.deallocFunc && reallocFunc == o.reallocFunc);
     }
 };
 
 namespace memory
 {
-PHANTOM_EXPORT_PHANTOM void* allocBytes(size_t size, size_t align = 1, const char* file = "",
-                                        int line = 0);
+PHANTOM_EXPORT_PHANTOM void* allocBytes(size_t size, size_t align = 1, const char* file = "", int line = 0);
 PHANTOM_EXPORT_PHANTOM void  deallocBytes(void* mem);
-PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align = 1,
-                                          const char* file = "", int line = 0);
+PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align = 1, const char* file = "",
+                                          int line = 0);
 
 } // namespace memory
 } // namespace phantom

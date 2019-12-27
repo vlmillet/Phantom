@@ -6,9 +6,7 @@
 
 /* TODO LICENCE HERE */
 
-// #include "phantom/phantom.h"
-#include "phantom/console.h"
-#include "phantom/phantom_priv.h"
+#include "phantom/detail/phantom_priv.h"
 
 #include <phantom/class>
 
@@ -123,7 +121,13 @@ PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align, 
 
 #if !defined(PHANTOM_STATIC_LINK_PHANTOM)
 
-void* operator new(size_t _size) throw(std::bad_alloc)
+#    if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
+#        define PHANTOM_NEW_THROW
+#    else
+#        define PHANTOM_NEW_THROW throw(std::bad_alloc)
+#    endif
+
+void* operator new(size_t _size) PHANTOM_NEW_THROW
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED
@@ -133,7 +137,7 @@ void* operator new(size_t _size) throw(std::bad_alloc)
     return std::malloc(_size);
 }
 
-void* operator new[](size_t _size) throw(std::bad_alloc)
+void* operator new[](size_t _size) PHANTOM_NEW_THROW
 {
 #    if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 #        if !TYPE_REGISTRATION_KEY_DEBUG_ENABLED

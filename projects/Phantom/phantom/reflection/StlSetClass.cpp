@@ -5,27 +5,23 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "StlSetClass.h"
 
 #include "Method.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
-StlSetClass::StlSetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                         Modifiers a_Modifiers, uint a_uiFlags)
-    : ContainerClass(TypeKind::StlSetClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers,
-                     a_uiFlags)
+StlSetClass::StlSetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+                         uint a_uiFlags)
+    : ContainerClass(TypeKind::StlSetClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StlSetClass::StlSetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/,
-                         uint a_uiFlags /*= 0*/)
-    : ContainerClass(TypeKind::StlSetClass, a_strName, a_Modifiers, a_uiFlags),
-      m_Data(PHANTOM_NEW(RTData))
+StlSetClass::StlSetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : ContainerClass(TypeKind::StlSetClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
 {
 }
 

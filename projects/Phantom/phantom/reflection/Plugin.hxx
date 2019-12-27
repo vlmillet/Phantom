@@ -21,6 +21,14 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -29,7 +37,6 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Plugin)
         {
-            using Plugins = typedef_< phantom::reflection::Plugins>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
             this_()
@@ -38,17 +45,23 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<bool()>("HasLoadingInProgress", &_::HasLoadingInProgress)
             .staticMethod<bool(Module*)>("HasLoadingInProgress", &_::HasLoadingInProgress)
             .staticMethod<bool()>("HasUnloadingInProgress", &_::HasUnloadingInProgress)
-            .staticMethod<Plugins const&()>("GetLoadingPluginStack", &_::GetLoadingPluginStack)
-            .staticMethod<Plugins const&()>("GetUnloadingPluginStack", &_::GetUnloadingPluginStack)
+            /// missing symbol(s) reflection (phantom::reflection::Plugins) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .staticMethod<Plugins const&()>("GetLoadingPluginStack", &_::GetLoadingPluginStack)
+            /// missing symbol(s) reflection (phantom::reflection::Plugins) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .staticMethod<Plugins const&()>("GetUnloadingPluginStack", &_::GetUnloadingPluginStack)
         
         .public_()
             .constructor<void(StringView, StringView)>()
             .constructor<void(StringView)>()
             .method<StringView() const>("getFilePath", &_::getFilePath)
-            .method<bool(Message*)>("load", &_::load)["nullptr"]
-            .method<bool(Message*)>("unload", &_::unload)["nullptr"]
-            .method<bool(Message*)>("loadAsDependency", &_::loadAsDependency)["nullptr"]
-            .method<bool(Message*)>("unloadAsDependency", &_::unloadAsDependency)["nullptr"]
+            /// missing symbol(s) reflection (phantom::Message) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Message*)>("load", &_::load)["nullptr"]
+            /// missing symbol(s) reflection (phantom::Message) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Message*)>("unload", &_::unload)["nullptr"]
+            /// missing symbol(s) reflection (phantom::Message) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Message*)>("loadAsDependency", &_::loadAsDependency)["nullptr"]
+            /// missing symbol(s) reflection (phantom::Message) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Message*)>("unloadAsDependency", &_::unloadAsDependency)["nullptr"]
             .method<bool() const>("isLoaded", &_::isLoaded)
             .method<void()>("deleteOnDisk", &_::deleteOnDisk)
             .method<Module*() const>("getModule", &_::getModule)

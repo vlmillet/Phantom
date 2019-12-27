@@ -7,17 +7,17 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/ArrayView.h>
 #include <phantom/reflection/TypeOf.h>
 #include <phantom/register>
+#include <phantom/utils/ArrayView.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
-#define PHANTOM_INSTANCE_CACHE(T, ...)                                                             \
-    PHANTOM_REGISTER(PostClassTypes)                                                               \
-    {                                                                                              \
-        PHANTOM_CLASSOF(T)->getOrCreateInstanceCache();                                            \
+#define PHANTOM_INSTANCE_CACHE(T, ...)                                                                                 \
+    PHANTOM_REGISTER(PostClassTypes)                                                                                   \
+    {                                                                                                                  \
+        PHANTOM_CLASSOF(T)->getOrCreateInstanceCache();                                                                \
     }
 
 namespace phantom

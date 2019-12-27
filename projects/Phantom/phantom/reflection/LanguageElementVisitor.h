@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/reflection/reflection.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */

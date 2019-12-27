@@ -5,14 +5,12 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "FunctionPointer.h"
 
 #include "Function.h"
 #include "FunctionType.h"
 
 #include <phantom/dyn_cast>
-#include <phantom/new_ex.h>
 /* *********************************************** */
 namespace phantom
 {

@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/Signal.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom

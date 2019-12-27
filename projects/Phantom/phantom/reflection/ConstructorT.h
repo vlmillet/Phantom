@@ -11,7 +11,7 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/ConstructorCaller.h>
+#include <phantom/detail/ConstructorCaller.h>
 #include <phantom/reflection/CallHelpers.h>
 #include <phantom/reflection/ClassType.h>
 #include <phantom/reflection/Constructor.h>

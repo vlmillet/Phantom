@@ -1,6 +1,6 @@
 #pragma once
 
-#include <phantom/config.h>
+#include <phantom/detail/config.h>
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO && PHANTOM_COMPILER_MAJOR_VERSION <= PHANTOM_COMPILER_VISUAL_STUDIO_MAJOR_VERSION_14
 #include <phantom/traits/SafeAlignOf.h>

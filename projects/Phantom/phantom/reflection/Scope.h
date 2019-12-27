@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/reflection/LanguageElement.h>
 #include <phantom/reflection/Members.h>
 /* **************** Declarations ***************** */
@@ -223,8 +223,7 @@ public:
     /// \param  a_Arguments             The template arguments.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* addTemplateSpecialization(Template*               a_pTemplate,
-                                                      TemplateSignature*      a_pTemplateSignature,
+    TemplateSpecialization* addTemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pTemplateSignature,
                                                       const LanguageElements& a_Arguments);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,10 +235,8 @@ public:
     /// \param  a_pBody                 The template body.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* addTemplateSpecialization(Template*               a_pTemplate,
-                                                      TemplateSignature*      a_pTemplateSignature,
-                                                      const LanguageElements& a_Arguments,
-                                                      Symbol*                 a_pBody);
+    TemplateSpecialization* addTemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pTemplateSignature,
+                                                      const LanguageElements& a_Arguments, Symbol* a_pBody);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Create a PHANTOM_NEW(template) instantiation.
@@ -252,10 +249,9 @@ public:
     /// instantiation argument, T is int, not int[5]).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization*
-    addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpecialization,
-                             const LanguageElements& a_Arguments,
-                             const PlaceholderMap&   a_PartialSpecializationParameterDeductions);
+    TemplateSpecialization* addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpecialization,
+                                                     const LanguageElements& a_Arguments,
+                                                     const PlaceholderMap& a_PartialSpecializationParameterDeductions);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes template specialization from this scope.
@@ -295,8 +291,7 @@ public:
     /// \return The template specialization matching given template name and arguments.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* getTemplateSpecialization(StringView              a_strName,
-                                                      const LanguageElements& a_Arguments) const;
+    TemplateSpecialization* getTemplateSpecialization(StringView a_strName, const LanguageElements& a_Arguments) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a variable to this scope.
@@ -425,9 +420,8 @@ public:
     /// \return null if failed, else the added PHANTOM_NEW(template) alias.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Template* addAliasTemplate(StringView a_TemplateTypes, StringView a_TemplateParams,
-                               StringView a_strAliasName, StringView a_TemplateDependantType,
-                               Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Template* addAliasTemplate(StringView a_TemplateTypes, StringView a_TemplateParams, StringView a_strAliasName,
+                               StringView a_TemplateDependantType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     /// \brief  Adds an alias template to this scope.
     ///
@@ -441,8 +435,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Template* addAliasTemplate(TemplateSignature* a_pSignature, StringView a_strAliasName,
-                               StringView a_TemplateDependantType, Modifiers a_Modifiers = 0,
-                               uint a_uiFlags = 0);
+                               StringView a_TemplateDependantType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds an using to this scope.
@@ -591,8 +584,7 @@ public:
     /// \return null if it fails to parse, else the newly created anonymous section.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual AnonymousSection* addAnonymousSection(StringView a_strCode, Modifiers a_Modifiers = 0,
-                                                  uint a_uiFlags = 0);
+    virtual AnonymousSection* addAnonymousSection(StringView a_strCode, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes the given anonymous section from this namespace.
@@ -685,8 +677,7 @@ public:
     /// \return true if the given subroutine is accepted, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool acceptsSubroutine(Subroutine*  a_pSubroutine,
-                           Subroutines* a_pOutConflictingSubroutines = nullptr) const;
+    bool acceptsSubroutine(Subroutine* a_pSubroutine, Subroutines* a_pOutConflictingSubroutines = nullptr) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the given element's doubles contained in this scope.

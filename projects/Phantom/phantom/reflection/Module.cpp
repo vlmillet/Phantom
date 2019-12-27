@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Module.h"
 
 #include "Application.h"
@@ -14,13 +13,13 @@
 #include "Source.h"
 #include "SourceStream.h"
 #include "TemplateSpecialization.h"
-#include "phantom/StringUtil.h"
-#include "phantom/new.h"
-#include "phantom/phantom_priv.h"
+#include "phantom/detail/new.h"
+#include "phantom/detail/phantom_priv.h"
 
 #include <fstream>
-#include <phantom/Path.h>
 #include <phantom/dyn_cast>
+#include <phantom/utils/Path.h>
+#include <phantom/utils/StringUtil.h>
 #include <system_error>
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include <windows.h>

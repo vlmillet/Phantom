@@ -7,10 +7,10 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/MemoryContext.h>
-#include <phantom/Signal.h>
-#include <phantom/SmallMap.h>
+#include <phantom/detail/MemoryContext.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
+#include <phantom/utils/SmallMap.h>
 /* *********************************************** */
 namespace phantom
 {

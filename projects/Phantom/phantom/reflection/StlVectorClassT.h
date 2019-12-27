@@ -8,7 +8,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/new>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/SequentialContainerClassT.h>
 #include <phantom/reflection/StlVectorClass.h>
 
@@ -25,8 +25,7 @@ class StlVectorClassT : public SequentialContainerClassT<t_Ty, Base>
     typedef PHANTOM_TYPENAME t_Ty::value_type ContainerValueType;
 
 public:
-    StlVectorClassT(StringView a_strName, Modifiers a_Modifiers = 0)
-        : BaseType(a_strName, a_Modifiers)
+    StlVectorClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
     {
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));
     }

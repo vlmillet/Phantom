@@ -129,10 +129,6 @@ public:
         return MethodInvokeH<R, Args...>::invoke(this, a_pThis, std::forward<Args>(a_Args)...);
     }
 
-    void safeInvoke(void* a_pCallerAddress, void** a_pArgs) const;
-    void safeInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const;
-    void safePlacementInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if the current member function can override the given one.
     ///

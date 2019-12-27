@@ -19,13 +19,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
+#include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -41,7 +42,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Packages = typedef_< phantom::reflection::Packages>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -60,8 +61,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<PackageFolder*() const>("getParentFolder", &_::getParentFolder)
             .method<Packages const&() const>("getPackages", &_::getPackages)
             .method<Package*(Module*) const>("getPackage", &_::getPackage)
-            .method<PackageFolders::const_iterator() const>("beginPackageFolders", &_::beginPackageFolders)
-            .method<PackageFolders::const_iterator() const>("endPackageFolders", &_::endPackageFolders)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("beginPackageFolders", &_::beginPackageFolders)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("endPackageFolders", &_::endPackageFolders)
             .method<void(PackageFolders&) const>("getPackageFolders", &_::getPackageFolders)
             .method<PackageFolders const&() const>("getPackageFolders", &_::getPackageFolders)
             .method<PackageFolder*(StringView) const>("getPackageFolder", &_::getPackageFolder)
@@ -71,8 +74,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
         
         .public_()
-            .signal("packageFolderAdded", &_::packageFolderAdded)
-            .signal("packageFolderAboutToBeRemoved", &_::packageFolderAboutToBeRemoved)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("packageFolderAdded", &_::packageFolderAdded)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("packageFolderAboutToBeRemoved", &_::packageFolderAboutToBeRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -13,13 +13,12 @@
 #include "Module.h"
 #include "Namespace.h"
 #include "TemplateSpecialization.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
 #include <ostream>
-#include <phantom/Rtti.h>
-#include <phantom/SmallSet.h>
-#include <phantom/StaticGlobals.h>
+#include <phantom/detail/StaticGlobals.h>
 #include <phantom/traits/IntTypeBySize.h>
+#include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -39,16 +38,16 @@ LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/)
 
 LanguageElement::~LanguageElement()
 {
-    _PHNTM_Rtti.instance = nullptr;
+    PHANTOM_ASSERT(!RTTI.instance);
     PHANTOM_ASSERT(isNative() OR m_pElements == nullptr);
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
 }
 
 int LanguageElement::destructionPriority() const
 {
-    if (this == PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass || this == Application::Get())
+    if (this == RTTI.metaClass || this == Application::Get())
         return std::numeric_limits<int>::max();
-    return static_cast<LanguageElement*>(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass)->destructionPriority() - 1;
+    return static_cast<LanguageElement*>(RTTI.metaClass)->destructionPriority() - 1;
 }
 
 void LanguageElement::terminate()
@@ -85,12 +84,17 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     {
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
-            if (a_pClass == nullptr OR Rtti::ClassOf(*it)->isA(a_pClass))
+            if (a_pClass == nullptr OR(*it)->as(a_pClass))
             {
                 out.push_back(*it);
             }
         }
     }
+}
+
+void* LanguageElement::as(Class* a_Class) const
+{
+    return RTTI.metaClass->cast(a_Class, RTTI.instance);
 }
 
 LanguageElements const& LanguageElement::getElements() const

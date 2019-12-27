@@ -21,6 +21,13 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -45,10 +52,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(StringView)>("write", &_::write)
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<time_t() const, virtual_|override_>("getLastChangeTime", &_::getLastChangeTime)
-            /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<std::basic_istream<char>*(), virtual_|override_>("createInputStream", &_::createInputStream)
-            /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::std::basic_istream<char> *), virtual_|override_>("destroyInputStream", &_::destroyInputStream)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int *(), override_>("createInputStream", &_::createInputStream)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<void(int *), override_>("destroyInputStream", &_::destroyInputStream)
             .method<SourceFile*() const, virtual_|override_>("clone", &_::clone)
             ;
         }

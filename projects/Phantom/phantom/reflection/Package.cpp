@@ -5,21 +5,21 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Package.h"
+
 #include "PackageFolder.h"
 
-#include <phantom/StringUtil.h>
+#include <phantom/utils/StringUtil.h>
 #ifndef __DOXYGEN__
-#    include <phantom/Path.h>
+#    include <phantom/utils/Path.h>
 #endif
 #include "Application.h"
 #include "Module.h"
 #include "Namespace.h"
 #include "Source.h"
 
-#include <phantom/new.h>
-#include <phantom/phantom_priv.h>
+#include <phantom/detail/new.h>
+#include <phantom/detail/phantom_priv.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -40,16 +40,14 @@ bool Package::IsValidName(StringView a_strName)
             prevChar = c;
             continue;
         }
-        if (NOT((((c) >= '0') AND((c) <= '9')) OR(((c | 0x20) >= 'a') AND((c | 0x20) <= 'z'))
-                OR(c) == '_'))
+        if (NOT((((c) >= '0') AND((c) <= '9')) OR(((c | 0x20) >= 'a') AND((c | 0x20) <= 'z')) OR(c) == '_'))
             return false;
         prevChar = c;
     }
     return true;
 }
 
-Package::Package(StringView a_strName)
-    : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID), m_pNamespace(nullptr)
+Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID), m_pNamespace(nullptr)
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
     String namespaceName = m_strName;
@@ -120,8 +118,7 @@ void Package::onElementAdded(LanguageElement* a_pElement)
 {
     if (Source* pSource = a_pElement->asSource())
     {
-        if (std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource) ==
-            m_ArchivedSources.end())
+        if (std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource) == m_ArchivedSources.end())
         {
             m_Sources.push_back(pSource);
             Module* pModule = getModule();
@@ -158,8 +155,7 @@ void Package::onElementRemoved(LanguageElement* a_pElement)
         }
         else
         {
-            m_ArchivedSources.erase(
-            std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource));
+            m_ArchivedSources.erase(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource));
         }
     }
 }

@@ -11,7 +11,7 @@
 #include "Module.h"
 #include "Source.h"
 
-#include <phantom/Path.h>
+#include <phantom/utils/Path.h>
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include "windows.h"
 
@@ -28,12 +28,9 @@
 #include "Function.h"
 #include "Package.h"
 #include "SourceStream.h"
-#include "phantom/IValueStream.h"
-#include "phantom/Value.h"
 #include "registration/registration.h"
 
 #include <fstream>
-#include <phantom/Message.h>
 #include <phantom/dyn_cast>
 /* *********************************************** */
 
@@ -141,8 +138,7 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
         detail::pushInstallation();
         detail::installModules();
         detail::popInstallation();
-        if (a_pMessage)
-            a_pMessage->success("Dll loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(a_strPath));
+        PHANTOM_LOG(Information, "Dll loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(a_strPath));
         PHANTOM_ASSERT(m_pModule == nullptr);
         m_pModule = Application::Get()->getModule(m_strName);
         for (auto dep : m_Dependencies)
@@ -175,15 +171,14 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
         DWORD dw = GetLastError();
         if (a_pMessage)
         {
-            if (pMessageLoadFailed == nullptr)
-                pMessageLoadFailed = a_pMessage->error("Cannot load module : %s", m_strName.c_str());
+            PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
             LPVOID lpMsgBuf;
             FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                           NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
 
             String clampedMessage = (char*)lpMsgBuf;
             clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
-            pMessageLoadFailed->error("System DLL loading failed : %s", clampedMessage.c_str());
+            PHANTOM_LOG(Error, "System DLL loading failed : %s", clampedMessage.c_str());
             LocalFree(lpMsgBuf);
         }
         return false;
@@ -336,8 +331,7 @@ bool Plugin::_unloadNative(Message* a_pMessage)
     if (FreeLibrary((HMODULE)m_pModule->getHandle()))
     {
         m_pModule = nullptr;
-        if (a_pMessage)
-            a_pMessage->success("Module unloaded : %s", m_strName.c_str());
+        PHANTOM_LOG(Information, "Module unloaded : %s", m_strName.c_str());
         return true;
     }
     else
@@ -345,8 +339,7 @@ bool Plugin::_unloadNative(Message* a_pMessage)
         DWORD dw = GetLastError();
         if (a_pMessage)
         {
-            if (pMessageUnloadFailed == nullptr)
-                pMessageUnloadFailed = a_pMessage->error("Cannot unload module : %s", m_strName.c_str());
+            PHANTOM_LOG(Error, "Cannot unload module : %s", m_strName.c_str());
             LPVOID lpMsgBuf;
 
             FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -355,7 +348,7 @@ bool Plugin::_unloadNative(Message* a_pMessage)
             String clampedMessage = (char*)lpMsgBuf;
             clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
 
-            pMessageUnloadFailed->error("System dynamic library unloading failed : %s", clampedMessage.c_str());
+            PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", clampedMessage.c_str());
 
             LocalFree(lpMsgBuf);
         }

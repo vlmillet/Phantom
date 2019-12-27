@@ -5,18 +5,16 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "FunctionType.h"
 
 #include "FunctionPointer.h"
 #include "Source.h"
 #ifndef __DOXYGEN__
-#    include <phantom/StringUtil.h>
+#    include <phantom/utils/StringUtil.h>
 #endif
 #include "Application.h"
 
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

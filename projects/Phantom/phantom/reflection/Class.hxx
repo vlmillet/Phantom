@@ -27,7 +27,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -48,7 +51,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Class*() const>("operator Class*", &_::operator notypedef<Class*>)
             ;
         }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
         PHANTOM_STRUCT(StructBuilder)
         {
             using StringView = typedef_< phantom::StringView>;
@@ -73,14 +77,13 @@ PHANTOM_PACKAGE("phantom.reflection")
             using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
             using Variants = typedef_< phantom::Variants>;
             using VirtualMethodTables = typedef_< phantom::reflection::VirtualMethodTables>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::ClassType>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
             .staticMethod<Class*()>("MetaClass", &_::MetaClass)
-            .staticMethod<StringView()>("GetEmbeddedRttiFieldName", &_::GetEmbeddedRttiFieldName)
         
         .public_()
         
@@ -167,8 +170,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool() const>("isRootClass", &_::isRootClass)
             .method<bool(Class*) const>("isA", &_::isA)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
-            .method<ERelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
-            .method<bool(void*, void*) const>("doesInstanceDependOn", &_::doesInstanceDependOn)
+            .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
             .method<void(Method*), virtual_|override_>("addMethod", &_::addMethod)
             .method<void(Signal*), virtual_>("addSignal", &_::addSignal)
             .method<void(Signal*), virtual_>("removeSignal", &_::removeSignal)
@@ -184,10 +186,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpressionCascade", &_::getOverriddenDefaultExpressionCascade)
             .method<bool() const, virtual_|override_>("isPolymorphic", &_::isPolymorphic)
-            .method<void(void const*) const, virtual_>("mapRtti", &_::mapRtti)
-            .method<void(void const*) const, virtual_>("unmapRtti", &_::unmapRtti)
-            .method<void(void const*) const, virtual_>("installRtti", &_::installRtti)
-            .method<void(void const*) const, virtual_>("uninstallRtti", &_::uninstallRtti)
             .using_("Type::allocate")
             .using_("Type::deallocate")
             .method<void*() const, virtual_|override_>("allocate", &_::allocate)

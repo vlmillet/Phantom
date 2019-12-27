@@ -5,10 +5,8 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ClassType.h"
 
-#include "../VirtualDelete.h"
 #include "Application.h"
 #include "ConstType.h"
 #include "Constructor.h"
@@ -27,7 +25,7 @@
 #include "Variable.h"
 #include "registration/registration.h"
 
-#include <phantom/value.h>
+#include <phantom/detail/VirtualDelete.h>
 /* *********************************************** */
 namespace phantom
 {

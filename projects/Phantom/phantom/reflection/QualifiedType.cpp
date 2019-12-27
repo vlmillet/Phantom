@@ -82,7 +82,7 @@ void QualifiedType::deleteInstance(void* a_pInstance) const
     m_pUnderlyingType->deleteInstance(a_pInstance);
 }
 
-phantom::reflection::Type::ERelation QualifiedType::getRelationWith(Type* a_pType) const
+phantom::reflection::Type::TypeRelation QualifiedType::getRelationWith(Type* a_pType) const
 {
     return m_pUnderlyingType->getRelationWith(a_pType);
 }

@@ -10,8 +10,7 @@
 #include "Constant.h"
 
 #include <phantom/alignof>
-#include <phantom/random.h>
-#include <phantom/value.h>
+#include <phantom/utils/random.h>
 /* *********************************************** */
 namespace phantom
 {

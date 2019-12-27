@@ -10,8 +10,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/RttiMapData.h>
-#include <phantom/allocate.h>
+#include <phantom/detail/allocate.h>
 #include <phantom/traits/HasEmbeddedRtti.h>
 
 // --------------------------------------------------------------------------------------------
@@ -36,9 +35,9 @@ struct ProxyNewH
     PHANTOM_FORCEINLINE t_Ty* operator>>(t_Ty* a_pInstance)
     {
         auto pMetaClass = t_Ty::MetaClass();
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance = a_pInstance;
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.dynamicDeleteFunc = &DynamicProxyDeleter<t_Ty>::dynamicDelete;
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass = pMetaClass;
+        a_pInstance->RTTI.instance = a_pInstance;
+        a_pInstance->RTTI.dynamicDeleteFunc = &DynamicProxyDeleter<t_Ty>::dynamicDelete;
+        a_pInstance->RTTI.metaClass = pMetaClass;
         pMetaClass->registerInstance(a_pInstance);
         return a_pInstance;
     }
@@ -52,10 +51,9 @@ struct ProxyDeleteH
     {
         auto pMetaClass = t_Ty::MetaClass();
         pMetaClass->unregisterInstance(a_pInstance);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance == a_pInstance);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.dynamicDeleteFunc ==
-                       &DynamicProxyDeleter<t_Ty>::dynamicDelete);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass == pMetaClass);
+        PHANTOM_ASSERT(a_pInstance->RTTI.instance == a_pInstance);
+        PHANTOM_ASSERT(a_pInstance->RTTI.dynamicDeleteFunc == &DynamicProxyDeleter<t_Ty>::dynamicDelete);
+        PHANTOM_ASSERT(a_pInstance->RTTI.metaClass == pMetaClass);
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
 #    pragma clang diagnostic push
 #    pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"

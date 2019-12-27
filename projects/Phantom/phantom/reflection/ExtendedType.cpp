@@ -5,16 +5,14 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ExtendedType.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
-ExtendedType::ExtendedType(Type* a_pUnderlyingType, TypeKind a_eTypeKind, StringView a_strName,
-                           size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/,
-                           uint a_uiFlags /*= 0*/)
+ExtendedType::ExtendedType(Type* a_pUnderlyingType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
+                           size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Type(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags),
       m_pUnderlyingType(a_pUnderlyingType)
 {

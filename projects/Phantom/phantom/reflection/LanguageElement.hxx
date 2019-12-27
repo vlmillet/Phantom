@@ -26,8 +26,9 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallMap.hxx>
-#include <phantom/SmallSet.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -36,19 +37,16 @@ namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
     PHANTOM_SOURCE("LanguageElement")
 
-        PHANTOM_CLASS_T((class), (t_Scope), Members)
-        {
-            this_()
-            ;
-        }
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Ellipsis)
         {
             this_()
             ;
         }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<PlaceholderMap>("PlaceholderMap"); }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<ModuleSet>("ModuleSet"); }
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<PlaceholderMap>("PlaceholderMap"); }
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<ModuleSet>("ModuleSet"); }
         PHANTOM_CLASS(LanguageElement)
         {
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
@@ -74,6 +72,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         .public_()
             .method<void*() const>("getMostDerived", &_::getMostDerived)
             .method<Class*() const>("getMetaClass", &_::getMetaClass)
+            .method<void*(Class*) const>("as", &_::as)
             .method<LanguageElements const&() const>("getElements", &_::getElements)
             .method<LanguageElements const&() const>("getReferencedElements", &_::getReferencedElements)
             .method<LanguageElements const&() const>("getReferencingElements", &_::getReferencingElements)
@@ -224,10 +223,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(LanguageElement*)>("removeElement", &_::removeElement)
             .method<Symbol*(StringView, Modifiers, uint) const>("getUniqueElement", &_::getUniqueElement)["0"]["0"]
             .method<size_t(LanguageElement*) const>("getElementIndex", &_::getElementIndex)
-            /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::std::basic_ostream<char> &) const>("dumpElementList", &_::dumpElementList)
-            /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::std::basic_ostream<char> &) const>("dumpElementListCascade", &_::dumpElementListCascade)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<void(int &) const>("dumpElementList", &_::dumpElementList)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<void(int &) const>("dumpElementListCascade", &_::dumpElementListCascade)
             .method<String() const, virtual_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<String() const, virtual_>("getQualifiedName", &_::getQualifiedName)
             .method<String() const, virtual_>("getDecoratedName", &_::getDecoratedName)
@@ -270,7 +269,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Source*() const, virtual_>("getCodeLocationSource", &_::getCodeLocationSource)
             .method<LanguageElement*(const CodePosition&) const>("getElementAtCodePosition", &_::getElementAtCodePosition)
             .method<LanguageElement*(uint16) const>("getElementAtLine", &_::getElementAtLine)
-            .field("PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD", &_::PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)
+            /// missing symbol(s) reflection (phantom::EmbeddedProxyRtti) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .field("RTTI", &_::RTTI)
             .method<int() const, virtual_>("destructionPriority", &_::destructionPriority)
         
         .protected_()
@@ -328,7 +328,3 @@ PHANTOM_END("phantom.reflection")
 #endif
 
 // haunt }
-
-
-
-

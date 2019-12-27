@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/Optional.h>
-#include <phantom/OptionalArrayView.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Optional.h>
+#include <phantom/utils/OptionalArrayView.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

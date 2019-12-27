@@ -8,13 +8,12 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/ClassOf.h>
-#include <phantom/SmallMap.h>
 #include <phantom/reflection/ClassType.h>
+#include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-class SlotPool;
 namespace reflection
 {
 class InstanceCache;
@@ -61,11 +60,6 @@ class PHANTOM_EXPORT_PHANTOM Class : public ClassType
 public:
     static Class*           MetaClass();
     HAUNT_OFF static Class* metaClass;
-
-    PHANTOM_FORCEINLINE static StringView GetEmbeddedRttiFieldName()
-    {
-        return PHANTOM_PP_QUOTE(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD);
-    }
 
 public:
     friend class phantom::Phantom;
@@ -713,8 +707,7 @@ public:
         return std::is_class<T>::value && isA(static_cast<Type*>(PHANTOM_TYPEOF(T)));
     }
 
-    ERelation getRelationWith(Type* a_pType) const override;
-    bool      doesInstanceDependOn(void* a_pInstance, void* a_pOther) const;
+    TypeRelation getRelationWith(Type* a_pType) const override;
 
     void addMethod(Method* a_pMethod) override;
 
@@ -814,28 +807,6 @@ public:
     Expression* getOverriddenDefaultExpressionCascade(ValueMember* a_pValueMember) const;
 
     bool isPolymorphic() const override;
-
-    virtual void mapRtti(void const* a_pInstance) const;
-    virtual void unmapRtti(void const* a_pInstance) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Installs RTTI to the given instance class. If 'PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD'
-    /// macros
-    ///         has been defined and the class holds it, it will be filled. Else, the instance will
-    ///         be mapped to the global RTTI map
-    ///
-    /// \param [in,out] a_pInstance  The instance address.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void installRtti(void const* a_pInstance) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Counterpart of installRTTI.
-    ///
-    /// \param [in,out] a_pInstance  The instance address.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void uninstallRtti(void const* a_pInstance) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Visit function that allows you to browse the inheritance hierarchy of an instance.
@@ -1123,9 +1094,6 @@ private:
     void removeDerivedClass(Class* a_pType);
     bool getBaseClassAccess(Class* a_pClass, Access* a_pInheritanceAccess) const;
     bool getBaseClassAccessCascade(Class* a_pClass, Access* a_pInheritanceAccess) const;
-
-    void _mapRtti(void const* a_pInstance, Class* a_pBaseClass, void const* a_pBase, const RttiMapData* a_pRTTI) const;
-    void _unmapRtti(void const* a_pInstance, bool a_bRemoveRTTI) const;
 
 protected:
     void _onNativeElementsAccess();

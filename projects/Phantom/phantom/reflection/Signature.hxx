@@ -26,7 +26,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/ArrayView.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -47,7 +50,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringViews = typedef_< phantom::StringViews>;
             using Types = typedef_< phantom::reflection::Types>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

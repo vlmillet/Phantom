@@ -4,7 +4,6 @@
 // http://www.wiwila.com/tools/phantom/license/
 // ]
 
-// #include "phantom/phantom.h"
 #include "CodeLocation.h"
 
 namespace phantom

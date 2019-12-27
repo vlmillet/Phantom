@@ -24,6 +24,14 @@
 #include <phantom/using>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -60,7 +68,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Types = typedef_< phantom::reflection::Types>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
             using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Type, ::phantom::reflection::Scope, ::phantom::reflection::Aggregate>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

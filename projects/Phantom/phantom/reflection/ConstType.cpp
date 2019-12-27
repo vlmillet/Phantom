@@ -5,19 +5,18 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ConstType.h"
+
 #include "ConstVolatileType.h"
 
-#include <phantom/Delegate.h>
+#include <phantom/utils/Delegate.h>
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
 ConstType::ConstType(Type* a_pType)
-    : QualifiedType(a_pType, a_pType->getTypeKind(), "const", 0, 0,
-                    a_pType->getModifiers() | PHANTOM_R_CONST,
+    : QualifiedType(a_pType, a_pType->getTypeKind(), "const", 0, 0, a_pType->getModifiers() | PHANTOM_R_CONST,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
     addReferencedElement(a_pType);
@@ -28,9 +27,8 @@ bool ConstType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a
     if (a_pType->asConstType())
     {
         a_Score += 10;
-        return m_pUnderlyingType
-        ? m_pUnderlyingType->partialAccepts(a_pType->removeConst(), a_Score, a_Deductions)
-        : false;
+        return m_pUnderlyingType ? m_pUnderlyingType->partialAccepts(a_pType->removeConst(), a_Score, a_Deductions)
+                                 : false;
     }
     return false;
 }

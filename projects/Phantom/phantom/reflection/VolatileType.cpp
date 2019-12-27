@@ -5,19 +5,18 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "ConstVolatileType.h"
 #include "VolatileType.h"
 
-#include <phantom/Delegate.h>
+#include "ConstVolatileType.h"
+
+#include <phantom/utils/Delegate.h>
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
 VolatileType::VolatileType(Type* a_pType)
-    : QualifiedType(a_pType, a_pType->getTypeKind(), "volatile", 0, 0,
-                    a_pType->getModifiers() | PHANTOM_R_VOLATILE,
+    : QualifiedType(a_pType, a_pType->getTypeKind(), "volatile", 0, 0, a_pType->getModifiers() | PHANTOM_R_VOLATILE,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
     addReferencedElement(a_pType);
@@ -27,15 +26,13 @@ VolatileType::~VolatileType()
 {
 }
 
-bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score,
-                                  PlaceholderMap& a_Deductions) const
+bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
     if (a_pType->asVolatileType())
     {
         a_Score += 10;
-        return m_pUnderlyingType
-        ? m_pUnderlyingType->partialAccepts(a_pType->removeVolatile(), a_Score, a_Deductions)
-        : false;
+        return m_pUnderlyingType ? m_pUnderlyingType->partialAccepts(a_pType->removeVolatile(), a_Score, a_Deductions)
+                                 : false;
     }
     return false;
 }

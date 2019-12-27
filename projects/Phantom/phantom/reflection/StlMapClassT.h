@@ -8,7 +8,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/new>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/StlContainerClassT.h>
 #include <phantom/reflection/StlMapClass.h>
 

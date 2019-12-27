@@ -5,9 +5,9 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "Field.h"
 #include "MemberAnonymousSection.h"
+
+#include "Field.h"
 #include "MemberAnonymousUnion.h"
 /* *********************************************** */
 
@@ -16,11 +16,7 @@ namespace phantom
 namespace reflection
 {
 MemberAnonymousSection::MemberAnonymousSection(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol("", modifiers, a_uiFlags),
-      DataElement(this),
-      m_uiSize(0),
-      m_uiAlignment(0),
-      m_uiOffset(0)
+    : Symbol("", modifiers, a_uiFlags), DataElement(this), m_uiSize(0), m_uiAlignment(0), m_uiOffset(0)
 {
 }
 
@@ -42,8 +38,7 @@ void MemberAnonymousSection::onReferencedElementRemoved(LanguageElement* a_pElem
     if (found != m_Fields.end())
     {
         m_Fields.erase(found);
-        m_DataElements.erase(
-        std::find(m_DataElements.begin(), m_DataElements.end(), static_cast<Field*>(a_pElement)));
+        m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), static_cast<Field*>(a_pElement)));
         PHANTOM_ASSERT(a_pElement->asField());
         static_cast<Field*>(a_pElement)->m_pMemberAnonymousSection = nullptr;
     }
@@ -63,8 +58,7 @@ MemberAnonymousUnion* MemberAnonymousSection::getEmbeddingMemberAnonymousUnion()
     return nullptr;
 }
 
-void MemberAnonymousSection::addMemberAnonymousSection(
-MemberAnonymousSection* a_pMemberAnonymousSection)
+void MemberAnonymousSection::addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
 {
     PHANTOM_ASSERT(std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(),
                              a_pMemberAnonymousSection) == m_MemberAnonymousSections.end());
@@ -72,11 +66,10 @@ MemberAnonymousSection* a_pMemberAnonymousSection)
     addElement(a_pMemberAnonymousSection);
 }
 
-void MemberAnonymousSection::removeMemberAnonymousSection(
-MemberAnonymousSection* a_pMemberAnonymousSection)
+void MemberAnonymousSection::removeMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
 {
-    m_MemberAnonymousSections.erase(std::find(
-    m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(), a_pMemberAnonymousSection));
+    m_MemberAnonymousSections.erase(
+    std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(), a_pMemberAnonymousSection));
     removeElement(a_pMemberAnonymousSection);
 }
 
@@ -130,11 +123,10 @@ Field* MemberAnonymousSection::getFirstField() const
 
 void MemberAnonymousSection::onElementRemoved(LanguageElement* a_pElement)
 {
-    m_MemberAnonymousSections.erase(std::find(m_MemberAnonymousSections.begin(),
-                                              m_MemberAnonymousSections.end(),
+    m_MemberAnonymousSections.erase(std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(),
                                               static_cast<MemberAnonymousSection*>(a_pElement)));
-    m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(),
-                                   static_cast<MemberAnonymousSection*>(a_pElement)));
+    m_DataElements.erase(
+    std::find(m_DataElements.begin(), m_DataElements.end(), static_cast<MemberAnonymousSection*>(a_pElement)));
 }
 
 void MemberAnonymousSection::onElementAdded(LanguageElement* a_pElement)

@@ -22,6 +22,13 @@
 #include <phantom/using>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -30,10 +37,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Pointer)
         {
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::PointerType>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -70,7 +76,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Type*() const, virtual_|override_>("removeAllQualifiers", &_::removeAllQualifiers)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool(Type*) const, virtual_|override_>("isEquivalent", &_::isEquivalent)
-            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
+            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<Type*() const, virtual_|override_>("getUnderlyingType", &_::getUnderlyingType)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)

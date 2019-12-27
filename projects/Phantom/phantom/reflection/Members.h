@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/newImpl.h>
+#include <phantom/detail/newImpl.h>
 #include <phantom/reflection/LanguageElement.h>
 /* *********************************************** */
 

@@ -11,9 +11,9 @@
 #include "Symbol.h"
 #include "Type.h"
 
-#include <phantom/Delegate.h>
-#include <phantom/StringViews.h>
-#include <phantom/Variant.h>
+#include <phantom/utils/Delegate.h>
+#include <phantom/utils/StringViews.h>
+#include <phantom/utils/Variant.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

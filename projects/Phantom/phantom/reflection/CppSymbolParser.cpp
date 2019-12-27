@@ -29,13 +29,13 @@
 #include "TypeOf.h"
 #include "Variable.h"
 #include "VolatileType.h"
-#include "phantom/ScopeExit.h"
-#include "phantom/new.h"
 
 #include <inttypes.h>
-#include <phantom/SmallString.h>
-#include <phantom/StringView.h>
+#include <phantom/detail/new.h>
 #include <phantom/dyn_cast.h>
+#include <phantom/utils/ScopeExit.h>
+#include <phantom/utils/SmallString.h>
+#include <phantom/utils/StringView.h>
 
 #pragma warning(disable : 4996)
 

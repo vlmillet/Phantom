@@ -23,6 +23,14 @@
 #include <phantom/using>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -35,7 +43,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::MemberPointer>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -51,7 +59,8 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .method<bool(TypesView, Modifiers, uint) const>("matches", &_::matches)["0"]["0"]
-            .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
+            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
             .method<MethodPointer*() const, virtual_|override_>("asMethodPointer", &_::asMethodPointer)
             .method<void(StringView, void*) const, virtual_|override_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToString", &_::valueToString)

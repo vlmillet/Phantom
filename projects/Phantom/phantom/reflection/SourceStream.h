@@ -9,8 +9,8 @@
 /* ****************** Includes ******************* */
 #include <ctime>
 #include <istream>
-#include <phantom/EmbeddedRtti.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/EmbeddedRtti.h>
+#include <phantom/detail/phantom.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

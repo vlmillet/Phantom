@@ -9,7 +9,7 @@
 
 #include "Method.h"
 
-#include <phantom/new.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

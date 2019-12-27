@@ -26,9 +26,9 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallMap.hxx>
-#include <phantom/SmallSet.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -37,9 +37,11 @@ namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
     PHANTOM_SOURCE("Symbol")
 
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<MetaDatas>("MetaDatas"); }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<Annotations>("Annotations"); }
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<MetaDatas>("MetaDatas"); }
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<Annotations>("Annotations"); }
         PHANTOM_CLASS(SymbolExtension)
         {
             this_()
@@ -61,7 +63,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::LanguageElement>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -117,6 +119,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(const MetaDatas&)>("addMetaDatas", &_::addMetaDatas)
             .method<void(StringView, const Variant&)>("setMetaData", &_::setMetaData)
             .method<void(StringView, Variant&&)>("setMetaData", &_::setMetaData)
+            .method<void(StringHash, const Variant&)>("setMetaData", &_::setMetaData)
+            .method<void(StringHash, Variant&&)>("setMetaData", &_::setMetaData)
             .method<void(StringView)>("removeMetaData", &_::removeMetaData)
             .method<void(StringHash)>("removeMetaData", &_::removeMetaData)
             .method<const Variant&(StringView) const>("getMetaData", &_::getMetaData)
@@ -162,7 +166,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
         
         .protected_()
-            .field("m_strName", &_::m_strName)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("m_strName", &_::m_strName)
             .field("m_pNamespace", &_::m_pNamespace)
             .field("m_pMetaDatas", &_::m_pMetaDatas)
             .field("m_pAnnotations", &_::m_pAnnotations)

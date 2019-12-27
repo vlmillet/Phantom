@@ -17,11 +17,10 @@
 #include <phantom/source>
 #include <phantom/class>
 #include <phantom/struct>
-#include <phantom/enum>
+#include <phantom/enum_class>
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/using>
@@ -29,7 +28,9 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -51,15 +52,13 @@ PHANTOM_PACKAGE("phantom.reflection")
             using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
             using AlignmentComputer = typedef_<_::AlignmentComputer>;
             using DataElements = typedef_< phantom::reflection::DataElements>;
-            using ERelation = typedef_<_::ERelation>;
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using RecursiveSpinMutex = typedef_< phantom::RecursiveSpinMutex>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::reflection::Types>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -72,14 +71,14 @@ PHANTOM_PACKAGE("phantom.reflection")
             // .typedef_<TypeFilter>("TypeFilter")
             .staticMethod<bool(Type*)>("DataPointerFilter", &_::DataPointerFilter)
             .staticMethod<bool(Type*)>("NoFilter", &_::NoFilter)
-            .enum_<ERelation>().values({
-                {"e_Relation_None",_::e_Relation_None},
-                {"e_Relation_Equal",_::e_Relation_Equal},
-                {"e_Relation_Child",_::e_Relation_Child},
-                {"e_Relation_Parent",_::e_Relation_Parent},
-                {"e_Relation_Compatible",_::e_Relation_Compatible},
-                {"e_Relation_GenericContentChild",_::e_Relation_GenericContentChild},
-                {"e_Relation_GenericContentParent",_::e_Relation_GenericContentParent}})
+            .enum_<TypeRelation>().values({
+                {"None",_::TypeRelation::None},
+                {"Equal",_::TypeRelation::Equal},
+                {"Child",_::TypeRelation::Child},
+                {"Parent",_::TypeRelation::Parent},
+                {"Compatible",_::TypeRelation::Compatible},
+                {"GenericContentChild",_::TypeRelation::GenericContentChild},
+                {"GenericContentParent",_::TypeRelation::GenericContentParent}})
             .end()
             .class_<AlignmentComputer>()
             .public_()
@@ -163,16 +162,16 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*, size_t) const, virtual_>("deallocate", &_::deallocate)
             .method<void(void*) const, virtual_>("construct", &_::construct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
+            // .method<void(void*) const>("scopedConstruct", &_::scopedConstruct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("localConstruct", &_::localConstruct)
+            // .method<void(void*) const>("localConstruct", &_::localConstruct)
             .method<void(void*) const, virtual_>("destroy", &_::destroy)
             .method<uint64_t(const void*) const, virtual_>("hash", &_::hash)
             .method<void*() const, virtual_>("newInstance", &_::newInstance)
             .method<void(void*) const, virtual_>("deleteInstance", &_::deleteInstance)
             .method<void*(void*) const, virtual_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<ERelation(Type*) const, virtual_>("getRelationWith", &_::getRelationWith)
+            .method<TypeRelation(Type*) const, virtual_>("getRelationWith", &_::getRelationWith)
             .method<bool(void const*, void const*) const, virtual_>("equal", &_::equal)
             .method<void(StringView, void*) const, virtual_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_>("valueToString", &_::valueToString)
@@ -228,8 +227,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<ConstVolatileType*() const>("makeConstVolatile", &_::makeConstVolatile)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<ptrdiff_t(Type*) const, virtual_>("getPointerAdjustmentOffset", &_::getPointerAdjustmentOffset)
-            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
-            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
+            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
+            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
         
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
@@ -246,8 +247,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(LanguageElement*), virtual_|override_>("onAncestorAboutToBeChanged", &_::onAncestorAboutToBeChanged)
         
         .public_()
-            .signal("kindCreated", &_::kindCreated)
-            .signal("kindDestroyed", &_::kindDestroyed)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("kindCreated", &_::kindCreated)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("kindDestroyed", &_::kindDestroyed)
         
         .protected_()
             .field("m_eTypeKind", &_::m_eTypeKind)

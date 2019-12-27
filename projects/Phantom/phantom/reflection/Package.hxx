@@ -19,13 +19,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -42,7 +43,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -69,8 +70,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(PackageFolders&) const>("getPackageFolders", &_::getPackageFolders)
         
         .public_()
-            .signal("sourceAdded", &_::sourceAdded)
-            .signal("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("sourceAdded", &_::sourceAdded)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
         
         .protected_()
             .field("m_pNamespace", &_::m_pNamespace)

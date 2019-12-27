@@ -5,13 +5,12 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Variable.h"
 
 #include "Class.h"
 
-#include <phantom/lexical_cast.h>
-#include <phantom/new>
+#include <phantom/detail/lexical_cast.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

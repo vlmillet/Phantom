@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "TemplateSpecialization.h"
 
 #include "Placeholder.h"
@@ -14,8 +13,8 @@
 #include "TemplateParameter.h"
 #include "TemplateSignature.h"
 
-#include <phantom/SmallSet.h>
-#include <phantom/new.h>
+#include <phantom/detail/new.h>
+#include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 namespace phantom
 {

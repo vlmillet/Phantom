@@ -5,12 +5,11 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "TemplateDependantElement.h"
 
 #include "TemplateDependantType.h"
 
-#include <phantom/new>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 
 namespace phantom

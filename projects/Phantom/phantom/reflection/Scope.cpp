@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Scope.h"
 
 #include "Alias.h"
@@ -21,8 +20,8 @@
 #include "TemplateSpecialization.h"
 #include "Variable.h"
 
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
+#include <phantom/detail/phantom_priv.h>
 /* *********************************************** */
 namespace phantom
 {

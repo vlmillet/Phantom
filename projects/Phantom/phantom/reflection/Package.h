@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/Signal.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
@@ -141,15 +141,15 @@ public:
     /// @}
 
 private:
-    void           addArchivedSource(Source* a_pSource);
-    void           deleteSource(Source* a_pSource);
-    void           removeSource(Source* a_pSource);
-    void           onElementAdded(LanguageElement* a_pElement) override;
-    void           onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void           onElementRemoved(LanguageElement* a_pElement) override;
-    void           setNamespace(Namespace* a_pNamespace);
-    hash64         computeHash() const override;
-    void           onAncestorChanged(LanguageElement* a_pAncestor) override;
+    void   addArchivedSource(Source* a_pSource);
+    void   deleteSource(Source* a_pSource);
+    void   removeSource(Source* a_pSource);
+    void   onElementAdded(LanguageElement* a_pElement) override;
+    void   onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    void   onElementRemoved(LanguageElement* a_pElement) override;
+    void   setNamespace(Namespace* a_pNamespace);
+    hash64 computeHash() const override;
+    void   onAncestorChanged(LanguageElement* a_pAncestor) override;
 
 protected:
     Namespace*     m_pNamespace;

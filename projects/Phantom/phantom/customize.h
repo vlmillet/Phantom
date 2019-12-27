@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/config.h>
+#include <phantom/detail/config.h>
 
 #if defined(PHANTOM_CUSTOM_FORCED_INCLUDE)
 #    include PHANTOM_CUSTOM_FORCED_INCLUDE
@@ -76,11 +76,3 @@
 #if !defined(PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY)
 #    define PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY 8192
 #endif
-
-#if !defined(__HAUNT__)
-
-#    if !defined(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)
-#        define PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD _PHNTM_Rtti
-#    endif
-
-#endif // __HAUNT__

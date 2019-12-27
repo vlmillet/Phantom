@@ -5,9 +5,9 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Union.h"
-#include "phantom/new.h"
+
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {

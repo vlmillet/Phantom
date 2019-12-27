@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/macros.h>
+#include <phantom/detail/macros.h>
 
 /// @cond ADVANCED
 

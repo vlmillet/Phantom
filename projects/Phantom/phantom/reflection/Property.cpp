@@ -9,7 +9,7 @@
 
 #include "Parameter.h"
 #include "Signature.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
 #include <phantom/reflection/Signal.h>
 /* *********************************************** */

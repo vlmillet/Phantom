@@ -9,10 +9,10 @@
 /* ****************** Includes ******************* */
 #include "Aggregate.h"
 
-#include <phantom/ScopeExit.h>
-#include <phantom/Signal.h>
 #include <phantom/reflection/Symbol.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
+#include <phantom/utils/ScopeExit.h>
+#include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -75,15 +75,15 @@ public:
     }
 
     /// \brief  Represents a relation between two types.
-    enum ERelation
+    enum class TypeRelation
     {
-        e_Relation_None = 0,
-        e_Relation_Equal,
-        e_Relation_Child,
-        e_Relation_Parent,
-        e_Relation_Compatible,
-        e_Relation_GenericContentChild,
-        e_Relation_GenericContentParent,
+        None = 0,
+        Equal,
+        Child,
+        Parent,
+        Compatible,
+        GenericContentChild,
+        GenericContentParent,
     };
 
     /// \brief  Helper that computes automatically alignment via pushing types to it.
@@ -913,7 +913,7 @@ public:
     /// \return The relation with the other type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual ERelation getRelationWith(Type* a_pType) const;
+    virtual TypeRelation getRelationWith(Type* a_pType) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if the two given value of this type are equal.

@@ -25,7 +25,8 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallMap.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -52,7 +53,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Methods = typedef_< phantom::reflection::Methods>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Subroutine>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -61,7 +62,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(ABI, Modifiers, uint)>()["ABI::MethodCall"]["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(ABI, Modifiers, uint)>()["ABI::MethodCall"]["0"]["0"]
             .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
             .method<reflection::ClassType*() const>("getOwnerClassType", &_::getOwnerClassType)
             .method<reflection::Class*() const>("getOwnerClass", &_::getOwnerClass)
@@ -71,9 +73,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(ExecutionContext&, void**) const, virtual_|override_>("placementCall", &_::placementCall)
             .method<void(void**) const, virtual_|override_>("call", &_::call)
             .method<void(void**, void*) const, virtual_|override_>("call", &_::call)
-            .method<void(void*, void**) const>("safeInvoke", &_::safeInvoke)
-            .method<void(void*, void**, void*) const>("safeInvoke", &_::safeInvoke)
-            .method<void(void*, void**, void*) const>("safePlacementInvoke", &_::safePlacementInvoke)
             .method<bool(Method*) const>("canOverride", &_::canOverride)
             .method<bool(StringView, Signature*, Modifiers) const>("canOverride", &_::canOverride)["0"]
             .method<bool(Method*) const>("isOverridableBy", &_::isOverridableBy)
@@ -95,8 +94,10 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .constructor<void(LanguageElement*, StringView, StringView, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             .method<size_t() const, virtual_>("computeNativeVirtualIndex", &_::computeNativeVirtualIndex)
             .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
             .method<LocalVariable*() const, virtual_>("createThis", &_::createThis)
@@ -104,7 +105,8 @@ PHANTOM_PACKAGE("phantom.reflection")
         .protected_()
             .field("m_pThis", &_::m_pThis)
             .field("m_uiVirtualTableIndex", &_::m_uiVirtualTableIndex)
-            .field("m_pVTableClosures", &_::m_pVTableClosures)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .field("m_pVTableClosures", &_::m_pVTableClosures)
             .field("m_pProperty", &_::m_pProperty)
             ;
         }

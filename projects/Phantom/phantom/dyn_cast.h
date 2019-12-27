@@ -7,7 +7,6 @@
 #pragma once
 
 #include <phantom/ClassOf.h>
-#include <phantom/Rtti.h>
 #include <phantom/reflection/TypeOf.h>
 #include <phantom/traits/HasEmbeddedRtti.h>
 
@@ -45,8 +44,7 @@ struct dyn_castH
         if (a_pSource == nullptr)
             return nullptr;
         return reinterpret_cast<t_Target*>(
-        a_pSource->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass->upcast(
-        PHANTOM_CLASSOF(t_Target), a_pSource->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance));
+        a_pSource->RTTI.metaClass->upcast(PHANTOM_CLASSOF(t_Target), a_pSource->RTTI.instance));
     }
 };
 
@@ -57,14 +55,7 @@ struct dyn_castH<t_Target, t_Source, false>
     PHANTOM_STATIC_ASSERT(std::is_class<t_Target>::value);
     static t_Target* apply(t_Source* a_pSource)
     {
-        if (a_pSource == nullptr)
-            return nullptr;
-        reflection::Class* pTargetClass = PHANTOM_CLASSOF(t_Target);
-        const RttiMapData& oi = Rtti::Find(a_pSource);
-
-        return oi.isNull() ? nullptr // If no rtti registered we cannot know how to cast, we return
-                                     // NULL which is safer than trying to cast
-                           : reinterpret_cast<t_Target*>(oi.cast(pTargetClass));
+        return nullptr;
     }
 };
 
@@ -75,12 +66,9 @@ PHANTOM_FORCEINLINE t_TargetPtr dyn_cast(t_Source* a_pSource)
 {
     using SourceNoQual = PHANTOM_TYPENAME std::remove_cv<t_Source>::type;
     PHANTOM_STATIC_ASSERT(IsDataPointer<t_TargetPtr>::value);
-    using TargetNoQual =
-    PHANTOM_TYPENAME std::remove_cv<PHANTOM_TYPENAME std::remove_pointer<t_TargetPtr>::type>::type;
+    using TargetNoQual = PHANTOM_TYPENAME std::remove_cv<PHANTOM_TYPENAME std::remove_pointer<t_TargetPtr>::type>::type;
     return (TargetNoQual*)detail::dyn_castH < TargetNoQual, SourceNoQual,
            HasEmbeddedRtti<SourceNoQual>::value ||
            HasEmbeddedProxyRtti<SourceNoQual>::value > ::apply((SourceNoQual*)a_pSource);
 }
 } // namespace phantom
-
-#include "RttiMapData.h"

@@ -12,9 +12,9 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/StringView.h>
-#include <phantom/new.h>
+#include <phantom/detail/new.h>
 #include <phantom/traits/IsTypeDefined.h>
+#include <phantom/utils/StringView.h>
 
 namespace phantom
 {
@@ -32,10 +32,8 @@ public:
         using T = RemoveForwardT<MemberClassT>;
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_class<T>::value, "class_<T> : T must be a class");
-        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value),
-                                 "missing #include <phantom/class>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this),
-                                              reflection::Access::Private, nullptr);
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/class>");
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Private, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -49,10 +47,8 @@ public:
         using T = RemoveForwardT<MemberClassT>;
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_class<T>::value, "struct_<T> : T must be a struct");
-        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value),
-                                 "missing #include <phantom/struct>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this),
-                                              reflection::Access::Public, nullptr);
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/struct>");
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Public, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -66,10 +62,8 @@ public:
         using T = RemoveForwardT<MemberUnionT>;
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_union<T>::value, "union_<T> : T must be an union");
-        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value),
-                                 "missing #include <phantom/union>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this),
-                                              reflection::Access::Public, nullptr);
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/union>");
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Public, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -84,8 +78,7 @@ public:
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT((std::is_integral<T>::value || std::is_enum<T>::value),
                                  "enum_<T> : T an enum or integral type for anonymous enums");
-        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value),
-                                 "missing #include <phantom/enum>");
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/enum>");
         auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this));
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());

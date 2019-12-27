@@ -5,9 +5,9 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "TemplateDependantElement.h"
 #include "TemplateDependantType.h"
+
+#include "TemplateDependantElement.h"
 /* *********************************************** */
 namespace phantom
 {

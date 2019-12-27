@@ -19,13 +19,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/friend>
-
-#include <phantom/template-only-push>
-
-#include <phantom/SmallVector.hxx>
-
-#include <phantom/template-only-pop>
 
 namespace phantom {
 namespace reflection {
@@ -35,7 +28,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(VirtualMethodTable)
         {
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
@@ -46,8 +39,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .constructor<void(void**, size_t)>()
             .method<size_t() const>("getMethodCount", &_::getMethodCount)
             .method<size_t(Method*) const>("getIndexOf", &_::getIndexOf)
-            .method<Methods::const_iterator() const>("beginMethods", &_::beginMethods)
-            .method<Methods::const_iterator() const>("endMethods", &_::endMethods)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("beginMethods", &_::beginMethods)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<int() const>("endMethods", &_::endMethods)
             .method<Method*(size_t) const>("getMethod", &_::getMethod)
             .method<Class*() const>("getOwnerClass", &_::getOwnerClass)
             .method<Class*() const>("getOriginalClass", &_::getOriginalClass)

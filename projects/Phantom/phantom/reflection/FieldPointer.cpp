@@ -5,28 +5,26 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "Field.h"
 #include "FieldPointer.h"
+
+#include "Field.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
-FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType,
-                           Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : MemberPointer(TypeKind::FieldPointer, a_pObjectType, sizeof(Field*),
-                    std::alignment_of<Field*>::value, a_Modifiers,
-                    a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
+FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, Modifiers a_Modifiers /*= 0*/,
+                           uint a_uiFlags /*= 0*/)
+    : MemberPointer(TypeKind::FieldPointer, a_pObjectType, sizeof(Field*), std::alignment_of<Field*>::value,
+                    a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_pValueType(a_pValueType)
 {
     if (m_pValueType)
         addReferencedElement(m_pValueType);
 }
 
-FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, size_t a_uiSize,
-                           size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/,
-                           uint a_uiFlags /*= 0*/)
+FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, size_t a_uiSize, size_t a_uiAlignment,
+                           Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : MemberPointer(TypeKind::MethodPointer, a_pObjectType, a_uiSize, a_uiAlignment, a_Modifiers,
                     a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_pValueType(a_pValueType)

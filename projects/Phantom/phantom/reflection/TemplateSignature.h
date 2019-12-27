@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/SmallMap.h>
 #include <phantom/reflection/LanguageElement.h>
+#include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 

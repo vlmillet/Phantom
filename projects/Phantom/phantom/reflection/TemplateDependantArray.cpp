@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "TemplateDependantArray.h"
 
 #include "phantom/reflection/Placeholder.h"

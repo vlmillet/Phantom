@@ -5,10 +5,7 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Pointer.h"
-
-#include <phantom/value.h>
 /* *********************************************** */
 namespace phantom
 {

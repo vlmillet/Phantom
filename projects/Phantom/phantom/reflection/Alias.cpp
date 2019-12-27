@@ -5,11 +5,9 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Alias.h"
 
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

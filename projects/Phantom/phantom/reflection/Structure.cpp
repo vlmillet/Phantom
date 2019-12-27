@@ -5,10 +5,10 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Structure.h"
+
 #include "ValueMember.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -19,8 +19,8 @@ Structure::Structure(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a
 {
 }
 
-Structure::Structure(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                     Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+Structure::Structure(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/,
+                     uint a_uiFlags /*= 0*/)
     : ClassType(TypeKind::Structure, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }

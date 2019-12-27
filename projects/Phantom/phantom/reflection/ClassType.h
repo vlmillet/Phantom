@@ -9,11 +9,11 @@
 /* ****************** Includes ******************* */
 #include "Aggregate.h"
 
-#include <phantom/Delegate.h>
 #include <phantom/reflection/Scope.h>
 #include <phantom/reflection/Type.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
 #include <phantom/traits/IsTypeDefined.h>
+#include <phantom/utils/Delegate.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

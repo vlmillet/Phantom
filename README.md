@@ -4,7 +4,8 @@ C++ Reflection and Scripting Library
 ----
 ## Phantom
 ----
-Phantom is a **C++ reflection library**, feature complete (yet bloat-free), self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (no code in your project files if you really don't want). It has been first developed as a home-made project and then was used inside the game industry as a robust foundation for quick game engine development. 
+Phantom is a **C++ reflection library**, feature complete, self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (reflection can be in complete separate files from your source code). 
+It has been first developed as a home-made project and then was used inside the game industry as a robust foundation for quick game engine development. 
 
 After years of use inside a professional game studio, it is now made available under a permissive license for whoever want to use it or participate to its development.
 

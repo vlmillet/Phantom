@@ -32,7 +32,6 @@
 
 #include <inttypes.h>
 #include <phantom/detail/new.h>
-#include <phantom/dyn_cast.h>
 #include <phantom/utils/ScopeExit.h>
 #include <phantom/utils/SmallString.h>
 #include <phantom/utils/StringView.h>
@@ -45,9 +44,7 @@ namespace reflection
 {
 struct StringViewStream
 {
-    StringViewStream(StringView str) : str(str)
-    {
-    }
+    StringViewStream(StringView str) : str(str) {}
 
     char peek()
     {
@@ -64,10 +61,7 @@ struct StringViewStream
         PHANTOM_ASSERT(!eof());
         return str.dropFront();
     }
-    bool eof() const
-    {
-        return str.empty();
-    }
+    bool eof() const { return str.empty(); }
     void ignore()
     {
         PHANTOM_ASSERT(!eof());
@@ -555,7 +549,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                     if (Alias* pAlias = pTemplated->asAlias()) // alias template
                                     {
                                         if (TemplateDependantTemplateInstance* pTDInstance =
-                                            phantom::dyn_cast<TemplateDependantTemplateInstance*>(
+                                            phantom::Object::Cast<TemplateDependantTemplateInstance>(
                                             pAlias->getAliasedSymbol()))
                                         {
                                             if (Template* pAliasedTpl = pTDInstance->getTemplate())

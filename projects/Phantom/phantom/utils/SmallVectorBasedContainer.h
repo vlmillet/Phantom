@@ -38,7 +38,7 @@ public:
 
 public:
     SmallVectorBasedContainer() = default;
-    explicit SmallVectorBasedContainer(MemoryTraits const* a_pMemTraits) : m_storage(a_pMemTraits){};
+    explicit SmallVectorBasedContainer(CustomAllocator const* a_pMemTraits) : m_storage(a_pMemTraits){};
     iterator erase(const_iterator a_Where)
     {
         return m_storage.erase(a_Where);

@@ -31,7 +31,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(FieldPointer)
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::MemberPointer>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

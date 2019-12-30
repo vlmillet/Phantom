@@ -22,6 +22,7 @@
 
 #include <phantom/template-only-push>
 
+#include "LanguageElement.hxx"
 #include <phantom/utils/ArrayView.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -42,6 +43,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Functions = typedef_< phantom::reflection::Functions>;
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using StringView = typedef_< phantom::StringView>;
             using Subroutines = typedef_< phantom::reflection::Subroutines>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
@@ -83,8 +85,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(TemplateSpecialization*)>("addTemplateSpecialization", &_::addTemplateSpecialization)
             .method<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&)>("addTemplateSpecialization", &_::addTemplateSpecialization)
             .method<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&, Symbol*)>("addTemplateSpecialization", &_::addTemplateSpecialization)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<TemplateSpecialization*(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>("addTemplateInstantiation", &_::addTemplateInstantiation)
+            .method<TemplateSpecialization*(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>("addTemplateInstantiation", &_::addTemplateInstantiation)
             .method<void(TemplateSpecialization*)>("removeTemplateSpecialization", &_::removeTemplateSpecialization)
             .method<TemplateSpecialization*(size_t) const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<TemplateSpecializations const&() const>("getTemplateSpecializations", &_::getTemplateSpecializations)
@@ -138,22 +139,14 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .field("m_pThisElement", &_::m_pThisElement)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Functions", &_::m_Functions)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Variables", &_::m_Variables)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Constants", &_::m_Constants)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Types", &_::m_Types)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Templates", &_::m_Templates)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_TemplateSpecializations", &_::m_TemplateSpecializations)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_AnonymousSections", &_::m_AnonymousSections)
-            /// missing symbol(s) reflection (phantom::reflection::Members) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Aliases", &_::m_Aliases)
+            .field("m_Functions", &_::m_Functions)
+            .field("m_Variables", &_::m_Variables)
+            .field("m_Constants", &_::m_Constants)
+            .field("m_Types", &_::m_Types)
+            .field("m_Templates", &_::m_Templates)
+            .field("m_TemplateSpecializations", &_::m_TemplateSpecializations)
+            .field("m_AnonymousSections", &_::m_AnonymousSections)
+            .field("m_Aliases", &_::m_Aliases)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

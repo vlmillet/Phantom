@@ -26,18 +26,18 @@ template<class ScopeExit>
 struct ScopedConstruction
 {
     ScopedConstruction(ScopeExit&& a_ScopeExit, void* a_pMemory)
-        : memory(a_pMemory), m_ScopeExit(std::move(a_ScopeExit))
+        : m_ScopeExit(std::move(a_ScopeExit)), m_pMemory(a_pMemory)
     {
     }
 
     operator void*() const
     {
-        return memory;
+        return m_pMemory;
     }
 
 private:
     ScopeExit m_ScopeExit;
-    void*     memory;
+    void*     m_pMemory;
 };
 
 template<class ScopeExit>

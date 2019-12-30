@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "plugin.h"
-
 #include <stdint.h>
 
 namespace phantom

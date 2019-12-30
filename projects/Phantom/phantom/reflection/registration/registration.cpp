@@ -253,7 +253,7 @@ void TypeBuilderBase::operator()(StringView a_Name, Variant&& a_Value)
 {
     reflection::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
     PHANTOM_ASSERT(m_Members.empty() || m_Members.back().isSymbol, "last declaration does not accept meta data");
-    dest[StringHash(a_Name)] = std::move(a_Value);
+    dest[StringWithHash(a_Name)] = std::move(a_Value);
 }
 
 void TypeBuilderBase::operator()(reflection::Modifiers a_Modifiers)

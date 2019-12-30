@@ -10,29 +10,29 @@
 
 #include <phantom/detail/fwd.h>
 
-PHANTOM_DEFINE_HAS_FIELD_NO_BASE_MACRO_PARAM(RTTI);
+PHANTOM_DEFINE_HAS_FIELD_NO_BASE_MACRO_PARAM(rtti);
 
 namespace phantom
 {
 /// @cond INTERNAL
 
 template<typename t_Ty>
-struct HasEmbeddedRtti : public PHANTOM_PP_CAT(HasField_, RTTI)<t_Ty, EmbeddedRtti>
+struct HasEmbeddedRtti : public PHANTOM_PP_CAT(HasField_, rtti)<t_Ty, RTTI>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedProxyRtti : public PHANTOM_PP_CAT(HasField_, RTTI)<t_Ty, EmbeddedProxyRtti>
+struct HasEmbeddedProxyRtti : public PHANTOM_PP_CAT(HasField_, rtti)<t_Ty, EmbeddedProxyRtti>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, RTTI)<t_Ty, EmbeddedRtti>
+struct HasEmbeddedRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, rtti)<t_Ty, RTTI>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedProxyRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, RTTI)<t_Ty, EmbeddedProxyRtti>
+struct HasEmbeddedProxyRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, rtti)<t_Ty, EmbeddedProxyRtti>
 {
 };
 } // namespace phantom

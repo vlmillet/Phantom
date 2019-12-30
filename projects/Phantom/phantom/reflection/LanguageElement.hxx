@@ -20,12 +20,13 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallSet.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -37,16 +38,19 @@ namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
     PHANTOM_SOURCE("LanguageElement")
 
+        PHANTOM_CLASS_T((class), (t_Scope), Members)
+        {
+            this_()
+            ;
+        }
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Ellipsis)
         {
             this_()
             ;
         }
-        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<PlaceholderMap>("PlaceholderMap"); }
-        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<ModuleSet>("ModuleSet"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<PlaceholderMap>("PlaceholderMap"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<ModuleSet>("ModuleSet"); }
         PHANTOM_CLASS(LanguageElement)
         {
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
@@ -56,6 +60,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
             this_()
+            .inherits<::phantom::Object>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, VisitorData), virtual_>("visit", &_::visit)
         
@@ -70,9 +75,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
         
         .public_()
-            .method<void*() const>("getMostDerived", &_::getMostDerived)
-            .method<Class*() const>("getMetaClass", &_::getMetaClass)
-            .method<void*(Class*) const>("as", &_::as)
             .method<LanguageElements const&() const>("getElements", &_::getElements)
             .method<LanguageElements const&() const>("getReferencedElements", &_::getReferencedElements)
             .method<LanguageElements const&() const>("getReferencingElements", &_::getReferencingElements)
@@ -179,6 +181,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool(LanguageElement*) const>("hasElementCascade", &_::hasElementCascade)
             .method<bool() const, virtual_>("isCompileTime", &_::isCompileTime)
             .method<LanguageElement*() const>("getOwner", &_::getOwner)
+            .method<LanguageElement*() const>("getRootElement", &_::getRootElement)
             .method<void(LanguageElements&, Class*) const>("fetchElementsDeep", &_::fetchElementsDeep)["nullptr"]
             .method<void(LanguageElements&, Class*) const>("fetchElements", &_::fetchElements)["nullptr"]
             .method<void(StringView, Symbols&) const>("getSymbolsWithName", &_::getSymbolsWithName)
@@ -223,10 +226,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(LanguageElement*)>("removeElement", &_::removeElement)
             .method<Symbol*(StringView, Modifiers, uint) const>("getUniqueElement", &_::getUniqueElement)["0"]["0"]
             .method<size_t(LanguageElement*) const>("getElementIndex", &_::getElementIndex)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<void(int &) const>("dumpElementList", &_::dumpElementList)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<void(int &) const>("dumpElementListCascade", &_::dumpElementListCascade)
+            /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(::std::basic_ostream<char> &) const>("dumpElementList", &_::dumpElementList)
+            /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(::std::basic_ostream<char> &) const>("dumpElementListCascade", &_::dumpElementListCascade)
             .method<String() const, virtual_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<String() const, virtual_>("getQualifiedName", &_::getQualifiedName)
             .method<String() const, virtual_>("getDecoratedName", &_::getDecoratedName)
@@ -269,8 +272,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Source*() const, virtual_>("getCodeLocationSource", &_::getCodeLocationSource)
             .method<LanguageElement*(const CodePosition&) const>("getElementAtCodePosition", &_::getElementAtCodePosition)
             .method<LanguageElement*(uint16) const>("getElementAtLine", &_::getElementAtLine)
-            /// missing symbol(s) reflection (phantom::EmbeddedProxyRtti) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("RTTI", &_::RTTI)
             .method<int() const, virtual_>("destructionPriority", &_::destructionPriority)
         
         .protected_()

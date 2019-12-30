@@ -36,9 +36,10 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Reference)
         {
+            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::ExtendedType>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -74,8 +75,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*, void*) const, virtual_|override_>("moveAssign", &_::moveAssign)
             .method<void(void*, void const*) const, virtual_|override_>("copyConstruct", &_::copyConstruct)
             .method<void(void*, void*) const, virtual_|override_>("moveConstruct", &_::moveConstruct)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<bool(Type*, size_t&, PlaceholderMap&) const, pure_virtual|override_>("partialAccepts", &_::partialAccepts)
+            .method<bool(Type*, size_t&, PlaceholderMap&) const, pure_virtual|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Symbol*) const, pure_virtual|override_>("isSame", &_::isSame)
             .method<void(void**, void*)>("address", &_::address)
             .method<Type*() const, virtual_|override_>("getUnderlyingType", &_::getUnderlyingType)

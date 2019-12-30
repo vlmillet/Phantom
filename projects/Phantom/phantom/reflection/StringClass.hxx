@@ -37,7 +37,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::StlVectorClass>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

@@ -19,12 +19,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
+#include <phantom/signal>
 #include <phantom/typedef>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -40,6 +42,8 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(Application)
         {
             using Classes = typedef_< phantom::reflection::Classes>;
+            using LoadedLibraries = typedef_<_::LoadedLibraries>;
+            using LoadedLibraryModules = typedef_<_::LoadedLibraryModules>;
             using Modules = typedef_< phantom::reflection::Modules>;
             using Plugins = typedef_< phantom::reflection::Plugins>;
             using Sources = typedef_< phantom::reflection::Sources>;
@@ -49,7 +53,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Strings = typedef_< phantom::Strings>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
             using Types = typedef_< phantom::reflection::Types>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -58,10 +62,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .typedef_<LoadedLibraryModules>("LoadedLibraryModules")
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .typedef_<LoadedLibraries>("LoadedLibraries")
+            .typedef_<LoadedLibraryModules>("LoadedLibraryModules")
+            .typedef_<LoadedLibraries>("LoadedLibraries")
             /// missing symbol(s) reflection (phantom::reflection::Expression, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .typedef_<CppExpressionParser>("CppExpressionParser")
         
@@ -145,42 +147,24 @@ PHANTOM_PACKAGE("phantom.reflection")
             // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginPathAdded", &_::pluginPathAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginPathRemoved", &_::pluginPathRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("binaryPathAdded", &_::binaryPathAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("binaryPathRemoved", &_::binaryPathRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("moduleAdded", &_::moduleAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("moduleDiscarded", &_::moduleDiscarded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("moduleAboutToBeRemoved", &_::moduleAboutToBeRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("moduleUnloaded", &_::moduleUnloaded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginAdded", &_::pluginAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginAboutToBeRemoved", &_::pluginAboutToBeRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginLoaded", &_::pluginLoaded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginLoadingFailed", &_::pluginLoadingFailed)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("pluginAboutToBeUnloaded", &_::pluginAboutToBeUnloaded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("sourceAdded", &_::sourceAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("packageAdded", &_::packageAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("sourceDeleted", &_::sourceDeleted)
+            .signal("pluginPathAdded", &_::pluginPathAdded)
+            .signal("pluginPathRemoved", &_::pluginPathRemoved)
+            .signal("binaryPathAdded", &_::binaryPathAdded)
+            .signal("binaryPathRemoved", &_::binaryPathRemoved)
+            .signal("moduleAdded", &_::moduleAdded)
+            .signal("moduleDiscarded", &_::moduleDiscarded)
+            .signal("moduleAboutToBeRemoved", &_::moduleAboutToBeRemoved)
+            .signal("moduleUnloaded", &_::moduleUnloaded)
+            .signal("pluginAdded", &_::pluginAdded)
+            .signal("pluginAboutToBeRemoved", &_::pluginAboutToBeRemoved)
+            .signal("pluginLoaded", &_::pluginLoaded)
+            .signal("pluginLoadingFailed", &_::pluginLoadingFailed)
+            .signal("pluginAboutToBeUnloaded", &_::pluginAboutToBeUnloaded)
+            .signal("sourceAdded", &_::sourceAdded)
+            .signal("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
+            .signal("packageAdded", &_::packageAdded)
+            .signal("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
+            .signal("sourceDeleted", &_::sourceDeleted)
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)

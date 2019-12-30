@@ -24,6 +24,8 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/Optional.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -42,7 +44,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -51,8 +53,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .constructor<void(LanguageElement*, StringView, OptionalArrayView<LanguageElement*>, OptionalArrayView<LanguageElement*>, Modifiers, uint)>()["NullOpt"]["NullOpt"]["0"]["0"]
+            .constructor<void(LanguageElement*, StringView, OptionalArrayView<LanguageElement*>, OptionalArrayView<LanguageElement*>, Modifiers, uint)>()["NullOpt"]["NullOpt"]["0"]["0"]
             .method<Type*() const, virtual_|override_>("toType", &_::toType)
             .method<LanguageElement*() const>("getLeft", &_::getLeft)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)

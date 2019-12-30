@@ -34,7 +34,7 @@ ContainerClass::~ContainerClass()
 
 void ContainerClass::setValueType(Type* a_pValueType)
 {
-    PHANTOM_ASSERT(a_pValueType);
+    PHANTOM_ASSERT(a_pValueType, "container value type not reflected");
     m_pValueType = a_pValueType;
 }
 

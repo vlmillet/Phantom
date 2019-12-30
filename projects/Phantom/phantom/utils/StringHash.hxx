@@ -19,6 +19,7 @@
 #include <phantom/function>
 #include <phantom/method>
 #include <phantom/constructor>
+#include <phantom/friend>
 
 #include <phantom/template-only-push>
 
@@ -36,6 +37,8 @@ PHANTOM_PACKAGE("phantom.utils")
         {
             using StringView = typedef_< phantom::StringView>;
             this_()
+        
+        .public_()
             .constructor<void(), default_>()
             .constructor<void(StringView), explicit_>()
             .constructor<void(uint64_t), explicit_>()
@@ -45,8 +48,8 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<bool(StringHash const&) const>("operator<", &_::operator<)
             .method<bool(StringHash const&) const>("operator==", &_::operator==)
             .method<bool(StringHash const&) const>("operator!=", &_::operator!=)
-            .method<bool() const>("IsNull", &_::IsNull)
-            .method<bool() const>("IsValid", &_::IsValid)
+            .method<bool() const>("isNull", &_::isNull)
+            .method<bool() const>("isValid", &_::isValid)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -7,27 +7,29 @@
 #pragma once
 
 #include "Constructor.h"
-#include "TypeOf.h"
 #include "allocate.h"
+
+#include <phantom/detail/TypeOfFwd.h>
+#include <phantom/utils/Object.h>
 
 HAUNT_STOP;
 namespace phantom
 {
 namespace detail
 {
-template<class t_Ty, bool t_HasEmbeddedRtti>
+template<class t_Ty, bool t_IsObject>
 struct NewHH;
 
-// Embedded RTTI
+// Embedded rtti
 
 template<class t_Ty>
 struct NewHH<t_Ty, true>
 {
     PHANTOM_FORCEINLINE static t_Ty* apply(t_Ty* a_pInstance)
     {
-        a_pInstance->RTTI.instance = a_pInstance;
-        a_pInstance->RTTI.metaClass = (reflection::Class*)TypeOf<t_Ty>(TypeOfTag<t_Ty>());
-        a_pInstance->RTTI.metaClass->registerInstance(a_pInstance);
+        a_pInstance->rtti.instance = a_pInstance;
+        a_pInstance->rtti.metaClass = (reflection::Class*)TypeOf<t_Ty>(TypeOfTag<t_Ty>());
+        a_pInstance->rtti.metaClass->registerInstance(a_pInstance);
         return a_pInstance;
     }
 };
@@ -37,10 +39,7 @@ struct NewHH<t_Ty, true>
 template<class t_Ty>
 struct NewHH<t_Ty, false>
 {
-    PHANTOM_FORCEINLINE static t_Ty* apply(t_Ty* a_pInstance)
-    {
-        return a_pInstance;
-    }
+    PHANTOM_FORCEINLINE static t_Ty* apply(t_Ty* a_pInstance) { return a_pInstance; }
 };
 
 template<class t_Ty>
@@ -48,14 +47,14 @@ struct NewH
 {
     PHANTOM_FORCEINLINE t_Ty* operator*(t_Ty* a_pInstance)
     {
-        return NewHH < t_Ty, HasEmbeddedRtti<t_Ty>::value || HasEmbeddedProxyRtti<t_Ty>::value > ::apply(a_pInstance);
+        return NewHH<t_Ty, IsObject<t_Ty>::value>::apply(a_pInstance);
     }
 };
 
-template<bool StaticChecks, class t_Ty, bool t_HasEmbeddedRtti>
+template<bool StaticChecks, class t_Ty, bool t_IsObject>
 struct PlacementDeleteHH;
 
-// Embedded RTTI
+// Embedded rtti
 
 template<bool StaticChecks, class t_Ty>
 struct PlacementDeleteHH<StaticChecks, t_Ty, true>
@@ -70,10 +69,7 @@ struct PlacementDeleteHH<StaticChecks, t_Ty, false>
 {
     static_assert(!StaticChecks || !std::has_virtual_destructor<t_Ty>::value,
                   "calling 'static' delete on a class with virtual destructor is forbidden");
-    PHANTOM_FORCEINLINE static void apply(t_Ty* a_pInstance)
-    {
-        Constructor<t_Ty>::destroy(a_pInstance);
-    }
+    PHANTOM_FORCEINLINE static void apply(t_Ty* a_pInstance) { Constructor<t_Ty>::destroy(a_pInstance); }
 };
 
 template<bool StaticChecks, typename t_Ty>
@@ -83,8 +79,7 @@ struct DeleteH
     {
         if (a_pInstance)
         {
-            PlacementDeleteHH<StaticChecks, t_Ty,
-                              HasEmbeddedRtti<t_Ty>::value || HasEmbeddedProxyRtti<t_Ty>::value>::apply(a_pInstance);
+            PlacementDeleteHH<StaticChecks, t_Ty, IsObject<t_Ty>::value>::apply(a_pInstance);
             Allocator<t_Ty>::deallocate(a_pInstance);
         }
     }
@@ -95,8 +90,7 @@ struct PlacementDeleteH
 {
     PHANTOM_FORCEINLINE void operator*(t_Ty* a_pInstance)
     {
-        PlacementDeleteHH<true, t_Ty, HasEmbeddedRtti<t_Ty>::value || HasEmbeddedProxyRtti<t_Ty>::value>::apply(
-        a_pInstance);
+        PlacementDeleteHH<true, t_Ty, IsObject<t_Ty>::value>::apply(a_pInstance);
     }
 };
 
@@ -130,9 +124,7 @@ struct NewNH
 template<typename t_Ty>
 struct DeleteNH
 {
-    PHANTOM_FORCEINLINE DeleteNH(size_t N) : N(N)
-    {
-    }
+    PHANTOM_FORCEINLINE      DeleteNH(size_t N) : N(N) {}
     PHANTOM_FORCEINLINE void operator*(t_Ty* a_pInstances)
     {
         t_Ty*  pInstance = a_pInstances;
@@ -148,7 +140,7 @@ struct DeleteNH
     size_t N;
 };
 
-template<class t_Ty, bool t_has_embed_rtti, bool t_has_proxy_rtti>
+template<class t_Ty, bool t_has_embed_rtti>
 struct DeleteDynHH
 {
     static_assert(std::is_same<t_Ty, t_Ty*>::value, "invalid case of dynamic deletion");
@@ -156,13 +148,13 @@ struct DeleteDynHH
 
 // ProxyRtti case
 template<class t_Ty>
-struct DeleteDynHH<t_Ty, true, true>
+struct DeleteDynHH<t_Ty, true>
 {
     static void apply(t_Ty* a_pInstance)
     {
-        auto class_ = a_pInstance->RTTI.metaClass;
-        auto ptr_ = a_pInstance->RTTI.instance;
-        if (auto dfunc = a_pInstance->RTTI.dynamicDeleteFunc)
+        auto class_ = a_pInstance->rtti.metaClass;
+        auto ptr_ = a_pInstance->rtti.instance;
+        if (auto dfunc = a_pInstance->rtti.customDeleteFunc)
         {
             dfunc(ptr_);
         }
@@ -174,29 +166,14 @@ struct DeleteDynHH<t_Ty, true, true>
     }
 };
 
-// Embedded rtti
-template<class t_Ty>
-struct DeleteDynHH<t_Ty, true, false>
-{
-    static void apply(t_Ty* a_pInstance);
-};
-
-// No embedded rtti (requires phantom to be installed for mapped rtti)
-template<class t_Ty>
-struct DeleteDynHH<t_Ty, false, false>
-{
-    static void apply(t_Ty* a_pInstance);
-};
-
 struct DeleteDynH
 {
     template<class t_Ty>
     void operator*(t_Ty* a_pInstance)
     {
-        static const bool HasProxy = HasEmbeddedProxyRtti<t_Ty>::value;
         if (a_pInstance)
         {
-            DeleteDynHH<t_Ty, HasEmbeddedRtti<t_Ty>::value || HasProxy, HasProxy>::apply(a_pInstance);
+            DeleteDynHH<t_Ty, IsObject<t_Ty>::value>::apply(a_pInstance);
         }
     }
 };
@@ -214,14 +191,8 @@ struct VirtualDeleteH
 template<typename t_Ty>
 struct StackNewH
 {
-    PHANTOM_FORCEINLINE StackNewH(t_Ty* a_pInstance) : m_pInstance(a_pInstance)
-    {
-        NewH<t_Ty>() * a_pInstance;
-    }
-    PHANTOM_FORCEINLINE ~StackNewH()
-    {
-        PlacementDeleteH<t_Ty>() * m_pInstance;
-    }
+    PHANTOM_FORCEINLINE StackNewH(t_Ty* a_pInstance) : m_pInstance(a_pInstance) { NewH<t_Ty>() * a_pInstance; }
+    PHANTOM_FORCEINLINE ~StackNewH() { PlacementDeleteH<t_Ty>() * m_pInstance; }
     t_Ty* m_pInstance;
 };
 
@@ -230,8 +201,7 @@ struct DynamicDeleter
 {
     PHANTOM_FORCEINLINE static void dynamicDelete(void* a_pInstance)
     {
-        PlacementDeleteHH<false, t_Ty, HasEmbeddedRtti<t_Ty>::value || HasEmbeddedProxyRtti<t_Ty>::value>::apply(
-        reinterpret_cast<t_Ty*>(a_pInstance));
+        PlacementDeleteHH<false, t_Ty, IsObject<t_Ty>::value>::apply(reinterpret_cast<t_Ty*>(a_pInstance));
         Allocator<t_Ty>::deallocate(reinterpret_cast<t_Ty*>(a_pInstance));
     }
 };

@@ -41,6 +41,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .staticMethod<void(String&, StringView, StringView)>("ReplaceAll", &_::ReplaceAll)
             .staticMethod<void(Strings&, StringView, const char*, bool)>("Split", &_::Split)["true"]
             .staticMethod<void(StringViews&, StringView, const char*, bool)>("Split", &_::Split)["true"]
+            .staticMethod<StringView(StringView)>("RemoveExtraBlanks", &_::RemoveExtraBlanks)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

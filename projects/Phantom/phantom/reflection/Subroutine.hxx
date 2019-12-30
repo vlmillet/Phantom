@@ -121,7 +121,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringViews = typedef_< phantom::StringViews>;
             using Types = typedef_< phantom::reflection::Types>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol, ::phantom::reflection::Callable>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -230,7 +230,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pBlock", &_::m_pBlock)
             .field("m_MemoryLocation", &_::m_MemoryLocation)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            /// missing symbol(s) reflection (phantom::reflection::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_CallDelegate", &_::m_CallDelegate)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_Closure", &_::m_Closure)

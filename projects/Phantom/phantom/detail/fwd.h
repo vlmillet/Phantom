@@ -65,10 +65,6 @@ class Phantom;
 template<class S>
 class Delegate;
 
-HAUNT_PACKAGE("phantom")
-PHANTOM_DECL_LISTABLE(Message);
-HAUNT_END("phantom")
-
 class Variant;
 class DummyClass
 {

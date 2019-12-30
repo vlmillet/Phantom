@@ -50,7 +50,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringViews = typedef_< phantom::StringViews>;
             using Types = typedef_< phantom::reflection::Types>;
             using TypesView = typedef_< phantom::reflection::TypesView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

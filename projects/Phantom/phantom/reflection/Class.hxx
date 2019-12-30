@@ -51,8 +51,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Class*() const>("operator Class*", &_::operator notypedef<Class*>)
             ;
         }
-        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
         PHANTOM_STRUCT(StructBuilder)
         {
             using StringView = typedef_< phantom::StringView>;
@@ -77,7 +76,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
             using Variants = typedef_< phantom::Variants>;
             using VirtualMethodTables = typedef_< phantom::reflection::VirtualMethodTables>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::ClassType>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -211,11 +210,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void*(void*) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void*(void*, Constructor*, void**) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_|override_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<const Variant&(StringView) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<const Variant&(StringHash) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<void(StringView, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<void(StringHash, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<bool(StringView) const>("hasMetaDataCascade", &_::hasMetaDataCascade)
+            .method<const Variant&(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const Variant&(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<void(StringView, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<void(StringWithHash, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<bool(StringWithHash) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
+            .method<bool(StringView) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)

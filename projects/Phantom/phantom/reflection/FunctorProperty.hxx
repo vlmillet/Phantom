@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using GetFunctor = typedef_<_::GetFunctor>;
             using SetFunctor = typedef_<_::SetFunctor>;
             using StringView = typedef_< phantom::StringView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::ValueMember>()
         .public_()
             .typedef_<SetFunctor>("SetFunctor")

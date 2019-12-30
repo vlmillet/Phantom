@@ -19,6 +19,7 @@
 #include <phantom/method>
 #include <phantom/constructor>
 #include <phantom/field>
+#include <phantom/friend>
 
 #include <phantom/template-only-push>
 
@@ -36,6 +37,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using VoidPtrs = typedef_< phantom::VoidPtrs>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
+        
         .protected_()
             .constructor<void(Class*)>()
         
@@ -43,8 +45,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<VoidPtrs const&() const>("getInstances", &_::getInstances)
         
         .protected_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("m_Instances", &_::m_Instances)
+            .field("m_Instances", &_::m_Instances)
             .field("m_pClass", &_::m_pClass)
             ;
         }

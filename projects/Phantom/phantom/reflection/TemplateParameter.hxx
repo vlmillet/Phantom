@@ -38,8 +38,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(TemplateParameter)
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -57,8 +58,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<LanguageElement*() const>("getDefaultArgument", &_::getDefaultArgument)
             .method<void(LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
             .method<Placeholder*() const>("getPlaceholder", &_::getPlaceholder)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
+            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(LanguageElement*) const>("acceptsArgument", &_::acceptsArgument)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)

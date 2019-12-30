@@ -9,7 +9,6 @@
 
 #include "phantom/reflection/Placeholder.h"
 
-#include <phantom/dyn_cast>
 #include <phantom/reflection/Template.h>
 #include <phantom/reflection/TemplateSpecialization.h>
 /* *********************************************** */
@@ -66,7 +65,7 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
         return true;
     Placeholder*                       pPH = a_pOther->asPlaceholder();
     TemplateDependantTemplateInstance* pTDTI =
-    pPH ? phantom::dyn_cast<TemplateDependantTemplateInstance*>(pPH->asSymbol()) : nullptr;
+    pPH ? phantom::Object::Cast<TemplateDependantTemplateInstance>(pPH->asSymbol()) : nullptr;
     if (pTDTI == nullptr OR NOT(pTDTI->m_pTemplate->isSame(m_pTemplate)))
         return false;
     size_t count = m_Arguments.size();

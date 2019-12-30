@@ -22,16 +22,9 @@ class Functor;
 
 struct NullMutex
 {
-    void lock()
-    {
-    }
-    void unlock() noexcept
-    {
-    }
-    bool try_lock()
-    {
-        return true;
-    }
+    void lock() {}
+    void unlock() noexcept {}
+    bool try_lock() { return true; }
 };
 
 template<class S, class Mtx = NullMutex>
@@ -91,27 +84,15 @@ class ModuleRegistrationInfo;
 }
 
 class Object;
-struct EmbeddedRtti;
-struct EmbeddedProxyRtti;
 
 struct FunctorID
 {
     FunctorID() = default;
-    FunctorID(size_t a_Lo, size_t a_Hi) : lo(a_Lo), hi(a_Hi)
-    {
-    }
-    FunctorID(void* a_Lo, void* a_Hi) : lo(size_t(a_Lo)), hi(size_t(a_Hi))
-    {
-    }
+    FunctorID(size_t a_Lo, size_t a_Hi) : lo(a_Lo), hi(a_Hi) {}
+    FunctorID(void* a_Lo, void* a_Hi) : lo(size_t(a_Lo)), hi(size_t(a_Hi)) {}
 
-    bool operator==(FunctorID const& a_Other) const
-    {
-        return lo == a_Other.lo && hi == a_Other.hi;
-    }
-    bool operator!=(FunctorID const& a_Other) const
-    {
-        return lo != a_Other.lo || hi != a_Other.hi;
-    }
+    bool operator==(FunctorID const& a_Other) const { return lo == a_Other.lo && hi == a_Other.hi; }
+    bool operator!=(FunctorID const& a_Other) const { return lo != a_Other.lo || hi != a_Other.hi; }
 
     bool operator<(FunctorID a_Other) const
     {
@@ -122,15 +103,9 @@ struct FunctorID
         return hi < a_Other.hi;
     }
 
-    bool isNull() const
-    {
-        return lo == 0 && hi == 0;
-    }
+    bool isNull() const { return lo == 0 && hi == 0; }
 
-    operator bool() const
-    {
-        return !isNull();
-    }
+    operator bool() const { return !isNull(); }
 
 private:
     size_t lo = 0;

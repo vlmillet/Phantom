@@ -1,10 +1,12 @@
 #pragma once
 
 #include "SmallVector.h"
-#include <phantom/reflection/meta_type>
-#include <phantom/reflection/StlVectorClassT.h>
 
-PHANTOM_R_META_TYPE_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), phantom::SmallVector, phantom::reflection::StlVectorClassT);
+#include <phantom/reflection/StlVectorClassT.h>
+#include <phantom/reflection/meta_type>
+
+PHANTOM_R_META_TYPE_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), phantom::SmallVector,
+                      phantom::reflection::StlVectorClassT);
 
 // haunt {
 
@@ -64,8 +66,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(), default_>()
             )
             .PHANTOM_T constructor<void(size_t), explicit_>()
-            /// missing symbol(s) reflection (phantom::MemoryTraits) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(MemoryTraits const*), explicit_>()
+            .PHANTOM_T constructor<void(CustomAllocator const*), explicit_>()
             .PHANTOM_T constructor<void(const ::std::initializer_list<value_type> &)>()
             .PHANTOM_T constructor<void(ArrayViewType)>()
             .PHANTOM_T constructor<void(const SelfType&)>()

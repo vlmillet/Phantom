@@ -248,9 +248,9 @@ private:
             (decltype(pMetaClass))(m_pType); /// meta meta type (the meta type of the meta type of
                                              /// 'Class' is the meta type of class itself)
         }
-        m_pType->RTTI.instance = m_pType;
-        m_pType->RTTI.dynamicDeleteFunc = &DynamicProxyDeleter<MetaType>::dynamicDelete;
-        m_pType->RTTI.metaClass = pMetaClass;
+        m_pType->rtti.instance = m_pType;
+        m_pType->rtti.customDeleteFunc = &DynamicProxyDeleter<MetaType>::dynamicDelete;
+        m_pType->rtti.metaClass = pMetaClass;
         pMetaClass->registerInstance(m_pType);
     }
 

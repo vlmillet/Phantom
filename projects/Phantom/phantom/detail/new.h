@@ -24,21 +24,12 @@ PHANTOM_EXPORT_PHANTOM bool installed();
 template<bool StaticChecks, class t_Ty>
 void PlacementDeleteHH<StaticChecks, t_Ty, true>::apply(t_Ty* a_pInstance)
 {
-    auto pClass = a_pInstance->RTTI.metaClass;
-    PHANTOM_ASSERT(a_pInstance == a_pInstance->RTTI.instance);
+    auto pClass = a_pInstance->rtti.metaClass;
+    PHANTOM_ASSERT(a_pInstance == a_pInstance->rtti.instance);
     pClass->unregisterInstance(a_pInstance);
     Constructor<t_Ty>::destroy(a_pInstance);
 }
 
-template<class t_Ty>
-void DeleteDynHH<t_Ty, true, false>::apply(t_Ty* a_pInstance)
-{
-    PHANTOM_ASSERT(phantom::detail::installed());
-    auto pClass = a_pInstance->RTTI.metaClass;
-    auto pAddr = a_pInstance->RTTI.instance;
-    pClass->unregisterInstance(pAddr);
-    pClass->deleteInstance(pAddr);
-}
 } // namespace detail
 } // namespace phantom
 

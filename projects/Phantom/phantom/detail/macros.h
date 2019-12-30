@@ -468,6 +468,14 @@ HAUNT_STOP;
 #    define PHANTOM_NOEXCEPT_IF(pred)
 #endif
 
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
+#    define PHANTOM_IF_LIKELY(x) if (__builtin_expect(!!(x), 1))
+#    define PHANTOM_IF_UNLIKELY(x) if (__builtin_expect(!!(x), 0))
+#else
+#    define PHANTOM_IF_LIKELY(x) if (!!(x))
+#    define PHANTOM_IF_UNLIKELY(x) if (!!(x))
+#endif
+
 #if !defined(__DOXYGEN__)
 
 #    if (PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO)
@@ -565,10 +573,7 @@ struct converter<0> : public false_type
     {                                                                                                                  \
         PHANTOM_DEPRECATE(void _(::static_warning_detail::false_type const&), msg){};                                  \
         void _(::static_warning_detail::true_type const&){};                                                           \
-        PHANTOM_PP_CAT(static_warning, __LINE__)()                                                                     \
-        {                                                                                                              \
-            _(::static_warning_detail::converter<(cond)>());                                                           \
-        }                                                                                                              \
+        PHANTOM_PP_CAT(static_warning, __LINE__)() { _(::static_warning_detail::converter<(cond)>()); }                \
     }
 
 #define PHANTOM_STATIC_WARNING_TEMPLATE(token, cond, msg)                                                              \
@@ -709,13 +714,8 @@ struct converter<0> : public false_type
 #define _PHNTM_DEFER_II(counter, ...)                                                                                  \
     struct PHANTOM_PP_CAT(_PHNTM_defer, counter)                                                                       \
     {                                                                                                                  \
-        PHANTOM_PP_CAT(_PHNTM_defer, counter)(std::function<void()> a_lambda) : m_lambda(a_lambda)                     \
-        {                                                                                                              \
-        }                                                                                                              \
-        ~PHANTOM_PP_CAT(_PHNTM_defer, counter)()                                                                       \
-        {                                                                                                              \
-            m_lambda();                                                                                                \
-        }                                                                                                              \
+        PHANTOM_PP_CAT(_PHNTM_defer, counter)(std::function<void()> a_lambda) : m_lambda(a_lambda) {}                  \
+        ~PHANTOM_PP_CAT(_PHNTM_defer, counter)() { m_lambda(); }                                                       \
         std::function<void()> m_lambda;                                                                                \
     } PHANTOM_PP_CAT(_PHNTM_defer_i_, counter)([this]() { __VA_ARGS__; });
 

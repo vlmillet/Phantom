@@ -24,13 +24,12 @@
 #endif
 /* *********************************************** */
 
-#include "console.h"
-
 #include <phantom/reflection/Application.h>
 #include <phantom/reflection/Module.h>
 #include <phantom/reflection/Namespace.h>
 #include <phantom/reflection/Package.h>
 #include <phantom/reflection/Source.h>
+#include <phantom/utils/Console.h>
 #if PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include <thread>
 #endif
@@ -60,13 +59,13 @@ void macosx_moduleAdded(const struct mach_header* mh, intptr_t vmaddr_slide)
 #    include <map>
 #endif
 #include "StaticGlobalRegistrer.h"
-#include "crc64.h"
 
-#include <phantom/ClassOf.h>
+#include <phantom/detail/ClassOfFwd.h>
 #include <phantom/reflection/reflection.h>
 #include <phantom/reflection/registration/GlobalRegistrer.h>
 #include <phantom/reflection/registration/Main.h>
 #include <phantom/traits/FunctionTypeToMethodPointerType.h>
+#include <phantom/utils/crc64.h>
 
 #define PHANTOM_REFLECTION_DEBUG_ENABLED 0
 
@@ -155,10 +154,6 @@ void defaultLog(MessageType, StringView file, int line, const char* format, va_l
     common_output("LOG", green);
 }
 
-void default_print(StringView a_strText, int)
-{
-    printf("%.*s", PHANTOM_STRING_AS_PRINTF_ARG(a_strText));
-}
 } // namespace
 
 namespace detail
@@ -186,7 +181,6 @@ static MessageReportFunc g_warning_func;
 static MessageReportFunc g_error_func;
 static LogFunc           g_LogFunc;
 
-typedef SmallMap<String, Message*, 4>          MessageMap;
 typedef SmallMap<String, reflection::Package*> PackageMap;
 
 typedef SmallVector<void*, 4096> ToFree;
@@ -214,9 +208,10 @@ PHANTOM_EXPORT_PHANTOM reflection::Symbol* symbolRegisteredAt(size_t a_ModuleHan
 
 void DynamicCppInitializerH::StaticGlobalsInit()
 {
-    MemoryTraits::Init();
+    CustomAllocator::Init();
     g_pGlobalNamespace.construct("");
     g_pApplication.construct();
+    g_pApplication->addElement(g_pGlobalNamespace);
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
     g_pReflectionNamespace.construct("reflection");
@@ -312,13 +307,6 @@ void DynamicCppInitializerH::registerModule(size_t a_ModuleHandle, StringView a_
     moduleRegistrationInfo(a_ModuleHandle)->m_OnLoad = onLoad;
     moduleRegistrationInfo(a_ModuleHandle)->m_OnUnload = onUnload;
     moduleRegistrationInfo(a_ModuleHandle)->m_Dependencies = SmallVector<StringView, 64>(a_Dependencies);
-    if (reflection::Plugin::GetLoadingPluginStack().size())
-    {
-        if (reflection::Plugin::GetLoadingPluginStack().back()->getName() != a_strName)
-        {
-            reflection::Plugin::GetLoadingPluginStack().back()->_addDependency(a_strName);
-        }
-    }
     popInstallation();
 }
 
@@ -927,7 +915,7 @@ phantom::reflection::Source* DynamicCppInitializerH::nativeSource(StringView a_s
     return pSource;
 }
 
-PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, EmbeddedRtti* a_pRtti)
+PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, RTTI* a_pRtti)
 {
     dynamic_initializer_()->deferInstallation(a_strTypeName, a_pRtti);
 }
@@ -1208,13 +1196,6 @@ PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strNam
     a_Buf += a_strName;
 }
 
-/// Placed here to avoid having to recompile CPlusPlus.cpp on each test change
-//     String reflection::CPlusPlus::compilationTest()
-//     {
-//         // return "((@(2854893509)).fragmentShader)=(&(@(2854884344)))";
-//         return "((args)[0])=((void*)&(a_0))";
-//     }
-
 PHANTOM_EXPORT_PHANTOM void setAssertFunc(MessageReportFunc a_func)
 {
     detail::g_assert_func = a_func;
@@ -1236,16 +1217,17 @@ PHANTOM_EXPORT_PHANTOM void setWarningFunc(MessageReportFunc a_func)
 }
 
 reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
-                       StringView a_strFile, uint a_uiFlags)
+                       CustomAllocator _allocator, StringView a_strFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
+
+    CustomAllocator::Push(_allocator);
 
     phantom::detail::DynamicCppInitializerH::StaticGlobalsInit();
 
     PHANTOM_LOG_NATIVE_REFLECTION("entering PHANTOM_MAIN...");
     PHANTOM_ASSERT(phantom::detail::g_instance == nullptr, "only one Main instance allowed");
     phantom::detail::g_instance = this;
-    setPrintDelegate(0, default_print);
 
     PHANTOM_LOG_NATIVE_REFLECTION("setting default paths...");
     for (int i = 1; i < argc; ++i)
@@ -1301,6 +1283,8 @@ reflection::Main::~Main()
     Application::Get()->m_OperationCounter++; /// to allow auto dll unloading after main(...) ends
     phantom::detail::DynamicCppInitializerH::StaticGlobalsRelease();
     dynamic_initializer_()->release(); // ensure every allocation made by the dynamic initializer are cleaned up here
+
+    CustomAllocator::Pop();
 }
 
 PHANTOM_EXPORT_PHANTOM uint64_t makeStringHash(StringView a_Str)

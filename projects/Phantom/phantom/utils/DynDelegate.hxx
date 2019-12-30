@@ -102,10 +102,8 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(), default_>()
             )
             .PHANTOM_T constructor<void(::phantom::reflection::Function *)>()
-            /// missing symbol(s) reflection (phantom::Object) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(Object, ::phantom::reflection::Method *)>()
-            /// missing symbol(s) reflection (phantom::Object) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(Object, StringView)>()
+            .PHANTOM_T constructor<void(void*, ::phantom::reflection::Class *, ::phantom::reflection::Method *)>()
+            .PHANTOM_T constructor<void(void*, ::phantom::reflection::Class *, StringView)>()
             .PHANTOM_T constructor<void(OpaqueDynDelegate), explicit_>()
             .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())
             ;

@@ -34,7 +34,7 @@ public:
         for (auto const& val : a_InitList)
             insert(val);
     }
-    explicit SmallSet(MemoryTraits const* a_pMemTraits) : BaseType(a_pMemTraits){};
+    explicit SmallSet(CustomAllocator const* a_pMemTraits) : BaseType(a_pMemTraits){};
 
     T const& operator[](size_t i) const
     {

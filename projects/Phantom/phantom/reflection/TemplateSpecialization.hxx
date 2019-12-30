@@ -41,10 +41,11 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using LanguageElementsView = typedef_< phantom::reflection::LanguageElementsView>;
+            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TemplateParameters = typedef_< phantom::reflection::TemplateParameters>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -56,8 +57,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&, Symbol*, uint)>("Create", &_::Create)
             .constructor<void(Template*, TemplateSignature*, const LanguageElements&, uint)>()
             .constructor<void(Template*, TemplateSignature*, const LanguageElements&, Symbol*, uint)>()
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>()
+            .constructor<void(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>()
         
         .public_()
             .method<TemplateSpecialization*() const, virtual_|override_>("asTemplateSpecialization", &_::asTemplateSpecialization)
@@ -71,10 +71,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<LanguageElement*(size_t) const>("getDefaultArgument", &_::getDefaultArgument)
             .method<LanguageElement*(StringView) const>("getDefaultArgument", &_::getDefaultArgument)
             .method<const LanguageElements&() const>("getArguments", &_::getArguments)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<int() const>("beginArguments", &_::beginArguments)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<int() const>("endArguments", &_::endArguments)
+            .method<LanguageElements::const_iterator() const>("beginArguments", &_::beginArguments)
+            .method<LanguageElements::const_iterator() const>("endArguments", &_::endArguments)
             .method<void(size_t, LanguageElement*)>("setArgument", &_::setArgument)
             .method<void(size_t, LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
             .method<void(StringView, LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
@@ -98,16 +96,14 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool(TemplateSpecialization*) const>("isSame", &_::isSame)
             .using_("Symbol::isSame")
             .using_("Symbol::partialAccepts")
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<bool(const LanguageElements&, size_t&, PlaceholderMap&) const>("partialAccepts", &_::partialAccepts)
+            .method<bool(const LanguageElements&, size_t&, PlaceholderMap&) const>("partialAccepts", &_::partialAccepts)
             .method<void(Symbol*)>("setTemplated", &_::setTemplated)
             .method<Symbol*() const>("getTemplated", &_::getTemplated)
             .method<TemplateSpecialization*(uint) const>("clone", &_::clone)["0"]
             .method<void(TemplateSpecialization*)>("setExtendedSpecialization", &_::setExtendedSpecialization)
             .method<TemplateSpecialization*() const>("getExtendedSpecialization", &_::getExtendedSpecialization)
             .method<TemplateSpecialization*() const>("getInstantiationSpecialization", &_::getInstantiationSpecialization)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<PlaceholderMap const&() const>("getPlaceholderSubstitutions", &_::getPlaceholderSubstitutions)
+            .method<PlaceholderMap const&() const>("getPlaceholderSubstitutions", &_::getPlaceholderSubstitutions)
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
         
         .protected_()

@@ -29,7 +29,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(AnonymousUnion)
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::AnonymousSection>()
         .public_()
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)

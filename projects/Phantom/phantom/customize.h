@@ -30,7 +30,7 @@
 #endif
 #if !defined(PHANTOM_CUSTOM_ENABLE_SLOT_POOL)
 #    define PHANTOM_CUSTOM_ENABLE_SLOT_POOL                                                                            \
-        1 /// (DON'T TOUCH) add connection pool allocator on EmbeddedRtti Data which will
+        1 /// (DON'T TOUCH) add connection pool allocator on RTTI Data which will
           /// automatically release slots on receiver destruction (PHANTOM_DYN_CONNECT can only be
           /// used after installation pass)
 #endif

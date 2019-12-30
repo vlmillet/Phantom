@@ -12,7 +12,6 @@
 #include "SmallVector.h"
 
 #include <functional>
-#include <phantom/typeof>
 #include <type_traits>
 /* *********************************************** */
 
@@ -348,13 +347,13 @@ public:
     {
         new (&m_DynDelegate) DynDelegateType(a_pFunction);
     }
-    Functor(Object a_Object, reflection::Method* a_pMethod) : m_Type(_Type::DynDelegate)
+    Functor(void* a_pInstance, reflection::Class* a_pClass, reflection::Method* a_pMethod) : m_Type(_Type::DynDelegate)
     {
-        new (&m_DynDelegate) DynDelegateType(a_Object, a_pMethod);
+        new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_pMethod);
     }
-    Functor(Object a_Object, StringView a_MethodName) : m_Type(_Type::DynDelegate)
+    Functor(void* a_pInstance, reflection::Class* a_pClass, StringView a_MethodName) : m_Type(_Type::DynDelegate)
     {
-        new (&m_DynDelegate) DynDelegateType(a_Object, a_MethodName);
+        new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_MethodName);
     }
     explicit Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : m_Type(_Type::DynDelegate)
     {

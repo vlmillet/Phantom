@@ -29,8 +29,7 @@ namespace phantom
 {
 namespace reflection
 {
-static_assert(!HasEmbeddedRtti<Class>::value, "HasRtti<Class>::value");
-static_assert(HasEmbeddedProxyRtti<Class>::value, "HasRtti<Class>::value");
+static_assert(IsObject<Class>::value, "HasRtti<Class>::value");
 
 Class* Class::metaClass;
 
@@ -871,7 +870,7 @@ bool Class::isA(Class* a_pType) const
     return false;
 }
 
-const Variant& Class::getMetaDataCascade(StringHash a_Hash) const
+const Variant& Class::getMetaDataIncludingBases(StringWithHash a_Hash) const
 {
     static Variant null;
     const Variant& v = getMetaData(a_Hash);
@@ -879,24 +878,24 @@ const Variant& Class::getMetaDataCascade(StringHash a_Hash) const
         return v;
     for (auto& bc : m_BaseClasses)
     {
-        const Variant& v2 = bc.baseClass->getMetaDataCascade(a_Hash);
+        const Variant& v2 = bc.baseClass->getMetaDataIncludingBases(a_Hash);
         if (v2.isValid())
             return v2;
     }
     return null;
 }
 
-const Variant& Class::getMetaDataCascade(StringView a_Name) const
+const Variant& Class::getMetaDataIncludingBases(StringView a_Name) const
 {
-    return getMetaDataCascade(StringHash(a_Name));
+    return getMetaDataIncludingBases(StringWithHash(a_Name));
 }
 
-void Class::getMetaDatasCascade(StringView a_Name, Variants& a_MetaDatas) const
+void Class::getMetaDatasIncludingBases(StringView a_Name, Variants& a_MetaDatas) const
 {
-    getMetaDatasCascade(StringHash(a_Name), a_MetaDatas);
+    getMetaDatasIncludingBases(StringWithHash(a_Name), a_MetaDatas);
 }
 
-void Class::getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const
+void Class::getMetaDatasIncludingBases(StringWithHash a_Hash, Variants& a_MetaDatas) const
 {
     auto& meta = getMetaData(a_Hash);
     if (meta.isValid())
@@ -905,7 +904,7 @@ void Class::getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const
     }
     for (auto& bc : m_BaseClasses)
     {
-        bc.baseClass->getMetaDatasCascade(a_Hash, a_MetaDatas);
+        bc.baseClass->getMetaDatasIncludingBases(a_Hash, a_MetaDatas);
     }
 }
 
@@ -1022,6 +1021,23 @@ void Class::_onNativeElementsAccessImpl()
             inserted = m_VirtualMethodTables[i]->insertMethod(pMethod, insertOnlyIfOverrides) OR inserted;
         }
     }
+}
+
+bool Class::hasMetaDataIncludingBases(StringWithHash a_strName) const
+{
+    if (hasMetaData(a_strName))
+        return true;
+    for (auto it = m_BaseClasses.begin(); it != m_BaseClasses.end(); ++it)
+    {
+        if (it->baseClass->hasMetaDataIncludingBases(a_strName))
+            return true;
+    }
+    return false;
+}
+
+bool Class::hasMetaDataIncludingBases(StringView a_strName) const
+{
+    return hasMetaDataIncludingBases(StringWithHash(a_strName));
 }
 
 bool Class::isCopyable() const
@@ -1729,6 +1745,16 @@ void Class::_unregisterKind(void* a_pInstance)
     {
         bc.baseClass->_unregisterKind(reinterpret_cast<byte*>(a_pInstance) + bc.offset);
     }
+}
+
+bool Class::isCopyConstructible() const
+{
+    return NOT(hasCopyDisabled());
+}
+
+bool Class::isMoveConstructible() const
+{
+    return NOT(hasMoveDisabled());
 }
 
 void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()

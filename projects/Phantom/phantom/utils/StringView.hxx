@@ -61,6 +61,8 @@ PHANTOM_PACKAGE("phantom.utils")
             )
             .PHANTOM_T method<void()>("clear", &_::clear)
             .PHANTOM_T method<SelfType(size_t, size_t)>("substr", &_::substr)["npos"]
+            .PHANTOM_T method<CharT()>("dropBack", &_::dropBack)
+            .PHANTOM_T method<void(size_t)>("dropBack", &_::dropBack)
             .PHANTOM_T method<CharT()>("dropFront", &_::dropFront)
             .PHANTOM_T method<void(size_t)>("dropFront", &_::dropFront)
             .PHANTOM_T method<bool(SelfType) const>("startsWith", &_::startsWith)

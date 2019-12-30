@@ -25,6 +25,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
@@ -53,7 +54,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Methods = typedef_< phantom::reflection::Methods>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Subroutine>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -105,8 +106,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         .protected_()
             .field("m_pThis", &_::m_pThis)
             .field("m_uiVirtualTableIndex", &_::m_uiVirtualTableIndex)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("m_pVTableClosures", &_::m_pVTableClosures)
+            .field("m_pVTableClosures", &_::m_pVTableClosures)
             .field("m_pProperty", &_::m_pProperty)
             ;
         }

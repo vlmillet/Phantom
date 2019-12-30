@@ -48,7 +48,7 @@ public:
         for (auto const& pair : a_InitList)
             insert(pair);
     }
-    explicit SmallMultimap(MemoryTraits const* a_pMemTraits) : BaseType(a_pMemTraits){};
+    explicit SmallMultimap(CustomAllocator const* a_pMemTraits) : BaseType(a_pMemTraits){};
     V& operator[](K const& _key)
     {
         auto it = upper_bound(_key);

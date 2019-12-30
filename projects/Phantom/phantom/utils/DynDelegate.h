@@ -9,8 +9,8 @@
 /* ****************** Includes ******************* */
 #include "StringView.h"
 
+#include <phantom/detail/TypeOfFwd.h>
 #include <phantom/reflection/CallHelpers.h>
-#include <phantom/typeof>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -112,12 +112,14 @@ public:
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    DynDelegate(Object a_Object, reflection::Method* a_pMethod) : OpaqueDynDelegate(a_Object, a_pMethod)
+    DynDelegate(void* a_pInstance, reflection::Class* a_pClass, reflection::Method* a_pMethod)
+        : OpaqueDynDelegate(a_pInstance, a_pClass, a_pMethod)
     {
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    DynDelegate(Object a_Object, StringView a_MethodName) : OpaqueDynDelegate(a_Object, a_MethodName)
+    DynDelegate(void* a_pInstance, reflection::Class* a_pClass, StringView a_MethodName)
+        : OpaqueDynDelegate(a_pInstance, a_pClass, a_MethodName)
     {
         PHANTOM_ASSERT(_CheckSignature());
     }

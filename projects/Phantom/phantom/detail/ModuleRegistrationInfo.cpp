@@ -25,7 +25,7 @@ ModuleRegistrationInfo::ModuleRegistrationInfo(size_t a_ModuleHandle)
       m_OnLoad(0),
       m_OnUnload(0),
       m_CurrentInstallationStep(TypeInstallationStep::Uninstalled),
-      m_HashToTypeMap(MemoryTraits::Default()),
+      m_HashToTypeMap(&CustomAllocator::Default()),
       m_bInstalled(false)
 {
 }

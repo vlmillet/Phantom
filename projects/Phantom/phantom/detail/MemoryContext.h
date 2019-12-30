@@ -9,7 +9,7 @@
 /* ****************** Includes ******************* */
 #include <haunt>
 HAUNT_STOP;
-#include <phantom/memory/memory.h>
+#include <phantom/detail/memory.h>
 #include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 namespace phantom

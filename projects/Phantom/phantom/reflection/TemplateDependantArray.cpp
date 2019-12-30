@@ -8,8 +8,6 @@
 #include "TemplateDependantArray.h"
 
 #include "phantom/reflection/Placeholder.h"
-
-#include <phantom/dyn_cast>
 /* *********************************************** */
 namespace phantom
 {
@@ -56,7 +54,7 @@ void TemplateDependantArray::getQualifiedName(StringBuffer& a_Buf) const
 bool TemplateDependantArray::isSame(Symbol* a_pOther) const
 {
     Placeholder*            pPH = a_pOther->asPlaceholder();
-    TemplateDependantArray* pTDAT = pPH ? phantom::dyn_cast<TemplateDependantArray*>(pPH->asSymbol()) : nullptr;
+    TemplateDependantArray* pTDAT = pPH ? phantom::Object::Cast<TemplateDependantArray>(pPH->asSymbol()) : nullptr;
     if (pTDAT == nullptr)
         return false;
     return pTDAT AND reinterpret_cast<LanguageElement*>(pTDAT->m_pItemCountExpression)

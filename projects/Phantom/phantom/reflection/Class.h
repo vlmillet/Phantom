@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/ClassOf.h>
+#include <phantom/detail/ClassOfFwd.h>
 #include <phantom/reflection/ClassType.h>
 #include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
@@ -921,56 +921,50 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a meta value by its name, recursively through all the base classes.
     ///
-    /// \param  a_strName   The meta name.
+    /// \param  a_strName   The key name.
     ///
-    /// \return null String if no meta found, else the meta Data value String.
+    /// \return null String if no meta found, else the meta data value String.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Variant& getMetaDataCascade(StringView a_Name) const;
-    const Variant& getMetaDataCascade(StringHash a_Hash) const;
+    const Variant& getMetaDataIncludingBases(StringView a_Name) const;
+    const Variant& getMetaDataIncludingBases(StringWithHash a_Hash) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets all meta value by name, recursively through all the base classes.
     ///
-    /// \param  a_strName   The meta name.
+    /// \param  a_strName   The key name.
     ///
-    /// \return null String if no meta found, else the meta Data value String.
+    /// \return null String if no meta found, else the meta data value String.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void getMetaDatasCascade(StringView a_Name, Variants& a_MetaDatas) const;
-    void getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const;
+    void getMetaDatasIncludingBases(StringView a_Name, Variants& a_MetaDatas) const;
+    void getMetaDatasIncludingBases(StringWithHash a_Hash, Variants& a_MetaDatas) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Query if this clss has a meta Data with given name through all base classes.
+    /// \brief  Query if this clss has a meta data with given name through all base classes.
     ///
-    /// \param  a_strName   The meta Data name.
+    /// \param  a_strName   The meta data name.
     ///
-    /// \return True is a meta Data has been found, false if not.
+    /// \return True is a meta data has been found, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool hasMetaDataCascade(StringView a_strName) const
-    {
-        if (hasMetaData(a_strName))
-            return true;
-        for (auto it = m_BaseClasses.begin(); it != m_BaseClasses.end(); ++it)
-        {
-            if (it->baseClass->hasMetaDataCascade(a_strName))
-                return true;
-        }
-        return false;
-    }
+    bool hasMetaDataIncludingBases(StringWithHash a_strName) const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Query if this clss has a meta data with given name through all base classes.
+    ///
+    /// \param  a_strName   The meta data name.
+    ///
+    /// \return True is a meta data has been found, false if not.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool hasMetaDataIncludingBases(StringView a_strName) const;
 
     bool isCopyable() const override;
 
-    bool isCopyConstructible() const override
-    {
-        return NOT(hasCopyDisabled());
-    }
+    bool isCopyConstructible() const override;
 
-    bool isMoveConstructible() const override
-    {
-        return NOT(hasMoveDisabled());
-    }
+    bool isMoveConstructible() const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  operator=

@@ -2,10 +2,11 @@
 
 #include "SmallMap.h"
 
-#include <phantom/reflection/meta_type>
 #include <phantom/reflection/StlMapClassT.h>
+#include <phantom/reflection/meta_type>
 
-PHANTOM_R_META_TYPE_T((typename, typename, size_t, size_t, typename), (K, V, S, D, P), phantom::SmallMap, phantom::reflection::StlMapClassT);
+PHANTOM_R_META_TYPE_T((typename, typename, size_t, size_t, typename), (K, V, S, D, P), phantom::SmallMap,
+                      phantom::reflection::StlMapClassT);
 
 // haunt {
 
@@ -64,8 +65,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(), default_>()
             )
             .PHANTOM_T constructor<void(::std::initializer_list<value_type>)>()
-            /// missing symbol(s) reflection (phantom::MemoryTraits) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(MemoryTraits const*), explicit_>()
+            .PHANTOM_T constructor<void(CustomAllocator const*), explicit_>()
             .PHANTOM_T method<V&(K const&)>("operator[]", &_::operator[])
             .PHANTOM_T method<const_iterator(K const&) const>("find", &_::find)
             .PHANTOM_T method<iterator(K const&)>("find", &_::find)

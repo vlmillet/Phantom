@@ -51,7 +51,7 @@ public:
         for (auto const& pair : a_InitList)
             insert(pair);
     }
-    explicit SmallMap(MemoryTraits const* a_pMemTraits) : BaseType(a_pMemTraits){};
+    explicit SmallMap(CustomAllocator const* a_pMemTraits) : BaseType(a_pMemTraits){};
 
     V& operator[](K const& _key)
     {

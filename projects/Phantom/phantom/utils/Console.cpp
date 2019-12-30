@@ -4,11 +4,12 @@
 // http://www.wiwila.com/tools/phantom/license/
 // ]
 
+#include "Console.h"
+
 #include "String.h"
-#include "console.h"
-#include "newImpl.h"
 
 #include <ostream>
+#include <phantom/new>
 
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 
@@ -20,10 +21,8 @@ namespace phantom
 {
 namespace console
 {
-static const WORD bgMask(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED |
-                         BACKGROUND_INTENSITY);
-static const WORD fgMask(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED |
-                         FOREGROUND_INTENSITY);
+static const WORD bgMask(BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
+static const WORD fgMask(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY);
 
 static const WORD fgBlack(0);
 static const WORD fgLoRed(FOREGROUND_RED);
@@ -95,8 +94,7 @@ public:
         GetInfo();
         FillConsoleOutputCharacter(hCon, ' ', dwConSize, coordScreen, &cCharsWritten);
         GetInfo();
-        FillConsoleOutputAttribute(hCon, csbi().wAttributes, dwConSize, coordScreen,
-                                   &cCharsWritten);
+        FillConsoleOutputAttribute(hCon, csbi().wAttributes, dwConSize, coordScreen, &cCharsWritten);
         SetConsoleCursorPosition(hCon, coordScreen);
     }
     void SetColor(WORD wRGBI, WORD Mask)

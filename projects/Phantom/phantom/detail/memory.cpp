@@ -14,32 +14,33 @@ namespace phantom
 {
 namespace
 {
-bool                           g_default_traits = false;
-SmallVector<MemoryTraits, 32>& _memory_traits()
+bool                              g_default_traits = false;
+SmallVector<CustomAllocator, 32>& _CustomAllocatorStack()
 {
-    static SmallVector<MemoryTraits, 32> g_memory_traits(MemoryTraits::Default());
+    static SmallVector<CustomAllocator, 32> g_memory_traits(&CustomAllocator::Default());
     return g_memory_traits;
 }
 } // namespace
 
-void MemoryTraits::Push(MemoryTraits a_Traits)
+void CustomAllocator::Push(CustomAllocator a_Traits)
 {
-    PHANTOM_ASSERT(_memory_traits().size() < 32, "maximum memory traits stack reached");
-    _memory_traits().push_back(a_Traits);
+    PHANTOM_ASSERT(_CustomAllocatorStack().size() < 32, "maximum custom allocator stack reached");
+    _CustomAllocatorStack().push_back(a_Traits);
 }
-void MemoryTraits::Pop()
+void CustomAllocator::Pop()
 {
-    _memory_traits().pop_back();
-}
-
-MemoryTraits const* MemoryTraits::CurrentOrDefault()
-{
-    return _memory_traits().size() ? &_memory_traits().back() : Default();
+    _CustomAllocatorStack().pop_back();
 }
 
-MemoryTraits const* MemoryTraits::Current()
+CustomAllocator const& CustomAllocator::CurrentOrDefault()
 {
-    return _memory_traits().size() ? &_memory_traits().back() : nullptr;
+    return _CustomAllocatorStack().size() ? _CustomAllocatorStack().back() : Default();
+}
+
+CustomAllocator const& CustomAllocator::Current()
+{
+    PHANTOM_ASSERT(_CustomAllocatorStack().size(), "no allocator pushed, use 'CustomAllocator::Push'");
+    return _CustomAllocatorStack().back();
 }
 
 static void* DefaultAllocFunc(size_t s, size_t, const char*, int)
@@ -57,60 +58,60 @@ static void DefaultDeallocFunc(void* m)
     std::free(m);
 }
 
-void MemoryTraits::Init()
+void CustomAllocator::Init()
 {
-    if (_memory_traits().empty())
+    if (_CustomAllocatorStack().empty())
     {
         g_default_traits = true;
-        Push(*Default());
+        Push(Default());
     }
 }
-void MemoryTraits::Release()
+void CustomAllocator::Release()
 {
     if (g_default_traits)
     {
-        PHANTOM_ASSERT(*Current() == *Default());
-        _memory_traits().pop_back();
-        PHANTOM_ASSERT(Current() == nullptr);
+        PHANTOM_ASSERT(Current() == Default());
+        _CustomAllocatorStack().pop_back();
+        _CustomAllocatorStack().empty();
     }
     else
     {
-        PHANTOM_ASSERT(_memory_traits().empty());
+        PHANTOM_ASSERT(_CustomAllocatorStack().empty());
     }
 }
 
-MemoryTraits const* MemoryTraits::Default()
+CustomAllocator const& CustomAllocator::Default()
 {
-    static MemoryTraits s_Default{DefaultAllocFunc, DefaultDeallocFunc, DefaultReallocFunc};
-    return &s_Default;
+    static CustomAllocator s_Default{DefaultAllocFunc, DefaultDeallocFunc, DefaultReallocFunc};
+    return s_Default;
 }
 
 namespace memory
 {
 PHANTOM_EXPORT_PHANTOM void* allocBytes(size_t size, size_t align, const char* file, int line)
 {
-    PHANTOM_ASSERT(MemoryTraits::Current(),
-                   "memory allocated while memory traits not defined. \n"
+    PHANTOM_ASSERT(!_CustomAllocatorStack().empty(),
+                   "memory allocated while custom allocator not defined. \n"
                    "Allocation happened here : %s:%d.\n"
                    "Ensure PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY is set to enough (current=%d) "
                    "for reflection registration at startup.\n",
                    file, line, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY);
-    return MemoryTraits::Current()->allocFunc(size, align, file, line);
+    return CustomAllocator::Current().allocFunc(size, align, file, line);
 }
 PHANTOM_EXPORT_PHANTOM void deallocBytes(void* mem)
 {
-    PHANTOM_ASSERT(MemoryTraits::Current(), "memory deallocated while memory traits not defined. \n");
-    MemoryTraits::Current()->deallocFunc(mem);
+    PHANTOM_ASSERT(!_CustomAllocatorStack().empty(), "memory deallocated while custom allocator not defined. \n");
+    CustomAllocator::Current().deallocFunc(mem);
 }
 PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align, const char* file, int line)
 {
-    PHANTOM_ASSERT(MemoryTraits::Current(),
-                   "memory reallocated while memory traits not defined. \n"
+    PHANTOM_ASSERT(!_CustomAllocatorStack().empty(),
+                   "memory reallocated while custom allocator not defined. \n"
                    "Allocation happened here : %s:%d.\n"
                    "Ensure PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY is set to enough (current=%d) "
                    "for reflection registration at startup.\n",
                    file, line, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY);
-    return MemoryTraits::Current()->reallocFunc(mem, size, align, file, line);
+    return CustomAllocator::Current().reallocFunc(mem, size, align, file, line);
 }
 
 } // namespace memory

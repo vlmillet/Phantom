@@ -14,7 +14,6 @@
 /* *********************************************** */
 namespace phantom
 {
-class Message;
 class Main;
 
 namespace reflection
@@ -657,8 +656,8 @@ private:
     void    _uninstallNativeModule(Module* a_pModule);
 
     void _loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                   StringView a_strSourceFile, uint a_uiFlags, Message* a_pMessage = nullptr);
-    void _unloadMain(Message* a_pMessage = nullptr);
+                   StringView a_strSourceFile, uint a_uiFlags);
+    void _unloadMain();
 
     void _addModule(Module* a_pModule);
     void _removeModule(Module* a_pModule);

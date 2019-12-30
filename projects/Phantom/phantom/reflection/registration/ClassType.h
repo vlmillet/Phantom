@@ -16,7 +16,7 @@ HAUNT_STOP;
 #include "Type.h"
 
 #include <locale>
-#include <phantom/ClassOf.h>
+#include <phantom/detail/ClassOfFwd.h>
 #include <phantom/detail/StaticGlobals.h>
 #include <phantom/detail/new.h>
 #include <phantom/reflection/ClassTypeT.h>

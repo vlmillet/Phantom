@@ -486,7 +486,8 @@ struct PreciseTypeOf
         static Type* object()                                                                                          \
         {                                                                                                              \
             PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD();                                                                    \
-            return (Type*)(PHANTOM_TYPEOF(t_Ty)->func);                                                                \
+            Type* t = PHANTOM_TYPEOF(t_Ty);                                                                            \
+            return t ? (Type*)(t->func) : nullptr;                                                                     \
         }                                                                                                              \
     };
 

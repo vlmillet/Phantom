@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using Variables = typedef_< phantom::reflection::Variables>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)

@@ -2,10 +2,11 @@
 
 #include "SmallSet.h"
 
-#include <phantom/reflection/meta_type>
 #include <phantom/reflection/StlSetClassT.h>
+#include <phantom/reflection/meta_type>
 
-PHANTOM_R_META_TYPE_T((typename, size_t, size_t, typename), (V, S, D, P), phantom::SmallSet, phantom::reflection::StlSetClassT);
+PHANTOM_R_META_TYPE_T((typename, size_t, size_t, typename), (V, S, D, P), phantom::SmallSet,
+                      phantom::reflection::StlSetClassT);
 
 // haunt {
 
@@ -60,8 +61,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(), default_>()
             )
             .PHANTOM_T constructor<void(::std::initializer_list<value_type>)>()
-            /// missing symbol(s) reflection (phantom::MemoryTraits) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(MemoryTraits const*), explicit_>()
+            .PHANTOM_T constructor<void(CustomAllocator const*), explicit_>()
             .PHANTOM_T method<T const&(size_t) const>("operator[]", &_::operator[])
             .PHANTOM_T method<const_iterator(T const&) const>("find", &_::find)
             .PHANTOM_T method<iterator(T const&)>("find", &_::find)

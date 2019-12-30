@@ -13,7 +13,6 @@
 #include "Source.hxx"
 
 #include <phantom/detail/phantom.h>
-#include <phantom/dyn_cast>
 #include <phantom/utils/Path.h>
 #ifndef __DOXYGEN__
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -91,12 +90,9 @@ Application::Application()
       m_pRootPackageFolder(nullptr),
       m_pNullptr(nullptr)
 {
-    addElement(Namespace::Global());
 }
 
-Application::~Application()
-{
-}
+Application::~Application() {}
 
 void Application::_createNativeModule(ModuleRegistrationInfo* info)
 {
@@ -339,7 +335,7 @@ Class* Application::findCppClass(StringView a_Text, StringBuffer* a_pLastError /
 }
 
 void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                            StringView a_strSourceFile, uint a_uiFlags, Message*)
+                            StringView a_strSourceFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
     PHANTOM_ASSERT(m_OperationCounter == 1);
@@ -355,7 +351,7 @@ void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, Str
 
 static int Module_GetNativeRefCount(Module* a_pModule);
 
-void Application::_unloadMain(Message* a_pMessage /*= nullptr*/)
+void Application::_unloadMain()
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
 
@@ -366,7 +362,7 @@ void Application::_unloadMain(Message* a_pMessage /*= nullptr*/)
         if (pModule->getPlugin())
         // if module is attached to a plugin, we unload it
         {
-            pModule->getPlugin()->unload(a_pMessage);
+            pModule->getPlugin()->unload();
             if (m_Modules.size() && m_Modules.back() == pModule)
             {
                 if (Module_GetNativeRefCount(pModule))
@@ -656,9 +652,7 @@ void Application::_addBuiltInType(Type* a_pType)
     m_BuiltInTypes.push_back(a_pType);
 }
 
-void Application::_removeBuiltInType(Type*)
-{
-}
+void Application::_removeBuiltInType(Type*) {}
 
 Type* Application::getBuiltInType(StringView a_strDecoratedName) const
 {
@@ -1061,9 +1055,7 @@ void Application::removePlugin(Plugin* a_pPlugin)
     m_Plugins.erase(std::find(m_Plugins.begin(), m_Plugins.end(), a_pPlugin));
 }
 
-void Application::getUniqueName(StringBuffer&) const
-{
-}
+void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
 {

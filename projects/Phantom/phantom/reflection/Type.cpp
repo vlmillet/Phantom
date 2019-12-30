@@ -18,10 +18,10 @@
 #include "Source.h"
 #include "TemplateSpecialization.h"
 
-#include <phantom/detail/crc64.h>
 #include <phantom/detail/new.h>
 #include <phantom/detail/phantom_priv.h>
 #include <phantom/utils/Delegate.h>
+#include <phantom/utils/crc64.h>
 /* *********************************************** */
 namespace phantom
 {

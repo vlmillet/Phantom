@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "crc64.h"
+#include <phantom/utils/crc64.h>
 
 HAUNT_STOP
 

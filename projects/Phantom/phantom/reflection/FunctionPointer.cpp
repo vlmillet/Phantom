@@ -9,8 +9,6 @@
 
 #include "Function.h"
 #include "FunctionType.h"
-
-#include <phantom/dyn_cast>
 /* *********************************************** */
 namespace phantom
 {
@@ -56,13 +54,11 @@ void FunctionPointer::valueFromString(StringView, void*) const
 
 void FunctionPointer::call(void* a_pPointer, void** a_pArgs) const
 {
-    PHANTOM_ASSERT(dyn_cast<Function*>(a_pPointer));
     static_cast<Function*>(a_pPointer)->call(a_pArgs);
 }
 
 void FunctionPointer::call(void* a_pPointer, void** a_pArgs, void* a_pReturnAddress) const
 {
-    PHANTOM_ASSERT(dyn_cast<Function*>(a_pPointer));
     static_cast<Function*>(a_pPointer)->call(a_pArgs, a_pReturnAddress);
 }
 

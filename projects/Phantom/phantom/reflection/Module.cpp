@@ -17,7 +17,6 @@
 #include "phantom/detail/phantom_priv.h"
 
 #include <fstream>
-#include <phantom/dyn_cast>
 #include <phantom/utils/Path.h>
 #include <phantom/utils/StringUtil.h>
 #include <system_error>

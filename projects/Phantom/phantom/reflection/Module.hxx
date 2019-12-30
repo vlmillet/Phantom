@@ -20,12 +20,14 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
+#include <phantom/signal>
 #include <phantom/typedef>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
@@ -40,6 +42,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(Module)
         {
             using Classes = typedef_< phantom::reflection::Classes>;
+            using Dependencies = typedef_<_::Dependencies>;
             using FuncT = typedef_<_::FuncT>;
             using Functions = typedef_< phantom::reflection::Functions>;
             using Modules = typedef_< phantom::reflection::Modules>;
@@ -47,7 +50,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Sources = typedef_< phantom::reflection::Sources>;
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::reflection::Types>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -56,8 +59,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .typedef_<Dependencies>("Dependencies")
+            .typedef_<Dependencies>("Dependencies")
         
         .public_()
             .constructor<void(StringView, uint)>()["0"]
@@ -98,12 +100,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void()>("markUpToDate", &_::markUpToDate)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("packageAdded", &_::packageAdded)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("changed", &_::changed)
+            .signal("packageAdded", &_::packageAdded)
+            .signal("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
+            .signal("changed", &_::changed)
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)

@@ -52,8 +52,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            /// missing symbol(s) reflection (phantom::MemoryTraits) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(MemoryTraits const*), explicit_>()
+            .PHANTOM_T constructor<void(CustomAllocator const*), explicit_>()
             .PHANTOM_T method<iterator(const_iterator)>("erase", &_::erase)
             .PHANTOM_T method<iterator(const_iterator, const_iterator)>("erase", &_::erase)
             .PHANTOM_T method<const_iterator() const>("begin", &_::begin)

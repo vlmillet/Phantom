@@ -28,9 +28,8 @@ namespace random {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("random")
 
-        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
         #if PHANTOM_NOT_TEMPLATE
-        // PHANTOM_REGISTER(Functions) { this_().function<void(char*, StringView)>("str", str)["\"%%%%%%%%-%%%%-%%%%-%%%%%%%%%%%%\""];}
+        PHANTOM_REGISTER(Functions) { this_().function<void(char*, StringView)>("str", str)["\"%%%%%%%%-%%%%-%%%%-%%%%%%%%%%%%\""];}
         PHANTOM_REGISTER(Functions) { this_().function<uint64_t()>("integer", integer);}
         PHANTOM_REGISTER(Functions) { this_().function<double()>("normalized", normalized);}
         #endif // PHANTOM_NOT_TEMPLATE

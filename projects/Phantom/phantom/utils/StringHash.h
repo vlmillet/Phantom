@@ -9,8 +9,13 @@ namespace phantom
 {
 PHANTOM_EXPORT_PHANTOM uint64_t makeStringHash(StringView a_Str);
 
+struct StringWithHash;
+
 struct PHANTOM_EXPORT_PHANTOM StringHash
 {
+    friend struct StringWithHash;
+
+public:
     StringHash() = default;
     explicit StringHash(StringView _string);
     explicit StringHash(uint64_t _hash);
@@ -28,7 +33,7 @@ struct PHANTOM_EXPORT_PHANTOM StringHash
     {
         return
 #if !defined(PHANTOM_NO_STRINGHASH_STRING)
-        m_pdebugString ? *m_pdebugString :
+        m_pdebugString ? StringView(*m_pdebugString) :
 #endif
                        StringView();
     }
@@ -46,11 +51,11 @@ struct PHANTOM_EXPORT_PHANTOM StringHash
         return m_value != _other.m_value;
     }
 
-    bool IsNull() const
+    bool isNull() const
     {
         return m_value == 0;
     }
-    bool IsValid() const
+    bool isValid() const
     {
         return m_value != 0;
     }

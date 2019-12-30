@@ -91,4 +91,13 @@ void StringUtil::Split(StringViews& a_Words, StringView a_Str, const char* a_Sep
         a_Words.emplace_back(start, count);
 }
 
+StringView StringUtil::RemoveExtraBlanks(StringView _str)
+{
+    while (_str.size() && std::isblank(_str.back(), std::locale()))
+        _str.dropBack();
+    while (_str.size() && std::isblank(_str.front(), std::locale()))
+        _str.dropFront();
+    return _str;
+}
+
 } // namespace phantom

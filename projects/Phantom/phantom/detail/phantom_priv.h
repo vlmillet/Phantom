@@ -11,7 +11,6 @@
 HAUNT_STOP;
 
 #include "ModuleRegistrationInfo.h"
-#include "crc64.h"
 #include "new.h"
 
 #include <phantom/reflection/Class.h>
@@ -20,10 +19,11 @@ HAUNT_STOP;
 #include <phantom/thread/RecursiveMutex.h>
 #include <phantom/typeof>
 #include <phantom/utils/StringViews.h>
+#include <phantom/utils/crc64.h>
 
 namespace phantom
 {
-struct EmbeddedRtti;
+struct RTTI;
 
 HAUNT_PAUSE;
 
@@ -44,8 +44,8 @@ public:
 
     struct DeferredInstallationInfo
     {
-        StringView    typeName;
-        EmbeddedRtti* rtti;
+        StringView typeName;
+        RTTI*      rtti;
     };
 
     void stepRegistration(RegistrationStep step);
@@ -79,15 +79,9 @@ public:
                              "missing package name in source qualified name (or enclose your "
                              "PHANTOM_R_SOURCE/PHANTOM_R_END scope in a PHANTOM_R_PACKAGE/PHANTOM_R_END scope)");
     }
-    void popSource()
-    {
-        m_source.clear();
-    }
-    StringView currentSource() const
-    {
-        return m_source;
-    }
-    void pushPackage(StringView a_strPackage)
+    void       popSource() { m_source.clear(); }
+    StringView currentSource() const { return m_source; }
+    void       pushPackage(StringView a_strPackage)
     {
         PHANTOM_ASSERT(m_package.empty());
         m_package = a_strPackage;
@@ -95,38 +89,23 @@ public:
                        "invalid package name, only [a-z0-9_] (lower case) characters separated "
                        "with '.' are allowed");
     }
-    void popPackage()
-    {
-        m_package.clear();
-    }
-    StringView currentPackage() const
-    {
-        return m_package;
-    }
-    void registerModule(size_t a_ModuleHandle, StringView a_strName, StringView a_strBinaryFileName,
-                        StringView a_strSource, uint a_uiFlags, std::initializer_list<StringView> a_Dependencies,
-                        void (*onLoad)(), void (*onUnload)());
-    void registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
-    void registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName, reflection::Type* a_pType);
-    void registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo);
-    void registerType(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
-    void stepTypeInstallation(reflection::Type* a_pType);
-    void stepTemplateInstanceInstallation(size_t a_ModuleHandle, reflection::Type* a_pType);
-    void registerTemplateInstance(size_t a_ModuleHandle, reflection::TypeInstallationInfo* a_pTii);
-    void unregisterModule(size_t a_ModuleHandle);
-    bool isActive() const
-    {
-        return m_iActive != 0;
-    }
-    bool isAutoRegistrationLocked() const
-    {
-        return m_bAutoRegistrationLocked;
-    }
-    void pushInstallation()
-    {
-        m_iActive++;
-    }
-    void popInstallation()
+    void       popPackage() { m_package.clear(); }
+    StringView currentPackage() const { return m_package; }
+    void       registerModule(size_t a_ModuleHandle, StringView a_strName, StringView a_strBinaryFileName,
+                              StringView a_strSource, uint a_uiFlags, std::initializer_list<StringView> a_Dependencies,
+                              void (*onLoad)(), void (*onUnload)());
+    void       registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
+    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName, reflection::Type* a_pType);
+    void       registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo);
+    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
+    void       stepTypeInstallation(reflection::Type* a_pType);
+    void       stepTemplateInstanceInstallation(size_t a_ModuleHandle, reflection::Type* a_pType);
+    void       registerTemplateInstance(size_t a_ModuleHandle, reflection::TypeInstallationInfo* a_pTii);
+    void       unregisterModule(size_t a_ModuleHandle);
+    bool       isActive() const { return m_iActive != 0; }
+    bool       isAutoRegistrationLocked() const { return m_bAutoRegistrationLocked; }
+    void       pushInstallation() { m_iActive++; }
+    void       popInstallation()
     {
         PHANTOM_ASSERT(m_iActive);
         m_iActive--;
@@ -153,7 +132,7 @@ public:
         hash64 h64 = crc64((uint64_t(line) << 32) | uint64_t(tag), (const unsigned char*)file.data(), file.size());
 #if TYPE_REGISTRATION_KEY_DEBUG_ENABLED
         {
-            MemoryTraits::Push(MemoryTraits::Default());
+            CustomAllocator::Push(CustomAllocator::Default());
             struct ___TRK
             {
                 StringView file;
@@ -170,10 +149,10 @@ public:
             if (!registeredForCleanup)
             {
                 StaticGlobals::RegisterForCleanup(m_debug_TRK, CleanupDelegate([](void* p) {
-                                                      MemoryTraits::Push(MemoryTraits::Default());
+                                                      CustomAllocator::Push(CustomAllocator::Default());
                                                       delete reinterpret_cast<std::map<hash64, ___TRK>*>(p);
                                                       m_debug_TRK = nullptr;
-                                                      MemoryTraits::Pop();
+                                                      CustomAllocator::Pop();
                                                   }));
                 registeredForCleanup = true;
             }
@@ -185,17 +164,14 @@ public:
                                it->second.tag == int(tag));
             if (erase)
                 m_debug_TRK->erase(h64);
-            MemoryTraits::Pop();
+            CustomAllocator::Pop();
         }
 #endif
         return h64;
     }
 
-    bool installed() const
-    {
-        return m_bPhantomInstalled;
-    }
-    void deferInstallation(StringView a_strTypeName, EmbeddedRtti* a_pRtti)
+    bool installed() const { return m_bPhantomInstalled; }
+    void deferInstallation(StringView a_strTypeName, RTTI* a_pRtti)
     {
         PHANTOM_ASSERT(a_pRtti->instance);
         m_DeferredInstallationsMutex.lock();
@@ -208,22 +184,22 @@ public:
     size_t computeModuleRegistrationInfoLevel(reflection::ModuleRegistrationInfo const& m);
 };
 
-PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, EmbeddedRtti* a_pInstance);
+PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, RTTI* a_pInstance);
 struct DeferredNewH
 {
     template<class T>
     inline T* operator*(T* a_pInstance)
     {
         PHANTOM_STATIC_ASSERT(std::is_class<T>::value);
-        a_pInstance->RTTI.instance = a_pInstance;
+        a_pInstance->rtti.instance = a_pInstance;
         if (dynamic_initializer_()->installed())
         {
-            PHANTOM_VERIFY(a_pInstance->RTTI.metaClass = static_cast<reflection::Class*>(PHANTOM_TYPEOF(T)));
-            a_pInstance->RTTI.metaClass->registerInstance(a_pInstance);
+            PHANTOM_VERIFY(a_pInstance->rtti.metaClass = static_cast<reflection::Class*>(PHANTOM_TYPEOF(T)));
+            a_pInstance->rtti.metaClass->registerInstance(a_pInstance);
         }
         else
         {
-            deferInstallation(reflection::TypeInfosOf<T>::object().qualifiedDecoratedName(), &a_pInstance->RTTI);
+            deferInstallation(reflection::TypeInfosOf<T>::object().qualifiedDecoratedName(), &a_pInstance->rtti);
         }
         return a_pInstance;
     }
@@ -239,8 +215,8 @@ struct DeferredDeleteH
         }
         else
         {
-            a_pInstance->RTTI.instance = nullptr;
-            a_pInstance->RTTI.metaClass = nullptr;
+            a_pInstance->rtti.instance = nullptr;
+            a_pInstance->rtti.metaClass = nullptr;
             a_pInstance->terminate();
             a_pInstance->~T();
         }

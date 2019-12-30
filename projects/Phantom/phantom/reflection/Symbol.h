@@ -11,14 +11,15 @@
 #include <phantom/reflection/LanguageElement.h>
 #include <phantom/utils/SmallSet.h>
 #include <phantom/utils/StringHash.h>
+#include <phantom/utils/StringWithHash.h>
 /* *********************************************** */
 
 namespace phantom
 {
 namespace reflection
 {
-typedef SmallMap<StringHash, Variant> MetaDatas;
-typedef SmallSet<String, 1>           Annotations;
+typedef SmallMap<StringWithHash, Variant> MetaDatas;
+typedef SmallSet<String, 1>               Annotations;
 
 class PHANTOM_EXPORT_PHANTOM SymbolExtension : public LanguageElement
 {
@@ -43,6 +44,7 @@ class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement
 
     PHANTOM_DECLARE_META_CLASS(Symbol);
 
+    friend class phantom::reflection::LanguageElement;
     friend class phantom::reflection::ClassType;
     friend class phantom::reflection::Class;
     friend class phantom::reflection::Scope;
@@ -254,8 +256,8 @@ public:
     void setMetaData(StringView a_Name, const Variant& a_Value);
     void setMetaData(StringView a_Name, Variant&& a_Value);
 
-    void setMetaData(StringHash a_Hash, const Variant& a_Value);
-    void setMetaData(StringHash a_Hash, Variant&& a_Value);
+    void setMetaData(StringWithHash a_Hash, const Variant& a_Value);
+    void setMetaData(StringWithHash a_Hash, Variant&& a_Value);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes the meta data matching the given name.
@@ -264,7 +266,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void removeMetaData(StringView a_Name);
-    void removeMetaData(StringHash a_NameHash);
+    void removeMetaData(StringWithHash a_NameHash);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a meta data from its name.
@@ -275,7 +277,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const Variant& getMetaData(StringView a_Name) const;
-    const Variant& getMetaData(StringHash a_Name) const;
+    const Variant& getMetaData(StringWithHash a_Name) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this symbol has meta data with given name.
@@ -286,7 +288,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool hasMetaData(StringView a_strName) const;
-    bool hasMetaData(StringHash a_Hash) const;
+    bool hasMetaData(StringWithHash a_Hash) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get the list of meta data.
@@ -496,7 +498,7 @@ protected:
     Annotations*      m_pAnnotations = nullptr;
     SymbolExtensions* m_pExtensions = nullptr;
     Modifiers         m_Modifiers = PHANTOM_R_NONE;
-    mutable hash64    m_Hash;
+    mutable hash64    m_Hash = 0;
     Access            m_eAccess = Access::Undefined;
     UserData          m_UserData;
 };

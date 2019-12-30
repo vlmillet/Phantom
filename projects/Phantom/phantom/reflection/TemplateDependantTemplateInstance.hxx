@@ -37,7 +37,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::ClassType>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)

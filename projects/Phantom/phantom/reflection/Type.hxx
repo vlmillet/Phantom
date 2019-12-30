@@ -21,6 +21,7 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
+#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/using>
@@ -28,6 +29,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -54,11 +56,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             using DataElements = typedef_< phantom::reflection::DataElements>;
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
             using RecursiveSpinMutex = typedef_< phantom::RecursiveSpinMutex>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::reflection::Types>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::reflection::Symbol>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -162,9 +165,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*, size_t) const, virtual_>("deallocate", &_::deallocate)
             .method<void(void*) const, virtual_>("construct", &_::construct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<void(void*) const>("scopedConstruct", &_::scopedConstruct)
+            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<void(void*) const>("localConstruct", &_::localConstruct)
+            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("localConstruct", &_::localConstruct)
             .method<void(void*) const, virtual_>("destroy", &_::destroy)
             .method<uint64_t(const void*) const, virtual_>("hash", &_::hash)
             .method<void*() const, virtual_>("newInstance", &_::newInstance)
@@ -227,10 +230,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<ConstVolatileType*() const>("makeConstVolatile", &_::makeConstVolatile)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<ptrdiff_t(Type*) const, virtual_>("getPointerAdjustmentOffset", &_::getPointerAdjustmentOffset)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
-            /// missing symbol(s) reflection (phantom::reflection::PlaceholderMap) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
+            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
+            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
         
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
@@ -247,10 +248,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(LanguageElement*), virtual_|override_>("onAncestorAboutToBeChanged", &_::onAncestorAboutToBeChanged)
         
         .public_()
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("kindCreated", &_::kindCreated)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .field("kindDestroyed", &_::kindDestroyed)
+            .signal("kindCreated", &_::kindCreated)
+            .signal("kindDestroyed", &_::kindDestroyed)
         
         .protected_()
             .field("m_eTypeKind", &_::m_eTypeKind)

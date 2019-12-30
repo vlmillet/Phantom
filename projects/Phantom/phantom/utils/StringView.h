@@ -79,6 +79,20 @@ public:
         return SelfType(m_pBegin + a_Start, a_Off == npos ? size() - a_Start : a_Off);
     }
 
+    CharT dropBack()
+    {
+        PHANTOM_ASSERT(size());
+        return *--m_pEnd;
+    }
+
+    void dropBack(size_t N)
+    {
+        if (N >= size())
+            m_pBegin = m_pEnd;
+        else
+            m_pEnd -= N;
+    }
+
     CharT dropFront()
     {
         PHANTOM_ASSERT(size());
@@ -88,8 +102,9 @@ public:
     void dropFront(size_t N)
     {
         if (N >= size())
-            N = size() - 1;
-        m_pBegin = m_pBegin + N;
+            m_pBegin = m_pEnd;
+        else
+            m_pBegin += N;
     }
 
     bool startsWith(SelfType a_Str) const

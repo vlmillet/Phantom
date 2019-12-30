@@ -996,36 +996,21 @@ public:
     Template* getTemplate() const;
 
     bool                    isTemplateInstance() const override;
-    TemplateSpecialization* getTemplateSpecialization() const
-    {
-        return Type::getTemplateSpecialization();
-    }
+    TemplateSpecialization* getTemplateSpecialization() const;
     TemplateSpecialization* getTemplateSpecialization(StringView              a_strTemplateName,
-                                                      const LanguageElements& a_Arguments) const
-    {
-        return Scope::getTemplateSpecialization(a_strTemplateName, a_Arguments);
-    }
+                                                      const LanguageElements& a_Arguments) const;
 
     void addFriend(Symbol* a_pFriend);
     bool hasFriend(Symbol* a_pFriend) const override;
 
     void checkCompleteness() const override;
 
-    bool isSame(Symbol* a_pSymbol) const override
-    {
-        return Type::isSame(a_pSymbol);
-    }
-    bool isSame(LanguageElement* a_pElement) const override
-    {
-        return Type::isSame(a_pElement);
-    }
+    bool isSame(Symbol* a_pSymbol) const override;
+    bool isSame(LanguageElement* a_pElement) const override;
 
     bool hasStrongDependencyOnType(Type* a_pType) const override;
 
-    virtual void finalizeNative()
-    {
-        PHANTOM_ASSERT_NO_IMPL();
-    }
+    virtual void finalizeNative();
 
     void getFields(AggregateFields& _fields) const override;
     void getFlattenedAggregateFields(AggregateFields& _aggregateFields) const override;

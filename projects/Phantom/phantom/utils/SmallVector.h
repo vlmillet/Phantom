@@ -102,7 +102,7 @@ public:
     {
         resize(a_Count);
     };
-    explicit SmallVector(MemoryTraits const* a_pMemTraits) : m_pMemTraits(a_pMemTraits)
+    explicit SmallVector(CustomAllocator const* a_pMemTraits) : m_pMemTraits(a_pMemTraits)
     {
         PHANTOM_ASSERT(m_pMemTraits);
     };
@@ -791,7 +791,7 @@ private:
     size_type   m_size = 0;
     value_type* m_data = (value_type*)&m_staticData;
     byte m_staticData[(StaticAllocSize == 0) | (sizeof(value_type) * StaticAllocSize)]; // trick to avoid 0-size array
-    MemoryTraits const* m_pMemTraits = MemoryTraits::CurrentOrDefault();
+    CustomAllocator const* m_pMemTraits = &CustomAllocator::CurrentOrDefault();
 };
 } // namespace phantom
 

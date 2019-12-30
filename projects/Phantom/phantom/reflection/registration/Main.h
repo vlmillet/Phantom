@@ -47,22 +47,25 @@ class PHANTOM_EXPORT_PHANTOM Main
 {
 public:
     Main(int (*_mainFuncPtr)(int, char**), StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, a_strMainCppFile, a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
+               a_uiFlags)
     {
     }
     Main(int (*_mainFuncPtr)(), StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, a_strMainCppFile, a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
+               a_uiFlags)
     {
     }
     Main(void* _mainFuncPtr, StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, a_strMainCppFile, a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
+               a_uiFlags)
     {
     }
     Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         StringView a_strMainCppFile = "", uint a_uiFlags = 0);
+         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0);
     ~Main();
 };
 } // namespace reflection

@@ -16,5 +16,6 @@ struct PHANTOM_EXPORT_PHANTOM StringUtil
     static void Split(Strings& a_Words, StringView a_Str, const char* a_Separators, bool a_bRemoveEmptyTokens = true);
     static void Split(StringViews& a_Words, StringView a_Str, const char* a_Separators,
                       bool a_bRemoveEmptyTokens = true);
+    static StringView RemoveExtraBlanks(StringView _str);
 };
 } // namespace phantom

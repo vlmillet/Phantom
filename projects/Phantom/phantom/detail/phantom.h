@@ -44,8 +44,8 @@
 /* ******************** PHANTOM ******************* */
 #    include <phantom/detail/fwd.h>
 #    include <phantom/detail/macros.h>
+#    include <phantom/detail/memory.h>
 #    include <phantom/detail/typedefs.h>
-#    include <phantom/memory/memory.h>
 #    include <phantom/plugin.h>
 
 namespace phantom
@@ -96,17 +96,13 @@ namespace detail
 {
 template<class t_Ty>
 struct TypeRegistrer;
-template<class t_Target, class t_Source, bool t_SourceHasEmbeddedRtti>
+template<class t_Target, class t_Source, bool t_SourceIsObject>
 struct asH;
 } // namespace detail
 
 #endif // DOXYGEN
 
 } // namespace phantom
-
-#ifndef __DOXYGEN__
-#    include "phantom/memory/memory.inl"
-#endif // DOXYGEN
 
 namespace phantom
 {
@@ -166,7 +162,6 @@ PHANTOM_EXPORT_PHANTOM void setAssertFunc(MessageReportFunc a_func);
 PHANTOM_EXPORT_PHANTOM void setErrorFunc(MessageReportFunc a_func);
 PHANTOM_EXPORT_PHANTOM void setLogFunc(LogFunc a_func);
 PHANTOM_EXPORT_PHANTOM void setWarningFunc(MessageReportFunc a_func);
-PHANTOM_EXPORT_PHANTOM void setPrintDelegate(int a_channel, const PrintDelegate& a_func);
 
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
                                                                          const char* format, ...);

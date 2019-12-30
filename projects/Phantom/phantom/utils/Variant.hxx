@@ -47,8 +47,7 @@ PHANTOM_PACKAGE("phantom.utils")
             // .staticMethod<void(TypeConverter)>("SetTypeConverter", &_::SetTypeConverter)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .staticMethod<TypeConverter()>("GetTypeConverter", &_::GetTypeConverter)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .staticMethod<Variant(, ::phantom::Generic::Arg<Generic::ParamType<0> *, void *>)>("From", &_::From)
+            .staticMethod<Variant(::phantom::Generic::Param<>, ::phantom::Generic::Arg<Generic::ParamType<0> *, void *>)>("From", &_::From)
         
         .public_()
             .staticField("null", &_::null)
@@ -81,8 +80,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<void*()>("data", &_::data)
             .method<bool() const>("isValid", &_::isValid)
             .method<bool() const>("isNull", &_::isNull)
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<bool(, ::phantom::Generic::Arg<Generic::ParamType<0> *, void *>) const>("as", &_::as)
+            .method<bool(::phantom::Generic::Param<>, ::phantom::Generic::Arg<Generic::ParamType<0> *, void *>) const>("as", &_::as)
             .method<phantom::Variant(::phantom::reflection::Type *) const>("as", &_::as)
             .method<void(StringBuffer&) const>("toLiteral", &_::toLiteral)
             .method<void(StringBuffer&) const>("toString", &_::toString)

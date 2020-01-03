@@ -80,10 +80,7 @@ struct InheritanceH
 {
     PHANTOM_STATIC_ASSERT((std::is_same<Derived, RemoveForwardT<Derived>>::value));
     PHANTOM_STATIC_ASSERT((IsTypeDefined<Derived>::value), "derived class is not defined");
-    static void Add(reflection::Class* a_pDerivedClass)
-    {
-        _add(a_pDerivedClass, _get<Bases>()...);
-    }
+    static void Add(reflection::Class* a_pDerivedClass) { _add(a_pDerivedClass, _get<Bases>()...); }
 
 private:
     template<class... LastPairs>
@@ -92,9 +89,7 @@ private:
         a_pDerivedClass->addBaseClass(a_BC.baseClass, a_BC.offset, a_BC.access);
         _add(a_pDerivedClass, a_LastPairs...);
     }
-    inline static void _add(reflection::Class*)
-    {
-    } // end recursion
+    inline static void _add(reflection::Class*) {} // end recursion
     template<typename BaseWrapped>
     inline static BaseClass _get()
     {
@@ -106,7 +101,8 @@ private:
                               "class is not a base class (" PHANTOM_DIAGNOSTIC_FUNCTION ")");
         PHANTOM_STATIC_ASSERT((IsTypeDefined<BaseNoForward>::value), "base class is not defined");
         reflection::Class* pBaseClass = PHANTOM_CLASSOF(Base);
-        PHANTOM_ASSERT(pBaseClass);
+        PHANTOM_ASSERT(pBaseClass,
+                       "base class reflection was not found, check your reflection definitions/reflection files");
         BaseClass bc;
         bc.access = BaseClassAccessH<BaseWrapped>::value;
         bc.baseClass = pBaseClass;
@@ -117,10 +113,7 @@ private:
 template<class... Ts>
 struct TypesH
 {
-    static reflection::Types Get()
-    {
-        return reflection::Types{phantom::reflection::TypeOf<Ts>::object()...};
-    }
+    static reflection::Types Get() { return reflection::Types{phantom::reflection::TypeOf<Ts>::object()...}; }
 };
 
 template<class T, class Top, class MostDerived>
@@ -178,10 +171,7 @@ public:
 
     using BaseType::operator();
 
-    MostDerived& operator()()
-    {
-        return *this;
-    }
+    MostDerived& operator()() { return *this; }
 
 private:
     reflection::Class*          m_pClass;

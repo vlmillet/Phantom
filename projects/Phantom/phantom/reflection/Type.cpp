@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Type.h"
 
 #include "Application.h"
@@ -19,10 +18,10 @@
 #include "Source.h"
 #include "TemplateSpecialization.h"
 
-#include <phantom/Delegate.h>
-#include <phantom/crc64.h>
-#include <phantom/new.h>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
+#include <phantom/detail/phantom_priv.h>
+#include <phantom/utils/Delegate.h>
+#include <phantom/utils/crc64.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -139,11 +138,11 @@ bool Type::hasAuto() const
     return removeEverything()->isAuto();
 }
 
-Type::ERelation Type::getRelationWith(Type* a_pType) const
+Type::TypeRelation Type::getRelationWith(Type* a_pType) const
 {
     if (a_pType == this)
-        return e_Relation_Equal;
-    return e_Relation_None;
+        return TypeRelation::Equal;
+    return TypeRelation::None;
 }
 
 bool Type::equal(void const* a_pSrc0, void const* a_pSrc1) const

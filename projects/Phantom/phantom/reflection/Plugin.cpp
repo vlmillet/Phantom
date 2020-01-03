@@ -11,7 +11,7 @@
 #include "Module.h"
 #include "Source.h"
 
-#include <phantom/Path.h>
+#include <phantom/utils/Path.h>
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include "windows.h"
 
@@ -28,13 +28,10 @@
 #include "Function.h"
 #include "Package.h"
 #include "SourceStream.h"
-#include "phantom/IValueStream.h"
-#include "phantom/Value.h"
 #include "registration/registration.h"
 
 #include <fstream>
-#include <phantom/Message.h>
-#include <phantom/dyn_cast>
+#include <phantom/utils/StringUtil.h>
 /* *********************************************** */
 
 namespace phantom
@@ -99,26 +96,15 @@ Plugin::Plugin(StringView a_strFilePath) : m_strFilePath(a_strFilePath)
 
 struct OperationCounterGuard
 {
-    OperationCounterGuard(size_t* counter) : m_counter(counter)
-    {
-        (*m_counter)++;
-    }
-    ~OperationCounterGuard()
-    {
-        (*m_counter)--;
-    }
+    OperationCounterGuard(size_t* counter) : m_counter(counter) { (*m_counter)++; }
+    ~OperationCounterGuard() { (*m_counter)--; }
     size_t* m_counter;
 };
 
 struct LoadingPluginsGuard
 {
-    LoadingPluginsGuard(Plugins* plugins) : m_guarded(plugins)
-    {
-    }
-    ~LoadingPluginsGuard()
-    {
-        m_guarded->pop_back();
-    }
+    LoadingPluginsGuard(Plugins* plugins) : m_guarded(plugins) {}
+    ~LoadingPluginsGuard() { m_guarded->pop_back(); }
     Plugins* m_guarded;
 };
 
@@ -128,10 +114,8 @@ bool Plugin::_isLoadingModule(Module* a_pModule) const
     return (g_LoadingPlugins.size() != 0);
 }
 
-bool Plugin::_loadNative(StringView a_strPath, Message* a_pMessage)
+bool Plugin::_loadNative(StringView a_strPath)
 {
-    Message* pMessageLoadFailed = nullptr;
-
 #if PHANTOM_OPERATING_SYSTEM ==                                                                                        \
 PHANTOM_OPERATING_SYSTEM_WINDOWS // ===================================================================================================
 
@@ -141,24 +125,9 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
         detail::pushInstallation();
         detail::installModules();
         detail::popInstallation();
-        if (a_pMessage)
-            a_pMessage->success("Dll loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(a_strPath));
+        PHANTOM_LOG(Information, "Dll loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(a_strPath));
         PHANTOM_ASSERT(m_pModule == nullptr);
         m_pModule = Application::Get()->getModule(m_strName);
-        for (auto dep : m_Dependencies)
-        {
-            if (Module* pDep = Application::Get()->getModule(dep))
-            {
-                m_pModule->addDependency(pDep);
-            }
-            else
-            {
-                PHANTOM_LOG(Error,
-                            "dependency '%.*s' was not found in this application ; check that "
-                            "'PHANTOM_PLUGIN(\"%.*s\");' is inside one of this module cpp files",
-                            PHANTOM_STRING_AS_PRINTF_ARG(dep), PHANTOM_STRING_AS_PRINTF_ARG(dep));
-            }
-        }
         if (m_pModule == nullptr)
         {
             PHANTOM_LOG(Error,
@@ -173,19 +142,15 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
     else
     {
         DWORD dw = GetLastError();
-        if (a_pMessage)
-        {
-            if (pMessageLoadFailed == nullptr)
-                pMessageLoadFailed = a_pMessage->error("Cannot load module : %s", m_strName.c_str());
-            LPVOID lpMsgBuf;
-            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                          NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+        PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
+        LPVOID lpMsgBuf;
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+                      dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
 
-            String clampedMessage = (char*)lpMsgBuf;
-            clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
-            pMessageLoadFailed->error("System DLL loading failed : %s", clampedMessage.c_str());
-            LocalFree(lpMsgBuf);
-        }
+        String clampedMessage = (char*)lpMsgBuf;
+        clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
+        PHANTOM_LOG(Error, "System DLL loading failed : %s", clampedMessage.c_str());
+        LocalFree(lpMsgBuf);
         return false;
     }
 
@@ -193,14 +158,13 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
 PHANTOM_OPERATING_SYSTEM_ORBIS // ===================================================================================================
 
     SceKernelModule dlhandle = -1;
-    const char*     argv[1] = {m_pModule->getDynamicLibraryPath().data()};
-    if ((dlhandle = sceKernelLoadStartModule(m_pModule->getDynamicLibraryPath().data(), 1, argv, 0, NULL, NULL)) >= 0)
+    const char*     argv[1] = {m_pModule->getLibraryFullName().data()};
+    if ((dlhandle = sceKernelLoadStartModule(m_pModule->getLibraryFullName().data(), 1, argv, 0, NULL, NULL)) >= 0)
     {
         detail::pushInstallation();
         detail::installModules();
         detail::popInstallation();
-        if (a_pMessage)
-            a_pMessage->success("Module loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
+        PHANTOM_LOG(Information, "Module loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
         PHANTOM_ASSERT(m_pModule == nullptr);
         m_pModule = Application::Get()->getModule(m_strName);
         if (m_pModule == nullptr)
@@ -273,9 +237,8 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
                 msg = "unknown error";
                 break;
             }
-            if (pMessageLoadFailed == nullptr)
-                pMessageLoadFailed = a_pMessage->error("Cannot load module : %s", m_strName.c_str());
-            pMessageLoadFailed->error("System DLL loading failed : %s", msg);
+            PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
+            PHANTOM_LOG(Error, "System DLL loading failed : %s", msg);
         }
         return false;
     }
@@ -283,13 +246,12 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
 #elif PHANTOM_OPERATING_SYSTEM_FAMILY ==                                                                               \
 PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ===================================================================================================
     void* dlhandle = nullptr;
-    if (dlhandle = dlopen(a_strPath.c_str(), RTLD_NOW))
+    if ((dlhandle = dlopen(String(a_strPath).c_str(), RTLD_NOW)))
     {
         detail::pushInstallation();
         detail::installModules();
         detail::popInstallation();
-        if (a_pMessage)
-            a_pMessage->success("Module loaded : %s", m_strName.c_str());
+        PHANTOM_LOG(Information, "Module loaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
         PHANTOM_ASSERT(m_pModule == nullptr);
         m_pModule = Application::Get()->getModule(m_strName);
         if (m_pModule == nullptr)
@@ -298,8 +260,8 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
                 Application::Get()->_pluginLoadingFailed(this);
             PHANTOM_LOG(Error,
                         "'PHANTOM_PLUGIN(\"...\");' declaration for the current loaded module does "
-                        "not match the plugin module file name '%s'",
-                        m_strName.c_str());
+                        "not match the plugin module file name '%.*s'",
+                        PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
             dlclose(dlhandle);
             return false;
         }
@@ -307,12 +269,10 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
     }
     else
     {
-        result = false;
         if (a_pMessage)
         {
-            if (pMessageLoadFailed == nullptr)
-                pMessageLoadFailed = a_pMessage->error("Cannot load module : %s", m_strName.c_str());
-            pMessageLoadFailed->error("System DLL loading failed : %s", dlerror());
+            PHANTOM_LOG(Error, "Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
+            PHANTOM_LOG(Error, "System DLL loading failed : %s", dlerror());
         }
         return false;
     }
@@ -324,9 +284,8 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
 #endif
 }
 
-bool Plugin::_unloadNative(Message* a_pMessage)
+bool Plugin::_unloadNative()
 {
-    Message* pMessageUnloadFailed = nullptr;
 #if defined(PHANTOM_STATIC_LIB_HANDLE)
     PHANTOM_LOG(Error, "cannot use native plugins in static link mode");
     return false;
@@ -336,29 +295,24 @@ bool Plugin::_unloadNative(Message* a_pMessage)
     if (FreeLibrary((HMODULE)m_pModule->getHandle()))
     {
         m_pModule = nullptr;
-        if (a_pMessage)
-            a_pMessage->success("Module unloaded : %s", m_strName.c_str());
+        PHANTOM_LOG(Information, "Module unloaded : %s", m_strName.c_str());
         return true;
     }
     else
     {
         DWORD dw = GetLastError();
-        if (a_pMessage)
-        {
-            if (pMessageUnloadFailed == nullptr)
-                pMessageUnloadFailed = a_pMessage->error("Cannot unload module : %s", m_strName.c_str());
-            LPVOID lpMsgBuf;
+        PHANTOM_LOG(Error, "Cannot unload module : %s", m_strName.c_str());
+        LPVOID lpMsgBuf;
 
-            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                          NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+                      dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
 
-            String clampedMessage = (char*)lpMsgBuf;
-            clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
+        String clampedMessage = (char*)lpMsgBuf;
+        clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
 
-            pMessageUnloadFailed->error("System dynamic library unloading failed : %s", clampedMessage.c_str());
+        PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", clampedMessage.c_str());
 
-            LocalFree(lpMsgBuf);
-        }
+        LocalFree(lpMsgBuf);
         return false;
     }
 
@@ -369,8 +323,7 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     if (sceKernelStopUnloadModule((SceKernelModule)m_pModule->getHandle(), 0, NULL, 0, NULL, NULL) >= 0)
     {
         m_pModule = nullptr;
-        if (a_pMessage)
-            a_pMessage->success("Module unloaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
+        PHANTOM_LOG(Information, "Module unloaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
         return true;
     }
     else
@@ -400,28 +353,24 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
                 msg = "unknown error";
                 break;
             }
-            if (pMessageUnloadFailed == nullptr)
-                pMessageUnloadFailed = a_pMessage->error("Cannot unload module : %s", m_strName.c_str());
-            pMessageUnloadFailed->error("System DLL unloading failed : %s", msg);
+            PHANTOM_LOG(Error, "Cannot unload module : %s", m_strName.c_str());
+            PHANTOM_LOG(Error, "System DLL unloading failed : %s", msg);
         }
         return false;
     }
 
 #elif PHANTOM_OPERATING_SYSTEM_FAMILY == PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX
-    if (dlclose((void*)pModule->getHandle()))
+    if (dlclose((void*)m_pModule->getHandle()))
     {
-        if (a_pMessage)
-            a_pMessage->success("Module unloaded : %s", a_strName.c_str());
+        PHANTOM_LOG(Information, "Module unloaded : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
         return true;
     }
     else
     {
-        result = false;
         if (a_pMessage)
         {
-            if (pMessageUnloadFailed == nullptr)
-                pMessageUnloadFailed = a_pMessage->error("Cannot unload module : %s", a_strName.c_str());
-            pMessageUnloadFailed->error("System dynamic library unloading failed : %s", dlerror());
+            PHANTOM_LOG(Error, "Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
+            PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", dlerror());
         }
         return false;
     }
@@ -433,52 +382,50 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
 #endif
 }
 
-void Plugin::_loadFile()
+bool Plugin::_loadFile()
 {
     std::ifstream in(m_strFilePath.c_str());
-    PHANTOM_ERROR(in.is_open(), "failed to open plugin file");
-    IValueStream str(in);
-    Value        v;
-    str >> v;
-    PHANTOM_ERROR(!str.fail(), "failed to read plugin file : parsing error");
-    PHANTOM_ERROR(v.isStruct(), "failed to read plugin file : expect {");
-    auto const& vals = v.asStruct();
-
-    auto it = vals.find("Name");
-    if (it != vals.end())
-        it->second.as(m_strName);
-
-    it = vals.find("DebugPath");
-    if (it != vals.end())
-        it->second.as(m_DebugPath);
-
-    it = vals.find("ReleasePath");
-    if (it != vals.end())
-        it->second.as(m_ReleasePath);
-
-    it = vals.find("IncludePaths");
-    if (it != vals.end())
-        it->second.as(m_IncludePaths);
-
-    it = vals.find("Dependencies");
-    if (it != vals.end())
+    char          linebuf[256];
+    Strings       lines;
+    if (!in.is_open())
     {
-        PHANTOM_ERROR(it->second.isArray(), "failed to read plugin file : 'Dependencies' must be an array");
-        for (auto const& v2 : it->second.asArray())
+        PHANTOM_LOG(Error, "failed to read plugin file");
+        return false;
+    }
+    in.getline(linebuf, 256);
+    if (strcmp(linebuf, "[Plugin]") != 0)
+    {
+        PHANTOM_LOG(Error, "failed to parse plugin file");
+        return false;
+    }
+    while (!in.eof())
+    {
+        in.getline(linebuf, 256);
+        String line(linebuf);
+        if (StringUtil::RemoveExtraBlanks(line).empty())
+            continue;
+        StringViews parts;
+        StringUtil::Split(parts, line, "=");
+        if (parts.size() != 2)
         {
-            String dep;
-            v2.as(dep);
-            m_Dependencies.push_back(dep);
+            PHANTOM_LOG(Error, "failed to parse plugin file");
+            return false;
+        }
+        StringView key = StringUtil::RemoveExtraBlanks(parts[0]);
+        StringView value = StringUtil::RemoveExtraBlanks(parts[1]);
+        if (key == "Name")
+            m_strName = value;
+        else if (key == "DebugPath")
+            m_DebugPath = value;
+        else if (key == "ReleasePath")
+            m_ReleasePath = value;
+        else
+        {
+            PHANTOM_LOG(Warning, "%.*s : unknown entry '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(m_strFilePath),
+                        PHANTOM_STRING_AS_PRINTF_ARG(value));
         }
     }
-}
-
-void Plugin::_addDependency(StringView a_Dependency)
-{
-    PHANTOM_ASSERT(a_Dependency.size());
-    PHANTOM_ASSERT(a_Dependency != m_strName);
-    if (std::find(m_Dependencies.begin(), m_Dependencies.end(), a_Dependency) == m_Dependencies.end())
-        m_Dependencies.push_back(a_Dependency);
+    return true;
 }
 
 bool Plugin::_refCountNative()
@@ -506,9 +453,9 @@ bool Plugin::_refCountNative()
     return true;
 }
 
-bool Plugin::load(Message* a_pMessage /*=nullptr*/)
+bool Plugin::load()
 {
-    if (_load(a_pMessage))
+    if (_load())
     {
         Application::Get()->_pluginLoaded(this);
         return true;
@@ -520,17 +467,17 @@ bool Plugin::load(Message* a_pMessage /*=nullptr*/)
     }
 }
 
-bool Plugin::loadAsDependency(Message* a_pMessage)
+bool Plugin::loadAsDependency()
 {
-    return _load(a_pMessage);
+    return _load();
 }
 
-bool Plugin::unloadAsDependency(Message* a_pMessage)
+bool Plugin::unloadAsDependency()
 {
-    return _unload(a_pMessage);
+    return _unload();
 }
 
-bool Plugin::_load(Message* a_pMessage)
+bool Plugin::_load()
 {
     PHANTOM_ASSERT(Application::Get()->getPlugin(m_strName) == this,
                    "Plugin should be added to Application before being (un)loaded");
@@ -595,7 +542,7 @@ PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_IOS
         PHANTOM_LOG(Error, "cannot use native plugins in static link mode");
         return false;
 #endif
-        if (!_loadNative(nativeBinaryPath.genericString(), a_pMessage))
+        if (!_loadNative(nativeBinaryPath.genericString()))
         {
             return false;
         }
@@ -619,7 +566,7 @@ PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_IOS
     if (pLoadingExtensionFunction)
     {
         void* this_ = this;
-        void* args[2] = {&this_, &a_pMessage};
+        void* args[2] = {&this_};
         bool  result = false;
         pLoadingExtensionFunction->call(args, &result);
         if (!result)
@@ -638,7 +585,7 @@ PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_IOS
     return true;
 }
 
-bool Plugin::unload(Message* a_pMessage)
+bool Plugin::unload()
 {
     PHANTOM_ASSERT(Application::Get()->getPlugin(m_strName) == this,
                    "Plugin should be added to Application before being (un)loaded");
@@ -651,10 +598,10 @@ bool Plugin::unload(Message* a_pMessage)
     }
     PHANTOM_ASSERT(m_pModule->m_pPlugin == this);
     m_pModule->m_pPlugin = nullptr;
-    return _unload(a_pMessage);
+    return _unload();
 }
 
-bool Plugin::_unload(Message* a_pMessage)
+bool Plugin::_unload()
 {
     Function* pUnloadingExtensionFunction = nullptr;
 
@@ -681,7 +628,7 @@ bool Plugin::_unload(Message* a_pMessage)
     if (pUnloadingExtensionFunction)
     {
         void* this_ = this;
-        void* args[2] = {&this_, &a_pMessage};
+        void* args[2] = {&this_};
         bool  result = false;
         pUnloadingExtensionFunction->call(args, &result);
         if (!result)
@@ -692,7 +639,7 @@ bool Plugin::_unload(Message* a_pMessage)
     if (m_pModule->isNative())
     {
         String strPath = m_pModule->getLibraryFullName();
-        if (!_unloadNative(a_pMessage))
+        if (!_unloadNative())
             return false;
     }
     return true;

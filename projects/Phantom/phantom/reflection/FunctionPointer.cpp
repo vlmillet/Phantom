@@ -5,14 +5,10 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "FunctionPointer.h"
 
 #include "Function.h"
 #include "FunctionType.h"
-
-#include <phantom/dyn_cast>
-#include <phantom/new_ex.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -35,32 +31,34 @@ void FunctionPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
     Type::onReferencedElementRemoved(a_pElement);
 }
 
+#if defined(PHANTOM_DEV)
+#    pragma message(PHANTOM_TODO "cleanup these asserts")
+#endif
+
 void FunctionPointer::valueToLiteral(StringBuffer&, const void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueToLiteral not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueToLiteral not defined for member function pointer types");
 }
 
 void FunctionPointer::valueToString(StringBuffer&, const void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueToString not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueToString not defined for member function pointer types");
 }
 
 void FunctionPointer::valueFromString(StringView, void*) const
 {
-    PHANTOM_THROW_EXCEPTION(exception::Exception, "valueFromString not defined for member function pointer types");
+    PHANTOM_ASSERT(false, "valueFromString not defined for member function pointer types");
 }
 
 /// Non native function pointers contains the meta function they point to
 
 void FunctionPointer::call(void* a_pPointer, void** a_pArgs) const
 {
-    PHANTOM_ASSERT(dyn_cast<Function*>(a_pPointer));
     static_cast<Function*>(a_pPointer)->call(a_pArgs);
 }
 
 void FunctionPointer::call(void* a_pPointer, void** a_pArgs, void* a_pReturnAddress) const
 {
-    PHANTOM_ASSERT(dyn_cast<Function*>(a_pPointer));
     static_cast<Function*>(a_pPointer)->call(a_pArgs, a_pReturnAddress);
 }
 

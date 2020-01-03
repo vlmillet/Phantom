@@ -21,24 +21,15 @@
 #include "VirtualMethodTable.h"
 #include "registration/registration.h"
 
-#include <phantom/RttiImpl.h>
-#include <phantom/SmallMap.h>
-#include <phantom/new.h>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/Function.h> // phantom::reflection::detail::pushModule
+#include <phantom/utils/SmallMap.h>
 
 namespace phantom
 {
 namespace reflection
 {
-static_assert(!HasEmbeddedRtti<Class>::value, "HasRtti<Class>::value");
-static_assert(HasEmbeddedProxyRtti<Class>::value, "HasRtti<Class>::value");
-
-// Set by reflection::BuiltInTypes::Install because Class meta type is a recursive meta type, indeed
-// it's its own meta type (meta meta type)
-static void _RTDynDeleteFunc(void* a_pInstance)
-{
-    Rtti::ClassOf(a_pInstance)->deleteInstance(a_pInstance);
-}
+static_assert(IsObject<Class>::value, "HasRtti<Class>::value");
 
 Class* Class::metaClass;
 
@@ -256,31 +247,6 @@ Method* Class::getSlotCascade(StringView a_strIdentifierString) const
     : nullptr;
 }
 
-bool Class::doesInstanceDependOn(void* a_pInstance, void* a_pOther) const
-{
-    PHANTOM_ASSERT(a_pInstance);
-    PHANTOM_ASSERT(Rtti::ClassOf(a_pInstance)->isA(const_cast<Class*>(this)));
-    PHANTOM_ASSERT(a_pOther);
-
-    for (auto baseClass : m_BaseClasses)
-    {
-        if (baseClass.baseClass->doesInstanceDependOn(reinterpret_cast<byte*>(a_pInstance) + baseClass.offset,
-                                                      a_pOther))
-            return true;
-    }
-
-    for (auto pField : getFields())
-    {
-        Type* pFieldType = pField->getValueType();
-        if (pFieldType->asClass())
-        {
-            if (*static_cast<void**>(pField->getAddress(a_pInstance)) == a_pOther)
-                return true;
-        }
-    }
-    return false;
-}
-
 void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Access /*= Access::Public*/)
 {
     PHANTOM_ASSERT(a_pBaseClass);
@@ -297,10 +263,7 @@ void Class::addBaseClass(Class* a_pClass, Access a_Access)
 {
     ExtraData* pExtraData = getExtraData();
     PHANTOM_ASSERT(pExtraData);
-    if (m_uiSize)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "class has been sized, cannot add base class anymore");
-    }
+    PHANTOM_ASSERT(m_uiSize == 0, "class has been sized, cannot add base class anymore");
     _addBaseClass(a_pClass, ~size_t(0), a_Access);
 }
 
@@ -422,18 +385,18 @@ void Class::sortBaseAndRootMethods(VirtualMethodTable* a_pBaseVMT, Methods* a_Ou
     }
 }
 
-Class::ERelation Class::getRelationWith(Type* a_pType) const
+Class::TypeRelation Class::getRelationWith(Type* a_pType) const
 {
     if (a_pType == this)
-        return e_Relation_Equal;
+        return TypeRelation::Equal;
     if (a_pType->asClass() == nullptr)
-        return e_Relation_None;
+        return TypeRelation::None;
     if (this->isA((Class*)a_pType))
-        return e_Relation_Child;
+        return TypeRelation::Child;
     if (static_cast<Class*>(a_pType)->isA(const_cast<Class*>(this)))
-        return e_Relation_Parent;
+        return TypeRelation::Parent;
 
-    return e_Relation_None;
+    return TypeRelation::None;
 }
 
 void Class::findOverriddenMethods(StringView a_strName, Signature* a_pSignature, Methods& a_Result)
@@ -907,7 +870,7 @@ bool Class::isA(Class* a_pType) const
     return false;
 }
 
-const Variant& Class::getMetaDataCascade(StringHash a_Hash) const
+const Variant& Class::getMetaDataIncludingBases(StringWithHash a_Hash) const
 {
     static Variant null;
     const Variant& v = getMetaData(a_Hash);
@@ -915,24 +878,24 @@ const Variant& Class::getMetaDataCascade(StringHash a_Hash) const
         return v;
     for (auto& bc : m_BaseClasses)
     {
-        const Variant& v2 = bc.baseClass->getMetaDataCascade(a_Hash);
+        const Variant& v2 = bc.baseClass->getMetaDataIncludingBases(a_Hash);
         if (v2.isValid())
             return v2;
     }
     return null;
 }
 
-const Variant& Class::getMetaDataCascade(StringView a_Name) const
+const Variant& Class::getMetaDataIncludingBases(StringView a_Name) const
 {
-    return getMetaDataCascade(makeStringHash(a_Name));
+    return getMetaDataIncludingBases(StringWithHash(a_Name));
 }
 
-void Class::getMetaDatasCascade(StringView a_Name, Variants& a_MetaDatas) const
+void Class::getMetaDatasIncludingBases(StringView a_Name, Variants& a_MetaDatas) const
 {
-    getMetaDatasCascade(makeStringHash(a_Name), a_MetaDatas);
+    getMetaDatasIncludingBases(StringWithHash(a_Name), a_MetaDatas);
 }
 
-void Class::getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const
+void Class::getMetaDatasIncludingBases(StringWithHash a_Hash, Variants& a_MetaDatas) const
 {
     auto& meta = getMetaData(a_Hash);
     if (meta.isValid())
@@ -941,7 +904,7 @@ void Class::getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const
     }
     for (auto& bc : m_BaseClasses)
     {
-        bc.baseClass->getMetaDatasCascade(a_Hash, a_MetaDatas);
+        bc.baseClass->getMetaDatasIncludingBases(a_Hash, a_MetaDatas);
     }
 }
 
@@ -1060,6 +1023,23 @@ void Class::_onNativeElementsAccessImpl()
     }
 }
 
+bool Class::hasMetaDataIncludingBases(StringWithHash a_strName) const
+{
+    if (hasMetaData(a_strName))
+        return true;
+    for (auto it = m_BaseClasses.begin(); it != m_BaseClasses.end(); ++it)
+    {
+        if (it->baseClass->hasMetaDataIncludingBases(a_strName))
+            return true;
+    }
+    return false;
+}
+
+bool Class::hasMetaDataIncludingBases(StringView a_strName) const
+{
+    return hasMetaDataIncludingBases(StringWithHash(a_strName));
+}
+
 bool Class::isCopyable() const
 {
     if (NOT(isCopyConstructible() && !hasCopyDisabled()))
@@ -1114,111 +1094,6 @@ void Class::construct(void* a_pInstance) const
 void Class::destroy(void* a_pObject) const
 {
     ClassType::destroy(a_pObject);
-}
-
-void Class::mapRtti(void const* a_pInstance) const
-{
-    _mapRtti(a_pInstance, (Class*)this, a_pInstance, nullptr);
-}
-
-void Class::unmapRtti(void const* a_pInstance) const
-{
-    _unmapRtti(a_pInstance, true);
-}
-
-namespace
-{
-bool Class_installEmbeddedRtti(Class const* a_pMDClass, void const* a_pMDInstance, Class const* a_pClass,
-                               void const* a_pInstance)
-{
-    for (BaseClass const& base : a_pClass->getBaseClasses())
-    {
-        if (Class_installEmbeddedRtti(a_pMDClass, a_pMDInstance, base.baseClass,
-                                      reinterpret_cast<char const*>(a_pInstance) + base.offset))
-            return true;
-    }
-    for (Field* pField : a_pClass->getFields())
-    {
-        if (pField->getValueType() == PHANTOM_TYPEOF(EmbeddedRtti) ||
-            pField->getValueType() == PHANTOM_TYPEOF(EmbeddedProxyRtti))
-        {
-            EmbeddedRtti* pRtti = pField->getAddressAs<EmbeddedRtti>(a_pInstance);
-            pRtti->instance = (void*)a_pMDInstance;
-            pRtti->metaClass = (Class*)a_pMDClass;
-            return true;
-        }
-    }
-    return false;
-}
-bool Class_uninstallEmbeddedRtti(Class const* a_pClass, void const* a_pInstance)
-{
-    for (Field* pField : a_pClass->getFields())
-    {
-        if (pField->getValueType() == PHANTOM_TYPEOF(EmbeddedRtti) ||
-            pField->getValueType() == PHANTOM_TYPEOF(EmbeddedProxyRtti))
-        {
-            EmbeddedRtti* pRtti = pField->getAddressAs<EmbeddedRtti>(a_pInstance);
-            pRtti->instance = nullptr;
-            pRtti->metaClass = nullptr;
-            return true;
-        }
-    }
-    for (BaseClass const& base : a_pClass->getBaseClasses())
-    {
-        if (Class_uninstallEmbeddedRtti(base.baseClass, reinterpret_cast<char const*>(a_pInstance) + base.offset))
-            return true;
-    }
-    return false;
-}
-
-} // namespace
-
-void Class::installRtti(void const* a_pInstance) const
-{
-    if (!Class_installEmbeddedRtti(this, a_pInstance, this, a_pInstance))
-    {
-        mapRtti(a_pInstance);
-    }
-}
-
-void Class::uninstallRtti(void const* a_pInstance) const
-{
-    if (!Class_uninstallEmbeddedRtti(this, a_pInstance))
-    {
-        unmapRtti(a_pInstance);
-    }
-}
-
-void Class::_mapRtti(void const* a_pInstance, Class* a_pBaseClass, void const* a_pBase,
-                     const RttiMapData* a_pRTTI) const
-{
-    if (!a_pRTTI)
-    {
-        a_pRTTI =
-        Rtti::InsertCustomData(a_pInstance, RttiMapData(a_pBaseClass, (Class*)this, a_pBase, _RTDynDeleteFunc));
-    }
-    for (auto& bc : m_BaseClasses)
-    {
-        Class* pBaseClass = bc.baseClass;
-        size_t baseClassOffset = bc.offset;
-        void*  pAdjustedBaseAddress = (byte*)a_pInstance + baseClassOffset;
-        pBaseClass->_mapRtti(pAdjustedBaseAddress, a_pBaseClass, a_pBase, (baseClassOffset != 0) ? nullptr : a_pRTTI);
-    }
-}
-
-void Class::_unmapRtti(void const* a_pInstance, bool a_bRemoveRTTI) const
-{
-    for (auto& bc : m_BaseClasses)
-    {
-        Class* pBaseClass = bc.baseClass;
-        size_t baseClassOffset = bc.offset;
-        void*  pAdjustedBaseAddress = (byte*)a_pInstance + baseClassOffset;
-        pBaseClass->_unmapRtti(pAdjustedBaseAddress, (baseClassOffset != 0));
-    }
-    if (a_bRemoveRTTI)
-    {
-        phantom::Rtti::EraseCustomData(a_pInstance);
-    }
 }
 
 void Class::setOverriddenDefaultExpression(ValueMember* a_pValueMember, Expression* a_pExpression)
@@ -1528,7 +1403,7 @@ ptrdiff_t Class::getPointerAdjustmentOffset(Class* a_pClass) const
     if (o0 != -1)
         return (int)o0;
     ptrdiff_t o1 = a_pClass->getBaseClassOffsetCascade(const_cast<Class*>(this));
-    return o1 != -1 ? -(int)o1 : -INT_MAX;
+    return o1 != -1 ? -ptrdiff_t(o1) : std::numeric_limits<ptrdiff_t>::min();
 }
 
 ptrdiff_t Class::getPointerAdjustmentOffset(Type* a_pType) const
@@ -1870,6 +1745,16 @@ void Class::_unregisterKind(void* a_pInstance)
     {
         bc.baseClass->_unregisterKind(reinterpret_cast<byte*>(a_pInstance) + bc.offset);
     }
+}
+
+bool Class::isCopyConstructible() const
+{
+    return NOT(hasCopyDisabled());
+}
+
+bool Class::isMoveConstructible() const
+{
+    return NOT(hasMoveDisabled());
 }
 
 void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()

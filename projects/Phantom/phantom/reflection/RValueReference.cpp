@@ -5,9 +5,9 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "LValueReference.h"
 #include "RValueReference.h"
+
+#include "LValueReference.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -48,15 +48,14 @@ Type* RValueReference::replicate(Type* a_pInput) const
     return m_pUnderlyingType->replicate(a_pInput->removeReference())->addRValueReference();
 }
 
-bool RValueReference::partialAccepts(Type* a_pType, size_t& a_Score,
-                                     PlaceholderMap& a_DeducedConstants) const
+bool RValueReference::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_DeducedConstants) const
 {
     if (a_pType->asRValueReference())
     {
         a_Score += 10;
-        return m_pUnderlyingType ? m_pUnderlyingType->partialAccepts(
-                                   a_pType->removeRValueReference(), a_Score, a_DeducedConstants)
-                                 : false;
+        return m_pUnderlyingType
+        ? m_pUnderlyingType->partialAccepts(a_pType->removeRValueReference(), a_Score, a_DeducedConstants)
+        : false;
     }
     return false;
 }

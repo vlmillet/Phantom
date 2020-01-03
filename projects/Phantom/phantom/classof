@@ -1,0 +1,5 @@
+#pragma once
+
+#include <phantom/detail/ClassOfFwd.h>
+#include <phantom/reflection/Class.h>
+#include <phantom/reflection/TypeOf.h>

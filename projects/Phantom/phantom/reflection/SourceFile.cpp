@@ -5,19 +5,20 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "SourceFile.h"
 
 #include "Application.h"
 #include "Module.h"
 #include "Package.h"
 #include "Source.h"
-#include "phantom/Message.h"
 #ifndef __DOXYGEN__
 #    include <fstream>
-#    include <phantom/Path.h>
+#    include <phantom/utils/Path.h>
 #endif
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_LINUX
+#    include <sys/stat.h>
+#endif
 /* *********************************************** */
 namespace phantom
 {

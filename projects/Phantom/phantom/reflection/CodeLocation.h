@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -167,8 +167,7 @@ struct PHANTOM_EXPORT_PHANTOM CodeRange
 struct PHANTOM_EXPORT_PHANTOM CodeRangeLocation
 {
     CodeRangeLocation() = default;
-    CodeRangeLocation(Source* a_pSource, const CodeRange& a_Range)
-        : source(a_pSource), range(a_Range)
+    CodeRangeLocation(Source* a_pSource, const CodeRange& a_Range) : source(a_pSource), range(a_Range)
     {
     }
     bool operator==(const CodeRangeLocation& other) const

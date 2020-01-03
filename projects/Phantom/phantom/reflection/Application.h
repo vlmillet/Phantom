@@ -7,14 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/MemoryContext.h>
-#include <phantom/Signal.h>
-#include <phantom/SmallMap.h>
+#include <phantom/detail/MemoryContext.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
+#include <phantom/utils/SmallMap.h>
 /* *********************************************** */
 namespace phantom
 {
-class Message;
 class Main;
 
 namespace reflection
@@ -574,30 +573,6 @@ public:
     Type* findType(StringView a_strUniqueName, LanguageElement* a_pScope = nullptr) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add/Set meta Data to a symbol, both given as a String with format : "symbol.meta".
-    ///
-    /// \param  a_SymbolDotMeta The symbol.meta name.
-    /// \param  a_Value         The meta Data value as Variant.
-    /// \param  a_pScope        (optional) [in,out] If non-null, the scope where to start the search
-    /// from.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setMetaData(StringView a_SymbolDotMeta, const Variant& a_Value, LanguageElement* a_pScope = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add/Set meta Data to a symbol, both given as a String with format : "symbol.meta".
-    ///
-    /// \param  a_SymbolDotMeta The symbol.meta name.
-    /// \param  a_pScope        (optional) [in,out] If non-null, the scope where to start the search
-    /// from.
-    ///
-    /// \return null Variant if no meta found matching the given symbol.meta name, else the meta
-    /// Data value as Variant.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const Variant& getMetaData(StringView a_SymbolDotMeta, LanguageElement* a_pScope /*= nullptr*/) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Find all the classes derived from the given optional base class.
     ///
     /// \param [in,out] a_Classes       [in,out] The classes found are stored in this container.
@@ -681,8 +656,8 @@ private:
     void    _uninstallNativeModule(Module* a_pModule);
 
     void _loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                   StringView a_strSourceFile, uint a_uiFlags, Message* a_pMessage = nullptr);
-    void _unloadMain(Message* a_pMessage = nullptr);
+                   StringView a_strSourceFile, uint a_uiFlags);
+    void _unloadMain();
 
     void _addModule(Module* a_pModule);
     void _removeModule(Module* a_pModule);

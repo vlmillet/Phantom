@@ -20,14 +20,16 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallMap.hxx>
-#include <phantom/SmallSet.hxx>
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallSet.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -58,6 +60,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::reflection::Symbols>;
             this_()
+            .inherits<::phantom::Object>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, VisitorData), virtual_>("visit", &_::visit)
         
@@ -72,8 +75,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
         
         .public_()
-            .method<void*() const>("getMostDerived", &_::getMostDerived)
-            .method<Class*() const>("getMetaClass", &_::getMetaClass)
             .method<LanguageElements const&() const>("getElements", &_::getElements)
             .method<LanguageElements const&() const>("getReferencedElements", &_::getReferencedElements)
             .method<LanguageElements const&() const>("getReferencingElements", &_::getReferencingElements)
@@ -180,6 +181,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool(LanguageElement*) const>("hasElementCascade", &_::hasElementCascade)
             .method<bool() const, virtual_>("isCompileTime", &_::isCompileTime)
             .method<LanguageElement*() const>("getOwner", &_::getOwner)
+            .method<LanguageElement*() const>("getRootElement", &_::getRootElement)
             .method<void(LanguageElements&, Class*) const>("fetchElementsDeep", &_::fetchElementsDeep)["nullptr"]
             .method<void(LanguageElements&, Class*) const>("fetchElements", &_::fetchElements)["nullptr"]
             .method<void(StringView, Symbols&) const>("getSymbolsWithName", &_::getSymbolsWithName)
@@ -270,7 +272,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Source*() const, virtual_>("getCodeLocationSource", &_::getCodeLocationSource)
             .method<LanguageElement*(const CodePosition&) const>("getElementAtCodePosition", &_::getElementAtCodePosition)
             .method<LanguageElement*(uint16) const>("getElementAtLine", &_::getElementAtLine)
-            .field("PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD", &_::PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)
             .method<int() const, virtual_>("destructionPriority", &_::destructionPriority)
         
         .protected_()
@@ -328,7 +329,3 @@ PHANTOM_END("phantom.reflection")
 #endif
 
 // haunt }
-
-
-
-

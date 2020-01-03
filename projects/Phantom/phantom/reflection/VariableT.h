@@ -11,7 +11,7 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/Copier.h>
+#include <phantom/detail/Copier.h>
 #include <phantom/reflection/Variable.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
@@ -26,16 +26,13 @@ public:
     typedef typename std::remove_extent<t_Ty>::type ValueTypeNoArray;
 
 public:
-    VariableT(StringView a_strName, ValueTypeNoArray* a_pPointer, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
-        : Variable(PHANTOM_TYPEOF(t_Ty), a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(StringView a_strName, ValueTypeNoArray* a_pPointer, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : Variable(PHANTOM_TYPEOF(t_Ty), a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
-    VariableT(Type* a_pContentType, StringView a_strName, ValueTypeNoArray* a_pPointer,
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(Type* a_pContentType, StringView a_strName, ValueTypeNoArray* a_pPointer, Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
 
@@ -53,16 +50,13 @@ template<typename t_Ty>
 class VariableT<t_Ty const> : public VariableT<t_Ty>
 {
 public:
-    VariableT(Type* a_pContentType, StringView a_strName, const t_Ty* a_pPointer,
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : VariableT<t_Ty>(a_pContentType, a_strName, const_cast<t_Ty*>(a_pPointer), a_Modifiers,
-                          a_uiFlags)
+    VariableT(Type* a_pContentType, StringView a_strName, const t_Ty* a_pPointer, Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : VariableT<t_Ty>(a_pContentType, a_strName, const_cast<t_Ty*>(a_pPointer), a_Modifiers, a_uiFlags)
     {
     }
-    VariableT(StringView a_strName, const t_Ty* a_pPointer, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
-        : VariableT<t_Ty>(PHANTOM_TYPEOF(t_Ty const), a_strName, const_cast<t_Ty*>(a_pPointer),
-                          a_Modifiers, a_uiFlags)
+    VariableT(StringView a_strName, const t_Ty* a_pPointer, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : VariableT<t_Ty>(PHANTOM_TYPEOF(t_Ty const), a_strName, const_cast<t_Ty*>(a_pPointer), a_Modifiers, a_uiFlags)
     {
     }
 };
@@ -74,16 +68,13 @@ public:
     typedef typename std::remove_extent<t_Ty>::type ValueTypeNoArray;
 
 public:
-    VariableT(Type* a_pContentType, StringView a_strName, t_Ty (*a_pPointer)[t_Size],
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(Type* a_pContentType, StringView a_strName, t_Ty (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
-    VariableT(StringView a_strName, t_Ty (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
-        : Variable(PHANTOM_TYPEOF(t_Ty[t_Size]), a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(StringView a_strName, t_Ty (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : Variable(PHANTOM_TYPEOF(t_Ty[t_Size]), a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
 
@@ -104,16 +95,13 @@ public:
     typedef typename std::remove_extent<t_Ty>::type ValueTypeNoArray;
 
 public:
-    VariableT(Type* a_pContentType, StringView a_strName, t_Ty (*a_pPointer)[],
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(Type* a_pContentType, StringView a_strName, t_Ty (*a_pPointer)[], Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : Variable(a_pContentType, a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
-    VariableT(StringView a_strName, t_Ty (*a_pPointer)[], Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
-        : Variable(PHANTOM_TYPEOF(t_Ty[]), a_strName, a_pPointer, a_Modifiers,
-                   a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    VariableT(StringView a_strName, t_Ty (*a_pPointer)[], Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : Variable(PHANTOM_TYPEOF(t_Ty[]), a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
     virtual void getValue(void* dest) const
@@ -130,14 +118,13 @@ template<typename t_Ty, size_t t_Size>
 class VariableT<t_Ty const[t_Size]> : public VariableT<t_Ty[t_Size]>
 {
 public:
-    VariableT(Type* a_pContentType, StringView a_strName, t_Ty const (*a_pPointer)[t_Size],
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : VariableT<t_Ty[t_Size]>(a_pContentType, a_strName,
-                                  const_cast<t_Ty (*)[t_Size]>(a_pPointer), a_Modifiers, a_uiFlags)
+    VariableT(Type* a_pContentType, StringView a_strName, t_Ty const (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : VariableT<t_Ty[t_Size]>(a_pContentType, a_strName, const_cast<t_Ty (*)[t_Size]>(a_pPointer), a_Modifiers,
+                                  a_uiFlags)
     {
     }
-    VariableT(StringView a_strName, t_Ty const (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
+    VariableT(StringView a_strName, t_Ty const (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
         : VariableT<t_Ty[t_Size]>(PHANTOM_TYPEOF(t_Ty)->addConst()->addArray(t_Size), a_strName,
                                   const_cast<t_Ty (*)[t_Size]>(a_pPointer), a_Modifiers, a_uiFlags)
     {
@@ -148,16 +135,13 @@ template<typename t_Ty>
 class VariableT<t_Ty const[]> : public VariableT<t_Ty[]>
 {
 public:
-    VariableT(Type* a_pContentType, StringView a_strName, t_Ty const (*a_pPointer)[],
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : VariableT<t_Ty[]>(a_pContentType, a_strName, const_cast<t_Ty (*)[]>(a_pPointer),
-                            a_Modifiers, a_uiFlags)
+    VariableT(Type* a_pContentType, StringView a_strName, t_Ty const (*a_pPointer)[], Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0)
+        : VariableT<t_Ty[]>(a_pContentType, a_strName, const_cast<t_Ty (*)[]>(a_pPointer), a_Modifiers, a_uiFlags)
     {
     }
-    VariableT(StringView a_strName, t_Ty const (*a_pPointer)[], Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0)
-        : VariableT<t_Ty[]>(PHANTOM_TYPEOF(t_Ty const[]), a_strName,
-                            const_cast<t_Ty (*)[]>(a_pPointer), a_Modifiers,
+    VariableT(StringView a_strName, t_Ty const (*a_pPointer)[], Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : VariableT<t_Ty[]>(PHANTOM_TYPEOF(t_Ty const[]), a_strName, const_cast<t_Ty (*)[]>(a_pPointer), a_Modifiers,
                             a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }

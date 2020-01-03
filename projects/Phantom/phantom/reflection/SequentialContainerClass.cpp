@@ -5,25 +5,23 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
-#include "Method.h"
 #include "SequentialContainerClass.h"
-#include "phantom/new.h"
+
+#include "Method.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace reflection
 {
-SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName,
-                                                   size_t a_uiSize, size_t a_uiAlignment,
-                                                   Modifiers a_Modifiers, uint a_uiFlags)
+SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
+                                                   size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
     : ContainerClass(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
 SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName,
-                                                   Modifiers a_Modifiers /*= 0*/,
-                                                   uint      a_uiFlags /*= 0*/)
+                                                   Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : ContainerClass(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
 {
 }

@@ -15,14 +15,14 @@ HAUNT_STOP;
 #include "phantom/reflection/MetaNewDelete.h"
 
 #include <locale>
-#include <phantom/Placement.h>
-#include <phantom/StaticGlobals.h>
-#include <phantom/new.h>
+#include <phantom/detail/StaticGlobals.h>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/Namespace.h>
 #include <phantom/reflection/Source.h>
 #include <phantom/reflection/Subroutine.h>
 #include <phantom/traits/FunctionTypeToFunctionPointerType.h>
 #include <phantom/traits/IsTypeDefined.h>
+#include <phantom/utils/Placement.h>
 
 namespace phantom
 {

@@ -8,7 +8,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/newImpl.h>
+#include <phantom/detail/newImpl.h>
 #include <phantom/reflection/SequentialContainerClass.h>
 #include <phantom/reflection/StlContainerClassT.h>
 
@@ -43,8 +43,7 @@ class SequentialContainerClassT : public StlContainerClassT<t_Ty, Base>
     typedef PHANTOM_TYPENAME t_Ty::iterator ContainerIterator;
 
 public:
-    SequentialContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0)
-        : BaseType(a_strName, a_Modifiers)
+    SequentialContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
     {
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));
     }

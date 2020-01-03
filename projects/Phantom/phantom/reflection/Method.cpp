@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Method.h"
 
 #include "ConstType.h"
@@ -15,7 +14,7 @@
 #include "RValueReference.h"
 #include "Signature.h"
 #include "VirtualMethodTable.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -37,10 +36,10 @@ Method::Method(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifi
       m_pVTableClosures(nullptr),
       m_pProperty(nullptr)
 {
-    if (testModifiers(PHANTOM_R_CONST) AND testModifiers(PHANTOM_R_SLOT_METHOD))
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "Slots cannot be const");
-    }
+#if defined(PHANTOM_DEV)
+#    pragma message(PHANTOM_TODO "remove Slot concept from Phantom (get more bloat free)")
+#endif
+    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers /*= 0*/,
@@ -51,10 +50,7 @@ Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifi
       m_pVTableClosures(nullptr),
       m_pProperty(nullptr)
 {
-    if (testModifiers(PHANTOM_R_CONST) AND testModifiers(PHANTOM_R_SLOT_METHOD))
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "Slots cannot be const");
-    }
+    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature,
@@ -65,10 +61,7 @@ Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_str
       m_pVTableClosures(nullptr),
       m_pProperty(nullptr)
 {
-    if (testModifiers(PHANTOM_R_CONST) AND testModifiers(PHANTOM_R_SLOT_METHOD))
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "Slots cannot be const");
-    }
+    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
@@ -79,10 +72,7 @@ Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_str
       m_pVTableClosures(nullptr),
       m_pProperty(nullptr)
 {
-    if (testModifiers(PHANTOM_R_CONST) AND testModifiers(PHANTOM_R_SLOT_METHOD))
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "Slots cannot be const");
-    }
+    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 size_t Method::getVirtualTableIndex(size_t a_uiVtableIndex) const
@@ -138,75 +128,11 @@ bool Method::isOverridableBy(Method* a_pMethod) const
     return a_pMethod->canOverride((Method*)this);
 }
 
-void Method::safeInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        invoke(rttiData.cast(pOwnerClass), a_pArgs, a_pReturnAddress);
-    }
-    else
-    {
-        invoke(a_pCallerAddress, a_pArgs, a_pReturnAddress);
-    }
-}
-
-void Method::safePlacementInvoke(void* a_pCallerAddress, void** a_pArgs, void* a_pReturnAddress) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        placementInvoke(rttiData.cast(pOwnerClass), a_pArgs, a_pReturnAddress);
-    }
-    else
-    {
-        placementInvoke(a_pCallerAddress, a_pArgs, a_pReturnAddress);
-    }
-}
-
-void Method::safeInvoke(void* a_pCallerAddress, void** a_pArgs) const
-{
-    reflection::Class* pOwnerClass = getOwner()->asClass();
-    if (pOwnerClass)
-    {
-        const RttiMapData& rttiData = Rtti::Find(a_pCallerAddress);
-        invoke(rttiData.cast(pOwnerClass), a_pArgs);
-    }
-    else
-    {
-        invoke(a_pCallerAddress, a_pArgs);
-    }
-}
-
-/*
-jit_function Method::getVTableFunction( size_t a_uiThisOffset ) const
-{
-    PHANTOM_ASSERT(m_jit_function.function, "Closure not yet created, you must add this Method to a
-Class"); if(a_uiThisOffset == 0) return m_jit_function; auto found =
-m_VTableOffsetFixFunctions.find(a_uiThisOffset); if(found != m_VTableOffsetFixFunctions.end())
-    {
-        return found->second;
-    }
-    jit_function func = compileThisOffsetShiftFunction(a_uiThisOffset);
-    // UNCOMMENT TO TEST APPLY
-//     void* nul = nullptr;
-//     void* null[] = { &nul };
-//     jit_function_apply(func, null, nullptr);
-    //a_pMethod->setVTableOffsetFixClosure[a_uiThisOffset] = func;
-    return func;
-}*/
-
 void Method::setVirtual()
 {
     if (isVirtual())
         return;
-    if (getOwner())
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException,
-                                "Member function cannot be set to virtual after being added to a class type")
-    }
+    PHANTOM_ASSERT(getOwner(), "method cannot be set to virtual after being added to a class type");
     m_Modifiers |= PHANTOM_R_VIRTUAL;
 }
 

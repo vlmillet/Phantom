@@ -30,9 +30,6 @@
 #include "Union.h"
 #include "VolatileType.h"
 
-#include <phantom/dyn_cast>
-#include <phantom/traits/HasEmbeddedRtti.h>
-
 #pragma warning(disable : 4100)
 
 namespace phantom
@@ -45,9 +42,7 @@ template<class Meta>
 struct InstanceT
 {
     InstanceT() = default;
-    InstanceT(Meta* a_pMeta, void* a_pAddress) : m_Meta(a_pMeta), m_pAddress(a_pAddress)
-    {
-    }
+    InstanceT(Meta* a_pMeta, void* a_pAddress) : m_Meta(a_pMeta), m_pAddress(a_pAddress) {}
 
 #if !defined(__HAUNT__) // fix haunt bug
     template<class T, typename = typename std::enable_if<std::is_base_of<Meta, T>::value>::type>
@@ -59,7 +54,7 @@ struct InstanceT
     template<class T>
     InstanceT<T> as()
     {
-        if (T* casted = phantom::dyn_cast<T*>(m_Meta))
+        if (T* casted = phantom::Object::Cast<T>(m_Meta))
         {
             return InstanceT<T>(casted, m_pAddress);
         }
@@ -72,18 +67,12 @@ struct InstanceT
         return InstanceT<T>(static_cast<T*>(m_Meta), m_pAddress);
     }
 
-    operator bool() const
-    {
-        return m_pAddress != nullptr;
-    }
+         operator bool() const { return m_pAddress != nullptr; }
     bool operator==(InstanceT<Meta> const& other) const
     {
         return m_pAddress == other.getAddress() && m_Meta == other.getMeta();
     }
-    bool operator!=(InstanceT<Meta> const& other) const
-    {
-        return !operator==(other);
-    }
+    bool operator!=(InstanceT<Meta> const& other) const { return !operator==(other); }
 
     template<class T>
     InstanceT<T> getSubInstance(T* _meta, size_t _offset) const
@@ -91,10 +80,7 @@ struct InstanceT
         return InstanceT<T>(_meta, (char*)m_pAddress + _offset);
     }
 
-    void* getAddressWithOffset(ptrdiff_t off)
-    {
-        return (char*)m_pAddress + off;
-    }
+    void* getAddressWithOffset(ptrdiff_t off) { return (char*)m_pAddress + off; }
 
     template<class T>
     T* getAddressAs()
@@ -102,14 +88,8 @@ struct InstanceT
         return (T*)m_Meta->cast(PHANTOM_TYPEOF(T), m_pAddress);
     }
 
-    void* getAddress() const
-    {
-        return m_pAddress;
-    }
-    Meta* getMeta() const
-    {
-        return m_Meta;
-    }
+    void* getAddress() const { return m_pAddress; }
+    Meta* getMeta() const { return m_Meta; }
 
 private:
     Meta* m_Meta = nullptr;
@@ -124,18 +104,12 @@ struct InstanceT<BaseClass>
     {
     }
 
-    operator bool() const
-    {
-        return m_Derived;
-    }
+         operator bool() const { return m_Derived; }
     bool operator==(InstanceT<BaseClass> const& other) const
     {
         return m_Derived == other.m_Derived && m_BaseClass == other.m_BaseClass;
     }
-    bool operator!=(InstanceT<BaseClass> const& other) const
-    {
-        return !operator==(other);
-    }
+    bool operator!=(InstanceT<BaseClass> const& other) const { return !operator==(other); }
 
     InstanceT<BaseClass> rebind(InstanceT<Class> other)
     {
@@ -143,20 +117,14 @@ struct InstanceT<BaseClass>
         return InstanceT<BaseClass>(other, m_BaseClass);
     }
 
-    InstanceT<Class> getDerivedInstance() const
-    {
-        return m_Derived;
-    }
+    InstanceT<Class> getDerivedInstance() const { return m_Derived; }
 
     InstanceT<Class> getBaseClassInstance() const
     {
         return m_Derived.getSubInstance(m_BaseClass.baseClass, m_BaseClass.offset);
     }
 
-    BaseClass const& getBaseClass() const
-    {
-        return m_BaseClass;
-    }
+    BaseClass const& getBaseClass() const { return m_BaseClass; }
 
 private:
     InstanceT<Class> m_Derived;
@@ -168,9 +136,7 @@ struct MemberAccessT
 {
     static_assert(std::is_base_of<ValueMember, Meta>::value, "Meta must derive from ValueMember");
     MemberAccessT() = default;
-    MemberAccessT(InstanceT<ClassType> a_Owner, Meta* a_pMember) : m_Owner(a_Owner), m_pMemberMeta(a_pMember)
-    {
-    }
+    MemberAccessT(InstanceT<ClassType> a_Owner, Meta* a_pMember) : m_Owner(a_Owner), m_pMemberMeta(a_pMember) {}
 
     template<class T, typename = typename std::enable_if<std::is_base_of<Meta, T>::value>::type>
     MemberAccessT(MemberAccessT<T> const& a_Other) : m_Owner(a_Other.getOwner()), m_pMemberMeta(a_Other.getMemberMeta())
@@ -180,33 +146,21 @@ struct MemberAccessT
     template<class T>
     MemberAccessT<T> as()
     {
-        if (T* casted = phantom::dyn_cast<T*>(m_pMemberMeta))
+        if (T* casted = phantom::Object::Cast<T>(m_pMemberMeta))
         {
             return MemberAccessT<T>(m_Owner, casted);
         }
         return MemberAccessT<T>();
     }
-    operator bool() const
-    {
-        return m_Owner && m_pMemberMeta != nullptr;
-    }
+         operator bool() const { return m_Owner && m_pMemberMeta != nullptr; }
     bool operator==(MemberAccessT<Meta> const& other) const
     {
         return m_Owner == other.m_Owner && m_pMemberMeta == other.m_pMemberMeta;
     }
-    bool operator!=(MemberAccessT<Meta> const& other) const
-    {
-        return !operator==(other);
-    }
+    bool operator!=(MemberAccessT<Meta> const& other) const { return !operator==(other); }
 
-    Meta* getMemberMeta() const
-    {
-        return m_pMemberMeta;
-    }
-    InstanceT<ClassType> getOwner() const
-    {
-        return m_Owner;
-    }
+    Meta*                getMemberMeta() const { return m_pMemberMeta; }
+    InstanceT<ClassType> getOwner() const { return m_Owner; }
 
 private:
     InstanceT<ClassType> m_Owner;
@@ -245,19 +199,10 @@ class RecursiveInstanceVisitorT
 public:
     using Impl = typename _RecursiveInstanceVisitorT::DerivedSelector<Derived>::type;
 
-    Impl* this_()
-    {
-        return static_cast<Impl*>(this);
-    }
-    Impl const* this_() const
-    {
-        return static_cast<Impl const*>(this);
-    }
+    Impl*       this_() { return static_cast<Impl*>(this); }
+    Impl const* this_() const { return static_cast<Impl const*>(this); }
 
-    bool shouldUpdateProperty(MemberAccessT<Property> a_Input) const
-    {
-        return false;
-    }
+    bool shouldUpdateProperty(MemberAccessT<Property> a_Input) const { return false; }
 
     inline bool traverseValueMembers(InstanceT<ClassType> a_Input)
     {
@@ -271,29 +216,14 @@ public:
 
     // ENTRY POINT
 
-    bool visit(void* a_pAddress, Type* a_pType)
-    {
-        return traverse(InstanceT<Type>(a_pType, a_pAddress));
-    }
+    bool visit(void* a_pAddress, Type* a_pType) { return traverse(InstanceT<Type>(a_pType, a_pAddress)); }
 
     // Type
 
-    bool visitType(InstanceT<Type>)
-    {
-        return true;
-    }
-    bool endType(InstanceT<Type>)
-    {
-        return true;
-    }
-    bool walkUpVisitFromType(InstanceT<Type> a_Input)
-    {
-        return this_()->visitType(a_Input);
-    }
-    bool walkUpEndFromType(InstanceT<Type> a_Input)
-    {
-        return this_()->endType(a_Input);
-    };
+    bool visitType(InstanceT<Type>) { return true; }
+    bool endType(InstanceT<Type>) { return true; }
+    bool walkUpVisitFromType(InstanceT<Type> a_Input) { return this_()->visitType(a_Input); }
+    bool walkUpEndFromType(InstanceT<Type> a_Input) { return this_()->endType(a_Input); };
 
     bool traverse(InstanceT<Type> a_Input)
     {
@@ -401,17 +331,11 @@ public:
         }
     }
 
-    bool traverseType(InstanceT<Type> a_Input)
-    {
-        return true;
-    }
+    bool traverseType(InstanceT<Type> a_Input) { return true; }
 
     // FundamentalTypeT<*>
 
-    bool traverse(InstanceT<FundamentalTypeT<bool>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverse(InstanceT<FundamentalTypeT<bool>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<bool>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -422,14 +346,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(bool* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<char>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(bool* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<char>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<char>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -440,14 +358,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(char* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<int8>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(char* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<int8>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<int8>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -458,14 +370,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(int8* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<uint8>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(int8* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<uint8>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<uint8>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -476,14 +382,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(uint8* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<int16>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(uint8* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<int16>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<int16>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -494,14 +394,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(int16* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<uint16>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(int16* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<uint16>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<uint16>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -512,14 +406,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(uint16* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<int32>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(uint16* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<int32>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<int32>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -530,14 +418,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(int32* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<uint32>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(int32* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<uint32>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<uint32>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -548,14 +430,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(uint32* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<int64>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(uint32* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<int64>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<int64>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -566,14 +442,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(int64* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<uint64>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(int64* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<uint64>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<uint64>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -584,14 +454,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(uint64* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<float>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(uint64* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<float>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<float>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -602,14 +466,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(float* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<double>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(float* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<double>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<double>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -620,14 +478,8 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(double* a_Input)
-    {
-        return true;
-    };
-    bool traverse(InstanceT<FundamentalTypeT<longdouble>> a_Input)
-    {
-        return this_()->traverseFundamentalType(a_Input);
-    }
+    bool traverseFundamental(double* a_Input) { return true; };
+    bool traverse(InstanceT<FundamentalTypeT<longdouble>> a_Input) { return this_()->traverseFundamentalType(a_Input); }
     bool traverseFundamentalType(InstanceT<FundamentalTypeT<longdouble>> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -638,10 +490,7 @@ public:
             return false;
         return true;
     }
-    bool traverseFundamental(longdouble* a_Input)
-    {
-        return true;
-    };
+    bool traverseFundamental(longdouble* a_Input) { return true; };
 
     PHANTOM_IF_WCHAR_T(
     bool traverse(InstanceT<FundamentalTypeT<wchar_t>> a_Input) {
@@ -682,14 +531,8 @@ public:
 
     // ExtendedType
 
-    bool visitExtendedType(InstanceT<ExtendedType> a_Input)
-    {
-        return true;
-    }
-    bool endExtendedType(InstanceT<ExtendedType> a_Input)
-    {
-        return true;
-    }
+    bool visitExtendedType(InstanceT<ExtendedType> a_Input) { return true; }
+    bool endExtendedType(InstanceT<ExtendedType> a_Input) { return true; }
     bool walkUpVisitFromExtendedType(InstanceT<ExtendedType> a_Input)
     {
         if (!(this_()->walkUpVisitFromType(a_Input)))
@@ -702,10 +545,7 @@ public:
             return false;
         return this_()->walkUpEndFromType(a_Input);
     }
-    bool traverse(InstanceT<ExtendedType> a_Input)
-    {
-        return this_()->traverseExtendedType(a_Input);
-    }
+    bool traverse(InstanceT<ExtendedType> a_Input) { return this_()->traverseExtendedType(a_Input); }
     bool traverseExtendedType(InstanceT<ExtendedType> a_Input)
     {
         if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
@@ -716,14 +556,8 @@ public:
 
     // QualifiedType
 
-    bool visitQualifiedType(InstanceT<QualifiedType> a_Input)
-    {
-        return true;
-    }
-    bool endQualifiedType(InstanceT<QualifiedType> a_Input)
-    {
-        return true;
-    }
+    bool visitQualifiedType(InstanceT<QualifiedType> a_Input) { return true; }
+    bool endQualifiedType(InstanceT<QualifiedType> a_Input) { return true; }
     bool walkUpVisitFromQualifiedType(InstanceT<QualifiedType> a_Input)
     {
         if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
@@ -736,10 +570,7 @@ public:
             return false;
         return this_()->walkUpEndFromExtendedType(a_Input);
     }
-    bool traverse(InstanceT<QualifiedType> a_Input)
-    {
-        return this_()->traverseQualifiedType(a_Input);
-    }
+    bool traverse(InstanceT<QualifiedType> a_Input) { return this_()->traverseQualifiedType(a_Input); }
     bool traverseQualifiedType(InstanceT<QualifiedType> a_Input)
     {
         if (!(this_()->walkUpVisitFromQualifiedType(a_Input)))
@@ -751,14 +582,8 @@ public:
 
     // ConstType
 
-    bool visitConstType(InstanceT<ConstType> a_Input)
-    {
-        return true;
-    }
-    bool endConstType(InstanceT<ConstType> a_Input)
-    {
-        return true;
-    }
+    bool visitConstType(InstanceT<ConstType> a_Input) { return true; }
+    bool endConstType(InstanceT<ConstType> a_Input) { return true; }
     bool walkUpVisitFromConstType(InstanceT<ConstType> a_Input)
     {
         if (!(this_()->walkUpVisitFromQualifiedType(a_Input)))
@@ -771,10 +596,7 @@ public:
             return false;
         return this_()->walkUpEndFromQualifiedType(a_Input);
     }
-    bool traverse(InstanceT<ConstType> a_Input)
-    {
-        return this_()->traverseConstType(a_Input);
-    }
+    bool traverse(InstanceT<ConstType> a_Input) { return this_()->traverseConstType(a_Input); }
     bool traverseConstType(InstanceT<ConstType> a_Input)
     {
         if (!(this_()->walkUpVisitFromConstType(a_Input)))
@@ -786,14 +608,8 @@ public:
 
     // VolatileType
 
-    bool visitVolatileType(InstanceT<VolatileType> a_Input)
-    {
-        return true;
-    }
-    bool endVolatileType(InstanceT<VolatileType> a_Input)
-    {
-        return true;
-    }
+    bool visitVolatileType(InstanceT<VolatileType> a_Input) { return true; }
+    bool endVolatileType(InstanceT<VolatileType> a_Input) { return true; }
     bool walkUpVisitFromVolatileType(InstanceT<VolatileType> a_Input)
     {
         if (!(this_()->walkUpVisitFromQualifiedType(a_Input)))
@@ -806,10 +622,7 @@ public:
             return false;
         return this_()->walkUpEndFromQualifiedType(a_Input);
     }
-    bool traverse(InstanceT<VolatileType> a_Input)
-    {
-        return this_()->traverseVolatileType(a_Input);
-    }
+    bool traverse(InstanceT<VolatileType> a_Input) { return this_()->traverseVolatileType(a_Input); }
     bool traverseVolatileType(InstanceT<VolatileType> a_Input)
     {
         if (!(this_()->walkUpVisitFromVolatileType(a_Input)))
@@ -821,14 +634,8 @@ public:
 
     // ConstVolatileType
 
-    bool visitConstVolatileType(InstanceT<ConstVolatileType> a_Input)
-    {
-        return true;
-    }
-    bool endConstVolatileType(InstanceT<ConstVolatileType> a_Input)
-    {
-        return true;
-    }
+    bool visitConstVolatileType(InstanceT<ConstVolatileType> a_Input) { return true; }
+    bool endConstVolatileType(InstanceT<ConstVolatileType> a_Input) { return true; }
     bool walkUpVisitFromConstVolatileType(InstanceT<ConstVolatileType> a_Input)
     {
         if (!(this_()->walkUpVisitFromQualifiedType(a_Input)))
@@ -841,10 +648,7 @@ public:
             return false;
         return this_()->walkUpEndFromQualifiedType(a_Input);
     }
-    bool traverse(InstanceT<ConstVolatileType> a_Input)
-    {
-        return this_()->traverseConstVolatileType(a_Input);
-    }
+    bool traverse(InstanceT<ConstVolatileType> a_Input) { return this_()->traverseConstVolatileType(a_Input); }
     bool traverseConstVolatileType(InstanceT<ConstVolatileType> a_Input)
     {
         if (!(this_()->walkUpVisitFromConstVolatileType(a_Input)))
@@ -856,14 +660,8 @@ public:
 
     // PointerType
 
-    bool visitPointerType(InstanceT<PointerType> a_Input)
-    {
-        return true;
-    }
-    bool endPointerType(InstanceT<PointerType> a_Input)
-    {
-        return true;
-    }
+    bool visitPointerType(InstanceT<PointerType> a_Input) { return true; }
+    bool endPointerType(InstanceT<PointerType> a_Input) { return true; }
     bool walkUpVisitFromPointerType(InstanceT<PointerType> a_Input)
     {
         if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
@@ -876,10 +674,7 @@ public:
             return false;
         return this_()->walkUpEndFromExtendedType(a_Input);
     }
-    bool traverse(InstanceT<PointerType> a_Input)
-    {
-        return this_()->traversePointerType(a_Input);
-    }
+    bool traverse(InstanceT<PointerType> a_Input) { return this_()->traversePointerType(a_Input); }
     bool traversePointerType(InstanceT<PointerType> a_Input)
     {
         if (!(this_()->walkUpVisitFromPointerType(a_Input)))
@@ -890,14 +685,8 @@ public:
 
     // FunctionPointer
 
-    bool visitFunctionPointer(InstanceT<FunctionPointer> a_Input)
-    {
-        return true;
-    }
-    bool endFunctionPointer(InstanceT<FunctionPointer> a_Input)
-    {
-        return true;
-    }
+    bool visitFunctionPointer(InstanceT<FunctionPointer> a_Input) { return true; }
+    bool endFunctionPointer(InstanceT<FunctionPointer> a_Input) { return true; }
     bool walkUpVisitFromFunctionPointer(InstanceT<FunctionPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromPointerType(a_Input)))
@@ -910,10 +699,7 @@ public:
             return false;
         return this_()->walkUpEndFromPointerType(a_Input);
     }
-    bool traverse(InstanceT<FunctionPointer> a_Input)
-    {
-        return this_()->traverseFunctionPointer(a_Input);
-    }
+    bool traverse(InstanceT<FunctionPointer> a_Input) { return this_()->traverseFunctionPointer(a_Input); }
     bool traverseFunctionPointer(InstanceT<FunctionPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromFunctionPointer(a_Input)))
@@ -924,14 +710,8 @@ public:
 
     // MemberPointer
 
-    bool visitMemberPointer(InstanceT<MemberPointer> a_Input)
-    {
-        return true;
-    }
-    bool endMemberPointer(InstanceT<MemberPointer> a_Input)
-    {
-        return true;
-    }
+    bool visitMemberPointer(InstanceT<MemberPointer> a_Input) { return true; }
+    bool endMemberPointer(InstanceT<MemberPointer> a_Input) { return true; }
     bool walkUpVisitFromMemberPointer(InstanceT<MemberPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromType(a_Input)))
@@ -962,14 +742,8 @@ public:
 
     // MethodPointer
 
-    bool visitMethodPointer(InstanceT<MethodPointer> a_Input)
-    {
-        return true;
-    }
-    bool endMethodPointer(InstanceT<MethodPointer> a_Input)
-    {
-        return true;
-    }
+    bool visitMethodPointer(InstanceT<MethodPointer> a_Input) { return true; }
+    bool endMethodPointer(InstanceT<MethodPointer> a_Input) { return true; }
     bool walkUpVisitFromMethodPointer(InstanceT<MethodPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromMemberPointer(a_Input)))
@@ -982,10 +756,7 @@ public:
             return false;
         return this_()->walkUpEndFromMemberPointer(a_Input);
     }
-    bool traverse(InstanceT<MethodPointer> a_Input)
-    {
-        return this_()->traverseMethodPointer(a_Input);
-    }
+    bool traverse(InstanceT<MethodPointer> a_Input) { return this_()->traverseMethodPointer(a_Input); }
     bool traverseMethodPointer(InstanceT<MethodPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromMethodPointer(a_Input)))
@@ -996,14 +767,8 @@ public:
 
     // FieldPointer
 
-    bool visitFieldPointer(InstanceT<FieldPointer> a_Input)
-    {
-        return true;
-    }
-    bool endFieldPointer(InstanceT<FieldPointer> a_Input)
-    {
-        return true;
-    }
+    bool visitFieldPointer(InstanceT<FieldPointer> a_Input) { return true; }
+    bool endFieldPointer(InstanceT<FieldPointer> a_Input) { return true; }
     bool walkUpVisitFromFieldPointer(InstanceT<FieldPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromMemberPointer(a_Input)))
@@ -1016,10 +781,7 @@ public:
             return false;
         return this_()->walkUpEndFromMemberPointer(a_Input);
     }
-    bool traverse(InstanceT<FieldPointer> a_Input)
-    {
-        return this_()->traverseFieldPointer(a_Input);
-    }
+    bool traverse(InstanceT<FieldPointer> a_Input) { return this_()->traverseFieldPointer(a_Input); }
     bool traverseFieldPointer(InstanceT<FieldPointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromFieldPointer(a_Input)))
@@ -1030,14 +792,8 @@ public:
 
     // FunctionType
 
-    bool visitFunctionType(InstanceT<FunctionType> a_Input)
-    {
-        return true;
-    }
-    bool endFunctionType(InstanceT<FunctionType> a_Input)
-    {
-        return true;
-    }
+    bool visitFunctionType(InstanceT<FunctionType> a_Input) { return true; }
+    bool endFunctionType(InstanceT<FunctionType> a_Input) { return true; }
     bool walkUpVisitFromFunctionType(InstanceT<FunctionType> a_Input)
     {
         if (!(this_()->walkUpVisitFromType(a_Input)))
@@ -1050,10 +806,7 @@ public:
             return false;
         return this_()->walkUpEndFromType(a_Input);
     }
-    bool traverse(InstanceT<FunctionType> a_Input)
-    {
-        return this_()->traverseFunctionType(a_Input);
-    }
+    bool traverse(InstanceT<FunctionType> a_Input) { return this_()->traverseFunctionType(a_Input); }
     bool traverseFunctionType(InstanceT<FunctionType> a_Input)
     {
         if (!(this_()->walkUpVisitFromFunctionType(a_Input)))
@@ -1064,14 +817,8 @@ public:
 
     // Pointer
 
-    bool visitPointer(InstanceT<Pointer> a_Input)
-    {
-        return true;
-    }
-    bool endPointer(InstanceT<Pointer> a_Input)
-    {
-        return true;
-    }
+    bool visitPointer(InstanceT<Pointer> a_Input) { return true; }
+    bool endPointer(InstanceT<Pointer> a_Input) { return true; }
     bool walkUpVisitFromPointer(InstanceT<Pointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromPointerType(a_Input)))
@@ -1084,10 +831,7 @@ public:
             return false;
         return this_()->walkUpEndFromPointerType(a_Input);
     }
-    bool traverse(InstanceT<Pointer> a_Input)
-    {
-        return this_()->traversePointer(a_Input);
-    }
+    bool traverse(InstanceT<Pointer> a_Input) { return this_()->traversePointer(a_Input); }
     bool traversePointer(InstanceT<Pointer> a_Input)
     {
         if (!(this_()->walkUpVisitFromPointer(a_Input)))
@@ -1098,14 +842,8 @@ public:
 
     // Reference
 
-    bool visitReference(InstanceT<Reference> a_Input)
-    {
-        return true;
-    }
-    bool endReference(InstanceT<Reference> a_Input)
-    {
-        return true;
-    }
+    bool visitReference(InstanceT<Reference> a_Input) { return true; }
+    bool endReference(InstanceT<Reference> a_Input) { return true; }
     bool walkUpVisitFromReference(InstanceT<Reference> a_Input)
     {
         if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
@@ -1118,10 +856,7 @@ public:
             return false;
         return this_()->walkUpEndFromExtendedType(a_Input);
     }
-    bool traverse(InstanceT<Reference> a_Input)
-    {
-        return this_()->traverseReference(a_Input);
-    }
+    bool traverse(InstanceT<Reference> a_Input) { return this_()->traverseReference(a_Input); }
     bool traverseReference(InstanceT<Reference> a_Input)
     {
         if (!(this_()->walkUpVisitFromReference(a_Input)))
@@ -1132,14 +867,8 @@ public:
 
     // LValueReference
 
-    bool visitLValueReference(InstanceT<LValueReference> a_Input)
-    {
-        return true;
-    }
-    bool endLValueReference(InstanceT<LValueReference> a_Input)
-    {
-        return true;
-    }
+    bool visitLValueReference(InstanceT<LValueReference> a_Input) { return true; }
+    bool endLValueReference(InstanceT<LValueReference> a_Input) { return true; }
     bool walkUpVisitFromLValueReference(InstanceT<LValueReference> a_Input)
     {
         if (!(this_()->walkUpVisitFromReference(a_Input)))
@@ -1152,10 +881,7 @@ public:
             return false;
         return this_()->walkUpEndFromReference(a_Input);
     }
-    bool traverse(InstanceT<LValueReference> a_Input)
-    {
-        return this_()->traverseLValueReference(a_Input);
-    }
+    bool traverse(InstanceT<LValueReference> a_Input) { return this_()->traverseLValueReference(a_Input); }
     bool traverseLValueReference(InstanceT<LValueReference> a_Input)
     {
         if (!(this_()->walkUpVisitFromLValueReference(a_Input)))
@@ -1166,14 +892,8 @@ public:
 
     // RValueReference
 
-    bool visitRValueReference(InstanceT<RValueReference> a_Input)
-    {
-        return true;
-    }
-    bool endRValueReference(InstanceT<RValueReference> a_Input)
-    {
-        return true;
-    }
+    bool visitRValueReference(InstanceT<RValueReference> a_Input) { return true; }
+    bool endRValueReference(InstanceT<RValueReference> a_Input) { return true; }
     bool walkUpVisitFromRValueReference(InstanceT<RValueReference> a_Input)
     {
         if (!(this_()->walkUpVisitFromReference(a_Input)))
@@ -1186,10 +906,7 @@ public:
             return false;
         return this_()->walkUpEndFromReference(a_Input);
     }
-    bool traverse(InstanceT<RValueReference> a_Input)
-    {
-        return this_()->traverseRValueReference(a_Input);
-    }
+    bool traverse(InstanceT<RValueReference> a_Input) { return this_()->traverseRValueReference(a_Input); }
     bool traverseRValueReference(InstanceT<RValueReference> a_Input)
     {
         if (!(this_()->walkUpVisitFromRValueReference(a_Input)))
@@ -1200,14 +917,8 @@ public:
 
     // PrimitiveType
 
-    bool visitPrimitiveType(InstanceT<PrimitiveType> a_Input)
-    {
-        return true;
-    }
-    bool endPrimitiveType(InstanceT<PrimitiveType> a_Input)
-    {
-        return true;
-    }
+    bool visitPrimitiveType(InstanceT<PrimitiveType> a_Input) { return true; }
+    bool endPrimitiveType(InstanceT<PrimitiveType> a_Input) { return true; }
     bool walkUpVisitFromPrimitiveType(InstanceT<PrimitiveType> a_Input)
     {
         if (!(this_()->walkUpVisitFromType(a_Input)))
@@ -1220,10 +931,7 @@ public:
             return false;
         return this_()->walkUpEndFromType(a_Input);
     }
-    bool traverse(InstanceT<PrimitiveType> a_Input)
-    {
-        return this_()->traversePrimitiveType(a_Input);
-    }
+    bool traverse(InstanceT<PrimitiveType> a_Input) { return this_()->traversePrimitiveType(a_Input); }
     bool traversePrimitiveType(InstanceT<PrimitiveType> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -1234,14 +942,8 @@ public:
 
     // Enum
 
-    bool visitEnum(InstanceT<Enum> a_Input)
-    {
-        return true;
-    }
-    bool endEnum(InstanceT<Enum> a_Input)
-    {
-        return true;
-    }
+    bool visitEnum(InstanceT<Enum> a_Input) { return true; }
+    bool endEnum(InstanceT<Enum> a_Input) { return true; }
     bool walkUpVisitFromEnum(InstanceT<Enum> a_Input)
     {
         if (!(this_()->walkUpVisitFromPrimitiveType(a_Input)))
@@ -1254,10 +956,7 @@ public:
             return false;
         return this_()->walkUpEndFromPrimitiveType(a_Input);
     }
-    bool traverse(InstanceT<Enum> a_Input)
-    {
-        return this_()->traverseEnum(a_Input);
-    }
+    bool traverse(InstanceT<Enum> a_Input) { return this_()->traverseEnum(a_Input); }
     bool traverseEnum(InstanceT<Enum> a_Input)
     {
         if (!(this_()->walkUpVisitFromEnum(a_Input)))
@@ -1268,14 +967,8 @@ public:
 
     // Array
 
-    bool visitArray(InstanceT<Array> a_Input)
-    {
-        return true;
-    }
-    bool endArray(InstanceT<Array> a_Input)
-    {
-        return true;
-    }
+    bool visitArray(InstanceT<Array> a_Input) { return true; }
+    bool endArray(InstanceT<Array> a_Input) { return true; }
     bool walkUpVisitFromArray(InstanceT<Array> a_Input)
     {
         if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
@@ -1288,10 +981,7 @@ public:
             return false;
         return this_()->walkUpEndFromExtendedType(a_Input);
     }
-    bool traverse(InstanceT<Array> a_Input)
-    {
-        return this_()->traverseArray(a_Input);
-    }
+    bool traverse(InstanceT<Array> a_Input) { return this_()->traverseArray(a_Input); }
     bool traverseArray(InstanceT<Array> a_Input)
     {
         if (!(this_()->walkUpVisitFromArray(a_Input)))
@@ -1314,14 +1004,8 @@ public:
 
     // ClassType
 
-    bool visitClassType(InstanceT<ClassType> a_Input)
-    {
-        return true;
-    }
-    bool endClassType(InstanceT<ClassType> a_Input)
-    {
-        return true;
-    }
+    bool visitClassType(InstanceT<ClassType> a_Input) { return true; }
+    bool endClassType(InstanceT<ClassType> a_Input) { return true; }
     bool walkUpVisitFromClassType(InstanceT<ClassType> a_Input)
     {
         if (!(this_()->walkUpVisitFromType(a_Input)))
@@ -1356,14 +1040,8 @@ public:
 
     // Structure
 
-    bool visitStructure(InstanceT<Structure> a_Input)
-    {
-        return true;
-    }
-    bool endStructure(InstanceT<Structure> a_Input)
-    {
-        return true;
-    }
+    bool visitStructure(InstanceT<Structure> a_Input) { return true; }
+    bool endStructure(InstanceT<Structure> a_Input) { return true; }
     bool walkUpVisitFromStructure(InstanceT<Structure> a_Input)
     {
         if (!(this_()->walkUpVisitFromClassType(a_Input)))
@@ -1376,10 +1054,7 @@ public:
             return false;
         return this_()->walkUpEndFromClassType(a_Input);
     }
-    bool traverse(InstanceT<Structure> a_Input)
-    {
-        return this_()->traverseStructure(a_Input);
-    }
+    bool traverse(InstanceT<Structure> a_Input) { return this_()->traverseStructure(a_Input); }
     bool traverseStructure(InstanceT<Structure> a_Input)
     {
         if (!(this_()->walkUpVisitFromStructure(a_Input)))
@@ -1392,14 +1067,8 @@ public:
 
     // Union
 
-    bool visitUnion(InstanceT<Union> a_Input)
-    {
-        return true;
-    }
-    bool endUnion(InstanceT<Union> a_Input)
-    {
-        return true;
-    }
+    bool visitUnion(InstanceT<Union> a_Input) { return true; }
+    bool endUnion(InstanceT<Union> a_Input) { return true; }
     bool walkUpVisitFromUnion(InstanceT<Union> a_Input)
     {
         if (!(this_()->walkUpVisitFromClassType(a_Input)))
@@ -1412,10 +1081,7 @@ public:
             return false;
         return this_()->walkUpEndFromClassType(a_Input);
     }
-    bool traverse(InstanceT<Union> a_Input)
-    {
-        return this_()->traverseUnion(a_Input);
-    }
+    bool traverse(InstanceT<Union> a_Input) { return this_()->traverseUnion(a_Input); }
     bool traverseUnion(InstanceT<Union> a_Input)
     {
         if (!(this_()->walkUpVisitFromUnion(a_Input)))
@@ -1428,22 +1094,10 @@ public:
 
     // ValueMember
 
-    bool visitValueMember(MemberAccessT<ValueMember> a_Input)
-    {
-        return true;
-    }
-    bool endValueMember(MemberAccessT<ValueMember> a_Input)
-    {
-        return true;
-    }
-    bool walkUpVisitFromValueMember(MemberAccessT<ValueMember> a_Input)
-    {
-        return this_()->visitValueMember(a_Input);
-    }
-    bool walkUpEndFromValueMember(MemberAccessT<ValueMember> a_Input)
-    {
-        return this_()->endValueMember(a_Input);
-    }
+    bool visitValueMember(MemberAccessT<ValueMember> a_Input) { return true; }
+    bool endValueMember(MemberAccessT<ValueMember> a_Input) { return true; }
+    bool walkUpVisitFromValueMember(MemberAccessT<ValueMember> a_Input) { return this_()->visitValueMember(a_Input); }
+    bool walkUpEndFromValueMember(MemberAccessT<ValueMember> a_Input) { return this_()->endValueMember(a_Input); }
     bool traverse(MemberAccessT<ValueMember> a_Input)
     {
         if (auto d0 = a_Input.as<Field>())
@@ -1453,21 +1107,12 @@ public:
         return this_()->traverseValueMember(a_Input);
     }
 
-    bool traverseValueMember(MemberAccessT<ValueMember> a_Input)
-    {
-        return true;
-    };
+    bool traverseValueMember(MemberAccessT<ValueMember> a_Input) { return true; };
 
     // Field
 
-    bool visitField(MemberAccessT<Field> a_Input)
-    {
-        return true;
-    }
-    bool endField(MemberAccessT<Field> a_Input)
-    {
-        return true;
-    }
+    bool visitField(MemberAccessT<Field> a_Input) { return true; }
+    bool endField(MemberAccessT<Field> a_Input) { return true; }
     bool walkUpVisitFromField(MemberAccessT<Field> a_Input)
     {
         if (!(this_()->walkUpVisitFromValueMember(a_Input)))
@@ -1480,10 +1125,7 @@ public:
             return false;
         return this_()->walkUpEndFromValueMember(a_Input);
     }
-    bool traverse(MemberAccessT<Field> a_Input)
-    {
-        return this_()->traverseField(a_Input);
-    }
+    bool traverse(MemberAccessT<Field> a_Input) { return this_()->traverseField(a_Input); }
     bool traverseField(MemberAccessT<Field> a_Input)
     {
         if (!(this_()->walkUpVisitFromField(a_Input)))
@@ -1497,14 +1139,8 @@ public:
 
     // Property
 
-    bool visitProperty(MemberAccessT<Property> a_Input)
-    {
-        return true;
-    }
-    bool endProperty(MemberAccessT<Property> a_Input)
-    {
-        return true;
-    }
+    bool visitProperty(MemberAccessT<Property> a_Input) { return true; }
+    bool endProperty(MemberAccessT<Property> a_Input) { return true; }
     bool walkUpVisitFromProperty(MemberAccessT<Property> a_Input)
     {
         if (!(this_()->walkUpVisitFromValueMember(a_Input)))
@@ -1517,10 +1153,7 @@ public:
             return false;
         return this_()->walkUpEndFromValueMember(a_Input);
     }
-    bool traverse(MemberAccessT<Property> a_Input)
-    {
-        return this_()->traverseProperty(a_Input);
-    }
+    bool traverse(MemberAccessT<Property> a_Input) { return this_()->traverseProperty(a_Input); }
     bool traverseProperty(MemberAccessT<Property> a_Input)
     {
         if (!(this_()->walkUpVisitFromProperty(a_Input)))
@@ -1539,14 +1172,8 @@ public:
 
     // BaseClass
 
-    bool visitBaseClass(InstanceT<BaseClass> a_Input)
-    {
-        return true;
-    }
-    bool endBaseClass(InstanceT<BaseClass> a_Input)
-    {
-        return true;
-    }
+    bool visitBaseClass(InstanceT<BaseClass> a_Input) { return true; }
+    bool endBaseClass(InstanceT<BaseClass> a_Input) { return true; }
 
     bool traverseBaseClass(InstanceT<BaseClass> a_Input)
     {
@@ -1557,21 +1184,12 @@ public:
         return this_()->endBaseClass(a_Input);
     }
 
-    bool traverse(InstanceT<BaseClass> a_Input)
-    {
-        return this_()->traverseBaseClass(a_Input);
-    }
+    bool traverse(InstanceT<BaseClass> a_Input) { return this_()->traverseBaseClass(a_Input); }
 
     // Class
 
-    bool visitClass(InstanceT<Class> a_Input)
-    {
-        return true;
-    }
-    bool endClass(InstanceT<Class> a_Input)
-    {
-        return true;
-    }
+    bool visitClass(InstanceT<Class> a_Input) { return true; }
+    bool endClass(InstanceT<Class> a_Input) { return true; }
     bool walkUpVisitFromClass(InstanceT<Class> a_Input)
     {
         if (!(this_()->walkUpVisitFromClassType(a_Input)))
@@ -1616,14 +1234,8 @@ public:
 
     // StlVectorClass
 
-    bool visitStlVectorClass(InstanceT<StlVectorClass> a_Input)
-    {
-        return true;
-    }
-    bool endStlVectorClass(InstanceT<StlVectorClass> a_Input)
-    {
-        return true;
-    }
+    bool visitStlVectorClass(InstanceT<StlVectorClass> a_Input) { return true; }
+    bool endStlVectorClass(InstanceT<StlVectorClass> a_Input) { return true; }
     bool walkUpVisitFromStlVectorClass(InstanceT<StlVectorClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
@@ -1636,10 +1248,7 @@ public:
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlVectorClass> a_Input)
-    {
-        return this_()->traverseStlVectorClass(a_Input);
-    }
+    bool traverse(InstanceT<StlVectorClass> a_Input) { return this_()->traverseStlVectorClass(a_Input); }
     bool traverseStlVectorClass(InstanceT<StlVectorClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromStlVectorClass(a_Input)))
@@ -1664,14 +1273,8 @@ public:
 
     // StlMapClass
 
-    bool visitStlMapClass(InstanceT<StlMapClass> a_Input)
-    {
-        return true;
-    }
-    bool endStlMapClass(InstanceT<StlMapClass> a_Input)
-    {
-        return true;
-    }
+    bool visitStlMapClass(InstanceT<StlMapClass> a_Input) { return true; }
+    bool endStlMapClass(InstanceT<StlMapClass> a_Input) { return true; }
     bool walkUpVisitFromStlMapClass(InstanceT<StlMapClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
@@ -1684,10 +1287,7 @@ public:
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlMapClass> a_Input)
-    {
-        return this_()->traverseStlMapClass(a_Input);
-    }
+    bool traverse(InstanceT<StlMapClass> a_Input) { return this_()->traverseStlMapClass(a_Input); }
     bool traverseStlMapClass(InstanceT<StlMapClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromStlMapClass(a_Input)))
@@ -1710,14 +1310,8 @@ public:
 
     // StlSetClass
 
-    bool visitStlSetClass(InstanceT<StlSetClass> a_Input)
-    {
-        return true;
-    }
-    bool endStlSetClass(InstanceT<StlSetClass> a_Input)
-    {
-        return true;
-    }
+    bool visitStlSetClass(InstanceT<StlSetClass> a_Input) { return true; }
+    bool endStlSetClass(InstanceT<StlSetClass> a_Input) { return true; }
     bool walkUpVisitFromStlSetClass(InstanceT<StlSetClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
@@ -1730,10 +1324,7 @@ public:
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlSetClass> a_Input)
-    {
-        return this_()->traverseStlSetClass(a_Input);
-    }
+    bool traverse(InstanceT<StlSetClass> a_Input) { return this_()->traverseStlSetClass(a_Input); }
     bool traverseStlSetClass(InstanceT<StlSetClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromStlSetClass(a_Input)))
@@ -1756,14 +1347,8 @@ public:
 
     // StringClass
 
-    bool visitStringClass(InstanceT<StringClass> a_Input)
-    {
-        return true;
-    }
-    bool endStringClass(InstanceT<StringClass> a_Input)
-    {
-        return true;
-    }
+    bool visitStringClass(InstanceT<StringClass> a_Input) { return true; }
+    bool endStringClass(InstanceT<StringClass> a_Input) { return true; }
     bool walkUpVisitFromStringClass(InstanceT<StringClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
@@ -1776,10 +1361,7 @@ public:
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StringClass> a_Input)
-    {
-        return this_()->traverseStringClass(a_Input);
-    }
+    bool traverse(InstanceT<StringClass> a_Input) { return this_()->traverseStringClass(a_Input); }
     bool traverseStringClass(InstanceT<StringClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromStringClass(a_Input)))
@@ -1789,15 +1371,9 @@ public:
 
     // Containers ..
 
-    bool visitContainerElement(InstanceT<Type> a_Input, size_t a_Index)
-    {
-        return true;
-    }
+    bool visitContainerElement(InstanceT<Type> a_Input, size_t a_Index) { return true; }
 
-    bool endContainerElement(InstanceT<Type> a_Input, size_t a_Index)
-    {
-        return true;
-    }
+    bool endContainerElement(InstanceT<Type> a_Input, size_t a_Index) { return true; }
 
     bool traverseContainerElement(InstanceT<Type> a_Input, size_t a_Index)
     {
@@ -1808,15 +1384,9 @@ public:
         return this_()->endContainerElement(a_Input, a_Index);
     }
 
-    bool visitContainer(InstanceT<Type> a_Input)
-    {
-        return true;
-    }
+    bool visitContainer(InstanceT<Type> a_Input) { return true; }
 
-    bool endContainer(InstanceT<Type> a_Input)
-    {
-        return true;
-    }
+    bool endContainer(InstanceT<Type> a_Input) { return true; }
 };
 } // namespace reflection
 } // namespace phantom

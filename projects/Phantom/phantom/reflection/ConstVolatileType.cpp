@@ -7,7 +7,7 @@
 /* ******************* Includes ****************** */
 #include "ConstVolatileType.h"
 
-#include <phantom/Delegate.h>
+#include <phantom/utils/Delegate.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -21,8 +21,7 @@ ConstVolatileType::ConstVolatileType(Type* a_pType)
     addReferencedElement(a_pType);
 }
 
-bool ConstVolatileType::partialAccepts(Type* a_pType, size_t& a_Score,
-                                       PlaceholderMap& a_Deductions) const
+bool ConstVolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
     if (a_pType->asConstVolatileType())
     {
@@ -37,8 +36,8 @@ bool ConstVolatileType::partialAccepts(Type* a_pType, size_t& a_Score,
 bool ConstVolatileType::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asConstVolatileType() AND m_pUnderlyingType->isSame(
-    static_cast<ConstVolatileType*>(a_pOther)->m_pUnderlyingType));
+    this OR(a_pOther->asConstVolatileType()
+            AND m_pUnderlyingType->isSame(static_cast<ConstVolatileType*>(a_pOther)->m_pUnderlyingType));
 }
 
 void ConstVolatileType::getUniqueName(StringBuffer& a_Buf) const

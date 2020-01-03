@@ -5,20 +5,18 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #ifndef __DOXYGEN__
-#    include <phantom/StringUtil.h>
-#    include <phantom/phantom_priv.h>
+#    include <phantom/detail/phantom_priv.h>
+#    include <phantom/utils/StringUtil.h>
 #endif
 #include "Alias.h"
 #include "Application.h"
 #include "Namespace.h"
 #include "Namespace.hxx"
 #include "Template.h"
-#include "phantom/Placement.h"
-#include "phantom/phantom_priv.h"
 
-#include <phantom/new_ex.h>
+#include <phantom/detail/phantom_priv.h>
+#include <phantom/utils/Placement.h>
 /* *********************************************** */
 namespace phantom
 {

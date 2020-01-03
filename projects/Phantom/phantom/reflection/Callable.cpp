@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Callable.h"
 /* *********************************************** */
 namespace phantom

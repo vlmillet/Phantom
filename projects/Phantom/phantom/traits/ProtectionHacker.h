@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include <phantom/macros.h>
+#include <phantom/detail/macros.h>
 
 /// @cond ADVANCED
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"
+#if defined(__clang__)
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"
+#endif
 
 namespace phantom
 {
@@ -69,6 +71,10 @@ struct Dtor final : public detail::DtorH<t_Ty, std::is_final<t_Ty>::value>
 };
 
 } // namespace phantom
+
+#if defined(__clang__)
+#    pragma clang diagnostic pop
+#endif
 
 #if defined(__clang__)
 #    pragma clang diagnostic pop

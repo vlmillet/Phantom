@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Signature.h"
 
 #include "Application.h"
@@ -13,9 +12,8 @@
 #include "Source.h"
 #include "Subroutine.h"
 
-#include <phantom/StringUtil.h>
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
+#include <phantom/utils/StringUtil.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -479,10 +477,7 @@ Expression* Signature::getParameterDefaultValueExpression(size_t a_uiParamIndex)
 
 void Signature::setParameterName(size_t i, StringView a_strName)
 {
-    if (isNative())
-    {
-        PHANTOM_THROW_EXCEPTION(exception::Exception, "Attempt to modify a native language element");
-    }
+    PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(m_Parameters[i]->m_strName == a_strName || m_Parameters[i]->m_strName.empty(),
                    "attempt to change a non-empty parameter name");
     m_Parameters[i]->m_strName = a_strName;

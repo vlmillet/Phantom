@@ -22,7 +22,8 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Functor.hxx>
+#include <phantom/utils/Functor.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 

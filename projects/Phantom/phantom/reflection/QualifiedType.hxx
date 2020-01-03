@@ -21,6 +21,14 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -58,7 +66,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*) const, virtual_|override_>("destroy", &_::destroy)
             .method<void*() const, virtual_|override_>("newInstance", &_::newInstance)
             .method<void(void*) const, virtual_|override_>("deleteInstance", &_::deleteInstance)
-            .method<ERelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
+            .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
             .method<bool(void const*, void const*) const, virtual_|override_>("equal", &_::equal)
             .method<void(StringView, void*) const, virtual_|override_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToString", &_::valueToString)

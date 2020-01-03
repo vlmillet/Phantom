@@ -7,16 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include "phantom/Constructor.h"
-
-#include <phantom/EmbeddedRtti.h>
-#include <phantom/SmallVector.h>
-#include <phantom/StringBuffer.h>
-#include <phantom/newImpl.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/Constructor.h>
+#include <phantom/detail/newImpl.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/reflection/CodeLocation.h>
 #include <phantom/reflection/LanguageElementVisitor.h>
 #include <phantom/reflection/reflection.h>
+#include <phantom/utils/SmallVector.h>
+#include <phantom/utils/StringBuffer.h>
 /* *********************************************** */
 
 namespace phantom
@@ -51,7 +49,7 @@ typedef SmallMap<Placeholder*, LanguageElement*> PlaceholderMap;
 typedef SmallSet<Module*>                        ModuleSet;
 
 /// \brief  Base implementation of every language element.
-class PHANTOM_EXPORT_PHANTOM LanguageElement
+class PHANTOM_EXPORT_PHANTOM LanguageElement : public Object
 {
 public:
     friend class phantom::reflection::LanguageElementVisitor;
@@ -73,10 +71,7 @@ public:
 
 public:
     typedef Delegate<Symbol*(Symbol*, bool)> SymbolFilter;
-    static Symbol*                           NoFilter(Symbol* a_pSymbol, bool /*a_bUnamedSubSymbol*/)
-    {
-        return a_pSymbol;
-    }
+    static Symbol* NoFilter(Symbol* a_pSymbol, bool /*a_bUnamedSubSymbol*/) { return a_pSymbol; }
     static Symbol* PublicFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
     static Symbol* PublicIfUnamedSubSymbolFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
 
@@ -85,24 +80,6 @@ public:
     void terminate();
 
 public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  most derived address of this LanguageElement.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void* getMostDerived() const
-    {
-        return PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  meta class of this LanguageElement.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Class* getMetaClass() const
-    {
-        return PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets elements owned by this one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,355 +120,94 @@ public:
 
     bool hasReferencingElement(LanguageElement* a_pLanguageElement) const;
 
-    virtual Type* asAddressType() const
-    {
-        return nullptr;
-    }
-    virtual Alias* asAlias() const
-    {
-        return nullptr;
-    }
-    virtual AnonymousSection* asAnonymousSection() const
-    {
-        return nullptr;
-    }
-    virtual AnonymousStruct* asAnonymousStruct() const
-    {
-        return nullptr;
-    }
-    virtual AnonymousUnion* asAnonymousUnion() const
-    {
-        return nullptr;
-    }
-    virtual PrimitiveType* asArithmeticType() const
-    {
-        return nullptr;
-    }
-    virtual Array* asArray() const
-    {
-        return nullptr;
-    }
-    virtual Block* asBlock() const
-    {
-        return nullptr;
-    }
-    virtual Class* asClass() const
-    {
-        return nullptr;
-    }
-    virtual Pointer* asClassPointer() const
-    {
-        return nullptr;
-    }
-    virtual LValueReference* asClassLValueReference() const
-    {
-        return nullptr;
-    }
-    virtual RValueReference* asClassRValueReference() const
-    {
-        return nullptr;
-    }
-    virtual Type* asClassAddressType() const
-    {
-        return nullptr;
-    }
-    virtual ClassType* asClassType() const
-    {
-        return nullptr;
-    }
-    virtual Constant* asConstant() const
-    {
-        return nullptr;
-    }
-    virtual ConstType* asConstClass() const
-    {
-        return nullptr;
-    }
-    virtual Pointer* asConstClassPointer() const
-    {
-        return nullptr;
-    }
-    virtual LValueReference* asConstClassLValueReference() const
-    {
-        return nullptr;
-    }
-    virtual RValueReference* asConstClassRValueReference() const
-    {
-        return nullptr;
-    }
-    virtual Type* asConstClassAddressType() const
-    {
-        return nullptr;
-    }
-    virtual Constructor* asConstructor() const
-    {
-        return nullptr;
-    }
-    virtual ConstType* asConstType() const
-    {
-        return nullptr;
-    }
-    Reference*                 asConstLValueReference() const;
-    virtual ConstVolatileType* asConstVolatileType() const
-    {
-        return nullptr;
-    }
-    virtual ContainerClass* asContainerClass() const
-    {
-        return nullptr;
-    }
-    virtual DataElement* asDataElement() const
-    {
-        return nullptr;
-    }
-    virtual FieldPointer* asFieldPointer() const
-    {
-        return nullptr;
-    }
-    virtual Pointer* asPointer() const
-    {
-        return nullptr;
-    }
-    virtual Destructor* asDestructor() const
-    {
-        return nullptr;
-    }
-    virtual Ellipsis* asEllipsis() const
-    {
-        return nullptr;
-    } // not yet implemented
-    virtual Enum* asEnum() const
-    {
-        return nullptr;
-    }
-    virtual Evaluable* asEvaluable() const
-    {
-        return nullptr;
-    }
-    virtual Expression* asExpression() const
-    {
-        return nullptr;
-    }
-    virtual Field* asField() const
-    {
-        return nullptr;
-    }
-    virtual PrimitiveType* asFloatingPointType() const
-    {
-        return nullptr;
-    }
-    virtual Function* asFunction() const
-    {
-        return nullptr;
-    }
-    virtual FunctionPointer* asFunctionPointer() const
-    {
-        return nullptr;
-    }
-    virtual FunctionType* asFunctionType() const
-    {
-        return nullptr;
-    }
-    virtual PrimitiveType* asFundamentalType() const
-    {
-        return nullptr;
-    }
-    virtual InitializerListType* asInitializerListType() const
-    {
-        return nullptr;
-    }
-    virtual PrimitiveType* asIntegralType() const
-    {
-        return nullptr;
-    }
-    inline LanguageElement* asLanguageElement() const
-    {
-        return (LanguageElement*)this;
-    }
-    virtual LocalVariable* asLocalVariable() const
-    {
-        return nullptr;
-    }
-    virtual LValueReference* asLValueReference() const
-    {
-        return nullptr;
-    }
-    virtual StlMapClass* asMapContainerClass() const
-    {
-        return nullptr;
-    }
-    virtual MemberAnonymousSection* asMemberAnonymousSection() const
-    {
-        return nullptr;
-    }
-    virtual MemberAnonymousStruct* asMemberAnonymousStruct() const
-    {
-        return nullptr;
-    }
-    virtual MemberAnonymousUnion* asMemberAnonymousUnion() const
-    {
-        return nullptr;
-    }
-    virtual MethodPointer* asMethodPointer() const
-    {
-        return nullptr;
-    }
-    virtual MemberPointer* asMemberPointer() const
-    {
-        return nullptr;
-    }
-    virtual Method* asMethod() const
-    {
-        return nullptr;
-    }
-    virtual Module* asModule() const
-    {
-        return nullptr;
-    }
-    virtual Symbol* asSymbol() const
-    {
-        return nullptr;
-    }
-    virtual Namespace* asNamespace() const
-    {
-        return nullptr;
-    }
-    virtual Type* asNullptrType() const
-    {
-        return nullptr;
-    }
-    virtual Package* asPackage() const
-    {
-        return nullptr;
-    }
-    virtual PackageFolder* asPackageFolder() const
-    {
-        return nullptr;
-    }
-    virtual Parameter* asParameter() const
-    {
-        return nullptr;
-    }
-    virtual Placeholder* asPlaceholder() const
-    {
-        return nullptr;
-    }
-    virtual Type* asPOD() const
-    {
-        return nullptr;
-    }
-    virtual PointerType* asPointerType() const
-    {
-        return nullptr;
-    }
-    virtual ExtendedType* asExtendedType() const
-    {
-        return nullptr;
-    }
-    virtual PrimitiveType* asPrimitiveType() const
-    {
-        return nullptr;
-    }
-    virtual Property* asProperty() const
-    {
-        return nullptr;
-    }
-    virtual Reference* asReference() const
-    {
-        return nullptr;
-    }
-    virtual RValueReference* asRValueReference() const
-    {
-        return nullptr;
-    }
-    virtual Scope* asScope() const
-    {
-        return nullptr;
-    }
-    virtual SequentialContainerClass* asSequentialContainerClass() const
-    {
-        return nullptr;
-    }
-    virtual StlSetClass* asSetContainerClass() const
-    {
-        return nullptr;
-    }
-    virtual Signal* asSignal() const
-    {
-        return nullptr;
-    }
-    virtual Signature* asSignature() const
-    {
-        return nullptr;
-    }
-    virtual Method* asSlot() const
-    {
-        return nullptr;
-    }
-    virtual Source* asSource() const
-    {
-        return nullptr;
-    }
-    virtual Statement* asStatement() const
-    {
-        return nullptr;
-    }
-    virtual StaticField* asStaticField() const
-    {
-        return nullptr;
-    }
-    virtual StaticMethod* asStaticMethod() const
-    {
-        return nullptr;
-    }
-    virtual Structure* asStructure() const
-    {
-        return nullptr;
-    }
-    virtual Subroutine* asSubroutine() const
-    {
-        return nullptr;
-    }
-    virtual Template* asTemplate() const
-    {
-        return nullptr;
-    }
-    virtual TemplateParameter* asTemplateParameter() const
-    {
-        return nullptr;
-    }
-    virtual TemplateSignature* asTemplateSignature() const
-    {
-        return nullptr;
-    }
-    virtual TemplateSpecialization* asTemplateSpecialization() const
-    {
-        return nullptr;
-    }
-    virtual Type* asType() const
-    {
-        return nullptr;
-    }
-    virtual Union* asUnion() const
-    {
-        return nullptr;
-    }
-    virtual ValueMember* asValueMember() const
-    {
-        return nullptr;
-    }
-    virtual Variable* asVariable() const
-    {
-        return nullptr;
-    }
-    virtual VirtualMethodTable* asVirtualMethodTable() const
-    {
-        return nullptr;
-    }
-    virtual VolatileType* asVolatileType() const
-    {
-        return nullptr;
-    }
+    virtual Type*                     asAddressType() const { return nullptr; }
+    virtual Alias*                    asAlias() const { return nullptr; }
+    virtual AnonymousSection*         asAnonymousSection() const { return nullptr; }
+    virtual AnonymousStruct*          asAnonymousStruct() const { return nullptr; }
+    virtual AnonymousUnion*           asAnonymousUnion() const { return nullptr; }
+    virtual PrimitiveType*            asArithmeticType() const { return nullptr; }
+    virtual Array*                    asArray() const { return nullptr; }
+    virtual Block*                    asBlock() const { return nullptr; }
+    virtual Class*                    asClass() const { return nullptr; }
+    virtual Pointer*                  asClassPointer() const { return nullptr; }
+    virtual LValueReference*          asClassLValueReference() const { return nullptr; }
+    virtual RValueReference*          asClassRValueReference() const { return nullptr; }
+    virtual Type*                     asClassAddressType() const { return nullptr; }
+    virtual ClassType*                asClassType() const { return nullptr; }
+    virtual Constant*                 asConstant() const { return nullptr; }
+    virtual ConstType*                asConstClass() const { return nullptr; }
+    virtual Pointer*                  asConstClassPointer() const { return nullptr; }
+    virtual LValueReference*          asConstClassLValueReference() const { return nullptr; }
+    virtual RValueReference*          asConstClassRValueReference() const { return nullptr; }
+    virtual Type*                     asConstClassAddressType() const { return nullptr; }
+    virtual Constructor*              asConstructor() const { return nullptr; }
+    virtual ConstType*                asConstType() const { return nullptr; }
+    Reference*                        asConstLValueReference() const;
+    virtual ConstVolatileType*        asConstVolatileType() const { return nullptr; }
+    virtual ContainerClass*           asContainerClass() const { return nullptr; }
+    virtual DataElement*              asDataElement() const { return nullptr; }
+    virtual FieldPointer*             asFieldPointer() const { return nullptr; }
+    virtual Pointer*                  asPointer() const { return nullptr; }
+    virtual Destructor*               asDestructor() const { return nullptr; }
+    virtual Ellipsis*                 asEllipsis() const { return nullptr; } // not yet implemented
+    virtual Enum*                     asEnum() const { return nullptr; }
+    virtual Evaluable*                asEvaluable() const { return nullptr; }
+    virtual Expression*               asExpression() const { return nullptr; }
+    virtual Field*                    asField() const { return nullptr; }
+    virtual PrimitiveType*            asFloatingPointType() const { return nullptr; }
+    virtual Function*                 asFunction() const { return nullptr; }
+    virtual FunctionPointer*          asFunctionPointer() const { return nullptr; }
+    virtual FunctionType*             asFunctionType() const { return nullptr; }
+    virtual PrimitiveType*            asFundamentalType() const { return nullptr; }
+    virtual InitializerListType*      asInitializerListType() const { return nullptr; }
+    virtual PrimitiveType*            asIntegralType() const { return nullptr; }
+    inline LanguageElement*           asLanguageElement() const { return (LanguageElement*)this; }
+    virtual LocalVariable*            asLocalVariable() const { return nullptr; }
+    virtual LValueReference*          asLValueReference() const { return nullptr; }
+    virtual StlMapClass*              asMapContainerClass() const { return nullptr; }
+    virtual MemberAnonymousSection*   asMemberAnonymousSection() const { return nullptr; }
+    virtual MemberAnonymousStruct*    asMemberAnonymousStruct() const { return nullptr; }
+    virtual MemberAnonymousUnion*     asMemberAnonymousUnion() const { return nullptr; }
+    virtual MethodPointer*            asMethodPointer() const { return nullptr; }
+    virtual MemberPointer*            asMemberPointer() const { return nullptr; }
+    virtual Method*                   asMethod() const { return nullptr; }
+    virtual Module*                   asModule() const { return nullptr; }
+    virtual Symbol*                   asSymbol() const { return nullptr; }
+    virtual Namespace*                asNamespace() const { return nullptr; }
+    virtual Type*                     asNullptrType() const { return nullptr; }
+    virtual Package*                  asPackage() const { return nullptr; }
+    virtual PackageFolder*            asPackageFolder() const { return nullptr; }
+    virtual Parameter*                asParameter() const { return nullptr; }
+    virtual Placeholder*              asPlaceholder() const { return nullptr; }
+    virtual Type*                     asPOD() const { return nullptr; }
+    virtual PointerType*              asPointerType() const { return nullptr; }
+    virtual ExtendedType*             asExtendedType() const { return nullptr; }
+    virtual PrimitiveType*            asPrimitiveType() const { return nullptr; }
+    virtual Property*                 asProperty() const { return nullptr; }
+    virtual Reference*                asReference() const { return nullptr; }
+    virtual RValueReference*          asRValueReference() const { return nullptr; }
+    virtual Scope*                    asScope() const { return nullptr; }
+    virtual SequentialContainerClass* asSequentialContainerClass() const { return nullptr; }
+    virtual StlSetClass*              asSetContainerClass() const { return nullptr; }
+    virtual Signal*                   asSignal() const { return nullptr; }
+    virtual Signature*                asSignature() const { return nullptr; }
+    virtual Method*                   asSlot() const { return nullptr; }
+    virtual Source*                   asSource() const { return nullptr; }
+    virtual Statement*                asStatement() const { return nullptr; }
+    virtual StaticField*              asStaticField() const { return nullptr; }
+    virtual StaticMethod*             asStaticMethod() const { return nullptr; }
+    virtual Structure*                asStructure() const { return nullptr; }
+    virtual Subroutine*               asSubroutine() const { return nullptr; }
+    virtual Template*                 asTemplate() const { return nullptr; }
+    virtual TemplateParameter*        asTemplateParameter() const { return nullptr; }
+    virtual TemplateSignature*        asTemplateSignature() const { return nullptr; }
+    virtual TemplateSpecialization*   asTemplateSpecialization() const { return nullptr; }
+    virtual Type*                     asType() const { return nullptr; }
+    virtual Union*                    asUnion() const { return nullptr; }
+    virtual ValueMember*              asValueMember() const { return nullptr; }
+    virtual Variable*                 asVariable() const { return nullptr; }
+    virtual VirtualMethodTable*       asVirtualMethodTable() const { return nullptr; }
+    virtual VolatileType*             asVolatileType() const { return nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Converts this element to type if possible.
@@ -501,10 +217,7 @@ public:
     /// \return The resulting expression.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* toType() const
-    {
-        return asType();
-    }
+    virtual Type* toType() const { return asType(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if the given element is friend of this element.
@@ -514,10 +227,7 @@ public:
     /// \return true if friend, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool hasFriend(Symbol*) const
-    {
-        return false;
-    }
+    virtual bool hasFriend(Symbol*) const { return false; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query the given element is a sub element of this element.
@@ -527,10 +237,7 @@ public:
     /// \return true if element, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool hasElement(LanguageElement* a_pElement) const
-    {
-        return a_pElement->m_pOwner == this;
-    }
+    bool hasElement(LanguageElement* a_pElement) const { return a_pElement->m_pOwner == this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if the given element is friend of this element, recursively through all
@@ -569,30 +276,7 @@ public:
         return hasElement(a_pElement) OR(m_pOwner AND m_pOwner->hasElementCascade(a_pElement));
     }
 
-    virtual bool isCompileTime() const
-    {
-        return false;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Mark this element as invalid an generate error message describing the reason.
-    ///
-    /// \param  a_Format    The message formatting.
-    ///
-    /// \return The error message.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Message* error(const char* a_Format, ...);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Mark this element as invalid an generate a sub error message describing the reason,
-    /// attached to the main error message.
-    ///
-    /// \param  a_Format    The message formatting.
-    ///
-    /// \return The sub verror message.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    Message* subError(const char* a_Format, ...);
+    virtual bool isCompileTime() const { return false; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the owner of this element.
@@ -600,9 +284,16 @@ public:
     /// \return The owner.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PHANTOM_FORCEINLINE LanguageElement* getOwner() const
+    PHANTOM_FORCEINLINE LanguageElement* getOwner() const { return m_pOwner; }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the root of this element.
+    ///
+    /// \return The root of this element.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    LanguageElement* getRootElement() const
     {
-        return m_pOwner;
+        return m_pOwner ? m_pOwner->getRootElement() : const_cast<LanguageElement*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1060,10 +751,7 @@ public:
     /// \return The flags.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint getFlags() const
-    {
-        return m_uiFlags;
-    }
+    uint getFlags() const { return m_uiFlags; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets a flag on this element.
@@ -1071,10 +759,7 @@ public:
     /// \param  flag    The flag.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setFlag(uint flag)
-    {
-        m_uiFlags |= flag;
-    }
+    void setFlag(uint flag) { m_uiFlags |= flag; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add flags to this element.
@@ -1082,10 +767,7 @@ public:
     /// \param  flags    The flags.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void addFlags(uint flags)
-    {
-        m_uiFlags |= flags;
-    }
+    void addFlags(uint flags) { m_uiFlags |= flags; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Remove flags from this element.
@@ -1093,10 +775,7 @@ public:
     /// \param  flags    The flags.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void removeFlags(uint flags)
-    {
-        m_uiFlags &= ~flags;
-    }
+    void removeFlags(uint flags) { m_uiFlags &= ~flags; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the flags of this element.
@@ -1104,10 +783,7 @@ public:
     /// \param  flags    The flags.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setFlags(uint flags)
-    {
-        m_uiFlags = flags;
-    }
+    void setFlags(uint flags) { m_uiFlags = flags; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Tests if given flags match this element's ones.
@@ -1117,28 +793,16 @@ public:
     /// \return true if the test passes, false if the test fails.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool testFlags(uint flags) const
-    {
-        return (m_uiFlags & flags) == flags;
-    }
+    bool testFlags(uint flags) const { return (m_uiFlags & flags) == flags; }
 
-    PHANTOM_FORCEINLINE bool isNative() const
-    {
-        return testFlags(PHANTOM_R_FLAG_NATIVE);
-    }
-    PHANTOM_FORCEINLINE bool isInvalid() const
-    {
-        return testFlags(PHANTOM_R_FLAG_INVALID);
-    }
+    PHANTOM_FORCEINLINE bool isNative() const { return testFlags(PHANTOM_R_FLAG_NATIVE); }
+    PHANTOM_FORCEINLINE bool isInvalid() const { return testFlags(PHANTOM_R_FLAG_INVALID); }
 
     bool isTemplateDependant() const
     {
         return ((m_uiFlags & PHANTOM_R_FLAG_TEMPLATE_DEPENDANT) == PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
     }
-    void setTemplateDependant()
-    {
-        m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT;
-    }
+    void setTemplateDependant() { m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; }
 
     void setInvalid();
     bool isIncomplete() const;
@@ -1149,16 +813,10 @@ public:
         return (m_uiFlags & PHANTOM_R_ALWAYS_VALID) == PHANTOM_R_ALWAYS_VALID;
     }
 
-    virtual bool isTemplateInstance() const
-    {
-        return false;
-    }
+    virtual bool isTemplateInstance() const { return false; }
 
     /// \brief  Sets this element as 'shared'.
-    PHANTOM_FORCEINLINE void setShared()
-    {
-        m_uiFlags |= PHANTOM_R_FLAG_SHARED;
-    }
+    PHANTOM_FORCEINLINE void setShared() { m_uiFlags |= PHANTOM_R_FLAG_SHARED; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this element is 'shared'.
@@ -1166,10 +824,7 @@ public:
     /// \return true if 'shared', false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PHANTOM_FORCEINLINE bool isShared() const
-    {
-        return ((m_uiFlags & PHANTOM_R_FLAG_SHARED) == PHANTOM_R_FLAG_SHARED);
-    }
+    PHANTOM_FORCEINLINE bool isShared() const { return ((m_uiFlags & PHANTOM_R_FLAG_SHARED) == PHANTOM_R_FLAG_SHARED); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the code position of this element (beginning)
@@ -1184,10 +839,7 @@ public:
     /// \brief  Retrieves the code range of this element as  {{line, col}, {line, col}}
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const CodeRange& getCodeRange() const
-    {
-        return m_CodeRange;
-    }
+    const CodeRange& getCodeRange() const { return m_CodeRange; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the code range of this element
@@ -1199,20 +851,14 @@ public:
     /// \brief  Retrieves the code position of this element as {line, col}
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const CodePosition& getCodePosition() const
-    {
-        return m_CodeRange.begin;
-    }
+    const CodePosition& getCodePosition() const { return m_CodeRange.begin; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Retrieves the code location of this element, which contains the source + a code position
     /// {line, col}
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CodeLocation getCodeLocation() const
-    {
-        return CodeLocation(getCodeLocationSource(), getCodePosition());
-    }
+    CodeLocation getCodeLocation() const { return CodeLocation(getCodeLocationSource(), getCodePosition()); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Retrieves the code range location of this element, which container the source + a code range
@@ -1235,10 +881,6 @@ public:
     LanguageElement* getElementAtCodePosition(const CodePosition& a_CodePosition) const;
     LanguageElement* getElementAtLine(uint16 a_Line) const;
 
-    /// @cond INTERNAL
-    EmbeddedProxyRtti PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD;
-    /// @endcond
-
     virtual int destructionPriority() const;
 
 protected:
@@ -1252,9 +894,7 @@ protected:
     virtual void onReferencedElementAdded(LanguageElement* a_pElement);
     virtual void onReferencedElementRemoved(LanguageElement* a_pElement);
     virtual void onInvalidated();
-    virtual void onElementsAccess()
-    {
-    }
+    virtual void onElementsAccess() {}
 
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////

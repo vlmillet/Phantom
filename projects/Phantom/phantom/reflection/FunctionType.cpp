@@ -5,18 +5,16 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "FunctionType.h"
 
 #include "FunctionPointer.h"
 #include "Source.h"
 #ifndef __DOXYGEN__
-#    include <phantom/StringUtil.h>
+#    include <phantom/utils/StringUtil.h>
 #endif
 #include "Application.h"
 
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -244,14 +242,8 @@ bool FunctionType::parseParameterTypeList(StringView a_strText, Types&, Language
         Symbol* pTypeElement = Application::Get()->findCppSymbol(*it, a_pContextScope);
         if (pTypeElement == nullptr)
         {
-            if (isNative())
-            {
-                PHANTOM_THROW_EXCEPTION(exception::UnknownTypeException, "%s", (*it).c_str());
-            }
-            else
-            {
-                addParameterType(nullptr);
-            }
+            PHANTOM_ASSERT(!isNative(), "%s", (*it).c_str());
+            addParameterType(nullptr);
         }
         else
         {

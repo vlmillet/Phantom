@@ -22,6 +22,13 @@
 #include <phantom/field>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -44,17 +51,20 @@ PHANTOM_PACKAGE("phantom.reflection")
         .public_()
         
         .protected_()
-            .constructor<void(FunctionType*, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(FunctionType*, ABI, Modifiers, uint)>()["0"]["0"]
         
         .public_()
-            .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
+            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
             .method<FunctionPointer*() const, virtual_|override_>("asFunctionPointer", &_::asFunctionPointer)
             .method<void(StringView, void*) const, virtual_|override_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToString", &_::valueToString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToLiteral", &_::valueToLiteral)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<FunctionType*() const>("getFunctionType", &_::getFunctionType)
-            .method<ABI() const>("getABI", &_::getABI)
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<ABI() const>("getABI", &_::getABI)
             .method<void(void*, void**) const, virtual_>("call", &_::call)
             .method<void(void*, void**, void*) const, virtual_>("call", &_::call)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
@@ -63,10 +73,12 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .staticMethod<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .staticMethod<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
         
         .protected_()
-            .field("m_eABI", &_::m_eABI)
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .field("m_eABI", &_::m_eABI)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

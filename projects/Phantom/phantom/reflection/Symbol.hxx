@@ -26,9 +26,11 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallMap.hxx>
-#include <phantom/SmallSet.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallSet.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -117,12 +119,14 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(const MetaDatas&)>("addMetaDatas", &_::addMetaDatas)
             .method<void(StringView, const Variant&)>("setMetaData", &_::setMetaData)
             .method<void(StringView, Variant&&)>("setMetaData", &_::setMetaData)
+            .method<void(StringWithHash, const Variant&)>("setMetaData", &_::setMetaData)
+            .method<void(StringWithHash, Variant&&)>("setMetaData", &_::setMetaData)
             .method<void(StringView)>("removeMetaData", &_::removeMetaData)
-            .method<void(StringHash)>("removeMetaData", &_::removeMetaData)
+            .method<void(StringWithHash)>("removeMetaData", &_::removeMetaData)
             .method<const Variant&(StringView) const>("getMetaData", &_::getMetaData)
-            .method<const Variant&(StringHash) const>("getMetaData", &_::getMetaData)
+            .method<const Variant&(StringWithHash) const>("getMetaData", &_::getMetaData)
             .method<bool(StringView) const>("hasMetaData", &_::hasMetaData)
-            .method<bool(StringHash) const>("hasMetaData", &_::hasMetaData)
+            .method<bool(StringWithHash) const>("hasMetaData", &_::hasMetaData)
             .method<const MetaDatas&() const>("getMetaDatas", &_::getMetaDatas)
             .method<bool(StringView) const>("hasAnnotation", &_::hasAnnotation)
             .method<bool(StringView)>("addAnnotation", &_::addAnnotation)

@@ -9,7 +9,7 @@
 /* ****************** Includes ******************* */
 #include "SourceStream.h"
 
-#include <phantom/String.h>
+#include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

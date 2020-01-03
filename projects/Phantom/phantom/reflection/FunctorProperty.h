@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/Functor.h>
 #include <phantom/reflection/ValueMember.h>
+#include <phantom/utils/Functor.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -32,10 +32,9 @@ public:
     /// \param  a_uiFilterMask  (optional) The filter mask.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    FunctorProperty(Type* a_pType, StringView a_Name,
+    FunctorProperty(Type* a_pType, StringView a_Name, uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
+    FunctorProperty(Type* a_pType, StringView a_Name, GetFunctor const& a_Get, SetFunctor const& a_Set,
                     uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
-    FunctorProperty(Type* a_pType, StringView a_Name, GetFunctor const& a_Get,
-                    SetFunctor const& a_Set, uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
     FunctorProperty(Type* a_pType, StringView a_Name, GetFunctor const& a_Get,
                     uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
 

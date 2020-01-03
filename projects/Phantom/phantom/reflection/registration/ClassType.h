@@ -16,11 +16,9 @@ HAUNT_STOP;
 #include "Type.h"
 
 #include <locale>
-#include <phantom/ClassOf.h>
-#include <phantom/Placement.h>
-#include <phantom/StaticGlobals.h>
-#include <phantom/StaticIf.h>
-#include <phantom/new.h>
+#include <phantom/detail/ClassOfFwd.h>
+#include <phantom/detail/StaticGlobals.h>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/ClassTypeT.h>
 #include <phantom/reflection/ConstantT.h>
 #include <phantom/reflection/MetaNewDelete.h>
@@ -28,6 +26,8 @@ HAUNT_STOP;
 #include <phantom/traits/FunctionTypeToMethodPointerType.h>
 #include <phantom/traits/RemoveConstReference.h>
 #include <phantom/traits/SelectType.h>
+#include <phantom/utils/Placement.h>
+#include <phantom/utils/StaticIf.h>
 
 namespace phantom
 {

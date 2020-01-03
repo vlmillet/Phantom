@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Template.h"
 
 #include "Application.h"
@@ -15,9 +14,9 @@
 #include "TemplateParameter.h"
 #include "TemplateSignature.h"
 #include "TemplateSpecialization.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
+#include "phantom/detail/phantom_priv.h"
 
-#include <phantom/new_ex.h>
 /* *********************************************** */
 #pragma warning(disable : 4996)
 

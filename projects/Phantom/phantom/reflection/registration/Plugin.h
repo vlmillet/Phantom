@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/String.h>
 #include <phantom/reflection/reflection.h>
 #include <phantom/reflection/registration/registration.h>
+#include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include <windows.h>
@@ -128,6 +128,8 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
             }                                                                                                          \
             __attribute__((destructor(500))) static void _shared_library_posix_unload()                                \
             {                                                                                                          \
+                static Dl_info info;                                                                                   \
+                dladdr((const void*)&_shared_library_posix_unload, &info);                                             \
                 ::phantom::reflection::detail::unregisterModule((size_t)info.dli_fbase);                               \
             }
 #    else

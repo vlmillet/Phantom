@@ -8,7 +8,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/StringConverter.h>
+#include <phantom/detail/StringConverter.h>
 #include <phantom/reflection/PrimitiveType.h>
 #include <phantom/reflection/TypeOf.h>
 #include <phantom/traits/SafeAlignOf.h>

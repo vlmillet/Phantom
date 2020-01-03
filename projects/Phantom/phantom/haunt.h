@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/preprocessor.h>
+#include <phantom/detail/preprocessor.h>
 
 #if defined(__HAUNT__)
 
@@ -17,30 +17,24 @@
 /// code generation control
 
 // INDIRECT annotations
-#    define HAUNT_METADATA(k, v)                                                                   \
+#    define HAUNT_METADATA(k, v)                                                                                       \
         [[clang::annotate("haunt::meta:" #k "=" #v)]] void _HNT_CAT(_HAUNT_META, __COUNTER__)();
-#    define HAUNT_METADATAS(seq)                                                                   \
-        [[clang::annotate("haunt::metas:" #seq)]] void _HNT_CAT(_HAUNT_META, __COUNTER__)();
-#    define HAUNT_SLOTS : virtual void _HNT_CAT(_HAUNT_ACCESS_slots_, __COUNTER__)();              \
+#    define HAUNT_METADATAS(seq) [[clang::annotate("haunt::metas:" #    seq)]] void _HNT_CAT(_HAUNT_META, __COUNTER__)();
+#    define HAUNT_SLOTS : virtual void _HNT_CAT(_HAUNT_ACCESS_slots_, __COUNTER__)();                                  \
     public
-#    define HAUNT_FLAGS(flags)                                                                     \
-        [[clang::annotate("haunt::flags:" #flags)]] _HNT_CAT(_HAUNT_FLAGS, __COUNTER__)();
-#    define HAUNT_MODIFIERS(modifiers)                                                             \
-        [[clang::annotate("haunt::modifiers:" #modifiers)]] _HNT_CAT(_HAUNT_MODIFIERS,             \
-                                                                     __COUNTER__)();
+#    define HAUNT_FLAGS(flags) [[clang::annotate("haunt::flags:" #    flags)]] _HNT_CAT(_HAUNT_FLAGS, __COUNTER__)();
+#    define HAUNT_MODIFIERS(modifiers)                                                                                 \
+        [[clang::annotate("haunt::modifiers:" #modifiers)]] _HNT_CAT(_HAUNT_MODIFIERS, __COUNTER__)();
 #    define HAUNT_RAW(...) HAUNT_TEXT(#    __VA_ARGS__)
 #    define HAUNT_UNIQUE_RAW(...) HAUNT_UNIQUE_TEXT(#    __VA_ARGS__)
 #    define HAUNT_TEXT(text) [[clang::annotate(text)]] void _HNT_CAT(_HAUNT_RAW, __COUNTER__)();
-#    define HAUNT_UNIQUE_TEXT(text)                                                                \
-        [[clang::annotate(text)]] void _HNT_CAT(_HAUNT_UNIQUE_RAW, __COUNTER__)();
+#    define HAUNT_UNIQUE_TEXT(text) [[clang::annotate(text)]] void _HNT_CAT(_HAUNT_UNIQUE_RAW, __COUNTER__)();
 
 // - source / package control
 #    define HAUNT_DIR(name) [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_DIR, __COUNTER__)();
 #    define HAUNT_FILE(name) [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_FILE, __COUNTER__)();
-#    define HAUNT_PACKAGE(name)                                                                    \
-        [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_PACKAGE, __COUNTER__)();
-#    define HAUNT_SOURCE(name)                                                                     \
-        [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_SOURCE, __COUNTER__)();
+#    define HAUNT_PACKAGE(name) [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_PACKAGE, __COUNTER__)();
+#    define HAUNT_SOURCE(name) [[clang::annotate(name)]] void _HNT_CAT(_HAUNT_SOURCE, __COUNTER__)();
 #    define HAUNT_END(name) [[clang::annotate("" name)]] void _HNT_CAT(_HAUNT_END, __COUNTER__)();
 // - parsing control
 #    define HAUNT_ON void _HNT_CAT(_HAUNT_ANNOTATE_on_, __COUNTER__)();
@@ -52,9 +46,8 @@
 #    define HAUNT_PAUSE void _HNT_CAT(_HAUNT_PAUSE, __COUNTER__)();
 
 // DIRECT annotations
-#    define HAUNT_ANNOTATE(quotedString)                                                           \
-        [[clang::annotate(                                                                         \
-        quotedString)]] // user one (end up in phantom::reflection::Symbol::getAnnotations()
+#    define HAUNT_ANNOTATE(quotedString)                                                                               \
+        [[clang::annotate(quotedString)]] // user one (end up in phantom::reflection::Symbol::getAnnotations()
 #    define HAUNT_SLOT [[clang::annotate("haunt::slot")]]
 #    define HAUNT_STRUCTURE [[clang::annotate("haunt::structure")]]
 #    define HAUNT_FILTERMASK(filter) [[clang::annotate("haunt::filtermask:" #    filter)]]
@@ -63,8 +56,8 @@
 #    define HAUNT_SET(name) [[clang::annotate("haunt::set:" #    name)]]
 #    define HAUNT_FILTERMASK(arg) [[clang::annotate("haunt::save:" PHANTOM_PP_QUOTE(arg))]]
 #    define HAUNT_TRANSIENT [[clang::annotate("haunt::transient")]]
-#    define HAUNT_PROPERTY(type, name, ...)                                                        \
-        [[clang::annotate("haunt::property:" PHANTOM_PP_QUOTE(PHANTOM_PP_REMOVE_PARENS(            \
+#    define HAUNT_PROPERTY(type, name, ...)                                                                            \
+        [[clang::annotate("haunt::property:" PHANTOM_PP_QUOTE(PHANTOM_PP_REMOVE_PARENS(                                \
         type)) "$" #name "$" #__VA_ARGS__)]] type PHANTOM_PP_CAT(_HAUNT_PROPERTY, __COUNTER__)();
 
 #else

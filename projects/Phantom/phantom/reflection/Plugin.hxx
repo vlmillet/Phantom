@@ -21,6 +21,13 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -31,7 +38,6 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using Plugins = typedef_< phantom::reflection::Plugins>;
             using StringView = typedef_< phantom::StringView>;
-            using Strings = typedef_< phantom::Strings>;
             this_()
         
         .public_()
@@ -45,23 +51,19 @@ PHANTOM_PACKAGE("phantom.reflection")
             .constructor<void(StringView, StringView)>()
             .constructor<void(StringView)>()
             .method<StringView() const>("getFilePath", &_::getFilePath)
-            .method<bool(Message*)>("load", &_::load)["nullptr"]
-            .method<bool(Message*)>("unload", &_::unload)["nullptr"]
-            .method<bool(Message*)>("loadAsDependency", &_::loadAsDependency)["nullptr"]
-            .method<bool(Message*)>("unloadAsDependency", &_::unloadAsDependency)["nullptr"]
+            .method<bool()>("load", &_::load)
+            .method<bool()>("unload", &_::unload)
+            .method<bool()>("loadAsDependency", &_::loadAsDependency)
+            .method<bool()>("unloadAsDependency", &_::unloadAsDependency)
             .method<bool() const>("isLoaded", &_::isLoaded)
             .method<void()>("deleteOnDisk", &_::deleteOnDisk)
             .method<Module*() const>("getModule", &_::getModule)
             .method<StringView() const>("getName", &_::getName)
             .method<void(StringView)>("setName", &_::setName)
-            .method<StringView() const>("getIncludePaths", &_::getIncludePaths)
-            .method<void(StringView)>("setIncludePaths", &_::setIncludePaths)
             .method<StringView() const>("getDebugPath", &_::getDebugPath)
             .method<void(StringView)>("setDebugPath", &_::setDebugPath)
             .method<StringView() const>("getReleasePath", &_::getReleasePath)
             .method<void(StringView)>("setReleasePath", &_::setReleasePath)
-            .method<Strings const&() const>("getDependencies", &_::getDependencies)
-            .method<void(Strings const&)>("setDependencies", &_::setDependencies)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

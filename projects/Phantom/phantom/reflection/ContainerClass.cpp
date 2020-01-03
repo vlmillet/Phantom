@@ -5,12 +5,11 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ContainerClass.h"
 
 #include "Method.h"
 #include "Property.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -35,7 +34,7 @@ ContainerClass::~ContainerClass()
 
 void ContainerClass::setValueType(Type* a_pValueType)
 {
-    PHANTOM_ASSERT(a_pValueType);
+    PHANTOM_ASSERT(a_pValueType, "container value type not reflected");
     m_pValueType = a_pValueType;
 }
 

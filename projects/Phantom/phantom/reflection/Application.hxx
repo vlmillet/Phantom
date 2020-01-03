@@ -25,8 +25,11 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallMap.hxx>
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -134,15 +137,14 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Type*(hash64) const>("findType", &_::findType)
             .method<Symbol*(StringView, LanguageElement*) const>("findSymbol", &_::findSymbol)["nullptr"]
             .method<Type*(StringView, LanguageElement*) const>("findType", &_::findType)["nullptr"]
-            .method<void(StringView, const Variant&, LanguageElement*)>("setMetaData", &_::setMetaData)["nullptr"]
-            .method<const Variant&(StringView, LanguageElement*) const>("getMetaData", &_::getMetaData)
             .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<Undefineds*(StringView) const>("getUndefineds", &_::getUndefineds)
             .method<Undefineds*(StringView)>("undefineds", &_::undefineds)
             .method<Constant*() const>("getNullptr", &_::getNullptr)
             .method<Type*() const>("getAuto", &_::getAuto)
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
-            .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
+            /// missing symbol(s) reflection (phantom::MemoryContext) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
         
         .public_()
             .signal("pluginPathAdded", &_::pluginPathAdded)

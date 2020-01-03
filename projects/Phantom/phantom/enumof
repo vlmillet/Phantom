@@ -1,0 +1,5 @@
+#pragma once
+
+#include <phantom/detail/EnumOfFwd.h>
+#include <phantom/reflection/Enum.h>
+#include <phantom/reflection/TypeOf.h>

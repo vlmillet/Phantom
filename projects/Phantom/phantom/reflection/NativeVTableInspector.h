@@ -9,7 +9,7 @@
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
 #if PHANTOM_ACCURATE_NATIVE_VTABLE_INSPECTOR_SIGNATURES
 #    include <phantom/traits/DefaultValue.h>
 #endif
@@ -82,99 +82,97 @@ PHANTOM_FORCEINLINE static void* extract_mfp_closure(t_MemberFuncPtrTy ptr)
 #define NativeVTableInspector_function_section_size 250
 
 #if PHANTOM_DEBUG_LEVEL != PHANTOM_DEBUG_LEVEL_FULL
-#    define NativeVTableInspector_setResultIndex(...)                                              \
-        NativeVTableInspector::sm_ResultIndex = __VA_ARGS__
+#    define NativeVTableInspector_setResultIndex(...) NativeVTableInspector::sm_ResultIndex = __VA_ARGS__
 #endif
 
-#define NativeVTableInspector_hack_member_function_0(z, count, signature)                          \
-    R hack_member_function_0_##count signature                                                     \
-    {                                                                                              \
-        NativeVTableInspector_setResultIndex(count);                                               \
-        return DefaultValue<R>::apply();                                                           \
+#define NativeVTableInspector_hack_member_function_0(z, count, signature)                                              \
+    R hack_member_function_0_##count signature                                                                         \
+    {                                                                                                                  \
+        NativeVTableInspector_setResultIndex(count);                                                                   \
+        return DefaultValue<R>::apply();                                                                               \
     }
 
-#define NativeVTableInspector_hack_member_function_1(z, count, signature)                          \
-    R hack_member_function_1_##count signature                                                     \
-    {                                                                                              \
-        NativeVTableInspector_setResultIndex(count + NativeVTableInspector_function_section_size); \
-        return DefaultValue<R>::apply();                                                           \
+#define NativeVTableInspector_hack_member_function_1(z, count, signature)                                              \
+    R hack_member_function_1_##count signature                                                                         \
+    {                                                                                                                  \
+        NativeVTableInspector_setResultIndex(count + NativeVTableInspector_function_section_size);                     \
+        return DefaultValue<R>::apply();                                                                               \
     }
 
-#define NativeVTableInspector_hack_member_function_0_void(z, count, signature)                     \
-    void hack_member_function_0_##count signature                                                  \
-    {                                                                                              \
-        NativeVTableInspector_setResultIndex(count);                                               \
+#define NativeVTableInspector_hack_member_function_0_void(z, count, signature)                                         \
+    void hack_member_function_0_##count signature                                                                      \
+    {                                                                                                                  \
+        NativeVTableInspector_setResultIndex(count);                                                                   \
     }
 
-#define NativeVTableInspector_hack_member_function_1_void(z, count, signature)                     \
-    void hack_member_function_1_##count signature                                                  \
-    {                                                                                              \
-        NativeVTableInspector_setResultIndex(count + NativeVTableInspector_function_section_size); \
+#define NativeVTableInspector_hack_member_function_1_void(z, count, signature)                                         \
+    void hack_member_function_1_##count signature                                                                      \
+    {                                                                                                                  \
+        NativeVTableInspector_setResultIndex(count + NativeVTableInspector_function_section_size);                     \
     }
 
-#define NativeVTableInspector_vtableentry_0(z, count, signature)                                   \
+#define NativeVTableInspector_vtableentry_0(z, count, signature)                                                       \
     extract_mfp_closure(&self_type::hack_member_function_0_##count),
 
-#define NativeVTableInspector_vtableentry_1(z, count, signature)                                   \
+#define NativeVTableInspector_vtableentry_1(z, count, signature)                                                       \
     extract_mfp_closure(&self_type::hack_member_function_1_##count),
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 
-#    define VTableInspector_commonT(call_args)                                                     \
-        PHANTOM_STATIC_ASSERT(                                                                     \
-        sizeof(member_function_pointer_t) == 2 * sizeof(int) + 2 * sizeof(void*),                  \
-        "member function pointer size must be 16 bytes on x86 and 24 bytes on x64, ensure /vmg "   \
-        "and /vmv are added to your Visual Studio C++ compiler command line options");             \
-        template<typename t_MemberFuncPtrTy>                                                       \
-        size_t getIndexOf(t_MemberFuncPtrTy ptr)                                                   \
-        {                                                                                          \
-            struct __MicrosoftUnknownMFP                                                           \
-            {                                                                                      \
-                void*     m_func_address;                                                          \
-                ptrdiff_t m_delta;                                                                 \
-                int       m_vtordisp;                                                              \
-                int       m_vtable_index;                                                          \
-            };                                                                                     \
-            union {                                                                                \
-                t_MemberFuncPtrTy     original;                                                    \
-                __MicrosoftUnknownMFP generic;                                                     \
-            } un;                                                                                  \
-            un.original = ptr;                                                                     \
-            if (un.generic.m_delta != 0)                                                           \
-            {                                                                                      \
-                int i = 0;                                                                         \
-                ++i;                                                                               \
-            }                                                                                      \
-            byte* fakeInstance = (byte*)&m_vptr_impostor;                                          \
-            fakeInstance -= un.generic.m_delta;                                                    \
-            member_function_pointer_t mp = *reinterpret_cast<member_function_pointer_t*>(&ptr);    \
-            PHANTOM_ASSERT(sm_ResultIndex == ~size_t(0));                                          \
-            (reinterpret_cast<decltype(this)>(fakeInstance)->*mp) call_args;                       \
-            PHANTOM_ASSERT(sm_ResultIndex != ~size_t(0));                                          \
-            size_t result = sm_ResultIndex;                                                        \
-            sm_ResultIndex = ~size_t(0);                                                           \
-            return result;                                                                         \
+#    define VTableInspector_commonT(call_args)                                                                         \
+        PHANTOM_STATIC_ASSERT(sizeof(member_function_pointer_t) == 2 * sizeof(int) + 2 * sizeof(void*),                \
+                              "member function pointer size must be 16 bytes on x86 and 24 bytes on x64, ensure /vmg " \
+                              "and /vmv are added to your Visual Studio C++ compiler command line options");           \
+        template<typename t_MemberFuncPtrTy>                                                                           \
+        size_t getIndexOf(t_MemberFuncPtrTy ptr)                                                                       \
+        {                                                                                                              \
+            struct __MicrosoftUnknownMFP                                                                               \
+            {                                                                                                          \
+                void*     m_func_address;                                                                              \
+                ptrdiff_t m_delta;                                                                                     \
+                int       m_vtordisp;                                                                                  \
+                int       m_vtable_index;                                                                              \
+            };                                                                                                         \
+            union {                                                                                                    \
+                t_MemberFuncPtrTy     original;                                                                        \
+                __MicrosoftUnknownMFP generic;                                                                         \
+            } un;                                                                                                      \
+            un.original = ptr;                                                                                         \
+            if (un.generic.m_delta != 0)                                                                               \
+            {                                                                                                          \
+                int i = 0;                                                                                             \
+                ++i;                                                                                                   \
+            }                                                                                                          \
+            byte* fakeInstance = (byte*)&m_vptr_impostor;                                                              \
+            fakeInstance -= un.generic.m_delta;                                                                        \
+            member_function_pointer_t mp = *reinterpret_cast<member_function_pointer_t*>(&ptr);                        \
+            PHANTOM_ASSERT(sm_ResultIndex == ~size_t(0));                                                              \
+            (reinterpret_cast<decltype(this)>(fakeInstance)->*mp) call_args;                                           \
+            PHANTOM_ASSERT(sm_ResultIndex != ~size_t(0));                                                              \
+            size_t result = sm_ResultIndex;                                                                            \
+            sm_ResultIndex = ~size_t(0);                                                                               \
+            return result;                                                                                             \
         }
 #else
 
-#    define VTableInspector_commonT(call_args)                                                     \
-        template<typename t_MemberFuncPtrTy>                                                       \
-        size_t getIndexOf(t_MemberFuncPtrTy ptr)                                                   \
-        {                                                                                          \
-            union {                                                                                \
-                struct                                                                             \
-                {                                                                                  \
-                    union {                                                                        \
-                        void (*fn)();                                                              \
-                        ptrdiff_t vtable_index;                                                    \
-                    };                                                                             \
-                    ptrdiff_t delta;                                                               \
-                } wrap_fp;                                                                         \
-                                                                                                   \
-                t_MemberFuncPtrTy fp;                                                              \
-            } u;                                                                                   \
-            u.fp = ptr;                                                                            \
-            return (u.wrap_fp.vtable_index - 1) / sizeof(u.wrap_fp.fn);                            \
+#    define VTableInspector_commonT(call_args)                                                                         \
+        template<typename t_MemberFuncPtrTy>                                                                           \
+        size_t getIndexOf(t_MemberFuncPtrTy ptr)                                                                       \
+        {                                                                                                              \
+            union {                                                                                                    \
+                struct                                                                                                 \
+                {                                                                                                      \
+                    union {                                                                                            \
+                        void (*fn)();                                                                                  \
+                        ptrdiff_t vtable_index;                                                                        \
+                    };                                                                                                 \
+                    ptrdiff_t delta;                                                                                   \
+                } wrap_fp;                                                                                             \
+                                                                                                                       \
+                t_MemberFuncPtrTy fp;                                                                                  \
+            } u;                                                                                                       \
+            u.fp = ptr;                                                                                                \
+            return (u.wrap_fp.vtable_index - 1) / sizeof(u.wrap_fp.fn);                                                \
         }
 
 #endif
@@ -238,8 +236,7 @@ struct VirtualDtorIndexProviderH<t_Ty, false>
 };
 
 template<typename t_Ty>
-struct VirtualDtorIndexProvider
-    : public VirtualDtorIndexProviderH<t_Ty, HasVirtualDestructor<t_Ty>::value>
+struct VirtualDtorIndexProvider : public VirtualDtorIndexProviderH<t_Ty, HasVirtualDestructor<t_Ty>::value>
 {
 };
 

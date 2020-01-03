@@ -5,8 +5,8 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Constructor.h"
+
 #include "Parameter.h"
 /* *********************************************** */
 namespace phantom
@@ -17,8 +17,8 @@ Constructor::Constructor() : Method(ABI::MethodCall)
 {
 }
 
-Constructor::Constructor(StringView a_strName, Signature* a_pSignature,
-                         Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+Constructor::Constructor(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/,
+                         uint a_uiFlags /*= 0*/)
     : Method(a_strName, a_pSignature, ABI::MethodCall, a_Modifiers, a_uiFlags)
 {
 }

@@ -5,15 +5,13 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "PlaceholderType.h"
 
 #include "PlaceholderClass.h"
 #include "PlaceholderClassType.h"
 #include "TemplateSpecialization.h"
 
-#include <phantom/new>
-#include <phantom/new_ex.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

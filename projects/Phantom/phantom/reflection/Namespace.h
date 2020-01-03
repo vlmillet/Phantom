@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/Signal.h>
 #include <phantom/reflection/Scope.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -81,8 +81,7 @@ public:
     /// \return null if it fails, else the namespace cascade.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* getNamespaceCascade(StringView  qualifiedName,
-                                   const char* a_SeparatorList = ":") const;
+    Namespace* getNamespaceCascade(StringView qualifiedName, const char* a_SeparatorList = ":") const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the parent namespace.
@@ -101,8 +100,7 @@ public:
     /// \return null if it fails, else the found or create namespace cascade.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* findOrCreateNamespace(StringView  a_strNamespaceName,
-                                     const char* separatorPattern = ":");
+    Namespace* findOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a namespace alias to this namespace.

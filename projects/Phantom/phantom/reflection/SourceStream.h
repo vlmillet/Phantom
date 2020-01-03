@@ -9,8 +9,7 @@
 /* ****************** Includes ******************* */
 #include <ctime>
 #include <istream>
-#include <phantom/EmbeddedRtti.h>
-#include <phantom/phantom.h>
+#include <phantom/utils/Object.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -19,7 +18,7 @@ namespace phantom
 {
 namespace reflection
 {
-class PHANTOM_EXPORT_PHANTOM SourceStream
+class PHANTOM_EXPORT_PHANTOM SourceStream : public Object
 {
     friend class Source;
 
@@ -57,10 +56,7 @@ public:
     /// \return The source or nullptr.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getSource() const
-    {
-        return m_pSource;
-    }
+    Source* getSource() const { return m_pSource; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the path of this stream (the part following the protocol inside the url).
@@ -68,10 +64,7 @@ public:
     /// \return A string view of the path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getPath() const
-    {
-        return m_Path;
-    }
+    StringView getPath() const { return m_Path; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the protocol of this stream (the part preceding the path inside the url).
@@ -79,10 +72,7 @@ public:
     /// \return A string view of the protocol.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getProtocol() const
-    {
-        return m_Path;
-    }
+    StringView getProtocol() const { return m_Path; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the url of this stream (protocol + path).
@@ -90,10 +80,7 @@ public:
     /// \return The source or nullptr.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    String getUrl() const
-    {
-        return m_Protocol + m_Path;
-    }
+    String getUrl() const { return m_Protocol + m_Path; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  clones this stream.
@@ -103,17 +90,13 @@ public:
 
     virtual SourceStream* clone() const = 0;
 
-    PHANTOM_EMBEDDED_RTTI; ///< @off
-
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Construct a source stream with given url decomposed as protocol + path(ex:
     /// 'file:C:/MyDev/MySource.soul'").
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol)
-    {
-    }
+    SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol) {}
 
 private:
     Source* m_pSource = nullptr;

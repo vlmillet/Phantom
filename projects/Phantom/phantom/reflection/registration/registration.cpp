@@ -5,11 +5,10 @@
 #include "PackageSource.h"
 #include "Template.h"
 #include "Type.h"
-#include "phantom/phantom_priv.h"
+#include "phantom/detail/phantom_priv.h"
 #include "phantom/reflection/EnumT.h"
 #include "phantom/reflection/Module.h"
 
-#include <phantom/StringUtil.h>
 #include <phantom/reflection/Alias.h>
 #include <phantom/reflection/Application.h>
 #include <phantom/reflection/Method.h>
@@ -20,6 +19,7 @@
 #include <phantom/reflection/TemplateParameter.h>
 #include <phantom/reflection/TemplateSignature.h>
 #include <phantom/reflection/TemplateSpecialization.h>
+#include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
@@ -253,7 +253,7 @@ void TypeBuilderBase::operator()(StringView a_Name, Variant&& a_Value)
 {
     reflection::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
     PHANTOM_ASSERT(m_Members.empty() || m_Members.back().isSymbol, "last declaration does not accept meta data");
-    dest[a_Name] = std::move(a_Value);
+    dest[StringWithHash(a_Name)] = std::move(a_Value);
 }
 
 void TypeBuilderBase::operator()(reflection::Modifiers a_Modifiers)

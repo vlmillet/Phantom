@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/fwd.h>
+#include <phantom/detail/fwd.h>
 /* ************* Class Declarations ************** */
 /* *********************************************** */
 

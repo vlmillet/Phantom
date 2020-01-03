@@ -7,9 +7,9 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/ArrayView.h>
-#include <phantom/StringViews.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/ArrayView.h>
+#include <phantom/utils/StringViews.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -70,8 +70,8 @@ public:
     /// \return null if it fails, else the PHANTOM_NEW(signature).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static Signature* Create(Type* a_pReturnType, Type* a_pSingleParameterType,
-                             Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    static Signature* Create(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0,
+                             uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Construction helper for 2 parameters.
@@ -85,9 +85,8 @@ public:
     /// \return null if it fails, else the PHANTOM_NEW(signature).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static Signature* Create(Type* a_pReturnType, Type* a_pFirstParameterType,
-                             Type* a_pSecondParameterType, Modifiers a_Modifiers = 0,
-                             uint a_uiFlags = 0);
+    static Signature* Create(Type* a_pReturnType, Type* a_pFirstParameterType, Type* a_pSecondParameterType,
+                             Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Construction helper for 2 parameters.
@@ -152,8 +151,8 @@ public:
     /// resolution). \param  a_Modifiers               (optional) The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Signature(StringView a_strCode, LanguageElement* a_pContextScope = nullptr,
-              Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Signature(StringView a_strCode, LanguageElement* a_pContextScope = nullptr, Modifiers a_Modifiers = 0,
+              uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an signature with a given return type, a single parameter type and
@@ -164,8 +163,7 @@ public:
     /// \param  a_Modifiers               (optional) The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Signature(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0);
+    Signature(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an signature with a given return type, a list of parameters and
@@ -176,8 +174,7 @@ public:
     /// \param  a_Modifiers       (optional) the a_Modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0);
+    Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an signature with a given return type, parameters types and

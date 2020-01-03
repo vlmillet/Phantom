@@ -7,14 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/ClassOf.h>
-#include <phantom/SmallMap.h>
+#include <phantom/detail/ClassOfFwd.h>
 #include <phantom/reflection/ClassType.h>
+#include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-class SlotPool;
 namespace reflection
 {
 class InstanceCache;
@@ -61,11 +60,6 @@ class PHANTOM_EXPORT_PHANTOM Class : public ClassType
 public:
     static Class*           MetaClass();
     HAUNT_OFF static Class* metaClass;
-
-    PHANTOM_FORCEINLINE static StringView GetEmbeddedRttiFieldName()
-    {
-        return PHANTOM_PP_QUOTE(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD);
-    }
 
 public:
     friend class phantom::Phantom;
@@ -713,8 +707,7 @@ public:
         return std::is_class<T>::value && isA(static_cast<Type*>(PHANTOM_TYPEOF(T)));
     }
 
-    ERelation getRelationWith(Type* a_pType) const override;
-    bool      doesInstanceDependOn(void* a_pInstance, void* a_pOther) const;
+    TypeRelation getRelationWith(Type* a_pType) const override;
 
     void addMethod(Method* a_pMethod) override;
 
@@ -814,28 +807,6 @@ public:
     Expression* getOverriddenDefaultExpressionCascade(ValueMember* a_pValueMember) const;
 
     bool isPolymorphic() const override;
-
-    virtual void mapRtti(void const* a_pInstance) const;
-    virtual void unmapRtti(void const* a_pInstance) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Installs RTTI to the given instance class. If 'PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD'
-    /// macros
-    ///         has been defined and the class holds it, it will be filled. Else, the instance will
-    ///         be mapped to the global RTTI map
-    ///
-    /// \param [in,out] a_pInstance  The instance address.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void installRtti(void const* a_pInstance) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Counterpart of installRTTI.
-    ///
-    /// \param [in,out] a_pInstance  The instance address.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void uninstallRtti(void const* a_pInstance) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Visit function that allows you to browse the inheritance hierarchy of an instance.
@@ -950,56 +921,50 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a meta value by its name, recursively through all the base classes.
     ///
-    /// \param  a_strName   The meta name.
+    /// \param  a_strName   The key name.
     ///
-    /// \return null String if no meta found, else the meta Data value String.
+    /// \return null String if no meta found, else the meta data value String.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Variant& getMetaDataCascade(StringView a_Name) const;
-    const Variant& getMetaDataCascade(StringHash a_Hash) const;
+    const Variant& getMetaDataIncludingBases(StringView a_Name) const;
+    const Variant& getMetaDataIncludingBases(StringWithHash a_Hash) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets all meta value by name, recursively through all the base classes.
     ///
-    /// \param  a_strName   The meta name.
+    /// \param  a_strName   The key name.
     ///
-    /// \return null String if no meta found, else the meta Data value String.
+    /// \return null String if no meta found, else the meta data value String.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void getMetaDatasCascade(StringView a_Name, Variants& a_MetaDatas) const;
-    void getMetaDatasCascade(StringHash a_Hash, Variants& a_MetaDatas) const;
+    void getMetaDatasIncludingBases(StringView a_Name, Variants& a_MetaDatas) const;
+    void getMetaDatasIncludingBases(StringWithHash a_Hash, Variants& a_MetaDatas) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Query if this clss has a meta Data with given name through all base classes.
+    /// \brief  Query if this clss has a meta data with given name through all base classes.
     ///
-    /// \param  a_strName   The meta Data name.
+    /// \param  a_strName   The meta data name.
     ///
-    /// \return True is a meta Data has been found, false if not.
+    /// \return True is a meta data has been found, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool hasMetaDataCascade(StringView a_strName) const
-    {
-        if (hasMetaData(a_strName))
-            return true;
-        for (auto it = m_BaseClasses.begin(); it != m_BaseClasses.end(); ++it)
-        {
-            if (it->baseClass->hasMetaDataCascade(a_strName))
-                return true;
-        }
-        return false;
-    }
+    bool hasMetaDataIncludingBases(StringWithHash a_strName) const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Query if this clss has a meta data with given name through all base classes.
+    ///
+    /// \param  a_strName   The meta data name.
+    ///
+    /// \return True is a meta data has been found, false if not.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool hasMetaDataIncludingBases(StringView a_strName) const;
 
     bool isCopyable() const override;
 
-    bool isCopyConstructible() const override
-    {
-        return NOT(hasCopyDisabled());
-    }
+    bool isCopyConstructible() const override;
 
-    bool isMoveConstructible() const override
-    {
-        return NOT(hasMoveDisabled());
-    }
+    bool isMoveConstructible() const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  operator=
@@ -1123,9 +1088,6 @@ private:
     void removeDerivedClass(Class* a_pType);
     bool getBaseClassAccess(Class* a_pClass, Access* a_pInheritanceAccess) const;
     bool getBaseClassAccessCascade(Class* a_pClass, Access* a_pInheritanceAccess) const;
-
-    void _mapRtti(void const* a_pInstance, Class* a_pBaseClass, void const* a_pBase, const RttiMapData* a_pRTTI) const;
-    void _unmapRtti(void const* a_pInstance, bool a_bRemoveRTTI) const;
 
 protected:
     void _onNativeElementsAccess();

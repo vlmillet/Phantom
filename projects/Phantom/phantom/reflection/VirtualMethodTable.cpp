@@ -5,13 +5,12 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "VirtualMethodTable.h"
 
 #include "Method.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
-#include <phantom/SmallMap.h>
+#include <phantom/utils/SmallMap.h>
 /* *********************************************** */
 namespace phantom
 {

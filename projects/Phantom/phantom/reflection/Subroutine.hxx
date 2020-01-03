@@ -27,8 +27,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/ArrayView.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -128,7 +130,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .method<ABI() const>("getABI", &_::getABI)
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<ABI() const>("getABI", &_::getABI)
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Callable*() const, virtual_>("asCallable", &_::asCallable)
             .method<Subroutine*() const, virtual_|override_>("asSubroutine", &_::asSubroutine)
@@ -156,8 +159,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool(const LanguageElements&, TypesView, Modifiers) const, virtual_>("matches", &_::matches)["Modifiers()"]
             .method<bool(StringView, TypesView, Modifiers) const>("matches", &_::matches)["Modifiers()"]
             .method<Type*() const>("getReturnType", &_::getReturnType)
-            .method<OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
-            .method<OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            /// missing symbol(s) reflection (phantom::OpaqueDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            /// missing symbol(s) reflection (phantom::OpaqueDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
             .method<void(ExecutionContext&, void**) const, virtual_>("call", &_::call)
             .method<void(ExecutionContext&, void**, Types const&) const, virtual_>("callVarArg", &_::callVarArg)
             .method<void(void*, void**, void*) const, virtual_>("placementInvoke", &_::placementInvoke)
@@ -189,8 +194,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Block*)>("setBlock", &_::setBlock)
             .method<bool(const byte*)>("containsMemoryAddress", &_::containsMemoryAddress)
-            .method<Closure() const, virtual_>("getClosure", &_::getClosure)
-            .method<void(Closure)>("setClosure", &_::setClosure)
+            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Closure() const, virtual_>("getClosure", &_::getClosure)
+            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(Closure)>("setClosure", &_::setClosure)
             .method<size_t() const>("getFrameSize", &_::getFrameSize)
             .method<bool() const>("isRVOCandidate", &_::isRVOCandidate)
             .method<void(ExecutionContext&, void**, size_t) const>("call", &_::call)
@@ -200,10 +207,14 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .constructor<void()>()
-            .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(ABI, Modifiers, uint)>()["0"]["0"]
             .method<void(void**, size_t, void*) const>("apply", &_::apply)
             .method<void(void**, size_t, void*) const>("placementApply", &_::placementApply)
             .method<void(void**, size_t) const>("apply", &_::apply)
@@ -213,14 +224,16 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .field("m_pSignature", &_::m_pSignature)
-            .field("m_eABI", &_::m_eABI)
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .field("m_eABI", &_::m_eABI)
             .field("m_pInstructions", &_::m_pInstructions)
             /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pBlock", &_::m_pBlock)
             .field("m_MemoryLocation", &_::m_MemoryLocation)
             /// missing symbol(s) reflection (phantom::reflection::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_CallDelegate", &_::m_CallDelegate)
-            .field("m_Closure", &_::m_Closure)
+            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .field("m_Closure", &_::m_Closure)
             .field("m_uiFrameSize", &_::m_uiFrameSize)
             ;
         }

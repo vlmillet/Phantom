@@ -10,9 +10,8 @@
 
 HAUNT_STOP;
 
-#include <phantom/Allocate.h>
-#include <phantom/RttiMapData.h>
-#include <phantom/traits/HasEmbeddedRtti.h>
+#include <phantom/detail/allocate.h>
+#include <phantom/utils/Object.h>
 
 // --------------------------------------------------------------------------------------------
 // this file contains macro helper for instancing meta elements avoiding reflection recursivity
@@ -29,16 +28,13 @@ namespace phantom
 template<typename t_Ty>
 struct ProxyNewH
 {
-    PHANTOM_STATIC_ASSERT(HasEmbeddedProxyRtti<t_Ty>::value);
-    PHANTOM_FORCEINLINE ProxyNewH()
-    {
-    }
+    PHANTOM_FORCEINLINE ProxyNewH() {}
     PHANTOM_FORCEINLINE t_Ty* operator>>(t_Ty* a_pInstance)
     {
         auto pMetaClass = t_Ty::MetaClass();
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance = a_pInstance;
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.dynamicDeleteFunc = &DynamicProxyDeleter<t_Ty>::dynamicDelete;
-        a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass = pMetaClass;
+        a_pInstance->rtti.instance = a_pInstance;
+        a_pInstance->rtti.customDeleteFunc = &DynamicProxyDeleter<t_Ty>::dynamicDelete;
+        a_pInstance->rtti.metaClass = pMetaClass;
         pMetaClass->registerInstance(a_pInstance);
         return a_pInstance;
     }
@@ -52,10 +48,9 @@ struct ProxyDeleteH
     {
         auto pMetaClass = t_Ty::MetaClass();
         pMetaClass->unregisterInstance(a_pInstance);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance == a_pInstance);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.dynamicDeleteFunc ==
-                       &DynamicProxyDeleter<t_Ty>::dynamicDelete);
-        PHANTOM_ASSERT(a_pInstance->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass == pMetaClass);
+        PHANTOM_ASSERT(a_pInstance->rtti.instance == a_pInstance);
+        PHANTOM_ASSERT(a_pInstance->rtti.customDeleteFunc == &DynamicProxyDeleter<t_Ty>::dynamicDelete);
+        PHANTOM_ASSERT(a_pInstance->rtti.metaClass == pMetaClass);
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
 #    pragma clang diagnostic push
 #    pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"

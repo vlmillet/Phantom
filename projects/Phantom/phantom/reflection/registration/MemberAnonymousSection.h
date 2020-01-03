@@ -12,7 +12,7 @@ HAUNT_STOP;
 
 #include "Type.h"
 
-#include <phantom/new.h>
+#include <phantom/detail/new.h>
 #include <phantom/reflection/MemberAnonymousStruct.h>
 #include <phantom/reflection/MemberAnonymousUnion.h>
 

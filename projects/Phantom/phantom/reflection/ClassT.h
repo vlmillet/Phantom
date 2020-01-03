@@ -53,16 +53,6 @@ public:
         }
     }
 
-    void installRtti(void const* a_pInstance) const override
-    {
-        Installer<t_Ty>::install(const_cast<SelfType*>(this), (t_Ty*)a_pInstance);
-    }
-
-    void uninstallRtti(void const* a_pInstance) const override
-    {
-        Installer<t_Ty>::uninstall(const_cast<SelfType*>(this), (t_Ty*)a_pInstance);
-    }
-
     virtual void onElementsAccess() override
     {
         this->_onNativeElementsAccess();

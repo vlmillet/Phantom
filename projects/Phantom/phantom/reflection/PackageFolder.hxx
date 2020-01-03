@@ -24,8 +24,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 

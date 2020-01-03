@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <phantom/Flags.h>
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
+#include <phantom/utils/Flags.h>
 
 #define PHANTOM_R_FILTER_FIELD 0x1
 #define PHANTOM_R_FILTER_PROPERTY 0x2
@@ -44,10 +44,8 @@ using SymbolExtenders = SmallVector<SymbolExtender, 4, 4>;
 #define PHANTOM_R_SINGLETON ::phantom::reflection::Modifier::Singleton
 #define PHANTOM_R_CONST ::phantom::reflection::Modifier::Const
 #define PHANTOM_R_NOCONST ::phantom::reflection::Modifier::NoConst
-#define PHANTOM_R_LVALUEREF                                                                        \
-    ::phantom::reflection::Modifier::LValueRef // cpp11 signature lvalue ref-qualifiers
-#define PHANTOM_R_RVALUEREF                                                                        \
-    ::phantom::reflection::Modifier::RValueRef // cpp11 signature rvalue ref-qualifiers
+#define PHANTOM_R_LVALUEREF ::phantom::reflection::Modifier::LValueRef // cpp11 signature lvalue ref-qualifiers
+#define PHANTOM_R_RVALUEREF ::phantom::reflection::Modifier::RValueRef // cpp11 signature rvalue ref-qualifiers
 #define PHANTOM_R_VOLATILE ::phantom::reflection::Modifier::Volatile
 #define PHANTOM_R_MUTABLE ::phantom::reflection::Modifier::Mutable
 #define PHANTOM_R_INLINE ::phantom::reflection::Modifier::Inline
@@ -116,12 +114,10 @@ struct Modifier
 };
 PHANTOM_DECLARE_FLAGS(Modifiers, Modifier::Enum);
 HAUNT_RAW(PHANTOM_REGISTER(Functions) {
-    this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, Modifier::Enum)>(
-    "operator|", operator|);
+    this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, Modifier::Enum)>("operator|", operator|);
 })
 HAUNT_RAW(PHANTOM_REGISTER(Functions) {
-    this_()
-    .function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, ::phantom::Flags<Modifier::Enum>)>(
+    this_().function<::phantom::Flags<Modifier::Enum>(Modifier::Enum, ::phantom::Flags<Modifier::Enum>)>(
     "operator|", operator|);
 })
 HAUNT_RAW(PHANTOM_REGISTER(Functions) {
@@ -134,22 +130,22 @@ HAUNT_RESUME;
 
 HAUNT_PAUSE;
 
-#define PHANTOM_DECLARE_META_CLASS(_type_)                                                         \
-public:                                                                                            \
-    static phantom::reflection::Class* MetaClass();                                                \
-                                                                                                   \
+#define PHANTOM_DECLARE_META_CLASS(_type_)                                                                             \
+public:                                                                                                                \
+    static phantom::reflection::Class* MetaClass();                                                                    \
+                                                                                                                       \
 private:
 
-#define PHANTOM_CANCEL_META_CLASS()                                                                \
-public:                                                                                            \
-    HAUNT_OFF static phantom::DummyClass* MetaClass();                                             \
-                                                                                                   \
+#define PHANTOM_CANCEL_META_CLASS()                                                                                    \
+public:                                                                                                                \
+    HAUNT_OFF static phantom::DummyClass* MetaClass();                                                                 \
+                                                                                                                       \
 private:
 
-#define PHANTOM_DEFINE_META_CLASS(_type_)                                                          \
-    phantom::reflection::Class* _type_::MetaClass()                                                \
-    {                                                                                              \
-        return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta();                         \
+#define PHANTOM_DEFINE_META_CLASS(_type_)                                                                              \
+    phantom::reflection::Class* _type_::MetaClass()                                                                    \
+    {                                                                                                                  \
+        return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta();                                             \
     }
 
 PHANTOM_EXPORT_PHANTOM void initializeSystem();
@@ -397,12 +393,11 @@ PHANTOM_EXPORT_PHANTOM ReflectionMutex& write_mutex();
 } // namespace reflection
 } // namespace phantom
 
-#    define _PHNTM_R_MTX_GUARD()                                                                   \
-        phantom::LockGuard<phantom::reflection::ReflectionMutex> __grd_(                           \
-        phantom::reflection::write_mutex());
+#    define _PHNTM_R_MTX_GUARD()                                                                                       \
+        phantom::LockGuard<phantom::reflection::ReflectionMutex> __grd_(phantom::reflection::write_mutex());
 
-#    define PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD()                                                 \
-        static phantom::RecursiveSpinMutex              __recursive_mutex_;                        \
+#    define PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD()                                                                     \
+        static phantom::RecursiveSpinMutex              __recursive_mutex_;                                            \
         phantom::LockGuard<phantom::RecursiveSpinMutex> __grd_(__recursive_mutex_);
 
 #else

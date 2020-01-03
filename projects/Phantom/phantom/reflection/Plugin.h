@@ -7,10 +7,10 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/SmallMap.h>
-#include <phantom/SmallVector.h>
-#include <phantom/String.h>
-#include <phantom/property.h>
+#include <phantom/utils/Property.h>
+#include <phantom/utils/SmallMap.h>
+#include <phantom/utils/SmallVector.h>
+#include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -42,10 +42,10 @@ public:
         return m_strFilePath;
     }
 
-    bool load(Message* a_pMessage = nullptr);
-    bool unload(Message* a_pMessage = nullptr);
-    bool loadAsDependency(Message* a_pMessage = nullptr);
-    bool unloadAsDependency(Message* a_pMessage = nullptr);
+    bool load();
+    bool unload();
+    bool loadAsDependency();
+    bool unloadAsDependency();
     bool isLoaded() const
     {
         return m_pModule != nullptr;
@@ -66,15 +66,6 @@ public:
         m_strName = a_Name;
     }
 
-    StringView getIncludePaths() const
-    {
-        return m_IncludePaths;
-    }
-    void setIncludePaths(StringView a_In)
-    {
-        m_IncludePaths = a_In;
-    }
-
     StringView getDebugPath() const
     {
         return m_DebugPath;
@@ -93,31 +84,19 @@ public:
         m_ReleasePath = a_In;
     }
 
-    Strings const& getDependencies() const
-    {
-        return m_Dependencies;
-    }
-    void setDependencies(Strings const& a_In)
-    {
-        m_Dependencies = a_In;
-    }
-
 private:
     bool _isLoadingModule(Module* a_pModule) const;
     bool _refCountNative();
     bool _unrefCountNative();
-    bool _load(Message* a_pMessage);
-    bool _unload(Message* a_pMessage);
-    bool _loadNative(StringView strPath, Message* a_pMessage);
-    bool _unloadNative(Message* a_pMessage);
-    void _loadFile();
-    void _addDependency(StringView a_Dependency);
+    bool _load();
+    bool _unload();
+    bool _loadNative(StringView strPath);
+    bool _unloadNative();
+    bool _loadFile();
 
 private:
     String  m_strFilePath;
     String  m_strName;
-    String  m_IncludePaths;
-    Strings m_Dependencies;
     String  m_DebugPath;
     String  m_ReleasePath;
     Module* m_pModule = nullptr;

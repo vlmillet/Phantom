@@ -9,10 +9,11 @@
 #include <haunt>
 HAUNT_STOP;
 
-#include <phantom/Allocate.h>
-#include <phantom/StringConverter.h>
-#include <phantom/extension.h>
-#include <phantom/hasher.h>
+#include <phantom/detail/Copier.h>
+#include <phantom/detail/Hasher.h>
+#include <phantom/detail/Mover.h>
+#include <phantom/detail/StringConverter.h>
+#include <phantom/detail/allocate.h>
 #include <phantom/reflection/ClassType.h>
 #include <phantom/reflection/Promoter.h>
 #include <phantom/reflection/TypeOf.h>

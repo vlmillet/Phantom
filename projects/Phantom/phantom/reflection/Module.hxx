@@ -26,8 +26,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallMap.hxx>
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -84,7 +86,8 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<void(Functions&, StringView, const Types*, Type*) const>("findFunctions", &_::findFunctions)["\"\""]["nullptr"]["nullptr"]
             .method<Source*() const>("getAnonymousSource", &_::getAnonymousSource)
-            .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
+            /// missing symbol(s) reflection (phantom::MemoryContext) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
             .method<Type*(hash64) const>("findType", &_::findType)
             .method<Type*(hash64) const>("findUsableType", &_::findUsableType)
             .typedef_<FuncT>("FuncT")

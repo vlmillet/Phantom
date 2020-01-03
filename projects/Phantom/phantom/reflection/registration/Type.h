@@ -12,15 +12,15 @@ HAUNT_STOP;
 
 #include "Scope.h"
 
-#include <phantom/Delegate.h>
-#include <phantom/StringView.h>
-#include <phantom/StringViews.h>
-#include <phantom/TypeInstallationInfo.h>
-#include <phantom/Variant.h>
+#include <phantom/detail/TypeInstallationInfo.h>
 #include <phantom/reflection/MetaNewDelete.h>
 #include <phantom/reflection/Symbol.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/traits/SelectType.h>
+#include <phantom/utils/Delegate.h>
+#include <phantom/utils/StringView.h>
+#include <phantom/utils/StringViews.h>
+#include <phantom/utils/Variant.h>
 
 #define PHANTOM_REFLECTED_TYPE                                                                                         \
     phantom::reflection::ReflectedTypeOfT<std::remove_reference_t<decltype(_PHNTM_IDTTY(this_()))>>
@@ -248,9 +248,9 @@ private:
             (decltype(pMetaClass))(m_pType); /// meta meta type (the meta type of the meta type of
                                              /// 'Class' is the meta type of class itself)
         }
-        m_pType->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.instance = m_pType;
-        m_pType->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.dynamicDeleteFunc = &DynamicProxyDeleter<MetaType>::dynamicDelete;
-        m_pType->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass = pMetaClass;
+        m_pType->rtti.instance = m_pType;
+        m_pType->rtti.customDeleteFunc = &DynamicProxyDeleter<MetaType>::dynamicDelete;
+        m_pType->rtti.metaClass = pMetaClass;
         pMetaClass->registerInstance(m_pType);
     }
 

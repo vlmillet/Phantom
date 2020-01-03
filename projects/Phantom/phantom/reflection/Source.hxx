@@ -29,9 +29,12 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
-#include <phantom/SmallMap.hxx>
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallMap.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -79,8 +82,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Source*() const>("getNativeArchive", &_::getNativeArchive)
             .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
             .method<FunctionType*(Type*, TypesView, Modifiers, uint)>("functionType", &_::functionType)["0"]["0"]
-            .method<FunctionPointer*(Type*, ABI, TypesView, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
-            .method<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<FunctionPointer*(Type*, ABI, TypesView, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
+            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
             .method<InitializerListType*(TypesView)>("initializerListType", &_::initializerListType)
             .method<MethodPointer*(ClassType*, Type*, TypesView, Modifiers, uint)>("methodPointerType", &_::methodPointerType)["0"]["0"]
             .method<FieldPointer*(ClassType*, Type*, Modifiers, uint)>("fieldPointerType", &_::fieldPointerType)["0"]["0"]

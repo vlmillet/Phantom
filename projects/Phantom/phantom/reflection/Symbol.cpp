@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Symbol.h"
 
 #include "Application.h"
@@ -13,10 +12,11 @@
 #include "Namespace.h"
 #include "Template.h"
 #include "TemplateSpecialization.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
 #include <locale>
-#include <phantom/Variant.h>
+#include <phantom/utils/StringHash.h>
+#include <phantom/utils/Variant.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -91,14 +91,15 @@ int Symbol::destructionPriority() const
     return prio;
 }
 
-phantom::hash64 Symbol::computeHash() const
+hash64 Symbol::computeHash() const
 {
+    PHANTOM_ASSERT_DEBUG(m_Hash != 0 || getRootElement() == Application::Get());
     StringBuffer buffer;
     getQualifiedDecoratedName(buffer);
     return ComputeHash(buffer.c_str(), buffer.size());
 }
 
-StringHash Symbol::ComputeHash(const char* a_Str, size_t a_Len)
+hash64 Symbol::ComputeHash(const char* a_Str, size_t a_Len)
 {
     return makeStringHash(StringView(a_Str, a_Len));
 }
@@ -132,22 +133,23 @@ void Symbol::onAncestorChanged(LanguageElement* a_pAncestor)
     LanguageElement::onAncestorChanged(a_pAncestor);
     if (!isNative())
     {
+        PHANTOM_ASSERT_DEBUG(getRootElement() == Application::Get());
         m_Hash = _computeHash();
     }
 }
 
-StringHash Symbol::_computeHash() const
+hash64 Symbol::_computeHash() const
 {
-    StringHash hash = computeHash();
+    hash64 hash = computeHash();
     return hash;
 }
 
 const Variant& Symbol::getMetaData(StringView a_Name) const
 {
-    return getMetaData(makeStringHash(a_Name));
+    return getMetaData(StringWithHash(a_Name));
 }
 
-const Variant& Symbol::getMetaData(StringHash a_Name) const
+const Variant& Symbol::getMetaData(StringWithHash a_Name) const
 {
     static Variant null;
     if (m_pMetaDatas == nullptr)
@@ -156,7 +158,7 @@ const Variant& Symbol::getMetaData(StringHash a_Name) const
     return found == m_pMetaDatas->end() ? null : found->second;
 }
 
-bool Symbol::hasMetaData(StringHash a_Hash) const
+bool Symbol::hasMetaData(StringWithHash a_Hash) const
 {
     if (m_pMetaDatas == nullptr)
         return false;
@@ -165,7 +167,7 @@ bool Symbol::hasMetaData(StringHash a_Hash) const
 
 bool Symbol::hasMetaData(StringView a_strName) const
 {
-    return hasMetaData(makeStringHash(a_strName));
+    return hasMetaData(StringWithHash(a_strName));
 }
 
 const MetaDatas& Symbol::getMetaDatas() const
@@ -211,7 +213,7 @@ SymbolExtension* Symbol::getExtension(Class* a_pClass, size_t a_Num /* = 0*/) co
 {
     size_t c = 0;
     for (auto ext : getExtensions())
-        if (ext->PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass->isA(a_pClass))
+        if (ext->rtti.metaClass->isA(a_pClass))
             if (c++ == a_Num)
                 return ext;
     return nullptr;
@@ -243,6 +245,16 @@ void Symbol::removeExtension(SymbolExtension* a_pExtension)
     removeElement(a_pExtension);
 }
 
+void Symbol::setMetaData(StringWithHash a_Hash, const Variant& a_Value)
+{
+    (*m_pMetaDatas)[a_Hash] = a_Value;
+}
+
+void Symbol::setMetaData(StringWithHash a_Hash, Variant&& a_Value)
+{
+    (*m_pMetaDatas)[a_Hash] = std::move(a_Value);
+}
+
 void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
 {
     size_t dotPos = a_Name.find_last_of('.');
@@ -252,7 +264,7 @@ void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
                        PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
         if (m_pMetaDatas == nullptr)
             m_pMetaDatas = PHANTOM_NEW(MetaDatas);
-        (*m_pMetaDatas)[a_Name] = a_Value;
+        (*m_pMetaDatas)[StringWithHash(a_Name)] = a_Value;
     }
     else
     {
@@ -267,10 +279,10 @@ void Symbol::setMetaData(StringView a_Name, Variant&& a_Value)
 {
     if (m_pMetaDatas == nullptr)
         m_pMetaDatas = PHANTOM_NEW(MetaDatas);
-    (*m_pMetaDatas)[a_Name] = (Variant &&) a_Value;
+    (*m_pMetaDatas)[StringWithHash(a_Name)] = (Variant &&) a_Value;
 }
 
-void Symbol::removeMetaData(StringHash a_NameHash)
+void Symbol::removeMetaData(StringWithHash a_NameHash)
 {
     PHANTOM_ASSERT(m_pMetaDatas);
     auto found = m_pMetaDatas->find(a_NameHash);
@@ -285,7 +297,7 @@ void Symbol::removeMetaData(StringHash a_NameHash)
 
 void Symbol::removeMetaData(StringView a_Name)
 {
-    removeMetaData(makeStringHash(a_Name));
+    removeMetaData(StringWithHash(a_Name));
 }
 
 void Symbol::setAccess(Access a_eAccess)
@@ -423,7 +435,7 @@ void Symbol::addMetaDatas(const MetaDatas& a_MetaDatas)
         return;
     for (auto it = a_MetaDatas.begin(); it != a_MetaDatas.end(); ++it)
     {
-        setMetaData(StringView(it->first), it->second);
+        setMetaData(it->first, it->second);
     }
 }
 
@@ -573,10 +585,12 @@ void Symbol::setUserData(UserData&& a_UserData)
     m_UserData = std::move(a_UserData);
 }
 
-phantom::StringHash Symbol::getHash() const
+hash64 Symbol::getHash() const
 {
     if (m_Hash == 0)
+    {
         m_Hash = _computeHash();
+    }
     PHANTOM_ASSERT_DEBUG(computeHash() == m_Hash, "hash for symbol %s is inconsistent over time",
                          getQualifiedDecoratedName().c_str());
     return m_Hash;

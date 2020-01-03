@@ -17,7 +17,7 @@
 #include <phantom/source>
 #include <phantom/class>
 #include <phantom/struct>
-#include <phantom/enum>
+#include <phantom/enum_class>
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
@@ -29,7 +29,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/Signal.hxx>
+#include <phantom/utils/Signal.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -51,7 +54,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
             using AlignmentComputer = typedef_<_::AlignmentComputer>;
             using DataElements = typedef_< phantom::reflection::DataElements>;
-            using ERelation = typedef_<_::ERelation>;
             using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
@@ -72,14 +74,14 @@ PHANTOM_PACKAGE("phantom.reflection")
             // .typedef_<TypeFilter>("TypeFilter")
             .staticMethod<bool(Type*)>("DataPointerFilter", &_::DataPointerFilter)
             .staticMethod<bool(Type*)>("NoFilter", &_::NoFilter)
-            .enum_<ERelation>().values({
-                {"e_Relation_None",_::e_Relation_None},
-                {"e_Relation_Equal",_::e_Relation_Equal},
-                {"e_Relation_Child",_::e_Relation_Child},
-                {"e_Relation_Parent",_::e_Relation_Parent},
-                {"e_Relation_Compatible",_::e_Relation_Compatible},
-                {"e_Relation_GenericContentChild",_::e_Relation_GenericContentChild},
-                {"e_Relation_GenericContentParent",_::e_Relation_GenericContentParent}})
+            .enum_<TypeRelation>().values({
+                {"None",_::TypeRelation::None},
+                {"Equal",_::TypeRelation::Equal},
+                {"Child",_::TypeRelation::Child},
+                {"Parent",_::TypeRelation::Parent},
+                {"Compatible",_::TypeRelation::Compatible},
+                {"GenericContentChild",_::TypeRelation::GenericContentChild},
+                {"GenericContentParent",_::TypeRelation::GenericContentParent}})
             .end()
             .class_<AlignmentComputer>()
             .public_()
@@ -172,7 +174,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*) const, virtual_>("deleteInstance", &_::deleteInstance)
             .method<void*(void*) const, virtual_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<ERelation(Type*) const, virtual_>("getRelationWith", &_::getRelationWith)
+            .method<TypeRelation(Type*) const, virtual_>("getRelationWith", &_::getRelationWith)
             .method<bool(void const*, void const*) const, virtual_>("equal", &_::equal)
             .method<void(StringView, void*) const, virtual_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_>("valueToString", &_::valueToString)

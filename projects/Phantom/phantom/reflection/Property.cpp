@@ -9,7 +9,7 @@
 
 #include "Parameter.h"
 #include "Signature.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
 #include <phantom/reflection/Signal.h>
 /* *********************************************** */
@@ -109,19 +109,13 @@ void Property::setSignal(Signal* a_pFunc)
 
 void Property::getValue(void const* a_pObject, void* a_pDest) const
 {
-    if (m_pGet == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "No get member function defined for this property");
-    }
+    PHANTOM_ASSERT(m_pGet);
     m_pGet->invoke((void*)a_pObject, nullptr, a_pDest);
 }
 
 void Property::setValue(void* a_pObject, void const* a_pSrc) const
 {
-    if (m_pSet == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "No set member function defined for this property");
-    }
+    PHANTOM_ASSERT(m_pSet);
     void* args[1] = {(void*)a_pSrc};
     m_pSet->invoke(a_pObject, args);
 }
@@ -160,21 +154,9 @@ void Property::onAncestorChanged(LanguageElement* a_pOwner)
 
 Method* Property::addSet(StringView a_strName /*= ""*/)
 {
-    if (isNative())
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "cannot add custom property functions to native properties");
-        return nullptr;
-    }
-    if (testFlags(PHANTOM_R_FLAG_READONLY))
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "cannot add set function to read only properties");
-        return nullptr;
-    }
-    if (getOwner() == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "property must have an owner before begin add member functions");
-        return nullptr;
-    }
+    PHANTOM_ASSERT(!isNative());
+    PHANTOM_ASSERT(!testFlags(PHANTOM_R_FLAG_READONLY));
+    PHANTOM_ASSERT(getOwner() != nullptr);
     addReferencedElement(m_pSet =
                          PHANTOM_NEW(Method)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_set") : a_strName,
                                              Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
@@ -186,16 +168,8 @@ Method* Property::addSet(StringView a_strName /*= ""*/)
 
 Signal* Property::addSignal(StringView a_strName /*= ""*/)
 {
-    if (isNative())
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "cannot add custom property functions to native properties");
-        return nullptr;
-    }
-    if (getOwner() == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "property must have an owner before begin add member functions");
-        return nullptr;
-    }
+    PHANTOM_ASSERT(!isNative());
+    PHANTOM_ASSERT(getOwner() != nullptr);
     addReferencedElement(
     m_pSignal = PHANTOM_NEW(Signal)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_signal") : a_strName,
                                     Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
@@ -207,16 +181,8 @@ Signal* Property::addSignal(StringView a_strName /*= ""*/)
 
 Method* Property::addGet(StringView a_strName /*= ""*/)
 {
-    if (isNative())
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "cannot add custom property functions to native properties");
-        return nullptr;
-    }
-    if (getOwner() == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "property must have an owner before begin add member functions");
-        return nullptr;
-    }
+    PHANTOM_ASSERT(!isNative());
+    PHANTOM_ASSERT(getOwner() != nullptr);
     addReferencedElement(m_pGet =
                          PHANTOM_NEW(Method)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_get") : a_strName,
                                              Signature::Create(getValueType()), PHANTOM_R_CONST,

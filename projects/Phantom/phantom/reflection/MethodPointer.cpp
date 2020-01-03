@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "MethodPointer.h"
 
 #include "ConstType.h"
@@ -13,8 +12,6 @@
 #include "LValueReference.h"
 #include "Method.h"
 #include "RValueReference.h"
-
-#include <phantom/dyn_cast>
 /* *********************************************** */
 namespace phantom
 {
@@ -83,13 +80,13 @@ Closure MethodPointer::getClosure(void* a_pPointer) const
 
 void MethodPointer::call(void* a_pPointer, void* a_pThis, void** a_pArgs) const
 {
-    PHANTOM_ASSERT(a_pPointer AND dyn_cast<Method*>(a_pPointer) == a_pPointer);
+    PHANTOM_ASSERT(a_pPointer);
     static_cast<Method*>(a_pPointer)->invoke(a_pThis, a_pArgs);
 }
 
 void MethodPointer::call(void* a_pPointer, void* a_pThis, void** a_pArgs, void* a_pReturnAddress) const
 {
-    PHANTOM_ASSERT(a_pPointer AND dyn_cast<Method*>(a_pPointer) == a_pPointer);
+    PHANTOM_ASSERT(a_pPointer);
     static_cast<Method*>(a_pPointer)->invoke(a_pThis, a_pArgs, a_pReturnAddress);
 }
 

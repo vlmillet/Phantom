@@ -7,11 +7,11 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/MemoryContext.h>
-#include <phantom/Signal.h>
-#include <phantom/SmallMap.h>
-#include <phantom/SmallSet.h>
+#include <phantom/detail/MemoryContext.h>
 #include <phantom/reflection/Symbol.h>
+#include <phantom/utils/Signal.h>
+#include <phantom/utils/SmallMap.h>
+#include <phantom/utils/SmallSet.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
@@ -307,7 +307,8 @@ private:
     /// \param  a_strSourcePath Full pathname of the sources.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Module(size_t a_NativeHandle, StringView a_strName, StringView a_LibFullName, StringView a_DeclarationCppFullName, uint a_uiFlags = 0);
+    Module(size_t a_NativeHandle, StringView a_strName, StringView a_LibFullName, StringView a_DeclarationCppFullName,
+           uint a_uiFlags = 0);
 
     void _registerType(hash64 a_Hash, Type* a_pType);
     void _unregisterType(hash64 a_Hash, Type* a_pType);

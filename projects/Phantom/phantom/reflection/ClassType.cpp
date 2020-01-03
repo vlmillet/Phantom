@@ -5,10 +5,8 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "ClassType.h"
 
-#include "../VirtualDelete.h"
 #include "Application.h"
 #include "ConstType.h"
 #include "Constructor.h"
@@ -27,7 +25,7 @@
 #include "Variable.h"
 #include "registration/registration.h"
 
-#include <phantom/value.h>
+#include <phantom/detail/VirtualDelete.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -731,10 +729,7 @@ void ClassType::destroy(void* a_pInstance) const
     PHANTOM_ASSERT(m_pExtraData);
 
     Method* pDestructor = getDestructor();
-    if (pDestructor == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "no destructor available for this class type");
-    }
+    PHANTOM_ASSERT(pDestructor, "no destructor available for this class type");
     pDestructor->invoke(a_pInstance, nullptr);
 }
 
@@ -918,6 +913,16 @@ void ClassType::addSubroutine(Subroutine* a_pSubroutine)
         Scope::addSubroutine(a_pSubroutine);
 }
 
+bool ClassType::isSame(LanguageElement* a_pElement) const
+{
+	return Type::isSame(a_pElement);
+}
+
+bool ClassType::isSame(Symbol* a_pSymbol) const
+{
+    return Type::isSame(a_pSymbol);
+}
+
 bool ClassType::hasStrongDependencyOnType(Type* a_pType) const
 {
     for (auto pField : getFields())
@@ -926,6 +931,11 @@ bool ClassType::hasStrongDependencyOnType(Type* a_pType) const
             return true;
     }
     return false;
+}
+
+void ClassType::finalizeNative()
+{
+	PHANTOM_ASSERT_NO_IMPL();
 }
 
 void ClassType::getFields(AggregateFields& _fields) const
@@ -957,6 +967,17 @@ void ClassType::onReferencedElementRemoved(LanguageElement* a_pElement)
             m_Friends->erase(friendFound);
         }
     }
+}
+
+TemplateSpecialization* ClassType::getTemplateSpecialization() const
+{
+    return Type::getTemplateSpecialization();
+}
+
+TemplateSpecialization* ClassType::getTemplateSpecialization(StringView              a_strTemplateName,
+                                                             const LanguageElements& a_Arguments) const
+{
+    return Scope::getTemplateSpecialization(a_strTemplateName, a_Arguments);
 }
 
 void ClassType::addFriend(Symbol* a_pFriend)

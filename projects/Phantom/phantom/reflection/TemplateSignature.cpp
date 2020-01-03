@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "TemplateSignature.h"
 
 #include "PlaceholderConstant.h"
@@ -13,14 +12,13 @@
 #include "PlaceholderType.h"
 #include "TemplateParameter.h"
 #ifndef __DOXYGEN__
-#    include <phantom/StringUtil.h>
+#    include <phantom/utils/StringUtil.h>
 #endif
 #include "Application.h"
 #include "Namespace.h"
 
-#include <phantom/new.h>
-#include <phantom/new_ex.h>
-#include <phantom/phantom_priv.h>
+#include <phantom/detail/new.h>
+#include <phantom/detail/phantom_priv.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -267,7 +265,7 @@ bool TemplateSignature::isSame(TemplateSignature* a_pOther) const
 bool TemplateSignature::isSame(Symbol* a_pLanguageElement) const
 {
     TemplateSignature* pTS = a_pLanguageElement->asTemplateSignature();
-    return pTS AND isSame(pTS);
+    return pTS AND     isSame(pTS);
 }
 
 bool TemplateSignature::isVariadic() const

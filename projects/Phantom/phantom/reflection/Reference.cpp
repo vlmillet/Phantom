@@ -5,7 +5,6 @@
 // ]
 
 /* ******************* Includes ****************** */
-// #include "phantom/phantom.h"
 #include "Reference.h"
 /* *********************************************** */
 namespace phantom
@@ -13,9 +12,8 @@ namespace phantom
 namespace reflection
 {
 Reference::Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName)
-    : ExtendedType(a_pReferencedType, a_eTypeKind, a_strName, sizeof(void*),
-                   std::alignment_of<void*>::value, a_pReferencedType->getModifiers(),
-                   a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
+    : ExtendedType(a_pReferencedType, a_eTypeKind, a_strName, sizeof(void*), std::alignment_of<void*>::value,
+                   a_pReferencedType->getModifiers(), a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
 }
 

@@ -27,7 +27,10 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -80,7 +83,6 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .staticMethod<Class*()>("MetaClass", &_::MetaClass)
-            .staticMethod<StringView()>("GetEmbeddedRttiFieldName", &_::GetEmbeddedRttiFieldName)
         
         .public_()
         
@@ -167,8 +169,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool() const>("isRootClass", &_::isRootClass)
             .method<bool(Class*) const>("isA", &_::isA)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
-            .method<ERelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
-            .method<bool(void*, void*) const>("doesInstanceDependOn", &_::doesInstanceDependOn)
+            .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
             .method<void(Method*), virtual_|override_>("addMethod", &_::addMethod)
             .method<void(Signal*), virtual_>("addSignal", &_::addSignal)
             .method<void(Signal*), virtual_>("removeSignal", &_::removeSignal)
@@ -184,10 +185,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpressionCascade", &_::getOverriddenDefaultExpressionCascade)
             .method<bool() const, virtual_|override_>("isPolymorphic", &_::isPolymorphic)
-            .method<void(void const*) const, virtual_>("mapRtti", &_::mapRtti)
-            .method<void(void const*) const, virtual_>("unmapRtti", &_::unmapRtti)
-            .method<void(void const*) const, virtual_>("installRtti", &_::installRtti)
-            .method<void(void const*) const, virtual_>("uninstallRtti", &_::uninstallRtti)
             .using_("Type::allocate")
             .using_("Type::deallocate")
             .method<void*() const, virtual_|override_>("allocate", &_::allocate)
@@ -213,11 +210,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void*(void*) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void*(void*, Constructor*, void**) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_|override_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<const Variant&(StringView) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<const Variant&(StringHash) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<void(StringView, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<void(StringHash, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<bool(StringView) const>("hasMetaDataCascade", &_::hasMetaDataCascade)
+            .method<const Variant&(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const Variant&(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<void(StringView, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<void(StringWithHash, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<bool(StringWithHash) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
+            .method<bool(StringView) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)

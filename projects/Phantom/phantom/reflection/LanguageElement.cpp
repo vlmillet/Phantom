@@ -13,13 +13,12 @@
 #include "Module.h"
 #include "Namespace.h"
 #include "TemplateSpecialization.h"
-#include "phantom/new.h"
+#include "phantom/detail/new.h"
 
 #include <ostream>
-#include <phantom/Rtti.h>
-#include <phantom/SmallSet.h>
-#include <phantom/StaticGlobals.h>
+#include <phantom/detail/StaticGlobals.h>
 #include <phantom/traits/IntTypeBySize.h>
+#include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -39,16 +38,16 @@ LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/)
 
 LanguageElement::~LanguageElement()
 {
-    _PHNTM_Rtti.instance = nullptr;
+    PHANTOM_ASSERT(!rtti.instance);
     PHANTOM_ASSERT(isNative() OR m_pElements == nullptr);
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
 }
 
 int LanguageElement::destructionPriority() const
 {
-    if (this == PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass || this == Application::Get())
-        return INT_MAX;
-    return static_cast<LanguageElement*>(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD.metaClass)->destructionPriority() - 1;
+    if (this == rtti.metaClass || this == Application::Get())
+        return std::numeric_limits<int>::max();
+    return static_cast<LanguageElement*>(rtti.metaClass)->destructionPriority() - 1;
 }
 
 void LanguageElement::terminate()
@@ -76,6 +75,7 @@ void LanguageElement::terminate()
     m_pOwner = nullptr;
 
     Unregister(this);
+    rtti.instance = nullptr;
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
@@ -85,7 +85,7 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     {
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
-            if (a_pClass == nullptr OR Rtti::ClassOf(*it)->isA(a_pClass))
+            if (a_pClass == nullptr OR(*it)->as(a_pClass))
             {
                 out.push_back(*it);
             }
@@ -639,17 +639,6 @@ bool LanguageElement::hasFriendCascade(Symbol* a_pElement) const
     return hasFriend(a_pElement) OR(m_pOwner AND m_pOwner->hasFriendCascade(a_pElement));
 }
 
-Message* LanguageElement::error(const char*, ...)
-{
-    setInvalid();
-    return nullptr;
-}
-
-Message* LanguageElement::subError(const char*, ...)
-{
-    return nullptr;
-}
-
 void LanguageElement::addSymbol(Symbol* a_pElement)
 {
     // first add the element
@@ -668,7 +657,7 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
                     continue;
                 Symbol* pSymbol = pElm->asSymbol();
                 (void)pSymbol;
-                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr OR pSymbol->getHash() != a_pElement->getHash(),
+                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr OR pSymbol->computeHash() != a_pElement->computeHash(),
                                      "equal element already added : be careful not having "
                                      "duplicate member declarations in your class, or check not "
                                      "registering not two type with same name in the same source");

@@ -11,11 +11,9 @@
 #include "PackageFolder.h"
 #include "Parameter.h"
 #include "Source.hxx"
-#include "phantom/Message.h"
 
-#include <phantom/Path.h>
-#include <phantom/dyn_cast>
-#include <phantom/phantom.h>
+#include <phantom/detail/phantom.h>
+#include <phantom/utils/Path.h>
 #ifndef __DOXYGEN__
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #        include "windows.h"
@@ -40,16 +38,13 @@
 #include "RValueReference.h"
 #include "SourceFile.h"
 #include "TemplateSpecialization.h"
-#include "phantom/IValueStream.h"
-#include "phantom/ModuleRegistrationInfo.h"
-#include "phantom/OValueStream.h"
-#include "phantom/Placement.h"
-#include "phantom/StringUtil.h"
-#include "phantom/Value.h"
-#include "phantom/phantom_priv.h"
+#include "phantom/detail/ModuleRegistrationInfo.h"
+#include "phantom/detail/phantom_priv.h"
+#include "phantom/utils/Placement.h"
 
 #include <fstream>
-#include <phantom/SmallSet.h>
+#include <phantom/utils/SmallSet.h>
+#include <phantom/utils/StringUtil.h>
 
 #pragma warning(disable : 4996)
 /* *********************************************** */
@@ -95,12 +90,9 @@ Application::Application()
       m_pRootPackageFolder(nullptr),
       m_pNullptr(nullptr)
 {
-    addElement(Namespace::Global());
 }
 
-Application::~Application()
-{
-}
+Application::~Application() {}
 
 void Application::_createNativeModule(ModuleRegistrationInfo* info)
 {
@@ -343,7 +335,7 @@ Class* Application::findCppClass(StringView a_Text, StringBuffer* a_pLastError /
 }
 
 void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                            StringView a_strSourceFile, uint a_uiFlags, Message*)
+                            StringView a_strSourceFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
     PHANTOM_ASSERT(m_OperationCounter == 1);
@@ -359,7 +351,7 @@ void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, Str
 
 static int Module_GetNativeRefCount(Module* a_pModule);
 
-void Application::_unloadMain(Message* a_pMessage /*= nullptr*/)
+void Application::_unloadMain()
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
 
@@ -370,7 +362,7 @@ void Application::_unloadMain(Message* a_pMessage /*= nullptr*/)
         if (pModule->getPlugin())
         // if module is attached to a plugin, we unload it
         {
-            pModule->getPlugin()->unload(a_pMessage);
+            pModule->getPlugin()->unload();
             if (m_Modules.size() && m_Modules.back() == pModule)
             {
                 if (Module_GetNativeRefCount(pModule))
@@ -660,9 +652,7 @@ void Application::_addBuiltInType(Type* a_pType)
     m_BuiltInTypes.push_back(a_pType);
 }
 
-void Application::_removeBuiltInType(Type*)
-{
-}
+void Application::_removeBuiltInType(Type*) {}
 
 Type* Application::getBuiltInType(StringView a_strDecoratedName) const
 {
@@ -1065,16 +1055,14 @@ void Application::removePlugin(Plugin* a_pPlugin)
     m_Plugins.erase(std::find(m_Plugins.begin(), m_Plugins.end(), a_pPlugin));
 }
 
-void Application::getUniqueName(StringBuffer&) const
-{
-}
+void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
 {
     if (m_pRootPackageFolder == nullptr)
     {
         const_cast<Application*>(this)->m_pRootPackageFolder = PHANTOM_DEFERRED_NEW(PackageFolder);
-		const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
+        const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
     }
     return m_pRootPackageFolder;
 }
@@ -1590,39 +1578,6 @@ Type* Application::findType(StringView a_strUniqueName, LanguageElement* a_pScop
 {
     Symbol* pSymbol = findSymbol(a_strUniqueName, a_pScope);
     return pSymbol ? pSymbol->asType() : nullptr;
-}
-
-void Application::setMetaData(StringView a_SymbolDotMeta, const Variant& a_Value,
-                              LanguageElement* a_pScope /*= nullptr*/)
-{
-    size_t lastDotPos = a_SymbolDotMeta.find_last_of('.');
-    if (lastDotPos == String::npos)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "invalid metadata argument");
-    }
-    String  symbol = a_SymbolDotMeta.substr(0, lastDotPos);
-    Symbol* pSymbol = findSymbol(symbol, a_pScope);
-    if (pSymbol == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "symbol not found '%s'", symbol.c_str());
-    }
-    pSymbol->setMetaData(a_SymbolDotMeta.substr(lastDotPos + 1), a_Value);
-}
-
-const Variant& Application::getMetaData(StringView a_SymbolDotMeta, LanguageElement* a_pScope /*= nullptr*/) const
-{
-    size_t lastDotPos = a_SymbolDotMeta.find_last_of('.');
-    if (lastDotPos == String::npos)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "invalid metadata argument");
-    }
-    String  symbol = a_SymbolDotMeta.substr(0, lastDotPos);
-    Symbol* pSymbol = findSymbol(symbol, a_pScope);
-    if (pSymbol == nullptr)
-    {
-        PHANTOM_THROW_EXCEPTION(RuntimeException, "symbol not found '%s'", symbol.c_str());
-    }
-    return pSymbol->getMetaData(a_SymbolDotMeta.substr(lastDotPos + 1));
 }
 
 void Application::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullptr*/,

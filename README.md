@@ -13,7 +13,7 @@ It comes with bêta extensions providing scripting features : [Phantom.Lang](#ph
 
 ----
 
-| [Compilers / Platforms](#compilers--platforms) \| [Donations / Support](#support--donations) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
+| [Compilers / Platforms](#compilers--platforms) \| [License / Support / Domations](#license--support--donations) \| [Phantom In a Nutshell](#phantom-in-a-nutshell) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
 :----------------------------------------------------------: |
 
 ### Compilers / Platforms 
@@ -24,9 +24,35 @@ It has been tested on Windows 7/10, Ubuntu and ORBIS platforms.
 More tests are required as it's scope was limited during development.
 <sub>As being mainly used for game engine/editor development, Phantom had a poor maintenance on other platforms than Windows. But things are changing slowly but surely...</sub>
 
-### Support / Donations
+### License / Support / Donations
 
 This project is under a MIT license which is one of the highest permissive distribution license. I receive no salary or royalties for developing it and I won't, by pure believes in sharing stuff for a better world <3. Anyone willing to donate is very welcome to help me maintaining and improving it on my spare time :) 
+
+### Phantom In A Nutshell
+
+- Classical features : **class, method, field, function, enum, constructor, property ...**
+- **Template class reflection**
+- **Plugins**, with clear **Module/Package/Source** symbols organisation
+- **Custom allocations** : provide your own allocate/deallocate functions (very few allocations before main for precise memory profiling)
+- Home made containers with respective *small buffer* and *views* optimizations (rare allocations when passing arguments)
+- **Minimal macros use** (only those to avoid unreadable code are used)
+- **On demand registration** : even if everything is reflected, only accessed class will register members (fast startup and low memory use)
+- **Optimized meta programming compilation time** using meta-forwarding
+- **Non intrusive** (you can separate your code from reflection code, even in separate libraries)
+- *Haunt* : a **clang based tool for automatic reflection generation** 
+	- cached dependency graph
+	- easy external code reflection with custom structuration/integration
+- **No third-party library**
+- **No RTTI**
+- Automatic namespace detection at registration (ask for the magic trick ;))
+- Used in the **game industry** (compiles on ORBIS)
+- C++11
+- Extensions
+	- *Phantom.Lang* (soon)
+		- Basic C++ grammar for evaluating C++ at runtime
+		- C++ family semantic for building language upon C++ 
+	- *Phantom.Jit* (soon)
+		- JIT your own language above C++ and debug it inside Visual Studio (on the fly PDB generation)
 
 ### HelloWorld
 

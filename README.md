@@ -32,27 +32,28 @@ This project is under a MIT license which is one of the highest permissive distr
 
 - Classical features : **class, method, field, function, enum, constructor, property ...**
 - **Template class reflection**
-- **Plugins**, with clear **Module/Package/Source** symbols organisation
-- **Custom allocations** : provide your own allocate/deallocate functions (very few allocations before main for precise memory profiling)
-- Home made containers with respective *small buffer* and *views* optimizations (rare allocations when passing arguments)
-- **Minimal macros use** (only those to avoid unreadable code are used)
-- **On demand registration** : even if everything is reflected, only accessed class will register members (fast startup and low memory use)
+- **Automatic reflection generation** for fast iterations with *Haunt*, a ***Clang* based tool** featuring : 
+	- code comment markers
+	- dependency resolution (no reflection generated for fields or methods with missing reflected types)
+	- highly customizable input/output
+	- trivial external libraries reflection and integration 
+- **Plugins**, with user **Module/Package/Source** symbols organisation 
+- **Custom user allocator** : provide your own allocate/deallocate functions (very few allocations before main for better memory control)
+- **Modern C++ with minimal macros use** (only those to avoid unreadable code are used) 
+- **On demand registration** : if requested, even if everything is reflected, only accessed class will register members (**fast startup** and **low memory use**, no matter your codebase size)
 - **Optimized meta programming compilation time** using meta-forwarding
 - **Non intrusive** (you can separate your code from reflection code, even in separate libraries)
-- *Haunt* : a **clang based tool for automatic reflection generation** 
-	- cached dependency graph
-	- easy external code reflection with custom structuration/integration
 - **No third-party library**
 - **No RTTI**
+- Home made containers with respective *small buffer* and *views* optimizations (rare allocations when passing arguments)
 - Automatic namespace detection at registration (ask for the magic trick ;))
 - Used in the **game industry** (compiles on ORBIS)
-- C++11
-- Extensions
+- **Extensions**
 	- *Phantom.Lang* (soon)
-		- Basic C++ grammar for evaluating C++ at runtime
-		- C++ family semantic for building language upon C++ 
+		- **Basic C++ grammar and semantic** for evaluating C++ at runtime
+		- AST objects for **building script upon native C++**  
 	- *Phantom.Jit* (soon)
-		- JIT your own language above C++ and debug it inside Visual Studio (on the fly PDB generation)
+		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation)
 
 ### HelloWorld
 

@@ -9,7 +9,7 @@
 #include <haunt>
 HAUNT_STOP;
 #include <phantom/detail/ConstructorCaller.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/traits/HasVirtualDestructor.h>
 #include <phantom/traits/IsDefaultConstructible.h>
 #include <phantom/traits/ProtectionHacker.h>

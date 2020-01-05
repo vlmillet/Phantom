@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "phantom.h"
+#include "core.h"
 
 HAUNT_STOP;
 
@@ -230,7 +230,7 @@ HAUNT_RESUME;
 
 #define TYPE_REGISTRATION_KEY_DEBUG_ENABLED (PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL)
 
-#define PHANTOM_DEFERRED_NEW(...) phantom::detail::DeferredNewH() * new (PHANTOM_ALLOCATE(__VA_ARGS__)) __VA_ARGS__
+#define PHANTOM_DEFERRED_NEW(...) phantom::detail::DeferredNewH() * new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
 #define PHANTOM_DEFERRED_PLACEMENT_NEW(instance) phantom::detail::DeferredNewH() * instance
 
 #define PHANTOM_DEFERRED_DELETE(...) phantom::detail::DeferredDeleteH<__VA_ARGS__>()*

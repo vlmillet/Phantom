@@ -25,10 +25,6 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
       m_pTemplateArguments(a_pTemplateArguments ? PHANTOM_NEW(LanguageElements)(*a_pTemplateArguments) : nullptr),
       m_pFunctionArguments(a_pFunctionArguments ? PHANTOM_NEW(LanguageElements)(*a_pFunctionArguments) : nullptr)
 {
-    if (m_pFunctionArguments && m_pFunctionArguments->size() == 4)
-    {
-        printf("");
-    }
     if (m_pLeft)
     {
         if (m_pLeft->getOwner() == nullptr)

@@ -7,7 +7,7 @@
 #include "ModuleRegistrationInfo.h"
 
 #include <phantom/detail/StaticGlobalRegistrer.h>
-#include <phantom/detail/phantom_priv.h>
+#include <phantom/detail/core_internal.h>
 #include <phantom/reflection/ClassType.h>
 #include <phantom/reflection/Module.h>
 #include <phantom/reflection/registration/registration.h>
@@ -50,7 +50,8 @@ RegistrerId ModuleRegistrationInfo::addRegistrer(ArrayView<RegistrationStep>    
         else
         // register for incoming future steps
         {
-            m_RegistrersByStep[step] = a_pRegistrer;
+#define _PHNTM_ADD_REGISTRER(registrers) registrers.push_back(a_pRegistrer); 
+            _PHNTM_APPLY_TO_REGISTRERS(step, _PHNTM_ADD_REGISTRER);
         }
     }
     return id;
@@ -230,11 +231,12 @@ void ModuleRegistrationInfo::stepRegistration(RegistrationStep a_Step)
 {
     PHANTOM_ASSERT(int(m_CurrentRegistrationStep) < int(a_Step));
     m_CurrentRegistrationStep = a_Step;
-    for (ptrdiff_t i = 0; i < m_RegistrersByStep.upper_bound(a_Step) - m_RegistrersByStep.lower_bound(a_Step); ++i)
-    {
-        m_RegistrersByStep.lower_bound(a_Step)[i].second->__PHNTM_process(a_Step);
-    }
-    m_RegistrersByStep.erase(a_Step);
+
+#define _PHNTM_CALL__PHNTM_process(registrers)\
+    for (size_t i = 0; i < registrers.size(); ++i)\
+        registrers[i]->__PHNTM_process(a_Step);\
+    registrers.clear();
+    _PHNTM_APPLY_TO_REGISTRERS(a_Step, _PHNTM_CALL__PHNTM_process);
 }
 
 TypeInstallationInfo::TypeInstallationInfo(reflection::Type* a_pType, reflection::Source* a_pSource,

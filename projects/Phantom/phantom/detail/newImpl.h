@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Constructor.h"
-#include "allocate.h"
 
 #include <phantom/detail/TypeOfFwd.h>
 #include <phantom/utils/Object.h>
@@ -80,7 +79,7 @@ struct DeleteH
         if (a_pInstance)
         {
             PlacementDeleteHH<StaticChecks, t_Ty, IsObject<t_Ty>::value>::apply(a_pInstance);
-            Allocator<t_Ty>::deallocate(a_pInstance);
+            phantom::deallocate(a_pInstance);
         }
     }
 };
@@ -97,12 +96,8 @@ struct PlacementDeleteH
 template<typename t_Ty>
 struct NewNH
 {
-    PHANTOM_FORCEINLINE NewNH(size_t N PHANTOM_MEMORY_STAT_APPEND_PARAMS) : N(N)
+    PHANTOM_FORCEINLINE NewNH(size_t N) : N(N)
     {
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-        this->a_strFILE = a_strFILE;
-        this->a_uiLINE = a_uiLINE;
-#endif
     }
     PHANTOM_FORCEINLINE t_Ty* operator*(t_Ty* a_pInstances)
     {
@@ -114,10 +109,6 @@ struct NewNH
         }
         return a_pInstances;
     }
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-    const char* a_strFILE;
-    int         a_uiLINE;
-#endif
     size_t N;
 };
 
@@ -207,36 +198,34 @@ struct DynamicDeleter
 };
 } // namespace detail
 
-template<class t_Ty, class... Args>
-t_Ty* New(Args&&... args)
+template<class T, class ... Args>
+T* New(Args&&... a_Args)
 {
-    return detail::NewH<t_Ty>() *
-    new (::phantom::allocate<t_Ty>(PHANTOM_MEMORY_STAT_INSERT_VALUES)) t_Ty(std::forward<Args>(args)...);
+	return detail::NewH<T>() * new (allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
 }
 
-template<class t_Ty, class... Args>
-t_Ty* NewWithStats(PHANTOM_MEMORY_STAT_PREPEND_PARAMS Args&&... args)
+template<class T, class... Args>
+T* PlacementNew(T* a_pObj, Args&&... a_Args)
 {
-    return detail::NewH<t_Ty>() *
-    new (::phantom::allocate<t_Ty>(PHANTOM_MEMORY_STAT_INSERT_ARGS)) t_Ty(std::forward<Args>(args)...);
+	return detail::NewH<T>() * new (a_pObj) T(std::forward<Args>(a_Args)...);
 }
 
-template<class t_Ty, class... Args>
-t_Ty* PlacementNew(t_Ty* a_pObj, Args&&... args)
+template<class T, bool Checks = true>
+void Delete(T*&& a_pPtr)
 {
-    return detail::NewH<t_Ty>() * new (a_pObj) t_Ty(std::forward<Args>(args)...);
+	return detail::DeleteH<Checks, T>() * a_pPtr;
 }
 
-template<class t_Ty>
-void Delete(t_Ty* a_pObj)
+template<class T, bool Checks = true>
+void Delete(T*& a_pPtr)
 {
-    detail::DeleteH<true, t_Ty>() * a_pObj;
+	return detail::DeleteH<Checks, T>() * a_pPtr;
 }
 
-template<class t_Ty>
-void DeleteDyn(t_Ty* a_pObj)
+template<class T>
+void DeleteAuto(T* a_pObj)
 {
-    detail::DeleteDynH() * a_pObj;
+	detail::DeleteDynH()* a_pObj;
 }
 
 } // namespace phantom

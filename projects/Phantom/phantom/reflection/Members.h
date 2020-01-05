@@ -46,7 +46,7 @@ public:
 
     ~Members()
     {
-        phantom::Delete(m_data);
+        phantom::Delete<t_Container>(m_data);
     }
 
     t_Container* operator->()

@@ -52,12 +52,6 @@
 #endif
 
 // public (ok) (you can play with it if you want if you know what you are doing)
-#if !defined(PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS)
-#    define PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS                                                                     \
-        1 /// Enable statitistics (file, line, count ...) on phantom class allocations (for stl
-          /// class it wont generate any file/line information, but it's not a probleme since stl is
-          /// safe)
-#endif
 #if !defined(PHANTOM_CUSTOM_ENABLE_SIGNAL_BLOCKING)
 #    define PHANTOM_CUSTOM_ENABLE_SIGNAL_BLOCKING 0 /// enable o_block and o_unblock keywords, usable on signals
 #endif
@@ -73,6 +67,6 @@
 #    define PHANTOM_CUSTOM_ENABLE_DERIVED_CLASS_CACHE 1
 #endif
 
-#if !defined(PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY)
-#    define PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY 8192
+#if !defined(PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP)
+#    define PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP(step) (step == phantom::RegistrationStep::ClassTypes ? 65536 : 1024)
 #endif

@@ -5,7 +5,7 @@
 #include "PackageSource.h"
 #include "Template.h"
 #include "Type.h"
-#include "phantom/detail/phantom_priv.h"
+#include "phantom/detail/core_internal.h"
 #include "phantom/reflection/EnumT.h"
 #include "phantom/reflection/Module.h"
 
@@ -214,7 +214,7 @@ void TypeBuilderBase::_splitEnumValues(StringView a_NameList, StringViews& a_Nam
         size_t pos = name.find_last_of(':');
         if (pos != StringView::npos)
             name = name.substr(pos + 1);
-        while (std::isblank(name[0], std::locale()))
+        while (StringUtil::IsBlank(name[0]))
             name = name.substr(1);
     }
 }

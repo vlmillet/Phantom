@@ -42,6 +42,23 @@ PHANTOM_PACKAGE("phantom.utils")
             .staticMethod<void(Strings&, StringView, const char*, bool)>("Split", &_::Split)["true"]
             .staticMethod<void(StringViews&, StringView, const char*, bool)>("Split", &_::Split)["true"]
             .staticMethod<StringView(StringView)>("RemoveExtraBlanks", &_::RemoveExtraBlanks)
+            .staticMethod<bool(char)>("IsBlank", &_::IsBlank)
+            .staticMethod<String(float, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(double, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(char, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(sint8, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(uint8, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(sint16, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(uint16, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(sint32, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(uint32, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(longlong, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(ulonglong, const char*)>("ToString", &_::ToString)["nullptr"]
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .staticMethod<String(sint64, const char*)>("ToString", &_::ToString)["nullptr"]
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .staticMethod<String(uint64, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<String(long double, const char*)>("ToString", &_::ToString)["nullptr"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

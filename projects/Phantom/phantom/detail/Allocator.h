@@ -9,7 +9,7 @@
 #include <haunt>
 HAUNT_STOP;
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 namespace phantom
 {
@@ -25,30 +25,30 @@ template<typename t_Ty>
 struct DefaultAllocator
 {
     PHANTOM_REBIND(DefaultAllocator);
-    PHANTOM_FORCEINLINE static t_Ty* allocate(const char* a_pFile, int a_Line)
+    PHANTOM_FORCEINLINE static t_Ty* allocate()
     {
         return reinterpret_cast<t_Ty*>(
-        phantom::memory::allocBytes(sizeof(t_Ty), PHANTOM_ALIGNOF(t_Ty), a_pFile, a_Line));
+        phantom::allocate(sizeof(t_Ty), PHANTOM_ALIGNOF(t_Ty)));
     }
     PHANTOM_FORCEINLINE static void deallocate(void* a_pPtr)
     {
-        phantom::memory::deallocBytes(a_pPtr);
+        phantom::deallocate(a_pPtr);
     }
-    PHANTOM_FORCEINLINE static t_Ty* allocate(size_t a_Count, const char* a_pFile, int a_Line)
+    PHANTOM_FORCEINLINE static t_Ty* allocate(size_t a_Count)
     {
         return reinterpret_cast<t_Ty*>(
-        phantom::memory::allocBytes(sizeof(t_Ty) * a_Count, PHANTOM_ALIGNOF(t_Ty), a_pFile, a_Line));
+        phantom::allocate(sizeof(t_Ty) * a_Count, PHANTOM_ALIGNOF(t_Ty)));
     }
     PHANTOM_FORCEINLINE static void deallocate(void* ptr, size_t)
     {
-        return phantom::memory::deallocBytes(ptr);
+        return phantom::deallocate(ptr);
     }
 };
 
 template<>
 struct DefaultAllocator<void>
 {
-    PHANTOM_FORCEINLINE static void* allocate(const char*, int)
+    PHANTOM_FORCEINLINE static void* allocate()
     {
         PHANTOM_ASSERT(false, "cannot allocate void");
         return nullptr;
@@ -57,7 +57,7 @@ struct DefaultAllocator<void>
     {
         PHANTOM_ASSERT(false, "cannot deallocate void");
     }
-    PHANTOM_FORCEINLINE static void* allocate(size_t, const char*, int)
+    PHANTOM_FORCEINLINE static void* allocate(size_t)
     {
         PHANTOM_ASSERT(false, "cannot allocate void");
         return nullptr;

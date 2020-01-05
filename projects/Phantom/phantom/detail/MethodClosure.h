@@ -1,6 +1,6 @@
 #pragma once
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 #pragma warning(disable : 4700)
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/SmallMap.h>
 
 namespace phantom

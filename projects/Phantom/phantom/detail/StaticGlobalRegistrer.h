@@ -10,7 +10,7 @@
 
 HAUNT_STOP;
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/SmallVector.h>
 #include <phantom/utils/StringView.h>
 

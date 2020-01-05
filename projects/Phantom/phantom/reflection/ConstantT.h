@@ -11,7 +11,7 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/lexical_cast.h>
+#include <phantom/utils/LexicalCast.h>
 #include <phantom/reflection/Constant.h>
 #include <phantom/reflection/MetaNewDelete.h>
 #include <phantom/reflection/TypeOf.h>

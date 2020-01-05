@@ -78,111 +78,14 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(CharT const*, size_t)>()
             .PHANTOM_T constructor<void(StringViewType)>()
             .PHANTOM_T constructor<void(CharT const*)>()
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(const ::std::string &), explicit_>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .PHANTOM_T constructor<void(int), explicit_>()
             .PHANTOM_T method<SelfType&(SelfType const&), default_>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             .PHANTOM_T method<SelfType&(SelfType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             .PHANTOM_T method<SelfType&(CharT const*)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             .PHANTOM_T method<SelfType&(CharT)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<SelfType&(const ::std::string &)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<::std::string() const, explicit_>("operator ::std::string", &_::operator notypedef<::std::string>)
-            .PHANTOM_T method<StringViewType() const>("operator StringViewType", &_::operator notypedef<StringViewType>)
-            .PHANTOM_T method<CharT const*() const>("begin", &_::begin)
-            .PHANTOM_T method<CharT const*() const>("end", &_::end)
-            .PHANTOM_T method<CharT*()>("begin", &_::begin)
-            .PHANTOM_T method<CharT*()>("end", &_::end)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<const_reverse_iterator() const>("rbegin", &_::rbegin)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<const_reverse_iterator() const>("rend", &_::rend)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<reverse_iterator()>("rbegin", &_::rbegin)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<reverse_iterator()>("rend", &_::rend)
-            .PHANTOM_T method<size_t() const>("size", &_::size)
-            .PHANTOM_T method<size_t() const>("length", &_::length)
-            .PHANTOM_T method<void(size_t)>("resize", &_::resize)
-            .PHANTOM_T method<void(size_t, CharT)>("resize", &_::resize)
-            .PHANTOM_T method<size_t() const>("capacity", &_::capacity)
-            .PHANTOM_T method<void(size_t)>("reserve", &_::reserve)
-            .PHANTOM_T method<void()>("clear", &_::clear)
-            .PHANTOM_T method<bool() const>("empty", &_::empty)
-            .PHANTOM_T method<CharT const&(size_t) const>("operator[]", &_::operator[])
-            .PHANTOM_T method<CharT&(size_t)>("operator[]", &_::operator[])
-            .PHANTOM_T method<CharT const&() const>("back", &_::back)
-            .PHANTOM_T method<CharT&()>("back", &_::back)
-            .PHANTOM_T method<CharT const&() const>("front", &_::front)
-            .PHANTOM_T method<CharT&()>("front", &_::front)
-            .PHANTOM_T method<SelfType&(CharT const*)>("operator+=", &_::operator+=)
-            .PHANTOM_T method<SelfType&(SelfType const&)>("operator+=", &_::operator+=)
-            .PHANTOM_T method<SelfType&(CharT)>("operator+=", &_::operator+=)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<SelfType&(const ::std::string &)>("operator+=", &_::operator+=)
-            .PHANTOM_T method<SelfType&(StringViewType)>("operator+=", &_::operator+=)
-            .PHANTOM_T method<SelfType(CharT const*) const>("operator+", &_::operator+)
-            .PHANTOM_T method<SelfType(SelfType const&) const>("operator+", &_::operator+)
-            .PHANTOM_T method<SelfType(CharT) const>("operator+", &_::operator+)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<SelfType(const ::std::string &) const>("operator+", &_::operator+)
-            .PHANTOM_T method<SelfType(StringViewType) const>("operator+", &_::operator+)
-            .PHANTOM_T method<SelfType&(CharT const*)>("append", &_::append)
-            .PHANTOM_T method<SelfType&(SelfType const&)>("append", &_::append)
-            .PHANTOM_T method<SelfType&(CharT)>("append", &_::append)
-            .PHANTOM_T method<void(CharT)>("push_back", &_::push_back)
-            .PHANTOM_T method<SelfType&(CharT)>("assign", &_::assign)
-            .PHANTOM_T method<SelfType&(CharT const*)>("assign", &_::assign)
-            .PHANTOM_T method<SelfType&(CharT const*, size_t)>("assign", &_::assign)
-            .PHANTOM_T method<SelfType&(CharT const*, size_t)>("append", &_::append)
-            .PHANTOM_T method<SelfType&(::std::initializer_list<CharT>)>("assign", &_::assign)
-            .PHANTOM_T method<SelfType&(::std::initializer_list<CharT>)>("append", &_::append)
-            .PHANTOM_T method<SelfType&(const SelfType&, size_t, size_t)>("append", &_::append)
-            .PHANTOM_T method<SelfType&(size_t, SelfType const&)>("insert", &_::insert)
-            .PHANTOM_T method<SelfType&(size_t, CharT const*, size_t)>("insert", &_::insert)
-            .PHANTOM_T method<iterator(const_iterator, ::std::initializer_list<CharT>)>("insert", &_::insert)
-            .PHANTOM_T method<size_t(size_t)>("erase", &_::erase)
-            .PHANTOM_T method<iterator(iterator)>("erase", &_::erase)
-            .PHANTOM_T method<iterator(iterator, iterator)>("erase", &_::erase)
-            .PHANTOM_T method<void(SelfType&)>("swap", &_::swap)
-            .PHANTOM_T method<void()>("pop_back", &_::pop_back)
-            .PHANTOM_T method<CharT const*() const>("c_str", &_::c_str)
-            .PHANTOM_T method<CharT const*() const>("data", &_::data)
-            .PHANTOM_T method<CharT*()>("data", &_::data)
-            .PHANTOM_T method<size_t(CharT) const>("find", &_::find)
-            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find", &_::find)["0"]
-            .PHANTOM_T method<size_t(SelfType const&, size_t) const>("find", &_::find)["0"]
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<size_t(const ::std::string &, size_t) const>("find", &_::find)["0"]
-            .PHANTOM_T method<size_t(StringViewType, size_t) const>("find", &_::find)["0"]
-            .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_of", &_::find_first_of)["0"]
-            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_of", &_::find_first_of)["0"]
-            .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_of", &_::find_last_of)["0"]
-            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_of", &_::find_last_of)["0"]
-            .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
-            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
-            .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
-            .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
-            .PHANTOM_T method<SelfType(size_t, size_t) const>("substr", &_::substr)["npos"]
-            .PHANTOM_T method<StringViewType() const>("view", &_::view)
-            .PHANTOM_T method<int(SelfType const&) const>("compare", &_::compare)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<int(const ::std::string &) const>("compare", &_::compare)
-            .PHANTOM_T method<int(CharT const*) const>("compare", &_::compare)
-            .PHANTOM_T method<int(size_t, size_t, CharT const*) const>("compare", &_::compare)
-            .PHANTOM_T method<int(size_t, size_t, SelfType const&) const>("compare", &_::compare)
-            .PHANTOM_T method<bool(SelfType const&) const>("operator<", &_::operator<)
-            .PHANTOM_T method<bool(SelfType const&) const>("operator>", &_::operator>)
-            .PHANTOM_T method<bool(SelfType const&) const>("operator==", &_::operator==)
-            .PHANTOM_T method<bool(SelfType const&) const>("operator!=", &_::operator!=)
-            .PHANTOM_T method<bool(CharT const*) const>("operator==", &_::operator==)
-            .PHANTOM_T method<bool(CharT const*) const>("operator!=", &_::operator!=)
-            .PHANTOM_T method<bool(StringViewType) const>("operator==", &_::operator==)
-            .PHANTOM_T method<bool(StringViewType) const>("operator!=", &_::operator!=)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(const ::std::string &) const>("operator==", &_::operator==)
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(const ::std::string &) const>("operator!=", &_::operator!=)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .PHANTOM_T method<SelfType&(int)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             ;
         }
     PHANTOM_END("SmallString")

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "phantom.h"
+#include "core.h"
 
 #include <phantom/utils/Delegate.h>
 

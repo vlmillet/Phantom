@@ -14,8 +14,6 @@
 /* *********************************************** */
 namespace phantom
 {
-class Main;
-
 namespace reflection
 {
 class ModuleRegistrationInfo;

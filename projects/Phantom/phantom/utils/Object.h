@@ -49,7 +49,7 @@ struct IsObject : public std::is_base_of<Object, T>
 };
 
 template<class T>
-static T* Object::Cast(Object* a_pObject)
+T* Object::Cast(Object* a_pObject)
 {
     PHANTOM_STATIC_ASSERT(IsObject<T>::value);
     if (a_pObject)

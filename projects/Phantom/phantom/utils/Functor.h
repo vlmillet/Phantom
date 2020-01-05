@@ -11,6 +11,7 @@
 #include "DynDelegate.h"
 #include "SmallVector.h"
 
+#include <phantom/alignof>
 #include <functional>
 #include <type_traits>
 /* *********************************************** */
@@ -524,14 +525,14 @@ private:
 
 private:
     union {
-        std::aligned_storage_t<sizeof(DelegateType), alignof(DelegateType)> m_Delegate;
+        std::aligned_storage_t<sizeof(DelegateType), PHANTOM_ALIGNOF(DelegateType)> m_Delegate;
         struct
         {
-            std::aligned_storage_t<sizeof(StdFuncType), alignof(StdFuncType)> m_StdFunction;
+            std::aligned_storage_t<sizeof(StdFuncType), PHANTOM_ALIGNOF(StdFuncType)> m_StdFunction;
             void* m_pLambdaDiscriminant; // this serves as a discriminant to build the functor ID
                                          // and compare them in case of lambdas
         };
-        std::aligned_storage_t<sizeof(DynDelegateType), alignof(DynDelegateType)> m_DynDelegate;
+        std::aligned_storage_t<sizeof(DynDelegateType), PHANTOM_ALIGNOF(DynDelegateType)> m_DynDelegate;
     };
     _Type m_Type;
 };

@@ -116,12 +116,14 @@ public:
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
     }
-    virtual void copy(void*, void const*) const
+    void copyAssign(void*, void const*) const override
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
+	}
+	void copyConstruct(void*, void const*) const override
+	{
+		_PHNTM_FORBIDDEN_VOID_METHOD;
+	}
 
     void* allocate() const override
     {
@@ -141,45 +143,6 @@ public:
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
     }
-    void* allocate(PHANTOM_MEMORY_STAT_INSERT_PARAMS_UNUSED) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-        return nullptr;
-    }
-    void* allocate(size_t PHANTOM_MEMORY_STAT_APPEND_PARAMS_UNUSED) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-        return nullptr;
-    }
-    virtual void deallocate(void* PHANTOM_MEMORY_STAT_APPEND_PARAMS_UNUSED) const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    virtual void deallocate(void*, size_t PHANTOM_MEMORY_STAT_APPEND_PARAMS_UNUSED) const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-
-#else
-    virtual void* allocate() const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-        return nullptr;
-    }
-    virtual void deallocate(void*) const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    virtual void* allocate(size_t) const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-        return nullptr;
-    }
-    virtual void deallocate(void*, size_t) const
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-#endif
 
     // Construction
     void construct(void*) const override

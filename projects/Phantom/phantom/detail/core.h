@@ -90,22 +90,6 @@ namespace reflection
 
 namespace phantom
 {
-#ifndef __DOXYGEN__
-
-namespace detail
-{
-template<class t_Ty>
-struct TypeRegistrer;
-template<class t_Target, class t_Source, bool t_SourceIsObject>
-struct asH;
-} // namespace detail
-
-#endif // DOXYGEN
-
-} // namespace phantom
-
-namespace phantom
-{
 enum class RegistrationStep
 {
     _None,
@@ -152,17 +136,6 @@ enum class MessageType
     Error,
 };
 
-typedef bool (*MessageReportFunc)(StringView expression, StringView file, int line, const char* format,
-                                  va_list arglist);
-typedef void (*LogFunc)(MessageType msgType, StringView file, int line, const char* format, va_list arglist);
-
-typedef Delegate<void(StringView, int)> PrintDelegate;
-
-PHANTOM_EXPORT_PHANTOM void setAssertFunc(MessageReportFunc a_func);
-PHANTOM_EXPORT_PHANTOM void setErrorFunc(MessageReportFunc a_func);
-PHANTOM_EXPORT_PHANTOM void setLogFunc(LogFunc a_func);
-PHANTOM_EXPORT_PHANTOM void setWarningFunc(MessageReportFunc a_func);
-
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
                                                                          const char* format, ...);
 PHANTOM_EXPORT_PHANTOM bool warning   PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
@@ -174,8 +147,4 @@ PHANTOM_EXPORT_PHANTOM void log       PHANTOM_PREVENT_MACRO_SUBSTITUTION(Message
 
 PHANTOM_EXPORT_PHANTOM bool isMainThread();
 
-} // namespace phantom
-
-namespace phantom
-{
 } // namespace phantom

@@ -8,12 +8,13 @@
 
 #include <haunt>
 HAUNT_STOP;
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/detail/typedefs.h>
 #include <phantom/reflection/reflection.h>
 #include <phantom/utils/SmallString.h>
 #include <phantom/utils/StringHash.h>
 #include <phantom/utils/StringView.h>
+#include <phantom/utils/StringUtil.h>
 
 /// @cond ADVANCED
 
@@ -317,7 +318,7 @@ struct TypeNameOf<t_Ty[i]>
 {
     static String name()
     {
-        return String(TypeNameOf<t_Ty>::name()) + '[' + std::to_string(i) + ']';
+        return String(TypeNameOf<t_Ty>::name()) + '[' + StringUtil::ToString(i) + ']';
     }
 };
 

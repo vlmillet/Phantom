@@ -12,7 +12,7 @@
 #include "Parameter.h"
 #include "Source.hxx"
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/Path.h>
 #ifndef __DOXYGEN__
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -39,7 +39,7 @@
 #include "SourceFile.h"
 #include "TemplateSpecialization.h"
 #include "phantom/detail/ModuleRegistrationInfo.h"
-#include "phantom/detail/phantom_priv.h"
+#include "phantom/detail/core_internal.h"
 #include "phantom/utils/Placement.h"
 
 #include <fstream>

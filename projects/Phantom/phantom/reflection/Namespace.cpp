@@ -6,7 +6,7 @@
 
 /* ******************* Includes ****************** */
 #ifndef __DOXYGEN__
-#    include <phantom/detail/phantom_priv.h>
+#    include <phantom/detail/core_internal.h>
 #    include <phantom/utils/StringUtil.h>
 #endif
 #include "Alias.h"
@@ -15,7 +15,7 @@
 #include "Namespace.hxx"
 #include "Template.h"
 
-#include <phantom/detail/phantom_priv.h>
+#include <phantom/detail/core_internal.h>
 #include <phantom/utils/Placement.h>
 /* *********************************************** */
 namespace phantom

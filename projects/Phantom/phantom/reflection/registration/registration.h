@@ -7,7 +7,7 @@ HAUNT_STOP;
 #include "Forward.h"
 #include <phantom/detail/VirtualDelete.h>
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/reflection/Namespace.h>
 #include <phantom/reflection/Source.h>
 #include <phantom/reflection/TypeInfos.h>

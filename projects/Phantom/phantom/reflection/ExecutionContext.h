@@ -8,7 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/VirtualDelete.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/SmallVector.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */

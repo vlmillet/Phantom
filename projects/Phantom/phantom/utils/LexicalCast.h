@@ -9,9 +9,9 @@
 #include <haunt>
 HAUNT_STOP;
 #include <inttypes.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/String.h>
-#include <string>
+#include <phantom/utils/StringUtil.h>
 
 /// @cond ADVANCED
 
@@ -250,7 +250,7 @@ struct LexicalCastH<String, t_Source>
 {
     static String apply(t_Source const& src)
     {
-        return String(std::to_string(src));
+        return String(StringUtil::ToString(src));
     }
 };
 } // namespace detail

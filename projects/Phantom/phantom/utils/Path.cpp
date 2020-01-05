@@ -6,7 +6,7 @@
 
 #include "Path.h"
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/utils/StringUtil.h>
 
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS

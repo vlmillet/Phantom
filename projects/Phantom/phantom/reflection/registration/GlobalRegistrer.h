@@ -13,7 +13,7 @@ HAUNT_STOP;
 #include "registration.h"
 
 #include <phantom/detail/StaticGlobalRegistrer.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 namespace phantom
 {

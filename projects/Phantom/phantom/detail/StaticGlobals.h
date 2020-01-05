@@ -34,12 +34,10 @@ class StaticGlobal
 public:
     StaticGlobal(bool a_AutoConstruct = true)
     {
-        phantom::static_if<IsPublicOrProtectedDefaultConstructible<T>::value>([&](auto f) {
+        phantom::static_if<IsPublicOrProtectedDefaultConstructible<T>::value>([=](auto f) {
             if (f(a_AutoConstruct))
-                m_Data.construct();
+                this->construct();
         });
-        StaticGlobals::RegisterForCleanup(
-        &m_Data, CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
     }
     ~StaticGlobal()
     {
@@ -87,7 +85,9 @@ public:
     template<class... Args>
     void construct(Args... a_Args)
     {
-        m_Data.construct(a_Args...);
+		m_Data.construct(a_Args...);
+		StaticGlobals::RegisterForCleanup(
+			&m_Data, CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
     }
 
 private:

@@ -165,9 +165,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*, size_t) const, virtual_>("deallocate", &_::deallocate)
             .method<void(void*) const, virtual_>("construct", &_::construct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
+            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:840:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:847:53)> >(void*) const>("localConstruct", &_::localConstruct)
+            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:840:53)> >(void*) const>("localConstruct", &_::localConstruct)
             .method<void(void*) const, virtual_>("destroy", &_::destroy)
             .method<uint64_t(const void*) const, virtual_>("hash", &_::hash)
             .method<void*() const, virtual_>("newInstance", &_::newInstance)

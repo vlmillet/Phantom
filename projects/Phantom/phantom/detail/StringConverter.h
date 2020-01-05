@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "lexical_cast.h"
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/reflection/Array.h>
 #include <phantom/reflection/Class.h>
 #include <phantom/reflection/Enum.h>
 #include <phantom/traits/IsFunctionPointer.h>
 #include <phantom/traits/IsNullptrT.h>
 #include <phantom/traits/IsStructure.h>
+#include <phantom/utils/LexicalCast.h>
 
 /// @cond ADVANCED
 
@@ -29,14 +29,17 @@ struct MetaTypeIdOf;
 }
 } // namespace reflection
 
-enum string_converter_id
+namespace detail 
 {
-    string_converter_default,
-    string_converter_array,
-    string_converter_enum,
-    string_converter_class,
-    string_converter_classtype,
+enum 
+{
+	string_converter_default,
+	string_converter_array,
+	string_converter_enum,
+	string_converter_class,
+	string_converter_classtype,
 };
+} // namespace detail
 
 template<typename t_Ty>
 struct literal_suffix
@@ -103,7 +106,7 @@ struct literal_suffix<wchar_t>
 };
 
 template<typename t_Ty, int t_MetaClassId>
-struct StringConverterH // string_converter_default
+struct StringConverterH // detail::string_converter_default
 {
     static void to(const reflection::Type*, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
@@ -123,7 +126,7 @@ struct StringConverterH // string_converter_default
 };
 
 template<typename t_Ty>
-struct StringConverterH<t_Ty, string_converter_classtype>
+struct StringConverterH<t_Ty, detail::string_converter_classtype>
 {
     static void to(const reflection::ClassType* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
@@ -140,7 +143,7 @@ struct StringConverterH<t_Ty, string_converter_classtype>
 };
 
 template<typename t_Ty>
-struct StringConverterH<t_Ty, string_converter_class>
+struct StringConverterH<t_Ty, detail::string_converter_class>
 {
     static void to(const reflection::Class* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
@@ -157,7 +160,7 @@ struct StringConverterH<t_Ty, string_converter_class>
 };
 
 template<typename t_Ty>
-struct StringConverterH<t_Ty, string_converter_enum>
+struct StringConverterH<t_Ty, detail::string_converter_enum>
 {
     static void toLiteral(const reflection::Enum* a_pEnum, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
@@ -174,7 +177,7 @@ struct StringConverterH<t_Ty, string_converter_enum>
 };
 
 template<typename t_Ty>
-struct StringConverterH<t_Ty, string_converter_array>
+struct StringConverterH<t_Ty, detail::string_converter_array>
 {
     static void toLiteral(const reflection::Array* a_pArray, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
@@ -193,25 +196,25 @@ struct StringConverterH<t_Ty, string_converter_array>
 template<typename t_Ty>
 struct StringConverter
     : public StringConverterH<t_Ty,
-                              std::is_array<t_Ty>::value ? string_converter_array
-                                                         : std::is_enum<t_Ty>::value ? string_converter_enum
+                              std::is_array<t_Ty>::value ? detail::string_converter_array
+                                                         : std::is_enum<t_Ty>::value ? detail::string_converter_enum
                                                                                      : (std::is_void<t_Ty>::value)
-                              ? string_converter_default
-                              : phantom::IsDataPointer<t_Ty>::value ? string_converter_default
+                              ? detail::string_converter_default
+                              : phantom::IsDataPointer<t_Ty>::value ? detail::string_converter_default
                                                                     : std::is_pointer<t_Ty>::value
-                              ? string_converter_default
-                              : ::std::is_floating_point<t_Ty>::value ? string_converter_default
+                              ? detail::string_converter_default
+                              : ::std::is_floating_point<t_Ty>::value ? detail::string_converter_default
                                                                       : ::phantom::IsNullptrT<t_Ty>::value
-                              ? string_converter_default
-                              : ::std::is_integral<t_Ty>::value ? string_converter_default
+                              ? detail::string_converter_default
+                              : ::std::is_integral<t_Ty>::value ? detail::string_converter_default
                                                                 : ::std::is_member_function_pointer<t_Ty>::value
-                              ? string_converter_default
-                              : ::std::is_member_object_pointer<t_Ty>::value ? string_converter_default
+                              ? detail::string_converter_default
+                              : ::std::is_member_object_pointer<t_Ty>::value ? detail::string_converter_default
                                                                              : std::is_union<t_Ty>::value
-                              ? string_converter_classtype
-                              : std::is_class<t_Ty>::value ? IsStructure<t_Ty>::value ? string_converter_classtype
-                                                                                      : string_converter_class
-                                                           : string_converter_default>
+                              ? detail::string_converter_classtype
+                              : std::is_class<t_Ty>::value ? IsStructure<t_Ty>::value ? detail::string_converter_classtype
+                                                                                      : detail::string_converter_class
+                                                           : detail::string_converter_default>
 {
 };
 

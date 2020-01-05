@@ -21,26 +21,6 @@ Pointer::~Pointer()
 {
 }
 
-void* Pointer::allocate() const
-{
-    return PHANTOM_ALLOCATE(void*);
-}
-
-void Pointer::deallocate(void* a_pInstance) const
-{
-    PHANTOM_DEALLOCATE(static_cast<void**>(a_pInstance), void*);
-}
-
-void* Pointer::allocate(size_t a_uiCount) const
-{
-    return PHANTOM_ALLOCATE_N(a_uiCount, void*);
-}
-
-void Pointer::deallocate(void* a_pChunk, size_t a_uiCount) const
-{
-    PHANTOM_DEALLOCATE_N(static_cast<void**>(a_pChunk), a_uiCount, void*);
-}
-
 void Pointer::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
     Type::onReferencedElementRemoved(a_pElement);

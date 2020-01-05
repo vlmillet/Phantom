@@ -9,7 +9,7 @@
 /* ****************** Includes ******************* */
 #include <phantom/detail/Constructor.h>
 #include <phantom/detail/newImpl.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/reflection/CodeLocation.h>
 #include <phantom/reflection/LanguageElementVisitor.h>
 #include <phantom/reflection/reflection.h>

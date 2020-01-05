@@ -11,7 +11,6 @@
 #include <phantom/detail/LambdaCapture.h>
 #include <phantom/detail/MethodClosure.h>
 #include <phantom/detail/Signal.h>
-#include <phantom/detail/allocate.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
 
 namespace phantom
@@ -297,13 +296,13 @@ private:
 
     FunctorID _connect(FunctorID a_ID, FunctorType&& a_Functor)
     {
-        _connect(new (PHANTOM_ALLOCATE(SlotType)) SlotType{nullptr, a_ID, std::move(a_Functor)});
+        _connect(new (phantom::allocate(sizeof(SlotType), PHANTOM_ALIGNOF(SlotType))) SlotType{nullptr, a_ID, std::move(a_Functor)});
         return a_ID;
     }
 
     FunctorID _connect(FunctorID a_ID, FunctorType const& a_Functor)
     {
-        _connect(new (PHANTOM_ALLOCATE(SlotType)) SlotType{nullptr, a_ID, a_Functor});
+        _connect(new (phantom::allocate(sizeof(SlotType), PHANTOM_ALIGNOF(SlotType))) SlotType{nullptr, a_ID, a_Functor});
         return a_ID;
     }
 

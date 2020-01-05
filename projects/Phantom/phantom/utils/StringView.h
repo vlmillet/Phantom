@@ -7,9 +7,8 @@
 #pragma once
 
 #include <algorithm>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <string.h>
-#include <string>
 
 namespace phantom
 {
@@ -164,11 +163,6 @@ public:
         CharT const* first = data() + a_Off;
         CharT const* it = strstr(first, a_pWhat);
         return it ? it - begin() : npos;
-    }
-
-    size_t find(std::string const& a_What, size_t a_Off = 0) const
-    {
-        return find(SelfType(a_What.data(), a_What.size()), a_Off);
     }
 
     size_t find(SelfType a_What, size_t a_Off = 0) const

@@ -182,64 +182,61 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     }
     else
     {
-        if (a_pMessage)
+        const char* msg;
+        switch (dlhandle)
         {
-            const char* msg;
-            switch (dlhandle)
-            {
-            case SCE_KERNEL_ERROR_EINVAL:
-                // 0x80020016
-                msg = "flags or pOpt is invalid";
-                break;
+        case SCE_KERNEL_ERROR_EINVAL:
+            // 0x80020016
+            msg = "flags or pOpt is invalid";
+            break;
 
-            case SCE_KERNEL_ERROR_ESTART:
-                // 0x80020064
-                msg = "module_start() returned a negative integer";
-                break;
+        case SCE_KERNEL_ERROR_ESTART:
+            // 0x80020064
+            msg = "module_start() returned a negative integer";
+            break;
 
-            case SCE_KERNEL_ERROR_ENOENT:
-                // 0x80020002
-                msg = "File specified in moduleFileName does not exist";
-                break;
+        case SCE_KERNEL_ERROR_ENOENT:
+            // 0x80020002
+            msg = "File specified in moduleFileName does not exist";
+            break;
 
-            case SCE_KERNEL_ERROR_ENOEXEC:
-                // 0x80020008
-                msg = "Cannot load because of abnormal file format";
-                break;
+        case SCE_KERNEL_ERROR_ENOEXEC:
+            // 0x80020008
+            msg = "Cannot load because of abnormal file format";
+            break;
 
-            case SCE_KERNEL_ERROR_ENOMEM:
-                // 0x8002000c
-                msg = "Cannot load because it is not possible to allocate memory";
-                break;
+        case SCE_KERNEL_ERROR_ENOMEM:
+            // 0x8002000c
+            msg = "Cannot load because it is not possible to allocate memory";
+            break;
 
-            case SCE_KERNEL_ERROR_EACCES:
-                // 0x8002000d
-                msg = "File specified with moduleFileName is placed in a forbidden location";
-                break;
+        case SCE_KERNEL_ERROR_EACCES:
+            // 0x8002000d
+            msg = "File specified with moduleFileName is placed in a forbidden location";
+            break;
 
-            case SCE_KERNEL_ERROR_EFAULT:
-                // 0x8002000e
-                msg = "moduleFileName points to invalid memory";
-                break;
+        case SCE_KERNEL_ERROR_EFAULT:
+            // 0x8002000e
+            msg = "moduleFileName points to invalid memory";
+            break;
 
-            case SCE_KERNEL_ERROR_EAGAIN:
-                // 0x80020023
-                msg = "Cannot load because of insufficient resources";
-                break;
+        case SCE_KERNEL_ERROR_EAGAIN:
+            // 0x80020023
+            msg = "Cannot load because of insufficient resources";
+            break;
 
-            case SCE_KERNEL_ERROR_ESDKVERSION:
-                // 0x80020063
-                msg = "Version of the SDK used to build the specified dynamic library is newer "
-                      "than the system software version";
-                break;
+        case SCE_KERNEL_ERROR_ESDKVERSION:
+            // 0x80020063
+            msg = "Version of the SDK used to build the specified dynamic library is newer "
+                    "than the system software version";
+            break;
 
-            default:
-                msg = "unknown error";
-                break;
-            }
-            PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
-            PHANTOM_LOG(Error, "System DLL loading failed : %s", msg);
+        default:
+            msg = "unknown error";
+            break;
         }
+        PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
+        PHANTOM_LOG(Error, "System DLL loading failed : %s", msg);
         return false;
     }
 
@@ -269,11 +266,8 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
     }
     else
     {
-        if (a_pMessage)
-        {
-            PHANTOM_LOG(Error, "Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
-            PHANTOM_LOG(Error, "System DLL loading failed : %s", dlerror());
-        }
+		PHANTOM_LOG(Error, "Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
+		PHANTOM_LOG(Error, "System DLL loading failed : %s", dlerror());
         return false;
     }
 #else
@@ -328,34 +322,31 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     }
     else
     {
-        if (a_pMessage)
+        const char* msg;
+        switch (dlhandle)
         {
-            const char* msg;
-            switch (dlhandle)
-            {
-            case SCE_KERNEL_ERROR_EINVAL:
-                // 0x80020016
-                msg = "flags or pOpt is invalid";
-                break;
+        case SCE_KERNEL_ERROR_EINVAL:
+            // 0x80020016
+            msg = "flags or pOpt is invalid";
+            break;
 
-            case SCE_KERNEL_ERROR_ESRCH:
-                // 0x80020003
-                msg = "handle is invalid(specified dynamic library is not loaded)";
-                break;
+        case SCE_KERNEL_ERROR_ESRCH:
+            // 0x80020003
+            msg = "handle is invalid(specified dynamic library is not loaded)";
+            break;
 
-            case SCE_KERNEL_ERROR_EBUSY:
-                // 0x80020010
-                msg = "Specified dynamic library is referenced by a thread other than the thread "
-                      "that called this function";
-                break;
+        case SCE_KERNEL_ERROR_EBUSY:
+            // 0x80020010
+            msg = "Specified dynamic library is referenced by a thread other than the thread "
+                    "that called this function";
+            break;
 
-            default:
-                msg = "unknown error";
-                break;
-            }
-            PHANTOM_LOG(Error, "Cannot unload module : %s", m_strName.c_str());
-            PHANTOM_LOG(Error, "System DLL unloading failed : %s", msg);
+        default:
+            msg = "unknown error";
+            break;
         }
+        PHANTOM_LOG(Error, "Cannot unload module : %s", m_strName.c_str());
+        PHANTOM_LOG(Error, "System DLL unloading failed : %s", msg);
         return false;
     }
 
@@ -367,11 +358,8 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     }
     else
     {
-        if (a_pMessage)
-        {
-            PHANTOM_LOG(Error, "Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
-            PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", dlerror());
-        }
+		PHANTOM_LOG(Error, "Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
+		PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", dlerror());
         return false;
     }
 #else
@@ -384,23 +372,42 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
 
 bool Plugin::_loadFile()
 {
-    std::ifstream in(m_strFilePath.c_str());
+    FILE* file = fopen(m_strFilePath.c_str(), "r");
     char          linebuf[256];
     Strings       lines;
-    if (!in.is_open())
+    if (!file)
     {
         PHANTOM_LOG(Error, "failed to read plugin file");
+        fclose(file);
         return false;
     }
-    in.getline(linebuf, 256);
+    char* end = fgets(linebuf, 256, file);
+    end += strlen(end);
+    if (!end)
+	{
+		PHANTOM_LOG(Error, "failed to parse plugin file");
+		fclose(file);
+		return false;
+    }
+    while (*--end == '\n' || *end == '\r')
+        *end = 0;
     if (strcmp(linebuf, "[Plugin]") != 0)
     {
         PHANTOM_LOG(Error, "failed to parse plugin file");
-        return false;
+		fclose(file);
+		return false;
     }
-    while (!in.eof())
-    {
-        in.getline(linebuf, 256);
+    while (feof(file) == 0 && (end = fgets(linebuf, 256, file)))
+	{
+		end += strlen(end);
+		if (!end)
+		{
+			PHANTOM_LOG(Error, "failed to parse plugin file");
+			fclose(file);
+			return false;
+		}
+		while (*--end == '\n' || *end == '\r')
+			*end = 0;
         String line(linebuf);
         if (StringUtil::RemoveExtraBlanks(line).empty())
             continue;
@@ -409,7 +416,8 @@ bool Plugin::_loadFile()
         if (parts.size() != 2)
         {
             PHANTOM_LOG(Error, "failed to parse plugin file");
-            return false;
+			fclose(file);
+			return false;
         }
         StringView key = StringUtil::RemoveExtraBlanks(parts[0]);
         StringView value = StringUtil::RemoveExtraBlanks(parts[1]);
@@ -425,7 +433,8 @@ bool Plugin::_loadFile()
                         PHANTOM_STRING_AS_PRINTF_ARG(value));
         }
     }
-    return true;
+	fclose(file);
+	return true;
 }
 
 bool Plugin::_refCountNative()
@@ -546,21 +555,6 @@ PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_IOS
         {
             return false;
         }
-
-        //                 if (!a_bNativeOnly)
-        //                 {
-        //                     _loadSources();
-        //
-        //                     Sources sources;
-        //                     m_pModule->getSources(sources);
-        //                     if (!Application::Get()->build(sources, nullptr)) // ensure module is
-        //                     built, if failed restore native versions
-        //                     {
-        //                         _unloadSources();
-        //                         _unloadNative(a_pMessage);
-        //                         return false;
-        //                     }
-        //                 }
     }
 
     if (pLoadingExtensionFunction)

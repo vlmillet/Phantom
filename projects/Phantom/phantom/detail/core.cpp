@@ -5,11 +5,12 @@
 // ]
 
 /* ******************* Includes ****************** */
-#include "phantom.h"
+#include "core.h"
 
 #include <iostream>
 #include <phantom/plugin>
 #include <phantom/reflection/SourceFile.h>
+#include <phantom/reflection/registration/Main.h>
 #include <phantom/utils/StringUtil.h>
 #include <sstream>
 
@@ -46,7 +47,7 @@ void macosx_moduleAdded(const struct mach_header* mh, intptr_t vmaddr_slide)
 #endif
 
 #include "StaticGlobals.h"
-#include "phantom_priv.h"
+#include "core_internal.h"
 
 #include <phantom/alignof>
 #include <phantom/reflection/Plugin.h>
@@ -208,7 +209,6 @@ PHANTOM_EXPORT_PHANTOM reflection::Symbol* symbolRegisteredAt(size_t a_ModuleHan
 
 void DynamicCppInitializerH::StaticGlobalsInit()
 {
-    CustomAllocator::Init();
     g_pGlobalNamespace.construct("");
     g_pApplication.construct();
     g_pApplication->addElement(g_pGlobalNamespace);
@@ -1196,24 +1196,24 @@ PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strNam
     a_Buf += a_strName;
 }
 
-PHANTOM_EXPORT_PHANTOM void setAssertFunc(MessageReportFunc a_func)
+void reflection::Main::setAssertFunc(MessageReportFunc a_func)
 {
-    detail::g_assert_func = a_func;
+    phantom::detail::g_assert_func = a_func;
 }
 
-PHANTOM_EXPORT_PHANTOM void setErrorFunc(MessageReportFunc a_func)
+void reflection::Main::setErrorFunc(MessageReportFunc a_func)
 {
-    detail::g_error_func = a_func;
+	phantom::detail::g_error_func = a_func;
 }
 
-PHANTOM_EXPORT_PHANTOM void setLogFunc(LogFunc a_func)
+void reflection::Main::setLogFunc(LogFunc a_func)
 {
-    detail::g_LogFunc = a_func;
+	phantom::detail::g_LogFunc = a_func;
 }
 
-PHANTOM_EXPORT_PHANTOM void setWarningFunc(MessageReportFunc a_func)
+void reflection::Main::setWarningFunc(MessageReportFunc a_func)
 {
-    detail::g_warning_func = a_func;
+	phantom::detail::g_warning_func = a_func;
 }
 
 reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,

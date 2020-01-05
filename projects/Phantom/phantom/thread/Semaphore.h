@@ -9,7 +9,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 //--- Pause Instruction
 // To use inside spin loops to help with power consumption/scheduling/performance.

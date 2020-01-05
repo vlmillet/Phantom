@@ -10,8 +10,7 @@
 
 #include <algorithm>
 #include <phantom/alignof>
-#include <phantom/detail/allocate.h>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/MoveTraits.h>
 
@@ -779,7 +778,7 @@ private:
     value_type* _alloc(size_t s)
     {
         return reinterpret_cast<value_type*>(
-        m_pMemTraits->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type), __FILE__, __LINE__));
+        m_pMemTraits->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type)));
     }
     void _dealloc(value_type* t)
     {

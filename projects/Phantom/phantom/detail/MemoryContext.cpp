@@ -12,7 +12,7 @@ MemoryContext::~MemoryContext()
 {
     for (auto pPtr : m_Allocations)
     {
-        phantom::memory::deallocBytes(pPtr);
+        phantom::deallocate(pPtr);
     }
 }
 

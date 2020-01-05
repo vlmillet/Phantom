@@ -235,7 +235,7 @@ struct TypeBuilderT : TypeBuilderBase
 private:
     MetaType* _createMetaType(StringView a_Name)
     {
-        return m_pType = (new (PHANTOM_ALLOCATE(MetaType)) MetaType(a_Name));
+        return m_pType = (new (phantom::allocate(sizeof(MetaType), PHANTOM_ALIGNOF(MetaType))) MetaType(a_Name));
     }
     void _installRtti()
     {
@@ -249,7 +249,7 @@ private:
                                              /// 'Class' is the meta type of class itself)
         }
         m_pType->rtti.instance = m_pType;
-        m_pType->rtti.customDeleteFunc = &DynamicProxyDeleter<MetaType>::dynamicDelete;
+        m_pType->rtti.customDeleteFunc = &DynamicDeleteMetaHelper<MetaType>::dynamicDelete;
         m_pType->rtti.metaClass = pMetaClass;
         pMetaClass->registerInstance(m_pType);
     }

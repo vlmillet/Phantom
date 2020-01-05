@@ -6,7 +6,7 @@
 
 #include "GlobalRegistrer.h"
 
-#include "phantom/detail/phantom_priv.h"
+#include "phantom/detail/core_internal.h"
 #include "phantom/reflection/Application.h"
 
 namespace phantom

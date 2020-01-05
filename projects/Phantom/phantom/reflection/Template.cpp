@@ -15,7 +15,7 @@
 #include "TemplateSignature.h"
 #include "TemplateSpecialization.h"
 #include "phantom/detail/new.h"
-#include "phantom/detail/phantom_priv.h"
+#include "phantom/detail/core_internal.h"
 
 /* *********************************************** */
 #pragma warning(disable : 4996)

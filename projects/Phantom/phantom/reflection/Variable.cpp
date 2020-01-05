@@ -9,7 +9,7 @@
 
 #include "Class.h"
 
-#include <phantom/detail/lexical_cast.h>
+#include <phantom/utils/LexicalCast.h>
 #include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom

@@ -8,6 +8,7 @@
 HAUNT_STOP;
 
 #include <phantom/plugin.h>
+#include <phantom/alignof>
 
 namespace phantom
 {
@@ -398,7 +399,7 @@ struct Slot
     {
         EmissionFrame::OnSlotDestruction(reinterpret_cast<SlotBase*>(this));
         this->~ThisType();
-        PHANTOM_DEALLOCATE(this, ThisType);
+        phantom::deallocate(this);
     }
     ThisType*               m_pNext;
     FunctorID               m_ID;
@@ -418,7 +419,7 @@ private:
     }
     EmissionFrame&                                                        top();
     EmissionFrame&                                                        at(intptr_t i);
-    std::aligned_storage_t<sizeof(EmissionFrame), alignof(EmissionFrame)> stack[EmissionFrame::MaxStackSize];
+    std::aligned_storage_t<sizeof(EmissionFrame), PHANTOM_ALIGNOF(EmissionFrame)> stack[EmissionFrame::MaxStackSize];
     intptr_t                                                              pointer = -1;
 };
 

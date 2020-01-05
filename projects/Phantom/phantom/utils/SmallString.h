@@ -9,7 +9,7 @@
 #include "SmallVector.h"
 #include "StringView.h"
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 namespace phantom
 {

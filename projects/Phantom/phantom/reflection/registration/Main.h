@@ -41,6 +41,10 @@ HAUNT_STOP;
 
 namespace phantom
 {
+	typedef bool(*MessageReportFunc)(StringView expression, StringView file, int line, const char* format,
+		va_list arglist);
+	typedef void(*LogFunc)(MessageType msgType, StringView file, int line, const char* format, va_list arglist);
+
 namespace reflection
 {
 class PHANTOM_EXPORT_PHANTOM Main
@@ -67,6 +71,11 @@ public:
     Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
          CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0);
     ~Main();
+
+	void setAssertFunc(MessageReportFunc a_func);
+	void setErrorFunc(MessageReportFunc a_func);
+	void setLogFunc(LogFunc a_func);
+	void setWarningFunc(MessageReportFunc a_func);
 };
 } // namespace reflection
 } // namespace phantom

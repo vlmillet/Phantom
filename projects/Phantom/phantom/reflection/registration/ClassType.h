@@ -28,6 +28,7 @@ HAUNT_STOP;
 #include <phantom/traits/SelectType.h>
 #include <phantom/utils/Placement.h>
 #include <phantom/utils/StaticIf.h>
+#include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
@@ -320,7 +321,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     MostDerived& operator[](StringView a_DefaultArg)
     {
         PHANTOM_ASSERT(this->m_Members.back().isFunc, "last declaration does not accept default arguments");
-        while (a_DefaultArg.size() && std::isblank(a_DefaultArg.front(), std::locale::classic()))
+        while (a_DefaultArg.size() && StringUtil::IsBlank(a_DefaultArg.front()))
             a_DefaultArg = a_DefaultArg.substr(1);
         this->m_Members.back().defaultArguments.push_back(a_DefaultArg);
         return static_cast<MostDerived&>(*this);

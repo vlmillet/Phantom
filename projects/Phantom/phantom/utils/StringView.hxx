@@ -77,8 +77,6 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<CharT() const>("back", &_::back)
             .PHANTOM_T method<size_t(CharT) const>("find", &_::find)
             .PHANTOM_T method<size_t(CharT const*, size_t) const>("find", &_::find)["0"]
-            /// missing symbol(s) reflection (std::string) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<size_t(const ::std::string &, size_t) const>("find", &_::find)["0"]
             .PHANTOM_T method<size_t(SelfType, size_t) const>("find", &_::find)["0"]
             .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_of", &_::find_first_of)["0"]
             .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_of", &_::find_first_of)["0"]

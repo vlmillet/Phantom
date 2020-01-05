@@ -9,12 +9,11 @@
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #if PHANTOM_ACCURATE_NATIVE_VTABLE_INSPECTOR_SIGNATURES
 #    include <phantom/traits/DefaultValue.h>
 #endif
 #include <phantom/traits/HasVirtualDestructor.h>
-#include <vector>
 HAUNT_STOP;
 /* *********************************************** */
 

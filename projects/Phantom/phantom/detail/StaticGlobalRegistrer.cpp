@@ -1,6 +1,6 @@
 #include "StaticGlobalRegistrer.h"
 
-#include "phantom_priv.h"
+#include "core_internal.h"
 
 #include <phantom/reflection/Module.h>
 #include <phantom/reflection/registration/registration.h>

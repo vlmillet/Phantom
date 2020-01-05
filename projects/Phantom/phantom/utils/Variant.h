@@ -9,7 +9,7 @@
 /* ****************** Includes ******************* */
 #include "Generic.h"
 #include "StringView.h"
-#include "phantom/detail/phantom.h"
+#include "phantom/detail/core.h"
 #include "phantom/traits/CopyTraits.h"
 #include "phantom/traits/MoveTraits.h"
 /* **************** Declarations ***************** */

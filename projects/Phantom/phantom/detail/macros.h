@@ -532,11 +532,11 @@ HAUNT_STOP;
 // C Style Allocation
 
 #define PHANTOM_ALLOCA(_size_) alloca(_size_)
-#define PHANTOM_MALLOC(_size_) phantom::memory::allocBytes(_size_, 1 PHANTOM_MEMORY_STAT_APPEND_VALUES)
+#define PHANTOM_MALLOC(_size_) phantom::allocate(_size_, 1)
 #define PHANTOM_MALLOC_ALIGNED(_size_, _align_)                                                                        \
-    phantom::memory::allocBytes(_size_, _align_ PHANTOM_MEMORY_STAT_APPEND_VALUES)
-#define PHANTOM_REALLOC(_ptr_, _size_) phantom::memory::reallocBytes(_ptr_, _size_, 1 PHANTOM_MEMORY_STAT_APPEND_VALUES)
-#define PHANTOM_FREE(_ptr_) phantom::memory::deallocBytes(_ptr_)
+    phantom::allocate(_size_, _align_)
+#define PHANTOM_REALLOC(_ptr_, _size_) phantom::reallocate(_ptr_, _size_, 1)
+#define PHANTOM_FREE(_ptr_) phantom::deallocate(_ptr_)
 #define PHANTOM_FREE_ALIGNED PHANTOM_FREE
 
 /*************************************************************************************************
@@ -725,36 +725,6 @@ struct converter<0> : public false_type
 
 // Mask test helper
 #define PHANTOM_MASK_TEST(_variable_, _value_) ((_variable_ & _value_) == _value_)
-
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-
-#    define PHANTOM_MEMORY_STAT_INSERT_VALUES __FILE__, __LINE__
-#    define PHANTOM_MEMORY_STAT_PREPEND_VALUES __FILE__, __LINE__,
-#    define PHANTOM_MEMORY_STAT_APPEND_VALUES , __FILE__, __LINE__
-#    define PHANTOM_MEMORY_STAT_INSERT_PARAMS const char *a_strFILE, int a_uiLINE
-#    define PHANTOM_MEMORY_STAT_INSERT_PARAMS_UNUSED const char*, int
-#    define PHANTOM_MEMORY_STAT_INSERT_PARAMS_WITH_DEFAULT const char *a_strFILE = __FILE__, int a_uiLINE = __LINE__
-#    define PHANTOM_MEMORY_STAT_PREPEND_PARAMS const char *a_strFILE, int a_uiLINE,
-#    define PHANTOM_MEMORY_STAT_APPEND_PARAMS , const char *a_strFILE, int a_uiLINE
-#    define PHANTOM_MEMORY_STAT_APPEND_PARAMS_UNUSED , const char*, int
-#    define PHANTOM_MEMORY_STAT_APPEND_PARAMS_WITH_DEFAULT , const char *a_strFILE = __FILE__, int a_uiLINE = __LINE__
-#    define PHANTOM_MEMORY_STAT_INSERT_ARGS a_strFILE, a_uiLINE
-#    define PHANTOM_MEMORY_STAT_PREPEND_ARGS a_strFILE, a_uiLINE,
-#    define PHANTOM_MEMORY_STAT_APPEND_ARGS , a_strFILE, a_uiLINE
-
-#else
-
-#    define PHANTOM_MEMORY_STAT_INSERT_VALUES
-#    define PHANTOM_MEMORY_STAT_PREPEND_VALUES
-#    define PHANTOM_MEMORY_STAT_APPEND_VALUES
-#    define PHANTOM_MEMORY_STAT_INSERT_PARAMS
-#    define PHANTOM_MEMORY_STAT_PREPEND_PARAMS
-#    define PHANTOM_MEMORY_STAT_APPEND_PARAMS
-#    define PHANTOM_MEMORY_STAT_INSERT_ARGS
-#    define PHANTOM_MEMORY_STAT_PREPEND_ARGS
-#    define PHANTOM_MEMORY_STAT_APPEND_ARGS
-
-#endif
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define PHANTOM_DIAGNOSTIC_FUNCTION __FUNCSIG__

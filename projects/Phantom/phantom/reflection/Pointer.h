@@ -42,11 +42,6 @@ protected:
 public:
     PHANTOM_DTOR ~Pointer() override;
 
-    void* allocate() const override;
-    void  deallocate(void* a_pInstance) const override;
-    void* allocate(size_t a_uiCount) const override;
-    void  deallocate(void* a_pChunk, size_t a_uiCount) const override;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the pointed type (ex: int* => int).
     ///

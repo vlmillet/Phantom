@@ -21,12 +21,6 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
-#include <phantom/template-only-push>
-
-#include <phantom/utils/SmallVector.hxx>
-
-#include <phantom/template-only-pop>
-
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
@@ -46,8 +40,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .constructor<void(void**, size_t)>()
             .method<size_t() const>("getMethodCount", &_::getMethodCount)
             .method<size_t(Method*) const>("getIndexOf", &_::getIndexOf)
-            .method<Methods::const_iterator() const>("beginMethods", &_::beginMethods)
-            .method<Methods::const_iterator() const>("endMethods", &_::endMethods)
             .method<Method*(size_t) const>("getMethod", &_::getMethod)
             .method<Class*() const>("getOwnerClass", &_::getOwnerClass)
             .method<Class*() const>("getOriginalClass", &_::getOriginalClass)
@@ -59,7 +51,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Method*(Method*) const>("getRootMethod", &_::getRootMethod)
             .method<VirtualMethodTable*() const, virtual_|override_>("asVirtualMethodTable", &_::asVirtualMethodTable)
             .method<size_t(Method*) const>("getMethodIndex", &_::getMethodIndex)
+            .method<void**() const>("getClosurePointers", &_::getClosurePointers)
             .method<bool(Method*, bool)>("insertMethod", &_::insertMethod)
+            .method<void(void*)>("extractNativeClosures", &_::extractNativeClosures)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

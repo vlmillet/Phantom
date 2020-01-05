@@ -23,6 +23,7 @@ HAUNT_STOP;
 #include <phantom/traits/FunctionTypeToFunctionPointerType.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/utils/Placement.h>
+#include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
@@ -75,7 +76,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         PHANTOM_ASSERT(m_Symbols.back()->asSubroutine(), "last declaration does not accept default arguments");
         auto        pFunc = static_cast<reflection::Subroutine*>(m_Symbols.back());
         StringViews defaultArgs = pFunc->getNativeDefaultArgumentStrings();
-        while (a_DefaultArg.size() && std::isblank(a_DefaultArg.front(), std::locale::classic()))
+        while (a_DefaultArg.size() && StringUtil::IsBlank(a_DefaultArg.front()))
             a_DefaultArg = a_DefaultArg.substr(1);
         defaultArgs.push_back(a_DefaultArg);
         pFunc->setNativeDefaultArgumentStrings(defaultArgs);

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 namespace phantom
 {

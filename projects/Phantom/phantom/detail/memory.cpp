@@ -6,7 +6,7 @@
 
 /* TODO LICENCE HERE */
 
-#include "phantom/detail/phantom_priv.h"
+#include "phantom/detail/core_internal.h"
 
 #include <phantom/class>
 
@@ -43,12 +43,12 @@ CustomAllocator const& CustomAllocator::Current()
     return _CustomAllocatorStack().back();
 }
 
-static void* DefaultAllocFunc(size_t s, size_t, const char*, int)
+static void* DefaultAllocFunc(size_t s, size_t)
 {
     return std::malloc(s);
 }
 
-static void* DefaultReallocFunc(void* m, size_t s, size_t, const char*, int)
+static void* DefaultReallocFunc(void* m, size_t s, size_t)
 {
     return std::realloc(m, s);
 }
@@ -86,35 +86,22 @@ CustomAllocator const& CustomAllocator::Default()
     return s_Default;
 }
 
-namespace memory
+PHANTOM_EXPORT_PHANTOM void* allocate(size_t size, size_t align)
 {
-PHANTOM_EXPORT_PHANTOM void* allocBytes(size_t size, size_t align, const char* file, int line)
-{
-    PHANTOM_ASSERT(!_CustomAllocatorStack().empty(),
-                   "memory allocated while custom allocator not defined. \n"
-                   "Allocation happened here : %s:%d.\n"
-                   "Ensure PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY is set to enough (current=%d) "
-                   "for reflection registration at startup.\n",
-                   file, line, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY);
-    return CustomAllocator::Current().allocFunc(size, align, file, line);
+    PHANTOM_ASSERT(!_CustomAllocatorStack().empty());
+    return CustomAllocator::Current().allocFunc(size, align);
 }
-PHANTOM_EXPORT_PHANTOM void deallocBytes(void* mem)
+PHANTOM_EXPORT_PHANTOM void deallocate(void* mem)
 {
     PHANTOM_ASSERT(!_CustomAllocatorStack().empty(), "memory deallocated while custom allocator not defined. \n");
     CustomAllocator::Current().deallocFunc(mem);
 }
-PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align, const char* file, int line)
+PHANTOM_EXPORT_PHANTOM void* reallocate(void* mem, size_t size, size_t align)
 {
-    PHANTOM_ASSERT(!_CustomAllocatorStack().empty(),
-                   "memory reallocated while custom allocator not defined. \n"
-                   "Allocation happened here : %s:%d.\n"
-                   "Ensure PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY is set to enough (current=%d) "
-                   "for reflection registration at startup.\n",
-                   file, line, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY);
-    return CustomAllocator::Current().reallocFunc(mem, size, align, file, line);
+    PHANTOM_ASSERT(!_CustomAllocatorStack().empty());
+    return CustomAllocator::Current().reallocFunc(mem, size, align);
 }
 
-} // namespace memory
 } // namespace phantom
 
 // Memory operators overriding.

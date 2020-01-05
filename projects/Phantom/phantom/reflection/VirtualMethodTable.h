@@ -67,28 +67,6 @@ public:
     size_t getIndexOf(Method* a_pMethod) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets an iterator pointing to the first member function in this table.
-    ///
-    /// \return An iterator pointing to the first member function in this table.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Methods::const_iterator beginMethods() const
-    {
-        return m_pMethods->begin();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets an iterator pointing to the end of member functions in this table.
-    ///
-    /// \return An iterator pointing to the end of member functions in this table.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Methods::const_iterator endMethods() const
-    {
-        return m_pMethods->end();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the member function at given position index.
     ///
     /// \param  a_uiIndex   The index.
@@ -193,9 +171,21 @@ public:
     /// \return The required member function index.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getMethodIndex(Method* a_pMethod) const;
+	size_t getMethodIndex(Method* a_pMethod) const;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// \brief  Retrieve the index of this member function in this vtable.
+	///
+	/// \param [in,out] a_pMethod   The required member function.
+	///
+	/// \return The required member function index.
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void** getClosurePointers() const { return m_ppClosures; }
 
     bool insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides);
+
+    void extractNativeClosures(void* a_pInstance);
 
 private: // Derivation constructors
     VirtualMethodTable(VirtualMethodTable* a_pBaseTable);

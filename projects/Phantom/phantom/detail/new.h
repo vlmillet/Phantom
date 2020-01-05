@@ -14,6 +14,7 @@ HAUNT_STOP;
 
 #include <phantom/reflection/Class.h>
 #include <phantom/reflection/TypeOf.h>
+#include <phantom/traits/ImplicitConv.h>
 
 namespace phantom
 {
@@ -33,17 +34,11 @@ void PlacementDeleteHH<StaticChecks, t_Ty, true>::apply(t_Ty* a_pInstance)
 } // namespace detail
 } // namespace phantom
 
-#define PHANTOM_NEW(...) ::phantom::detail::NewH<__VA_ARGS__>() * new (PHANTOM_ALLOCATE(__VA_ARGS__)) __VA_ARGS__
+#define PHANTOM_NEW(...) phantom::detail::NewH<__VA_ARGS__>() * new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
 
-#define PHANTOM_DELETE(...) ::phantom::detail::DeleteH<true, __VA_ARGS__>()*
+#define PHANTOM_DELETE(...) phantom::detail::DeleteH<true, __VA_ARGS__>() *
 
 #define PHANTOM_DELETE_IGNORE_CHECKS(...) ::phantom::detail::DeleteH<false, __VA_ARGS__>()*
-
-#define PHANTOM_NEW_N(N, ...)                                                                                          \
-    (::phantom::detail::NewNH<__VA_ARGS__>(N PHANTOM_MEMORY_STAT_APPEND_VALUES) *                                      \
-     ((__VA_ARGS__*)PHANTOM_ALLOCATE_N(N, __VA_ARGS__)))
-
-#define PHANTOM_DELETE_N(N, ...) ::phantom::detail::DeleteNH<__VA_ARGS__>(N)*
 
 #define PHANTOM_DELETE_DYN ::phantom::detail::DeleteDynH()*
 

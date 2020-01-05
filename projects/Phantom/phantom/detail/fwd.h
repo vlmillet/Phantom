@@ -79,9 +79,6 @@ template<class>
 struct Copier;
 
 template<class t_Ty>
-struct RttiDataMapper;
-
-template<class t_Ty>
 struct DynamicDeleter;
 
 template<class t_Ty>
@@ -97,16 +94,16 @@ template<class t_Ty>
 struct DefaultInstaller;
 
 template<class>
-struct ProxyNewH;
+struct NewMetaH;
 
 template<class>
-struct ProxyDeleteH;
+struct DeleteMetaH;
 
 template<class t_Ty>
 struct DynamicDeleteExH;
 
 template<class t_Ty>
-struct DynamicProxyDeleter;
+struct DynamicDeleteMetaHelper;
 
 namespace detail
 {

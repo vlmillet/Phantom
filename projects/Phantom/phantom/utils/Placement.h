@@ -8,7 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/alignof>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 #include <phantom/traits/IntTypeBySize.h>
 #include <phantom/traits/prerequisites.h>
 /* *********************************************** */

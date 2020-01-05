@@ -17,12 +17,8 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace memory
-{
-PHANTOM_EXPORT_PHANTOM void* allocBytes(size_t size, size_t align = 1, const char* file = "", int line = 0);
-PHANTOM_EXPORT_PHANTOM void  deallocBytes(void* mem);
-PHANTOM_EXPORT_PHANTOM void* reallocBytes(void* mem, size_t size, size_t align = 1, const char* file = "",
-                                          int line = 0);
+PHANTOM_EXPORT_PHANTOM void* allocate(size_t size, size_t align = 1);
+PHANTOM_EXPORT_PHANTOM void  deallocate(void* mem);
+PHANTOM_EXPORT_PHANTOM void* reallocate(void* mem, size_t size, size_t align = 1);
 
-} // namespace memory
 } // namespace phantom

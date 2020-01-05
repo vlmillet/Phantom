@@ -1071,7 +1071,7 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
                           "missing #include <phantom/reflection/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
     auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
-    new (PHANTOM_ALLOCATE(DontTouchThis)) DontTouchThis(
+    new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
                   PHANTOM_TYPEOF(ValueT), a_strName,
                   [=](void const* a_pInstance, void* a_pValue) {
                       a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));
@@ -1092,7 +1092,7 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
                           "missing #include <phantom/reflection/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
     auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
-    new (PHANTOM_ALLOCATE(DontTouchThis)) DontTouchThis(
+    new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
                   PHANTOM_TYPEOF(ValueT), a_strName,
                   [=](void const* a_pInstance, void* a_pValue) {
                       a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));

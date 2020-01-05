@@ -8,11 +8,18 @@
 
 namespace phantom
 {
+namespace
+{
+    bool s_destroyedOnce;
+}
 static Placement<SmallMap<void*, CleanupDelegate, 256>>& _CleanupMap(bool _construct = true)
 {
     static Placement<SmallMap<void*, CleanupDelegate, 256>> s_map;
     if (!s_map && _construct)
+    {
+        PHANTOM_ASSERT(!s_destroyedOnce);
         s_map.construct();
+    }
     return s_map;
 }
 
@@ -45,6 +52,7 @@ void StaticGlobals::Release()
         pair.second(pair.first);
     }
     _CleanupMap().destroy();
+    s_destroyedOnce = true;
 }
 
 } // namespace phantom

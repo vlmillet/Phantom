@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 HAUNT_STOP;
+
+#define PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(step) ((PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP(step)) / 2)
 
 #include <phantom/detail/Registrer.h>
 #include <phantom/detail/TypeInstallationInfo.h>
@@ -69,11 +71,62 @@ public:
     SmallVector<StringView, 64>        m_Dependencies;
     SmallVector<TypeInstallationInfo*> m_TypeInstallationInfos;
     SmallMap<RegistrerId, phantom::detail::_PHNTM_StaticGlobalRegistrer*,
-             PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY / 2 / sizeof(RegistrerId)>
-    m_RegistrersById;
-    SmallMultimap<RegistrationStep, phantom::detail::_PHNTM_StaticGlobalRegistrer*,
-                  PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY / 2 / sizeof(Pair<RegistrationStep, Registrer>)>
-                            m_RegistrersByStep;
+        PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::_None)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::_Reserved)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Start)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Namespaces)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Enums)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::ClassTypes)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostClassTypes)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Typedefs)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostTypedefs)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::TemplateSignatures)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostTypes)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Variables)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostVariables) 
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Functions)
+		+ PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::End) >
+		m_RegistrersById;
+    
+#define _PHNTM_CASE_STEP(macro, step) case RegistrationStep::step : { macro(m_##step##_Registrers) } break;
+
+    #define _PHNTM_APPLY_TO_REGISTRERS(stepVar, macro)\
+    switch(stepVar)                                   \
+    {                                                 \
+        _PHNTM_CASE_STEP(macro, _None)                \
+		_PHNTM_CASE_STEP(macro, _Reserved)            \
+		_PHNTM_CASE_STEP(macro, Start)                \
+		_PHNTM_CASE_STEP(macro, Namespaces)           \
+		_PHNTM_CASE_STEP(macro, Enums)                \
+		_PHNTM_CASE_STEP(macro, ClassTypes)           \
+		_PHNTM_CASE_STEP(macro, PostClassTypes)       \
+		_PHNTM_CASE_STEP(macro, Typedefs)             \
+		_PHNTM_CASE_STEP(macro, PostTypedefs)         \
+		_PHNTM_CASE_STEP(macro, TemplateSignatures)   \
+		_PHNTM_CASE_STEP(macro, PostTypes)            \
+		_PHNTM_CASE_STEP(macro, Variables)            \
+		_PHNTM_CASE_STEP(macro, PostVariables)        \
+		_PHNTM_CASE_STEP(macro, Functions)            \
+		_PHNTM_CASE_STEP(macro, End)                  \
+        default:PHANTOM_UNREACHABLE();                \
+    }                                                 
+
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::_None)> m__None_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::_Reserved)> m__Reserved_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Start)> m_Start_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Namespaces)> m_Namespaces_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Enums)> m_Enums_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::ClassTypes)> m_ClassTypes_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostClassTypes)> m_PostClassTypes_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Typedefs)> m_Typedefs_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostTypedefs)> m_PostTypedefs_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::TemplateSignatures)> m_TemplateSignatures_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostTypes)> m_PostTypes_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Variables)> m_Variables_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::PostVariables)> m_PostVariables_Registrers;
+    SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::Functions)> m_Functions_Registrers;
+	SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*, PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::End)> m_End_Registrers;
+
     RegistrationStep        m_CurrentRegistrationStep = RegistrationStep::_None;
     TypeInstallationStep    m_CurrentInstallationStep;
     SmallMap<hash64, Type*> m_HashToTypeMap;

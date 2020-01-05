@@ -10,7 +10,6 @@
 
 HAUNT_STOP;
 
-#include <phantom/detail/allocate.h>
 #include <phantom/utils/Object.h>
 
 // --------------------------------------------------------------------------------------------
@@ -19,21 +18,21 @@ HAUNT_STOP;
 
 /// @cond ADVANCED
 
-#define PHANTOM_META_NEW(...) phantom::ProxyNewH<__VA_ARGS__>() >> new (PHANTOM_ALLOCATE(__VA_ARGS__)) __VA_ARGS__
+#define PHANTOM_META_NEW(...) phantom::NewMetaH<__VA_ARGS__>() >> new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
 
-#define PHANTOM_META_DELETE(...) phantom::ProxyDeleteH<__VA_ARGS__>() >>
+#define PHANTOM_META_DELETE(...) phantom::DeleteMetaH<__VA_ARGS__>() >>
 
 namespace phantom
 {
 template<typename t_Ty>
-struct ProxyNewH
+struct NewMetaH
 {
-    PHANTOM_FORCEINLINE ProxyNewH() {}
+    PHANTOM_FORCEINLINE NewMetaH() {}
     PHANTOM_FORCEINLINE t_Ty* operator>>(t_Ty* a_pInstance)
     {
         auto pMetaClass = t_Ty::MetaClass();
         a_pInstance->rtti.instance = a_pInstance;
-        a_pInstance->rtti.customDeleteFunc = &DynamicProxyDeleter<t_Ty>::dynamicDelete;
+        a_pInstance->rtti.customDeleteFunc = &DynamicDeleteMetaHelper<t_Ty>::dynamicDelete;
         a_pInstance->rtti.metaClass = pMetaClass;
         pMetaClass->registerInstance(a_pInstance);
         return a_pInstance;
@@ -41,7 +40,7 @@ struct ProxyNewH
 };
 
 template<typename t_Ty>
-struct ProxyDeleteH
+struct DeleteMetaH
 {
     template<typename _Tyy>
     PHANTOM_FORCEINLINE void operator>>(_Tyy* a_pInstance)
@@ -49,7 +48,7 @@ struct ProxyDeleteH
         auto pMetaClass = t_Ty::MetaClass();
         pMetaClass->unregisterInstance(a_pInstance);
         PHANTOM_ASSERT(a_pInstance->rtti.instance == a_pInstance);
-        PHANTOM_ASSERT(a_pInstance->rtti.customDeleteFunc == &DynamicProxyDeleter<t_Ty>::dynamicDelete);
+        PHANTOM_ASSERT(a_pInstance->rtti.customDeleteFunc == &DynamicDeleteMetaHelper<t_Ty>::dynamicDelete);
         PHANTOM_ASSERT(a_pInstance->rtti.metaClass == pMetaClass);
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
 #    pragma clang diagnostic push
@@ -60,14 +59,12 @@ struct ProxyDeleteH
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
 #    pragma clang diagnostic pop
 #endif
-        // we don't use PHANTOM_DEALLOCATE to avoid loosing FILE and LINE information coming from
-        // parent call
-        Allocator<t_Ty>::deallocate(static_cast<t_Ty*>(a_pInstance));
+        phantom::deallocate(a_pInstance);
     }
 };
 
 template<typename t_Ty>
-struct DynamicProxyDeleter
+struct DynamicDeleteMetaHelper
 {
     PHANTOM_FORCEINLINE static void dynamicDelete(void* a_pBase)
     {

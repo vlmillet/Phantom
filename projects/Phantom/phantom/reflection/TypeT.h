@@ -9,11 +9,12 @@
 #include <haunt>
 HAUNT_STOP;
 
+#include <phantom/detail/Allocator.h>
+#include <phantom/detail/Constructor.h>
 #include <phantom/detail/Copier.h>
 #include <phantom/detail/Hasher.h>
 #include <phantom/detail/Mover.h>
 #include <phantom/detail/StringConverter.h>
-#include <phantom/detail/allocate.h>
 #include <phantom/reflection/ClassType.h>
 #include <phantom/reflection/Promoter.h>
 #include <phantom/reflection/TypeOf.h>
@@ -68,22 +69,12 @@ public:
 
     virtual void* allocate() const override
     {
-        return AllocatorType::allocate(PHANTOM_MEMORY_STAT_INSERT_VALUES);
+        return AllocatorType::allocate();
     }
     virtual void* allocate(size_t a_uiCount) const override
     {
-        return AllocatorType::allocate(a_uiCount PHANTOM_MEMORY_STAT_APPEND_VALUES);
+        return AllocatorType::allocate(a_uiCount);
     }
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-    virtual void* allocate(PHANTOM_MEMORY_STAT_INSERT_PARAMS) const override
-    {
-        return AllocatorType::allocate(PHANTOM_MEMORY_STAT_INSERT_ARGS);
-    }
-    virtual void* allocate(size_t a_uiCount PHANTOM_MEMORY_STAT_APPEND_PARAMS) const override
-    {
-        return AllocatorType::allocate(a_uiCount PHANTOM_MEMORY_STAT_APPEND_ARGS);
-    }
-#endif
     virtual void deallocate(void* a_pAddress) const override
     {
         AllocatorType::deallocate(reinterpret_cast<t_Ty*>(a_pAddress));
@@ -106,19 +97,10 @@ public:
 
     virtual void* newInstance() const override
     {
-        t_Ty* pInstance = AllocatorType::allocate(PHANTOM_MEMORY_STAT_INSERT_VALUES);
+        t_Ty* pInstance = AllocatorType::allocate();
         ConstructorType::construct(pInstance);
         return pInstance;
     }
-
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-    virtual void* newInstance(PHANTOM_MEMORY_STAT_INSERT_PARAMS) const override
-    {
-        t_Ty* pInstance = AllocatorType::allocate(PHANTOM_MEMORY_STAT_INSERT_ARGS);
-        ConstructorType::construct(pInstance);
-        return pInstance;
-    }
-#endif
 
     virtual void deleteInstance(void* a_pInstance) const override
     {

@@ -9,7 +9,7 @@
 #include <haunt>
 HAUNT_STOP;
 #include <iosfwd>
-#include <phantom/detail/phantom.h>
+#include <phantom/detail/core.h>
 
 // Thansk to Jades Hobo from codeprojects for its console manipulators which served me as reference
 // ! http://www.codeproject.com/KB/cpp/AddColorConsole.aspx

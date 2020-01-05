@@ -18,7 +18,7 @@
 /// META META TYPES
 #include "Pointer.h"
 
-#include <phantom/detail/phantom_priv.h>
+#include <phantom/detail/core_internal.h>
 #include <phantom/thread/RecursiveMutex.h>
 
 namespace phantom

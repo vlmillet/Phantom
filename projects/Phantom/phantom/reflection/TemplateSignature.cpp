@@ -18,7 +18,7 @@
 #include "Namespace.h"
 
 #include <phantom/detail/new.h>
-#include <phantom/detail/phantom_priv.h>
+#include <phantom/detail/core_internal.h>
 /* *********************************************** */
 namespace phantom
 {

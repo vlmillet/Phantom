@@ -16,9 +16,8 @@ struct PHANTOM_EXPORT_PHANTOM CustomAllocator
     static void                   Init();
     static void                   Release();
 
-    typedef void* (*AllocFunc)(size_t /*size*/, size_t /*align*/, const char* /*file*/, int /*line*/);
-    typedef void* (*ReallocFunc)(void* /*memory*/, size_t /*size*/, size_t /*align*/, const char* /*file*/,
-                                 int /*line*/);
+    typedef void* (*AllocFunc)(size_t /*size*/, size_t /*align*/);
+    typedef void* (*ReallocFunc)(void* /*memory*/, size_t /*size*/, size_t /*align*/);
     typedef void (*DeallocFunc)(void* /*memory*/);
 
     AllocFunc   allocFunc;

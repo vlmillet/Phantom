@@ -19,7 +19,7 @@
 #include "TemplateSpecialization.h"
 
 #include <phantom/detail/new.h>
-#include <phantom/detail/phantom_priv.h>
+#include <phantom/detail/core_internal.h>
 #include <phantom/utils/Delegate.h>
 #include <phantom/utils/crc64.h>
 /* *********************************************** */
@@ -193,28 +193,6 @@ void* Type::allocate() const
     return memory;
 }
 
-#if PHANTOM_CUSTOM_ENABLE_ALLOCATION_INFOS
-void* Type::allocate(PHANTOM_MEMORY_STAT_INSERT_PARAMS) const
-{
-    // allocate m_uiSize bytes
-    void* pAlloc = phantom::memory::allocBytes(m_uiSize, 1 PHANTOM_MEMORY_STAT_APPEND_ARGS);
-    return pAlloc;
-}
-
-void* Type::allocate(size_t a_uiCount PHANTOM_MEMORY_STAT_APPEND_PARAMS) const
-{
-    void* pAlloc = phantom::memory::allocBytes(a_uiCount * m_uiSize, 1 PHANTOM_MEMORY_STAT_APPEND_ARGS);
-    return pAlloc;
-}
-
-void* Type::newInstance(PHANTOM_MEMORY_STAT_INSERT_PARAMS) const
-{
-    void* pInstance = allocate(PHANTOM_MEMORY_STAT_INSERT_ARGS);
-    memset(pInstance, 0, m_uiSize);
-    return pInstance;
-}
-#endif
-
 void Type::deallocate(void* a_pInstance) const
 {
     PHANTOM_FREE(a_pInstance);
@@ -369,6 +347,16 @@ size_t Type::AlignmentComputer::align()
 void Type::fetchElements(LanguageElements& out, Class* a_pClass) const
 {
     LanguageElement::fetchElements(out, a_pClass);
+}
+
+void Type::copyConstruct(void* a_pDest, void const* a_pSrc) const
+{
+	memcpy(a_pDest, a_pSrc, m_uiSize);
+}
+
+void Type::moveConstruct(void* a_pDest, void* a_pSrc) const
+{
+	copyConstruct(a_pDest, a_pSrc);
 }
 
 Type* Type::getCommonBaseAncestor(Type* a_pType) const
@@ -950,6 +938,16 @@ bool Type::isUnsignedInteger() const
 Type* Type::promote() const
 {
     return const_cast<Type*>(this);
+}
+
+void Type::copyAssign(void* a_pDest, void const* a_pSrc) const
+{
+	memcpy(a_pDest, a_pSrc, m_uiSize);
+}
+
+void Type::moveAssign(void* a_pDest, void* a_pSrc) const
+{
+	copyAssign(a_pDest, a_pSrc);
 }
 
 } // namespace reflection

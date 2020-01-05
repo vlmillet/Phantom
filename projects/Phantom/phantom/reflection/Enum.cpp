@@ -28,7 +28,7 @@ String GenerateAnonymousName()
 } // namespace
 
 Enum::Enum()
-    : PrimitiveType(TypeKind::Enum, GenerateAnonymousName(), sizeof(int), alignof(int)), m_pUnderlyingIntType(IntType())
+    : PrimitiveType(TypeKind::Enum, GenerateAnonymousName(), sizeof(int), PHANTOM_ALIGNOF(int)), m_pUnderlyingIntType(IntType())
 {
 }
 
@@ -47,7 +47,7 @@ Enum::Enum(StringView a_strName, PrimitiveType* a_pIntType)
 
 Enum::Enum(StringView a_strName)
     : PrimitiveType(TypeKind::Enum, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()), sizeof(int),
-                    alignof(int)),
+        PHANTOM_ALIGNOF(int)),
       m_pUnderlyingIntType(IntType())
 {
 }

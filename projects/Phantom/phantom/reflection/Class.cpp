@@ -24,6 +24,7 @@
 #include <phantom/detail/new.h>
 #include <phantom/reflection/Function.h> // phantom::reflection::detail::pushModule
 #include <phantom/utils/SmallMap.h>
+#include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
@@ -1001,7 +1002,7 @@ void Class::_onNativeElementsAccessImpl()
         {
             VirtualMethodTable* pDerivedVTable = deriveVirtualMethodTable(pTable);
             pDerivedVTable->setFlag(PHANTOM_R_FLAG_NATIVE);
-            pDerivedVTable->m_strName = '$' + std::to_string(m_VirtualMethodTables.size());
+            pDerivedVTable->m_strName = '$' + StringUtil::ToString(m_VirtualMethodTables.size());
             addElement(pDerivedVTable);
         }
     }

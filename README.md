@@ -108,10 +108,6 @@ int main(int argc, char** argv)
 {
     using namespace phantom::reflection;
 
-    // <- at this point no heap allocation have been made, 
-    // this is where you can configure allocations with MemoryTraits class 
-    // before Phantom starts the big registration work
-
     // initializes Phantom, install all pre-main registrations, create the 'main' module (the module related to the .exe)
     Main app(main, "MyApplication", argc, argv);
 

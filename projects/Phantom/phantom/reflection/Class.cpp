@@ -23,11 +23,17 @@
 
 #include <phantom/detail/new.h>
 #include <phantom/reflection/Function.h> // phantom::reflection::detail::pushModule
+#include <phantom/reflection/registration/Main.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
+namespace detail
+{
+extern reflection::ClassHookFunc g_InstanceHook_func;
+}
+
 namespace reflection
 {
 static_assert(IsObject<Class>::value, "HasRtti<Class>::value");
@@ -39,9 +45,7 @@ Class* Class::MetaClass()
     return Class::metaClass;
 }
 
-Class::Class() : ClassType(TypeKind::Class, PHANTOM_NEW(ExtraData)), m_Signals(this), m_FieldsWithRAII(this)
-{
-}
+Class::Class() : ClassType(TypeKind::Class, PHANTOM_NEW(ExtraData)), m_Signals(this), m_FieldsWithRAII(this) {}
 
 Class::Class(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : ClassType(a_eTypeKind, PHANTOM_NEW(ExtraData), a_strName, a_Modifiers, a_uiFlags),
@@ -58,14 +62,15 @@ Class::Class(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t
 {
 }
 
-Class::~Class()
-{
-}
+Class::~Class() {}
 
 void Class::terminate()
 {
     if (m_pInstanceCache)
         PHANTOM_DELETE(InstanceCache) m_pInstanceCache;
+
+    if (phantom::detail::g_InstanceHook_func)
+        phantom::detail::g_InstanceHook_func(ClassHookOp::ClassDestroying, this, nullptr);
 
     if (m_InstanceCount)
     {
@@ -242,7 +247,7 @@ Method* Class::getSlot(StringView a_strIdentifierString) const
 
 Method* Class::getSlotCascade(StringView a_strIdentifierString) const
 {
-    Symbol*             pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
+    Symbol*         pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
     return pElement AND pElement->getOwner()->asClass() AND isA(static_cast<Class*>(pElement->getOwner()))
     ? pElement->asSlot()
     : nullptr;
@@ -1693,11 +1698,15 @@ void Class::registerInstance(void* a_pInstance)
 {
     _registerKind(a_pInstance);
     m_InstanceCount++;
+    if (phantom::detail::g_InstanceHook_func)
+        phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceRegistered, this, a_pInstance);
 }
 
 void Class::unregisterInstance(void* a_pInstance)
 {
     PHANTOM_ASSERT(m_InstanceCount);
+    if (phantom::detail::g_InstanceHook_func)
+        phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceUnregistering, this, a_pInstance);
     m_InstanceCount--;
     _unregisterKind(a_pInstance);
 }
@@ -1727,6 +1736,10 @@ void Class::_registerKind(void* a_pInstance)
         PHANTOM_ASSERT(m_InstanceCount == 0 && m_pSingleton == nullptr);
         m_pSingleton = a_pInstance;
     }
+
+    if (phantom::detail::g_InstanceHook_func)
+        phantom::detail::g_InstanceHook_func(ClassHookOp::KindCreated, this, a_pInstance);
+
 #if PHANTOM_CUSTOM_ENABLE_INSTANTIATION_SIGNALS
     PHANTOM_EMIT kindCreated(a_pInstance);
 #endif
@@ -1735,8 +1748,10 @@ void Class::_registerKind(void* a_pInstance)
 void Class::_unregisterKind(void* a_pInstance)
 {
 #if PHANTOM_CUSTOM_ENABLE_INSTANTIATION_SIGNALS
-    PHANTOM_EMIT kindDestroyed(a_pInstance);
+    PHANTOM_EMIT kindDestroying(a_pInstance);
 #endif
+    if (phantom::detail::g_InstanceHook_func)
+        phantom::detail::g_InstanceHook_func(ClassHookOp::KindDestroying, this, a_pInstance);
     if (isSingleton())
     {
         PHANTOM_ASSERT(m_InstanceCount == 0 && m_pSingleton == a_pInstance);

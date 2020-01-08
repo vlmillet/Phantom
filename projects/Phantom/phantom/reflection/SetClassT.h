@@ -8,24 +8,24 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/StlContainerClassT.h>
-#include <phantom/reflection/StlSetClass.h>
+#include <phantom/reflection/SetClass.h>
+#include <phantom/reflection/ContainerClassT.h>
 
 namespace phantom
 {
 namespace reflection
 {
-template<typename t_Ty, typename Base = StlSetClass>
-class StlSetClassT : public StlContainerClassT<t_Ty, Base>
+template<typename T, typename Base = SetClass>
+class SetClassT : public ContainerClassT<T, Base>
 {
 public:
-    using BaseType = StlContainerClassT<t_Ty, Base>;
-    typedef PHANTOM_TYPENAME t_Ty::value_type ContainerValueType;
-    typedef PHANTOM_TYPENAME t_Ty::const_iterator ContainerConstIterator;
-    typedef PHANTOM_TYPENAME t_Ty::iterator ContainerIterator;
+    using BaseType = ContainerClassT<T, Base>;
+    typedef PHANTOM_TYPENAME T::value_type ContainerValueType;
+    typedef PHANTOM_TYPENAME T::const_iterator ContainerConstIterator;
+    typedef PHANTOM_TYPENAME T::iterator ContainerIterator;
 
 public:
-    StlSetClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
+    SetClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
     {
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));
     }
@@ -33,14 +33,14 @@ public:
     virtual void insert(void* a_pContainer, void const* a_pKey) const override
     {
         ContainerValueType const* pKey = static_cast<ContainerValueType const*>(a_pKey);
-        t_Ty*                     pContainer = static_cast<t_Ty*>(a_pContainer);
+        T*                     pContainer = static_cast<T*>(a_pContainer);
         pContainer->insert(*pKey);
     }
 
     virtual void eraseKey(void* a_pContainer, void const* a_pKey) const override
     {
         ContainerValueType const* pKey = static_cast<ContainerValueType const*>(a_pKey);
-        t_Ty*                     pContainer = static_cast<t_Ty*>(a_pContainer);
+        T*                     pContainer = static_cast<T*>(a_pContainer);
         pContainer->erase(pContainer->find(*pKey));
     }
 };

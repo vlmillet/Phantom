@@ -3,12 +3,12 @@
 // Distributed under license available here at http://www.wiwila.com/tools/phantom/license/
 // ]
 
-#include "StlVectorClass.hxx"
+#include "VectorClass.hxx"
 
 namespace phantom
 {
 namespace reflection
 {
-PHANTOM_DEFINE_META_CLASS(StlVectorClass)
+PHANTOM_DEFINE_META_CLASS(VectorClass)
 }
 } // namespace phantom

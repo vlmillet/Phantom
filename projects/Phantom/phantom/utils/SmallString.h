@@ -455,7 +455,7 @@ public:
 
     size_t find(CharT const* a_pWhat, size_t a_Off = 0) const
     {
-        PHANTOM_ASSERT(a_Off < size());
+        PHANTOM_ASSERT(a_Off <= size());
         CharT const* first = data() + a_Off;
         CharT const* it = strstr(first, a_pWhat);
         return it ? it - begin() : npos;

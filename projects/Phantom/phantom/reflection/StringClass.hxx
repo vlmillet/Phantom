@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::StlVectorClass>()
+            .inherits<::phantom::reflection::VectorClass>()
         .public_()
             .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -50,9 +50,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
-            .method<StringClass*() const, virtual_>("asStringClass", &_::asStringClass)
             .method<void const*(void const*) const, pure_virtual>("c_str", &_::c_str)
             .method<void(void*, const void*, size_t) const, pure_virtual>("assign", &_::assign)
+            .method<void(void*, const void*) const, pure_virtual>("append", &_::append)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

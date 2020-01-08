@@ -199,9 +199,9 @@ class Interpreter;
 
 class ContainerClass;
 class SequentialContainerClass;
-class StlMapClass;
-class StlSetClass;
-class StlVectorClass;
+class MapClass;
+class SetClass;
+class VectorClass;
 class StringClass;
 class Ellipsis;
 class PointerType;
@@ -285,15 +285,15 @@ template<class>
 class VariableT;
 
 template<class, class>
-class StlContainerClassT;
+class ContainerClassT;
 template<class, class>
-class StlMapClassT;
+class MapClassT;
 template<class, class>
 class SequentialContainerClassT;
 template<class, class>
-class StlVectorClassT;
+class VectorClassT;
 template<class, class>
-class StlSetClassT;
+class SetClassT;
 template<class>
 class ConstantT;
 
@@ -320,9 +320,7 @@ HAUNT_RESUME;
 HAUNT_END("phantom.reflection");
 
 using CallDelegate = Delegate<void(ExecutionContext&, void**, ::size_t)>;
-inline void SilentCallDelegate(ExecutionContext& /*unused*/, void** /*unused*/, ::size_t /*unused*/)
-{
-}
+inline void SilentCallDelegate(ExecutionContext& /*unused*/, void** /*unused*/, ::size_t /*unused*/) {}
 
 class Evaluable;
 class Expression;

@@ -1300,7 +1300,7 @@ public:
      */
     //@{
     phantom::Signal<void(void*)> kindCreated;
-    phantom::Signal<void(void*)> kindDestroyed;
+    phantom::Signal<void(void*)> kindDestroying;
     //@}
 #endif
 

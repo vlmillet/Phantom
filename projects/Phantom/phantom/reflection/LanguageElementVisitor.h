@@ -19,9 +19,7 @@ namespace reflection
 /// \brief  Visitor data (used in LanguageElementVisitor visitor functions).
 struct VisitorData
 {
-    VisitorData() : id(0), in(0), out(0), flags(0)
-    {
-    }
+    VisitorData() : id(0), in(0), out(0), flags(0) {}
     VisitorData(int aid, const void** ain = nullptr, void** aout = nullptr, int aflags = 0)
         : id(aid), in(ain), out(aout), flags(aflags)
     {
@@ -30,10 +28,7 @@ struct VisitorData
     const void** in;
     void**       out;
     int          flags;
-    bool         hasFlag(int f) const
-    {
-        return (flags & f) == f;
-    }
+    bool         hasFlag(int f) const { return (flags & f) == f; }
 };
 
 /// \brief  A visitor base class to visit every native language elements (useful for
@@ -68,7 +63,7 @@ public:
     virtual void visit(LanguageElement* a_pInput, VisitorData a_Data);
     virtual void visit(LocalVariable* a_pInput, VisitorData a_Data);
     virtual void visit(LValueReference* a_pInput, VisitorData a_Data);
-    virtual void visit(StlMapClass* a_pInput, VisitorData a_Data);
+    virtual void visit(MapClass* a_pInput, VisitorData a_Data);
     virtual void visit(MemberAnonymousSection* a_pInput, VisitorData a_Data);
     virtual void visit(MemberAnonymousStruct* a_pInput, VisitorData a_Data);
     virtual void visit(MemberAnonymousUnion* a_pInput, VisitorData a_Data);
@@ -95,8 +90,8 @@ public:
     virtual void visit(RValueReference* a_pInput, VisitorData a_Data);
     virtual void visit(Scope* a_pInput, VisitorData a_Data);
     virtual void visit(SequentialContainerClass* a_pInput, VisitorData a_Data);
-    virtual void visit(StlSetClass* a_pInput, VisitorData a_Data);
-    virtual void visit(StlVectorClass* a_pInput, VisitorData a_Data);
+    virtual void visit(SetClass* a_pInput, VisitorData a_Data);
+    virtual void visit(VectorClass* a_pInput, VisitorData a_Data);
     virtual void visit(Signal* a_pInput, VisitorData a_Data);
     virtual void visit(Signature* a_pInput, VisitorData a_Data);
     virtual void visit(Source* a_pInput, VisitorData a_Data);

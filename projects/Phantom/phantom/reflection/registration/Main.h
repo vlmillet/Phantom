@@ -13,6 +13,7 @@ HAUNT_STOP;
 #include "registration.h"
 
 #include <phantom/reflection/reflection.h>
+#include <phantom/utils/Functor.h>
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define PHANTOM_MAIN(...)                                                                                          \
@@ -32,50 +33,64 @@ HAUNT_STOP;
 #define _PHNTM_MAIN_4(name, flags, argc, argv)                                                                         \
     struct _PHNTM_main_s                                                                                               \
     {                                                                                                                  \
-        static void _()                                                                                                \
-        {                                                                                                              \
-        }                                                                                                              \
+        static void _() {}                                                                                             \
     };                                                                                                                 \
     phantom::reflection::Main _PHNTM_main(PHANTOM_MODULE_HANDLE((void*)&_PHNTM_main_s::_), name, __FILE__, flags,      \
                                           argc, argv);
 
 namespace phantom
 {
-	typedef bool(*MessageReportFunc)(StringView expression, StringView file, int line, const char* format,
-		va_list arglist);
-	typedef void(*LogFunc)(MessageType msgType, StringView file, int line, const char* format, va_list arglist);
+using MessageReportFunc =
+Functor<bool(StringView expression, StringView file, int line, const char* format, va_list arglist)>;
+
+using LogFunc = Functor<void(MessageType msgType, StringView file, int line, const char* format, va_list arglist)>;
 
 namespace reflection
 {
+enum class ClassHookOp
+{
+    InstanceRegistered,
+    InstanceUnregistering,
+    KindCreated,
+    KindDestroying,
+    ClassDestroying,
+};
+
+using ClassHookFunc = Functor<void(ClassHookOp op, Class* a_pClass, void* a_pInstance)>;
+
 class PHANTOM_EXPORT_PHANTOM Main
 {
 public:
     Main(int (*_mainFuncPtr)(int, char**), StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
-               a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), ClassHookFunc a_ClassHookFunc = ClassHookFunc(),
+         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_ClassHookFunc,
+               a_strMainCppFile, a_uiFlags)
     {
     }
     Main(int (*_mainFuncPtr)(), StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
-               a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), ClassHookFunc a_ClassHookFunc = ClassHookFunc(),
+         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_ClassHookFunc,
+               a_strMainCppFile, a_uiFlags)
     {
     }
     Main(void* _mainFuncPtr, StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0)
-        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_strMainCppFile,
-               a_uiFlags)
+         CustomAllocator _allocator = CustomAllocator::Default(), ClassHookFunc a_ClassHookFunc = ClassHookFunc(),
+         StringView a_strMainCppFile = "", uint a_uiFlags = 0)
+        : Main(PHANTOM_MODULE_HANDLE(_mainFuncPtr), a_strMainModuleName, argc, argv, _allocator, a_ClassHookFunc,
+               a_strMainCppFile, a_uiFlags)
     {
     }
     Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
-         CustomAllocator _allocator = CustomAllocator::Default(), StringView a_strMainCppFile = "", uint a_uiFlags = 0);
+         CustomAllocator _allocator = CustomAllocator::Default(), ClassHookFunc a_ClassHookFunc = ClassHookFunc(),
+         StringView a_strMainCppFile = "", uint a_uiFlags = 0);
     ~Main();
 
-	void setAssertFunc(MessageReportFunc a_func);
-	void setErrorFunc(MessageReportFunc a_func);
-	void setLogFunc(LogFunc a_func);
-	void setWarningFunc(MessageReportFunc a_func);
+    void setAssertFunc(MessageReportFunc a_func);
+    void setErrorFunc(MessageReportFunc a_func);
+    void setLogFunc(LogFunc a_func);
+    void setWarningFunc(MessageReportFunc a_func);
 };
 } // namespace reflection
 } // namespace phantom

@@ -52,6 +52,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         .public_()
             .method<SequentialContainerClass*() const, virtual_|override_>("asSequentialContainerClass", &_::asSequentialContainerClass)
             .method<void(void*, void const*) const, virtual_>("push_back", &_::push_back)
+            /// missing symbol(s) reflection (phantom::MoveArg) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(void*, MoveArg) const, virtual_>("push_back", &_::push_back)
+            .method<void(void*) const, virtual_>("pop_back", &_::pop_back)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

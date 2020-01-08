@@ -34,24 +34,17 @@ class PHANTOM_EXPORT_PHANTOM ContainerClass : public Class
     };
 
 protected:
-    ContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
-                   size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
-    ContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0,
-                   uint a_uiFlags = 0);
+    ContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+                   Modifiers a_Modifiers, uint a_uiFlags);
+    ContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
     ~ContainerClass() override;
 
-    inline Type* getValueType() const
-    {
-        return m_pValueType;
-    }
-    void setValueType(Type* a_pValueType);
+    inline Type* getValueType() const { return m_pValueType; }
+    void         setValueType(Type* a_pValueType);
 
-    ContainerClass* asContainerClass() const override
-    {
-        return const_cast<ContainerClass*>(this);
-    }
+    ContainerClass* asContainerClass() const override { return const_cast<ContainerClass*>(this); }
 
     virtual void   begin(void* a_pContainer, void* a_pOutIt) const;
     virtual void   begin(void const* a_pContainer, void* a_pOutIt) const;
@@ -72,6 +65,9 @@ public:
     virtual Type* getConstIteratorType() const;
 
     Property* getSizeProperty() const;
+
+protected:
+    virtual Property* createSizeProperty() const;
 
 protected:
     Type*             m_pValueType = nullptr;

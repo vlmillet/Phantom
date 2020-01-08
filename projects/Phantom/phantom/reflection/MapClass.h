@@ -16,11 +16,11 @@ namespace phantom
 namespace reflection
 {
 /// \brief  Represents a specialized version of Class for map containers.
-class PHANTOM_EXPORT_PHANTOM StlMapClass : public ContainerClass
+class PHANTOM_EXPORT_PHANTOM MapClass : public ContainerClass
 {
     PHANTOM_DECL_TYPE;
 
-    PHANTOM_DECLARE_META_CLASS(StlMapClass);
+    PHANTOM_DECLARE_META_CLASS(MapClass);
 
     struct Data
     {
@@ -32,13 +32,13 @@ class PHANTOM_EXPORT_PHANTOM StlMapClass : public ContainerClass
     };
 
 protected:
-    StlMapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+    MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                 uint a_uiFlags);
 
 public:
-    StlMapClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    MapClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~StlMapClass() override;
+    ~MapClass() override;
 
     Type* getKeyType() const
     {

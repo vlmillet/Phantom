@@ -52,7 +52,7 @@ public:
 
 private:
     void kindCreated(void* a_pInstance);
-    void kindDestroyed(void* a_pInstance);
+    void kindDestroying(void* a_pInstance);
 
 protected:
     VoidPtrs m_Instances;

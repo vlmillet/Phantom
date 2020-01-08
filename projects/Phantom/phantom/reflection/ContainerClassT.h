@@ -34,7 +34,7 @@ struct EraseOrAssert
 };
 
 template<typename t_Ty, typename Base = ContainerClass>
-class StlContainerClassT : public ClassT<t_Ty, Base>
+class ContainerClassT : public ClassT<t_Ty, Base>
 {
     using BaseType = ClassT<t_Ty, Base>;
     typedef PHANTOM_TYPENAME t_Ty::value_type ContainerValueType;
@@ -42,7 +42,7 @@ class StlContainerClassT : public ClassT<t_Ty, Base>
     typedef PHANTOM_TYPENAME t_Ty::iterator ContainerIterator;
 
 public:
-    StlContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0)
+    ContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0)
         : BaseType(a_strName, a_Modifiers)
     {
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));

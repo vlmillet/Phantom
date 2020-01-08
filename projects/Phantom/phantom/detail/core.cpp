@@ -177,10 +177,11 @@ static StringView        g_pPackage;
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
 static reflection::LanguageElements* g_elements;
 #endif
-static MessageReportFunc g_assert_func;
-static MessageReportFunc g_warning_func;
-static MessageReportFunc g_error_func;
-static LogFunc           g_LogFunc;
+static MessageReportFunc  g_assert_func;
+static MessageReportFunc  g_warning_func;
+static MessageReportFunc  g_error_func;
+static LogFunc            g_LogFunc;
+reflection::ClassHookFunc g_InstanceHook_func;
 
 typedef SmallMap<String, reflection::Package*> PackageMap;
 
@@ -1142,7 +1143,7 @@ PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const c
 {
     va_list args;
     va_start(args, format);
-    bool r = (*detail::g_assert_func)(e, file, line, format, args);
+    bool r = detail::g_assert_func && detail::g_assert_func(e, file, line, format, args);
     va_end(args);
     return r;
 }
@@ -1152,7 +1153,7 @@ PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const cha
 {
     va_list args;
     va_start(args, format);
-    bool r = (*detail::g_warning_func)(e, file, line, format, args);
+    bool r = detail::g_warning_func && detail::g_warning_func(e, file, line, format, args);
     va_end(args);
     return r;
 }
@@ -1162,7 +1163,7 @@ PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char*
 {
     va_list args;
     va_start(args, format);
-    bool r = (*detail::g_error_func)(e, file, line, format, args);
+    bool r = detail::g_error_func && detail::g_error_func(e, file, line, format, args);
     va_end(args);
     return r;
 }
@@ -1172,7 +1173,8 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
 {
     va_list args;
     va_start(args, format);
-    (*detail::g_LogFunc)(msgType, file, line, format, args);
+    if (detail::g_LogFunc)
+        detail::g_LogFunc(msgType, file, line, format, args);
     va_end(args);
 }
 
@@ -1203,23 +1205,25 @@ void reflection::Main::setAssertFunc(MessageReportFunc a_func)
 
 void reflection::Main::setErrorFunc(MessageReportFunc a_func)
 {
-	phantom::detail::g_error_func = a_func;
+    phantom::detail::g_error_func = a_func;
 }
 
 void reflection::Main::setLogFunc(LogFunc a_func)
 {
-	phantom::detail::g_LogFunc = a_func;
+    phantom::detail::g_LogFunc = a_func;
 }
 
 void reflection::Main::setWarningFunc(MessageReportFunc a_func)
 {
-	phantom::detail::g_warning_func = a_func;
+    phantom::detail::g_warning_func = a_func;
 }
 
 reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
-                       CustomAllocator _allocator, StringView a_strFile, uint a_uiFlags)
+                       CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
+
+    phantom::detail::g_InstanceHook_func = a_ClassHookFunc;
 
     CustomAllocator::Push(_allocator);
 

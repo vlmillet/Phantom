@@ -5,7 +5,7 @@
 // ]
 
 /* ******************* Includes ****************** */
-#include "StlSetClass.h"
+#include "SetClass.h"
 
 #include "Method.h"
 #include "phantom/detail/new.h"
@@ -14,23 +14,22 @@ namespace phantom
 {
 namespace reflection
 {
-StlSetClass::StlSetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-                         uint a_uiFlags)
-    : ContainerClass(TypeKind::StlSetClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+SetClass::SetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
+    : ContainerClass(TypeKind::SetClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StlSetClass::StlSetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ContainerClass(TypeKind::StlSetClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
+SetClass::SetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : ContainerClass(TypeKind::SetClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
 {
 }
 
-StlSetClass::~StlSetClass()
+SetClass::~SetClass()
 {
     PHANTOM_DELETE(RTData) m_Data;
 }
 
-void StlSetClass::eraseKey(void* a_pContainer, void const* a_pKey) const
+void SetClass::eraseKey(void* a_pContainer, void const* a_pKey) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_erase)
@@ -39,7 +38,7 @@ void StlSetClass::eraseKey(void* a_pContainer, void const* a_pKey) const
     m_Data->m_pFunc_erase->invoke(a_pContainer, args);
 }
 
-void StlSetClass::insert(void* a_pContainer, void const* a_pKey) const
+void SetClass::insert(void* a_pContainer, void const* a_pKey) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_insert)
@@ -48,7 +47,7 @@ void StlSetClass::insert(void* a_pContainer, void const* a_pKey) const
     m_Data->m_pFunc_insert->invoke(a_pContainer, args);
 }
 
-void StlSetClass::find(void const* a_pContainer, void const* a_pKey, void* a_pIt) const
+void SetClass::find(void const* a_pContainer, void const* a_pKey, void* a_pIt) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_find)

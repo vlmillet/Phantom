@@ -33,6 +33,7 @@
 #include "LValueReference.h"
 #include "LanguageElement.h"
 #include "LocalVariable.h"
+#include "MapClass.h"
 #include "MemberAnonymousSection.h"
 #include "MemberAnonymousStruct.h"
 #include "MemberAnonymousUnion.h"
@@ -58,12 +59,10 @@
 #include "Reference.h"
 #include "Scope.h"
 #include "SequentialContainerClass.h"
+#include "SetClass.h"
 #include "Signal.h"
 #include "Signature.h"
 #include "Source.h"
-#include "StlMapClass.h"
-#include "StlSetClass.h"
-#include "StlVectorClass.h"
 #include "Structure.h"
 #include "Subroutine.h"
 #include "Symbol.h"
@@ -79,6 +78,7 @@
 #include "Union.h"
 #include "ValueMember.h"
 #include "Variable.h"
+#include "VectorClass.h"
 #include "VirtualMethodTable.h"
 #include "VolatileType.h"
 
@@ -155,9 +155,7 @@ void LanguageElementVisitor::visit(Destructor* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Method*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(Ellipsis*, VisitorData)
-{
-}
+void LanguageElementVisitor::visit(Ellipsis*, VisitorData) {}
 void LanguageElementVisitor::visit(Enum* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Type*>(a_pInput), a_Data);
@@ -178,9 +176,7 @@ void LanguageElementVisitor::visit(InitializerListType* a_pInput, VisitorData a_
 {
     visit(static_cast<Type*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(LanguageElement*, VisitorData)
-{
-}
+void LanguageElementVisitor::visit(LanguageElement*, VisitorData) {}
 void LanguageElementVisitor::visit(LocalVariable* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Symbol*>(a_pInput), a_Data);
@@ -189,7 +185,7 @@ void LanguageElementVisitor::visit(LValueReference* a_pInput, VisitorData a_Data
 {
     visit(static_cast<Reference*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(StlMapClass* a_pInput, VisitorData a_Data)
+void LanguageElementVisitor::visit(MapClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Class*>(a_pInput), a_Data);
 }
@@ -237,9 +233,7 @@ void LanguageElementVisitor::visit(Parameter* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<LocalVariable*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(Placeholder*, VisitorData)
-{
-}
+void LanguageElementVisitor::visit(Placeholder*, VisitorData) {}
 void LanguageElementVisitor::visit(PlaceholderClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Class*>(a_pInput), a_Data);
@@ -284,18 +278,16 @@ void LanguageElementVisitor::visit(RValueReference* a_pInput, VisitorData a_Data
 {
     visit(static_cast<Reference*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(Scope*, VisitorData)
-{
-}
+void LanguageElementVisitor::visit(Scope*, VisitorData) {}
 void LanguageElementVisitor::visit(SequentialContainerClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Class*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(StlSetClass* a_pInput, VisitorData a_Data)
+void LanguageElementVisitor::visit(SetClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<ContainerClass*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(StlVectorClass* a_pInput, VisitorData a_Data)
+void LanguageElementVisitor::visit(VectorClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<SequentialContainerClass*>(a_pInput), a_Data);
 }

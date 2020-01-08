@@ -41,7 +41,7 @@ This project is under a MIT license which is one of the highest permissive distr
 - **Custom user allocator** : provide your own allocate/deallocate functions (very few allocations before main for better memory control)
 - **Modern C++ with minimal macros use** (only those to avoid unreadable code are used) 
 - **On demand registration** : if requested, even if everything is reflected, only accessed class will register members (**fast startup** and **low memory use**, no matter your codebase size)
-- **Optimized meta programming compilation time** using meta-forwarding
+- **Optimized meta programming compilation time** using *meta-typedef* technique
 - **Non intrusive** (you can separate your code from reflection code, even in separate libraries)
 - **No third-party library**
 - **No RTTI**
@@ -64,16 +64,16 @@ Code:
 /// registration includes
 
 #include <phantom/class> 
-#include <phantom/field>
 #include <phantom/method>
+#include <phantom/field>
 #include <phantom/main>
 
 /// use includes
 
-#include <phantom/reflection/Application.h>
 #include <phantom/reflection/Class.h>
 #include <phantom/reflection/Method.h>
 #include <phantom/reflection/Field.h>
+#include <phantom/reflection/Application.h>
 
 namespace MyNamespace
 {
@@ -192,13 +192,166 @@ PHANTOM_END("MyPackage0.MyPackage1.MySource");
 ```
 <sub>(the module will be automatically detected by the Phantom registration system)</sub>
 #### On demand member registration
-> **Only keep what you need** <sub>A thought by me</sub>
+> **Only keep what you need** <sub>you should</sub>
 > 
 When you launch your application with Phantom, only the symbols at global or namespace scopes will be registered by default. Every class member will wait for any access in the reflection system to install. This allows to have everything reflected and still have a **very fast startup** and **low memory use** if not everything is used. 
 
 
 #### Heap allocation control
 99% of the time, Phantom will never perform heap allocation before entering ***main*** function ; this might happen if you really have a big module with lot of symbols registered. Once in the ***main*** you can use MemoryTraits in phantom to provide your own allocation functions.
+
+#### Template class reflection + User Custom Meta Types
+
+Phantom reflects template classes very easily. Full, partial and variadic template specializations are supported too.
+
+Every template reflection must be isolated into its own file to be used correcly accross multiple translation units. Indeed a template reflection registration is not the same as a class reflection registration (as templates have no real existence in compiled code). 
+
+This is why they must be included wherever an instance of this template is used inside another reflection scope. To do so, template files must be included in between ```#include <phantom/template-only-push>``` and ```#include <phantom/template-only-pop>```  
+
+See below an example of ```EASTL/basic_string.hxx``` used in a game engine for better understanding (it is easier than it look likes).
+
+```cp
+#pragma once
+
+#include <EASTL/string.h>
+
+#include <phantom/class>
+#include <phantom/method>
+#include <phantom/constructor>
+#include <phantom/meta_type>
+
+#include <phantom/reflection/StringClassT.h>
+
+#include <phantom/template-only-push> // < begin template includes here
+#include "allocator.hxx"
+#include <std/initializer_list.hxx>
+#include <phantom/template-only-pop> // < end template includes here
+
+// 'PHANTOM_META_TYPE_T' tells phantom to use phantom::reflection::StringClassT<> instead of phantom::reflection::ClassT<>
+// as the meta type for every reflected instance of basic_string.
+
+PHANTOM_META_TYPE_T((typename, typename), (T, Alloc), eastl::basic_string, phantom::reflection::StringClassT);
+
+namespace eastl
+{
+    PHANTOM_CLASS_T((typename, typename), (T, Alloc), basic_string)
+    {
+        using CharT = T;
+        using AllocatorT = Alloc;
+        using ThisType = eastl::basic_string<T, Alloc>;
+        using const_iterator = typedef_<PHANTOM_TYPENAME _::const_iterator>;
+        using iterator = typedef_<PHANTOM_TYPENAME _::iterator>;
+        using size_type = typedef_<PHANTOM_TYPENAME _::size_type>;
+        using value_type = typedef_<PHANTOM_TYPENAME _::value_type>;
+
+        this_()
+            .public_()
+                .PHANTOM_T constant("npos", _::npos)
+                .PHANTOM_T typedef_<size_type>("size_type")
+                .PHANTOM_T typedef_<value_type>("value_type")
+                .PHANTOM_T typedef_<const_iterator>("const_iterator")
+                .PHANTOM_T typedef_<iterator>("iterator")
+                PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value),
+                    .PHANTOM_T constructor<void()>()
+                )
+                .PHANTOM_T constructor<void(ThisType const&), default_>()
+                .PHANTOM_T constructor<void(ThisType&&)>()
+                .PHANTOM_T constructor<void(::std::initializer_list<CharT>, const AllocatorT&)>()
+                .PHANTOM_T constructor<void(CharT const*, size_t)>()
+                .PHANTOM_T constructor<void(CharT const*)>()
+                .PHANTOM_T method<ThisType& (ThisType const&), default_>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (ThisType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (CharT const*)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (CharT)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<CharT const* () const>("begin", &_::begin)
+                .PHANTOM_T method<CharT const* () const>("end", &_::end)
+                .PHANTOM_T method<CharT* ()>("begin", &_::begin)
+                .PHANTOM_T method<CharT* ()>("end", &_::end)
+                .PHANTOM_T method<size_t() const>("size", &_::size)
+                .PHANTOM_T method<size_t() const>("length", &_::length)
+                .PHANTOM_T method<void(size_t)>("resize", &_::resize)
+                .PHANTOM_T method<void(size_t, CharT)>("resize", &_::resize)
+                .PHANTOM_T method<size_t() const>("capacity", &_::capacity)
+                .PHANTOM_T method<void(size_t)>("reserve", &_::reserve)
+                .PHANTOM_T method<void()>("clear", &_::clear)
+                .PHANTOM_T method<bool() const>("empty", &_::empty)
+                .PHANTOM_T method<CharT const& (size_t) const>("operator[]", &_::operator[])
+                .PHANTOM_T method<CharT& (size_t)>("operator[]", &_::operator[])
+                .PHANTOM_T method<CharT const& () const>("back", &_::back)
+                .PHANTOM_T method<CharT& ()>("back", &_::back)
+                .PHANTOM_T method<CharT const& () const>("front", &_::front)
+                .PHANTOM_T method<CharT& ()>("front", &_::front)
+                .PHANTOM_T method<ThisType& (CharT const*)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (ThisType const&)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (CharT)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (CharT const*)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (ThisType const&)>("append", &_::append)
+                .PHANTOM_T method<void(CharT)>("push_back", &_::push_back)
+                .PHANTOM_T method<ThisType& (CharT const*)>("assign", &_::assign)
+                .PHANTOM_T method<ThisType& (CharT const*, size_t)>("assign", &_::assign)
+                .PHANTOM_T method<ThisType& (CharT const*, size_t)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (const ThisType&, size_t, size_t)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (size_t, ThisType const&)>("insert", &_::insert)
+                .PHANTOM_T method<ThisType& (size_t, CharT const*, size_t)>("insert", &_::insert)
+                .PHANTOM_T method<ThisType& (size_t, size_t)>("erase", &_::erase)
+                .PHANTOM_T method<iterator(const_iterator)>("erase", &_::erase)
+                .PHANTOM_T method<iterator(const_iterator, const_iterator)>("erase", &_::erase)
+                .PHANTOM_T method<void(ThisType&)>("swap", &_::swap)
+                .PHANTOM_T method<void()>("pop_back", &_::pop_back)
+                .PHANTOM_T method<CharT const* () const>("c_str", &_::c_str)
+                .PHANTOM_T method<CharT const* () const>("data", &_::data)
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find", &_::find)["0"]
+                .PHANTOM_T method<size_t(ThisType const&, size_t) const>("find", &_::find)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_of", &_::find_first_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_of", &_::find_first_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_of", &_::find_last_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_of", &_::find_last_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+                .PHANTOM_T method<ThisType(size_t, size_t) const>("substr", &_::substr)["npos"]
+                .PHANTOM_T method<int(ThisType const&) const>("compare", &_::compare)
+                .PHANTOM_T method<int(CharT const*) const>("compare", &_::compare)
+                .PHANTOM_T method<int(size_t, size_t, CharT const*) const>("compare", &_::compare)
+                .PHANTOM_T method<int(size_t, size_t, ThisType const&) const>("compare", &_::compare)
+        ;
+    }
+}
+```
+
+and here is an example where ```EASTL/basic_string.hxx``` is used :
+
+```cp
+#pragma once
+
+#include "String.h"
+
+#include <phantom/namespace>
+#include <phantom/package>
+#include <phantom/source>
+#include <phantom/function>
+#include <phantom/typedef>
+
+#include <phantom/template-only-push>
+
+#include <EASTL/basic_string.hxx>
+
+#include <phantom/template-only-pop>
+
+namespace GameEngine {
+PHANTOM_PACKAGE("GameEngine.Core")
+    PHANTOM_SOURCE("String")
+
+        #if PHANTOM_NOT_TEMPLATE
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<typedef_<String> >("String"); }
+        #endif // PHANTOM_NOT_TEMPLATE
+	
+    PHANTOM_END("String")
+PHANTOM_END("GameEngine.Core")
+}
+
+```
 
 ### Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
 

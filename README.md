@@ -358,6 +358,9 @@ PHANTOM_END("GameEngine.Core")
  You can customize what meta type phantom will use to register your class : 
 - for simple classes
 ```cp
+...
+#include <phantom/meta_type>
+...
 PHANTOM_META_TYPE(<your-ns>::<your_type>, <your-metatype>)
 namespace <your-ns> 
 {
@@ -373,6 +376,7 @@ namespace <your-ns>
     PHANTOM_CLASS_T(<tpl-signature>, <your_type>) { ... }
 }
 ``` 
+these macros are in ```<phantom/meta_type>```
 
 ### Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
 

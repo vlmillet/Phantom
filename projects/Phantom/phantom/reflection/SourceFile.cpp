@@ -66,8 +66,11 @@ SourceFile* SourceFile::CreateOnDisk(Source* a_pSource, StringView a_Path, bool 
 
 time_t SourceFile::getLastChangeTime() const
 {
-    struct stat s;
-    stat(getPath().data(), &s);
+    struct stat s = {};
+    if (stat(getPath().data(), &s) == -1)
+    {
+        return -1;
+    }
     return s.st_mtime;
 }
 

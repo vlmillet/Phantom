@@ -93,11 +93,12 @@ Property* ContainerClass::getSizeProperty() const
 {
     if (!m_pSizeProperty)
     {
-        m_pSizeProperty = PHANTOM_NEW(Property)(PHANTOM_TYPEOF(size_t), "Size", PHANTOM_R_FILTER_PROPERTY,
-                                                PHANTOM_R_NONE, isNative() * PHANTOM_R_FLAG_NATIVE);
-        m_pSizeProperty->setSet(getMethod("resize(size_t)"));
-        m_pSizeProperty->setGet(getMethod("size() const"));
-        const_cast<ContainerClass*>(this)->addProperty(m_pSizeProperty);
+        if ((m_pSizeProperty = createSizeProperty()))
+            const_cast<ContainerClass*>(this)->addProperty(m_pSizeProperty);
+    }
+    if (!m_pSizeProperty)
+    {
+        PHANTOM_LOG(Error, "container has no size property");
     }
     return m_pSizeProperty;
 }
@@ -233,6 +234,21 @@ Type* ContainerClass::getConstIteratorType() const
 {
     _initBeginC();
     return m_Data->m_pFunc_beginc->getReturnType();
+}
+
+Property* ContainerClass::createSizeProperty() const
+{
+    Property* pProp = nullptr;
+    auto      pGetMethod = getMethod("size() const");
+    if (pGetMethod)
+    {
+        pProp = PHANTOM_NEW(Property)(PHANTOM_TYPEOF(size_t), "Size", PHANTOM_R_FILTER_PROPERTY, PHANTOM_R_NONE,
+                                      isNative() * PHANTOM_R_FLAG_NATIVE);
+        pProp->setGet(pGetMethod);
+        if (auto pSetMethod = getMethod("resize(size_t)"))
+            pProp->setSet(pSetMethod);
+    }
+	return pProp;
 }
 
 } // namespace reflection

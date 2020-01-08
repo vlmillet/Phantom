@@ -8,8 +8,8 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/Constructor.h>
-#include <phantom/detail/newImpl.h>
 #include <phantom/detail/core.h>
+#include <phantom/detail/newImpl.h>
 #include <phantom/reflection/CodeLocation.h>
 #include <phantom/reflection/LanguageElementVisitor.h>
 #include <phantom/reflection/reflection.h>
@@ -164,7 +164,7 @@ public:
     inline LanguageElement*           asLanguageElement() const { return (LanguageElement*)this; }
     virtual LocalVariable*            asLocalVariable() const { return nullptr; }
     virtual LValueReference*          asLValueReference() const { return nullptr; }
-    virtual StlMapClass*              asMapContainerClass() const { return nullptr; }
+    virtual MapClass*                 asMapContainerClass() const { return nullptr; }
     virtual MemberAnonymousSection*   asMemberAnonymousSection() const { return nullptr; }
     virtual MemberAnonymousStruct*    asMemberAnonymousStruct() const { return nullptr; }
     virtual MemberAnonymousUnion*     asMemberAnonymousUnion() const { return nullptr; }
@@ -188,7 +188,7 @@ public:
     virtual RValueReference*          asRValueReference() const { return nullptr; }
     virtual Scope*                    asScope() const { return nullptr; }
     virtual SequentialContainerClass* asSequentialContainerClass() const { return nullptr; }
-    virtual StlSetClass*              asSetContainerClass() const { return nullptr; }
+    virtual SetClass*                 asSetContainerClass() const { return nullptr; }
     virtual Signal*                   asSignal() const { return nullptr; }
     virtual Signature*                asSignature() const { return nullptr; }
     virtual Method*                   asSlot() const { return nullptr; }

@@ -17,11 +17,11 @@ namespace phantom
 namespace reflection
 {
 /// \brief  Base base for stl compliant vector containers.
-class PHANTOM_EXPORT_PHANTOM StlVectorClass : public SequentialContainerClass
+class PHANTOM_EXPORT_PHANTOM VectorClass : public SequentialContainerClass
 {
     PHANTOM_DECL_TYPE;
 
-    PHANTOM_DECLARE_META_CLASS(StlVectorClass);
+    PHANTOM_DECLARE_META_CLASS(VectorClass);
 
     struct RTData
     {
@@ -33,14 +33,9 @@ class PHANTOM_EXPORT_PHANTOM StlVectorClass : public SequentialContainerClass
     };
 
 public:
-    StlVectorClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    VectorClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~StlVectorClass() override;
-
-    virtual StlVectorClass* asStlVectorClass() const
-    {
-        return const_cast<StlVectorClass*>(this);
-    }
+    ~VectorClass() override;
 
     virtual void const* data(void const* a_pContainer) const;
     virtual void*       data(void* a_pContainer) const;
@@ -49,12 +44,10 @@ public:
     void*               referenceAt(void* a_pContainer, size_t a_uiIndex) const override;
 
 protected:
-    StlVectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_Modifiers = 0,
-                   uint a_uiFlags = 0);
-    StlVectorClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                   Modifiers a_Modifiers, uint a_uiFlags);
-    StlVectorClass(TypeKind a_TypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                   Modifiers a_Modifiers, uint a_uiFlags);
+    VectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    VectorClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
+    VectorClass(TypeKind a_TypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+                uint a_uiFlags);
 
 private:
     mutable RTData* m_pData = nullptr;

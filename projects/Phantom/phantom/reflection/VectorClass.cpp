@@ -5,7 +5,7 @@
 // ]
 
 /* ******************* Includes ****************** */
-#include "StlVectorClass.h"
+#include "VectorClass.h"
 
 #include "Method.h"
 
@@ -15,35 +15,35 @@ namespace phantom
 {
 namespace reflection
 {
-StlVectorClass::StlVectorClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-                               uint a_uiFlags)
-    : StlVectorClass(TypeKind::StlVectorClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+VectorClass::VectorClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+                         uint a_uiFlags)
+    : VectorClass(TypeKind::VectorClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StlVectorClass::StlVectorClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : StlVectorClass(TypeKind::StlVectorClass, a_strName, a_Modifiers, a_uiFlags)
+VectorClass::VectorClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : VectorClass(TypeKind::VectorClass, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-StlVectorClass::StlVectorClass(TypeKind a_TypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                               Modifiers a_Modifiers, uint a_uiFlags)
+VectorClass::VectorClass(TypeKind a_TypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+                         Modifiers a_Modifiers, uint a_uiFlags)
     : SequentialContainerClass(a_TypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StlVectorClass::StlVectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
-                               uint a_uiFlags /*= 0*/)
+VectorClass::VectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
+                         uint a_uiFlags /*= 0*/)
     : SequentialContainerClass(a_TypeKind, a_strName, a_Modifiers, a_uiFlags), m_pData(PHANTOM_NEW(RTData))
 {
 }
 
-StlVectorClass::~StlVectorClass()
+VectorClass::~VectorClass()
 {
     PHANTOM_DELETE(RTData) m_pData;
 }
 
-void const* StlVectorClass::data(void const* a_pContainer) const
+void const* VectorClass::data(void const* a_pContainer) const
 {
     if (!m_pData->m_pFunc_datac)
         m_pData->m_pFunc_datac = getMethod("data() const");
@@ -53,7 +53,7 @@ void const* StlVectorClass::data(void const* a_pContainer) const
     return ptr;
 }
 
-void* StlVectorClass::data(void* a_pContainer) const
+void* VectorClass::data(void* a_pContainer) const
 {
     if (!m_pData->m_pFunc_data)
         m_pData->m_pFunc_data = getMethod("data()");
@@ -63,7 +63,7 @@ void* StlVectorClass::data(void* a_pContainer) const
     return ptr;
 }
 
-void StlVectorClass::resize(void* a_pContainer, size_t a_Size) const
+void VectorClass::resize(void* a_pContainer, size_t a_Size) const
 {
     if (!m_pData->m_pFunc_resize)
         m_pData->m_pFunc_resize = getMethod("resize", {PHANTOM_TYPEOF(size_t)});
@@ -71,7 +71,7 @@ void StlVectorClass::resize(void* a_pContainer, size_t a_Size) const
     return m_pData->m_pFunc_resize->invoke<void>((void*)a_pContainer, a_Size);
 }
 
-void const* StlVectorClass::referenceAt(void const* a_pContainer, size_t a_uiIndex) const
+void const* VectorClass::referenceAt(void const* a_pContainer, size_t a_uiIndex) const
 {
     if (!m_pData->m_pFunc_refAtC)
     {
@@ -83,7 +83,7 @@ void const* StlVectorClass::referenceAt(void const* a_pContainer, size_t a_uiInd
     return ref;
 }
 
-void* StlVectorClass::referenceAt(void* a_pContainer, size_t a_uiIndex) const
+void* VectorClass::referenceAt(void* a_pContainer, size_t a_uiIndex) const
 {
     if (!m_pData->m_pFunc_refAt)
     {

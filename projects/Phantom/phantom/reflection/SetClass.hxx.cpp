@@ -3,11 +3,11 @@
 // Distributed under license available here at http://www.wiwila.com/tools/phantom/license/
 // ]
 
-#include "StlSetClass.hxx"
+#include "SetClass.hxx"
 namespace phantom
 {
 namespace reflection
 {
-PHANTOM_DEFINE_META_CLASS(StlSetClass);
+PHANTOM_DEFINE_META_CLASS(SetClass);
 }
 } // namespace phantom

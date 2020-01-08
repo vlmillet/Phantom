@@ -712,11 +712,12 @@ bool Path::ResizeFile(const Path& p, size_t size)
 
 Path Path::GetCurrentWorkingDir()
 {
-    char buffer[512];
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-    return _getcwd(buffer, 512);
+	char buffer[512];
+	return _getcwd(buffer, 512);
 #elif PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
-    return getcwd(buffer, 512);
+	char buffer[512];
+	return getcwd(buffer, 512);
 #else
     return "/";
 #endif

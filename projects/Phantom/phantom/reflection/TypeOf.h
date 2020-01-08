@@ -29,55 +29,6 @@ HAUNT_STOP;
 
 #define PHANTOM_PRECISE_TYPEOF(...) (phantom::reflection::PreciseTypeOf<__VA_ARGS__>::object())
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// \brief  Retrieves the type reflection of the given template argument as a compile time deduced
-// meta type pointer. \description Different from PHANTOM_TYPEOF, PHANTOM_PRECISE_TYPEOF will return
-// the real reflection type pointer
-//              if the reflection has been declared above in the translation unit, or the closer
-//              canonical meta type deduced at compile time via type traits. For example if you pass
-//              a class 'MyClass' in the template arguments without the reflection declaration, the
-//              function will have a Class* return. If you declared the reflection above, the
-//              function will have a ClassT<MyClass, Class>* pointer.
-//
-// \return null if it fails, else the type reflection.
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-#define PHANTOM_R_META_TYPE(attached_type, MetaType)                                                                   \
-    namespace phantom                                                                                                  \
-    {                                                                                                                  \
-    namespace reflection                                                                                               \
-    {                                                                                                                  \
-    template<>                                                                                                         \
-    struct MetaTypeOf<attached_type>                                                                                   \
-    {                                                                                                                  \
-        typedef PHANTOM_PP_REMOVE_PARENS(MetaType) type;                                                               \
-    };                                                                                                                 \
-    template<>                                                                                                         \
-    struct MetaTypeOf<PHANTOM_PP_REMOVE_PARENS(MetaType)>                                                              \
-    {                                                                                                                  \
-        typedef Class type;                                                                                            \
-    };                                                                                                                 \
-    }                                                                                                                  \
-    }
-
-#define PHANTOM_R_META_TYPE_T(template_types, template_params, attached_type, MetaType)                                \
-    namespace phantom                                                                                                  \
-    {                                                                                                                  \
-    namespace reflection                                                                                               \
-    {                                                                                                                  \
-    template<PHANTOM_PP_MIX(template_types, template_params)>                                                          \
-    struct MetaTypeOf<attached_type<PHANTOM_PP_IDENTITY template_params> >                                             \
-    {                                                                                                                  \
-        typedef MetaType<attached_type<PHANTOM_PP_IDENTITY template_params> > type;                                    \
-    };                                                                                                                 \
-    template<PHANTOM_PP_MIX(template_types, template_params)>                                                          \
-    struct MetaTypeOf<MetaType<attached_type<PHANTOM_PP_IDENTITY template_params> > >                                  \
-    {                                                                                                                  \
-        typedef Class type;                                                                                            \
-    };                                                                                                                 \
-    }                                                                                                                  \
-    }
-
 namespace phantom
 {
 PHANTOM_EXPORT_PHANTOM size_t _dllModuleHandleFromAddress(void const*);
@@ -443,20 +394,14 @@ template<typename t_Ty>
 struct EnumOf
 {
     PHANTOM_STATIC_ASSERT(std::is_enum<t_Ty>::value, "t_Ty must be an enum");
-    static Enum* object()
-    {
-        return (Enum*)PHANTOM_TYPEOF(t_Ty);
-    }
+    static Enum* object() { return (Enum*)PHANTOM_TYPEOF(t_Ty); }
 };
 
 template<typename t_Ty>
 struct UnionOf
 {
     PHANTOM_STATIC_ASSERT(std::is_union<t_Ty>::value, "t_Ty must be an union");
-    static Union* object()
-    {
-        return (Union*)PHANTOM_TYPEOF(t_Ty);
-    }
+    static Union* object() { return (Union*)PHANTOM_TYPEOF(t_Ty); }
 };
 
 template<typename t_Ty>
@@ -464,10 +409,7 @@ struct ClassTypeOf
 {
     PHANTOM_STATIC_ASSERT(std::is_class<t_Ty>::value || std::is_union<t_Ty>::value,
                           "t_Ty must be a class, structure or union");
-    static ClassType* object()
-    {
-        return (ClassType*)PHANTOM_TYPEOF(t_Ty);
-    }
+    static ClassType* object() { return (ClassType*)PHANTOM_TYPEOF(t_Ty); }
 };
 
 template<typename t_Ty>
@@ -661,177 +603,114 @@ struct TypeOfUndefined<R(T::*)>
 template<>
 struct TypeOfUndefined<void>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_VOID;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_VOID; }
 };
 template<>
 struct TypeOfUndefined<char>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_CHAR;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_CHAR; }
 };
 template<>
 struct TypeOfUndefined<unsigned char>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_UNSIGNED_CHAR;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_UNSIGNED_CHAR; }
 };
 template<>
 struct TypeOfUndefined<signed char>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_SIGNED_CHAR;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_SIGNED_CHAR; }
 };
 template<>
 struct TypeOfUndefined<short>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_SHORT;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_SHORT; }
 };
 template<>
 struct TypeOfUndefined<unsigned short>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_UNSIGNED_SHORT;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_UNSIGNED_SHORT; }
 };
 template<>
 struct TypeOfUndefined<int>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_INT;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_INT; }
 };
 template<>
 struct TypeOfUndefined<unsigned int>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_UNSIGNED_INT;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_UNSIGNED_INT; }
 };
 template<>
 struct TypeOfUndefined<long>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_LONG;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_LONG; }
 };
 template<>
 struct TypeOfUndefined<unsigned long>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_UNSIGNED_LONG;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_UNSIGNED_LONG; }
 };
 template<>
 struct TypeOfUndefined<long long>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_LONG_LONG;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_LONG_LONG; }
 };
 template<>
 struct TypeOfUndefined<unsigned long long>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_UNSIGNED_LONG_LONG;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_UNSIGNED_LONG_LONG; }
 };
 template<>
 struct TypeOfUndefined<float>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_FLOAT;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_FLOAT; }
 };
 template<>
 struct TypeOfUndefined<double>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_DOUBLE;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_DOUBLE; }
 };
 template<>
 struct TypeOfUndefined<long double>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_LONG_DOUBLE;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_LONG_DOUBLE; }
 };
 template<>
 struct TypeOfUndefined<bool>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_BOOL;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_BOOL; }
 };
 template<>
 struct TypeOfUndefined<std::nullptr_t>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_NULLPTR_T;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_NULLPTR_T; }
 };
 #if PHANTOM_HAS_BUILT_IN_WCHAR_T == 1
 template<>
 struct TypeOfUndefined<wchar_t>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_WCHAR_T;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_WCHAR_T; }
 };
 #endif
 #if PHANTOM_HAS_BUILT_IN_CHAR16_T == 1
 template<>
 struct TypeOfUndefined<char16_t>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_CHAR16_T;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_CHAR16_T; }
 };
 #endif
 #if PHANTOM_HAS_BUILT_IN_CHAR32_T == 1
 template<>
 struct TypeOfUndefined<char32_t>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_CHAR32_T;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_CHAR32_T; }
 };
 #endif
 
 template<>
 struct TypeOfUndefined<void*>
 {
-    static Type* object()
-    {
-        return BuiltInTypes::TYPE_VOID_PTR;
-    }
+    static Type* object() { return BuiltInTypes::TYPE_VOID_PTR; }
 };
 
 template<class T>

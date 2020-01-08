@@ -72,6 +72,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Property*() const>("getSizeProperty", &_::getSizeProperty)
         
         .protected_()
+            .method<Property*() const, virtual_>("createSizeProperty", &_::createSizeProperty)
+        
+        .protected_()
             .field("m_pValueType", &_::m_pValueType)
             .field("m_pSizeProperty", &_::m_pSizeProperty)
             ;

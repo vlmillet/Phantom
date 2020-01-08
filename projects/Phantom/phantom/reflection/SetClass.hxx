@@ -2,7 +2,7 @@
 
 // haunt {
 
-#include "StlMapClass.h"
+#include "SetClass.h"
 
 #if defined(_MSC_VER)
 #   pragma warning(push, 0)
@@ -31,10 +31,10 @@
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
-    PHANTOM_SOURCE("StlMapClass")
+    PHANTOM_SOURCE("SetClass")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_CLASS(StlMapClass)
+        PHANTOM_CLASS(SetClass)
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
@@ -52,14 +52,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .method<Type*() const>("getKeyType", &_::getKeyType)
-            .method<Type*() const>("getMappedType", &_::getMappedType)
-            .method<void(Type*)>("setKeyType", &_::setKeyType)
-            .method<void(Type*)>("setMappedType", &_::setMappedType)
-            .method<void(void*, void const*) const, virtual_>("eraseKey", &_::eraseKey)
             .method<void(void*, void const*) const, virtual_>("insert", &_::insert)
-            .method<void(void*, void const*, void*) const, virtual_>("map", &_::map)
+            .method<void(void*, void const*) const, virtual_>("eraseKey", &_::eraseKey)
             .method<void(void const*, void const*, void*) const, virtual_>("find", &_::find)
-            .method<void(void*, void const*, void*) const, virtual_>("find", &_::find)
         
         .protected_()
             .field("m_pKeyType", &_::m_pKeyType)
@@ -67,7 +62,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
-    PHANTOM_END("StlMapClass")
+    PHANTOM_END("SetClass")
 PHANTOM_END("phantom.reflection")
 }
 }

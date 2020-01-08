@@ -8,6 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/reflection/ContainerClass.h>
+#include <phantom/traits/MoveArg.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -16,7 +17,7 @@ namespace phantom
 {
 namespace reflection
 {
-/// \brief  Base base for sequential containers class representation (vectors, dynamic arrays, ...).
+/// \brief  Base base for sequential containers class representation (vector, list, ...).
 class PHANTOM_EXPORT_PHANTOM SequentialContainerClass : public ContainerClass
 {
     PHANTOM_DECL_TYPE;
@@ -26,14 +27,15 @@ class PHANTOM_EXPORT_PHANTOM SequentialContainerClass : public ContainerClass
     struct RTData
     {
         Method* m_pFunc_push_back = nullptr;
+        Method* m_pFunc_push_back_move = nullptr;
+        Method* m_pFunc_pop_back = nullptr;
     };
 
 protected:
-    SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
-                             size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
+    SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+                             Modifiers a_Modifiers, uint a_uiFlags);
 
-    SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0,
-                             uint a_uiFlags = 0);
+    SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
     ~SequentialContainerClass() override;
@@ -44,6 +46,8 @@ public:
     }
 
     virtual void push_back(void* a_pContainer, void const* a_pValue) const;
+    virtual void push_back(void* a_pContainer, MoveArg a_pValue) const;
+    virtual void pop_back(void* a_pContainer) const;
 
 private:
     mutable RTData* m_Data = nullptr;

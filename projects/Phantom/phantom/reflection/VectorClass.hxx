@@ -2,7 +2,7 @@
 
 // haunt {
 
-#include "StlVectorClass.h"
+#include "VectorClass.h"
 
 #if defined(_MSC_VER)
 #   pragma warning(push, 0)
@@ -30,10 +30,10 @@
 namespace phantom {
 namespace reflection {
 PHANTOM_PACKAGE("phantom.reflection")
-    PHANTOM_SOURCE("StlVectorClass")
+    PHANTOM_SOURCE("VectorClass")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_CLASS(StlVectorClass)
+        PHANTOM_CLASS(VectorClass)
         {
             using Modifiers = typedef_< phantom::reflection::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
@@ -47,7 +47,6 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
-            .method<StlVectorClass*() const, virtual_>("asStlVectorClass", &_::asStlVectorClass)
             .method<void const*(void const*) const, virtual_>("data", &_::data)
             .method<void*(void*) const, virtual_>("data", &_::data)
             .method<void(void*, size_t) const, virtual_>("resize", &_::resize)
@@ -61,7 +60,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
-    PHANTOM_END("StlVectorClass")
+    PHANTOM_END("VectorClass")
 PHANTOM_END("phantom.reflection")
 }
 }

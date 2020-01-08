@@ -2,10 +2,10 @@
 
 #include "SmallString.h"
 
-#include <phantom/reflection/meta_type>
+#include <phantom/meta_type>
 #include <phantom/reflection/StringClassT.h>
 
-PHANTOM_R_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallString, phantom::reflection::StringClassT);
+PHANTOM_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallString, phantom::reflection::StringClassT);
 
 
 // haunt {

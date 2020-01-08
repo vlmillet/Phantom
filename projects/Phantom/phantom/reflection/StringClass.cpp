@@ -11,16 +11,14 @@ namespace phantom
 {
 namespace reflection
 {
-StringClass::StringClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                         Modifiers a_Modifiers, uint a_uiFlags)
-    : StlVectorClass(TypeKind::StringClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers,
-                     a_uiFlags)
+StringClass::StringClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+                         uint a_uiFlags)
+    : VectorClass(TypeKind::StringClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StringClass::StringClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/,
-                         uint a_uiFlags /*= 0*/)
-    : StlVectorClass(TypeKind::StringClass, a_strName, a_Modifiers, a_uiFlags)
+StringClass::StringClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : VectorClass(TypeKind::StringClass, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 

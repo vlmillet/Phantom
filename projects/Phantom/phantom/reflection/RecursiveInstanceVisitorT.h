@@ -17,17 +17,17 @@
 #include "FunctionType.h"
 #include "FundamentalsT.h"
 #include "LValueReference.h"
+#include "MapClass.h"
 #include "MethodPointer.h"
 #include "Pointer.h"
 #include "Property.h"
 #include "QualifiedType.h"
 #include "RValueReference.h"
-#include "StlMapClass.h"
-#include "StlSetClass.h"
-#include "StlVectorClass.h"
+#include "SetClass.h"
 #include "StringClass.h"
 #include "Structure.h"
 #include "Union.h"
+#include "VectorClass.h"
 #include "VolatileType.h"
 
 #pragma warning(disable : 4100)
@@ -290,12 +290,12 @@ public:
                                                                     a_Input.getAddress()));
             ;
 
-        case TypeKind::StlVectorClass:
-            return traverse(InstanceT<StlVectorClass>((StlVectorClass*)a_Input.getMeta(), a_Input.getAddress()));
-        case TypeKind::StlSetClass:
-            return traverse(InstanceT<StlSetClass>((StlSetClass*)a_Input.getMeta(), a_Input.getAddress()));
-        case TypeKind::StlMapClass:
-            return traverse(InstanceT<StlMapClass>((StlMapClass*)a_Input.getMeta(), a_Input.getAddress()));
+        case TypeKind::VectorClass:
+            return traverse(InstanceT<VectorClass>((VectorClass*)a_Input.getMeta(), a_Input.getAddress()));
+        case TypeKind::SetClass:
+            return traverse(InstanceT<SetClass>((SetClass*)a_Input.getMeta(), a_Input.getAddress()));
+        case TypeKind::MapClass:
+            return traverse(InstanceT<MapClass>((MapClass*)a_Input.getMeta(), a_Input.getAddress()));
         case TypeKind::StringClass:
             return traverse(InstanceT<StringClass>((StringClass*)a_Input.getMeta(), a_Input.getAddress()));
 
@@ -1206,12 +1206,12 @@ public:
     {
         switch (a_Input.getMeta()->getTypeKind())
         {
-        case TypeKind::StlVectorClass:
-            return traverse(a_Input.staticCast<StlVectorClass>());
-        case TypeKind::StlMapClass:
-            return traverse(a_Input.staticCast<StlMapClass>());
-        case TypeKind::StlSetClass:
-            return traverse(a_Input.staticCast<StlSetClass>());
+        case TypeKind::VectorClass:
+            return traverse(a_Input.staticCast<VectorClass>());
+        case TypeKind::MapClass:
+            return traverse(a_Input.staticCast<MapClass>());
+        case TypeKind::SetClass:
+            return traverse(a_Input.staticCast<SetClass>());
         case TypeKind::StringClass:
             return traverse(a_Input.staticCast<StringClass>());
         default:
@@ -1232,31 +1232,31 @@ public:
         return this_()->walkUpEndFromClass(a_Input);
     };
 
-    // StlVectorClass
+    // VectorClass
 
-    bool visitStlVectorClass(InstanceT<StlVectorClass> a_Input) { return true; }
-    bool endStlVectorClass(InstanceT<StlVectorClass> a_Input) { return true; }
-    bool walkUpVisitFromStlVectorClass(InstanceT<StlVectorClass> a_Input)
+    bool visitVectorClass(InstanceT<VectorClass> a_Input) { return true; }
+    bool endVectorClass(InstanceT<VectorClass> a_Input) { return true; }
+    bool walkUpVisitFromVectorClass(InstanceT<VectorClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
             return false;
-        return this_()->visitStlVectorClass(a_Input);
+        return this_()->visitVectorClass(a_Input);
     }
-    bool walkUpEndFromStlVectorClass(InstanceT<StlVectorClass> a_Input)
+    bool walkUpEndFromVectorClass(InstanceT<VectorClass> a_Input)
     {
-        if (!(this_()->endStlVectorClass(a_Input)))
+        if (!(this_()->endVectorClass(a_Input)))
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlVectorClass> a_Input) { return this_()->traverseStlVectorClass(a_Input); }
-    bool traverseStlVectorClass(InstanceT<StlVectorClass> a_Input)
+    bool traverse(InstanceT<VectorClass> a_Input) { return this_()->traverseVectorClass(a_Input); }
+    bool traverseVectorClass(InstanceT<VectorClass> a_Input)
     {
-        if (!(this_()->walkUpVisitFromStlVectorClass(a_Input)))
+        if (!(this_()->walkUpVisitFromVectorClass(a_Input)))
             return false;
-        StlVectorClass* pVecClass = a_Input.getMeta();
-        Type*           pValueType = pVecClass->getValueType();
-        size_t          typeSz = pValueType->getSize();
-        char*           data = (char*)pVecClass->data(a_Input.getAddress());
+        VectorClass* pVecClass = a_Input.getMeta();
+        Type*        pValueType = pVecClass->getValueType();
+        size_t       typeSz = pValueType->getSize();
+        char*        data = (char*)pVecClass->data(a_Input.getAddress());
         if (!this_()->visitContainer(a_Input))
             return false;
         size_t count = pVecClass->size(a_Input.getAddress());
@@ -1268,32 +1268,32 @@ public:
         if (!this_()->endContainer(a_Input))
             return false;
 
-        return this_()->walkUpEndFromStlVectorClass(a_Input);
+        return this_()->walkUpEndFromVectorClass(a_Input);
     };
 
-    // StlMapClass
+    // MapClass
 
-    bool visitStlMapClass(InstanceT<StlMapClass> a_Input) { return true; }
-    bool endStlMapClass(InstanceT<StlMapClass> a_Input) { return true; }
-    bool walkUpVisitFromStlMapClass(InstanceT<StlMapClass> a_Input)
+    bool visitMapClass(InstanceT<MapClass> a_Input) { return true; }
+    bool endMapClass(InstanceT<MapClass> a_Input) { return true; }
+    bool walkUpVisitFromMapClass(InstanceT<MapClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
             return false;
-        return this_()->visitStlMapClass(a_Input);
+        return this_()->visitMapClass(a_Input);
     }
-    bool walkUpEndFromStlMapClass(InstanceT<StlMapClass> a_Input)
+    bool walkUpEndFromMapClass(InstanceT<MapClass> a_Input)
     {
-        if (!(this_()->endStlMapClass(a_Input)))
+        if (!(this_()->endMapClass(a_Input)))
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlMapClass> a_Input) { return this_()->traverseStlMapClass(a_Input); }
-    bool traverseStlMapClass(InstanceT<StlMapClass> a_Input)
+    bool traverse(InstanceT<MapClass> a_Input) { return this_()->traverseMapClass(a_Input); }
+    bool traverseMapClass(InstanceT<MapClass> a_Input)
     {
-        if (!(this_()->walkUpVisitFromStlMapClass(a_Input)))
+        if (!(this_()->walkUpVisitFromMapClass(a_Input)))
             return false;
-        StlMapClass* pMapClass = a_Input.getMeta();
-        Type*        pValueType = pMapClass->getValueType();
+        MapClass* pMapClass = a_Input.getMeta();
+        Type*     pValueType = pMapClass->getValueType();
         if (!this_()->visitContainer(a_Input))
             return false;
         size_t count = pMapClass->size(a_Input.getAddress());
@@ -1305,32 +1305,32 @@ public:
         }
         if (!this_()->endContainer(a_Input))
             return false;
-        return this_()->walkUpEndFromStlMapClass(a_Input);
+        return this_()->walkUpEndFromMapClass(a_Input);
     };
 
-    // StlSetClass
+    // SetClass
 
-    bool visitStlSetClass(InstanceT<StlSetClass> a_Input) { return true; }
-    bool endStlSetClass(InstanceT<StlSetClass> a_Input) { return true; }
-    bool walkUpVisitFromStlSetClass(InstanceT<StlSetClass> a_Input)
+    bool visitSetClass(InstanceT<SetClass> a_Input) { return true; }
+    bool endSetClass(InstanceT<SetClass> a_Input) { return true; }
+    bool walkUpVisitFromSetClass(InstanceT<SetClass> a_Input)
     {
         if (!(this_()->walkUpVisitFromClass(a_Input)))
             return false;
-        return this_()->visitStlSetClass(a_Input);
+        return this_()->visitSetClass(a_Input);
     }
-    bool walkUpEndFromStlSetClass(InstanceT<StlSetClass> a_Input)
+    bool walkUpEndFromSetClass(InstanceT<SetClass> a_Input)
     {
-        if (!(this_()->endStlSetClass(a_Input)))
+        if (!(this_()->endSetClass(a_Input)))
             return false;
         return this_()->walkUpEndFromClass(a_Input);
     }
-    bool traverse(InstanceT<StlSetClass> a_Input) { return this_()->traverseStlSetClass(a_Input); }
-    bool traverseStlSetClass(InstanceT<StlSetClass> a_Input)
+    bool traverse(InstanceT<SetClass> a_Input) { return this_()->traverseSetClass(a_Input); }
+    bool traverseSetClass(InstanceT<SetClass> a_Input)
     {
-        if (!(this_()->walkUpVisitFromStlSetClass(a_Input)))
+        if (!(this_()->walkUpVisitFromSetClass(a_Input)))
             return false;
-        StlSetClass* pSetClass = a_Input.getMeta();
-        Type*        pValueType = pSetClass->getValueType();
+        SetClass* pSetClass = a_Input.getMeta();
+        Type*     pValueType = pSetClass->getValueType();
         if (!this_()->visitContainer(a_Input))
             return false;
         size_t count = pSetClass->size(a_Input.getAddress());
@@ -1342,7 +1342,7 @@ public:
         };
         if (!this_()->endContainer(a_Input))
             return false;
-        return this_()->walkUpEndFromStlSetClass(a_Input);
+        return this_()->walkUpEndFromSetClass(a_Input);
     };
 
     // StringClass

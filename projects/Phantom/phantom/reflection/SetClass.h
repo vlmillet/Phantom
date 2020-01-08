@@ -17,11 +17,11 @@ namespace phantom
 namespace reflection
 {
 /// \brief  Base base for set containers class representation (set, multiset, ...).
-class PHANTOM_EXPORT_PHANTOM StlSetClass : public ContainerClass
+class PHANTOM_EXPORT_PHANTOM SetClass : public ContainerClass
 {
     PHANTOM_DECL_TYPE;
 
-    PHANTOM_DECLARE_META_CLASS(StlSetClass);
+    PHANTOM_DECLARE_META_CLASS(SetClass);
 
     struct RTData
     {
@@ -36,18 +36,14 @@ class PHANTOM_EXPORT_PHANTOM StlSetClass : public ContainerClass
     };
 
 protected:
-    StlSetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-                uint a_uiFlags);
+    SetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
-    StlSetClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    SetClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~StlSetClass() override;
+    ~SetClass() override;
 
-    Type* getKeyType() const
-    {
-        return m_pValueType;
-    }
+    Type* getKeyType() const { return m_pValueType; }
 
     virtual void insert(void* a_pContainer, void const* a_pKey) const;
     virtual void eraseKey(void* a_pContainer, void const* a_pKey) const;

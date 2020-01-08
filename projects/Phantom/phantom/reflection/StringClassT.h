@@ -9,20 +9,20 @@
 HAUNT_STOP;
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/StlVectorClassT.h>
+#include <phantom/reflection/VectorClassT.h>
 #include <phantom/reflection/StringClass.h>
 
 namespace phantom
 {
 namespace reflection
 {
-template<typename t_Ty, typename Base = StringClass>
-class StringClassT : public StlVectorClassT<t_Ty, Base>
+template<typename T, typename Base = StringClass>
+class StringClassT : public VectorClassT<T, Base>
 {
-    using SelfType = StringClassT<t_Ty, Base>;
-    using BaseType = StlVectorClassT<t_Ty, Base>;
-    using StringType = t_Ty;
-    using CharType = PHANTOM_TYPENAME t_Ty::value_type;
+    using SelfType = StringClassT<T, Base>;
+    using BaseType = VectorClassT<T, Base>;
+    using StringType = T;
+    using CharType = PHANTOM_TYPENAME T::value_type;
 
 public:
     StringClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
@@ -30,17 +30,23 @@ public:
         this->setValueType(PHANTOM_TYPEOF(CharType));
     }
 
-    virtual const void* c_str(const void* a_pString) const override
+    const void* c_str(const void* a_pString) const override
     {
-        const t_Ty* pContainer = static_cast<const t_Ty*>(a_pString);
+        const T* pContainer = static_cast<const T*>(a_pString);
         return pContainer->c_str();
     }
 
-    virtual void assign(void* a_pString, const void* a_pChars, size_t a_Len) const override
+    void assign(void* a_pString, const void* a_pChars, size_t a_Len) const override
     {
-        t_Ty* pContainer = static_cast<t_Ty*>(a_pString);
+        T* pContainer = static_cast<T*>(a_pString);
         pContainer->assign((const CharType*)a_pChars, a_Len);
     }
+
+	void append(void* a_pString, const void* a_pChars) const override
+	{
+		T* pContainer = static_cast<T*>(a_pString);
+		pContainer->append((const CharType*)a_pChars);
+	}
 };
 
 } // namespace reflection

@@ -3,12 +3,12 @@
 // Distributed under license available here at http://www.wiwila.com/tools/phantom/license/
 // ]
 
-#include "StlMapClass.hxx"
+#include "MapClass.hxx"
 
 namespace phantom
 {
 namespace reflection
 {
-PHANTOM_DEFINE_META_CLASS(StlMapClass);
+PHANTOM_DEFINE_META_CLASS(MapClass);
 }
 } // namespace phantom

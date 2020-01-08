@@ -5,7 +5,7 @@
 // ]
 
 /* ******************* Includes ****************** */
-#include "StlMapClass.h"
+#include "MapClass.h"
 
 #include "Method.h"
 #include "phantom/detail/new.h"
@@ -14,23 +14,23 @@ namespace phantom
 {
 namespace reflection
 {
-StlMapClass::StlMapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
+MapClass::MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                          uint a_uiFlags)
-    : ContainerClass(TypeKind::StlMapClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+    : ContainerClass(TypeKind::MapClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
-StlMapClass::StlMapClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ContainerClass(TypeKind::StlMapClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(Data))
+MapClass::MapClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : ContainerClass(TypeKind::MapClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(Data))
 {
 }
 
-StlMapClass::~StlMapClass()
+MapClass::~MapClass()
 {
     PHANTOM_DELETE(Data) m_Data;
 }
 
-void StlMapClass::eraseKey(void* a_pContainer, void const* a_pKey) const
+void MapClass::eraseKey(void* a_pContainer, void const* a_pKey) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_eraseKey)
@@ -39,7 +39,7 @@ void StlMapClass::eraseKey(void* a_pContainer, void const* a_pKey) const
     m_Data->m_pFunc_eraseKey->invoke(a_pContainer, args);
 }
 
-void StlMapClass::insert(void* a_pContainer, void const* a_pPair) const
+void MapClass::insert(void* a_pContainer, void const* a_pPair) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_insert)
@@ -48,7 +48,7 @@ void StlMapClass::insert(void* a_pContainer, void const* a_pPair) const
     m_Data->m_pFunc_insert->invoke(a_pContainer, args);
 }
 
-void StlMapClass::map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const
+void MapClass::map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_map)
@@ -57,7 +57,7 @@ void StlMapClass::map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPo
     m_Data->m_pFunc_map->invoke(a_pContainer, args, a_pOutPairPointer);
 }
 
-void StlMapClass::find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const
+void MapClass::find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_findc)
@@ -66,7 +66,7 @@ void StlMapClass::find(void const* a_pContainer, void const* a_pKey, void* a_pOu
     m_Data->m_pFunc_findc->invoke((void*)a_pContainer, args, a_pOutIt);
 }
 
-void StlMapClass::find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const
+void MapClass::find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
     if (!m_Data->m_pFunc_find)

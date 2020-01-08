@@ -9,10 +9,10 @@
 
 /// use includes
 
-#include <phantom/reflection/Application.h>
 #include <phantom/reflection/Class.h>
 #include <phantom/reflection/Method.h>
 #include <phantom/reflection/Field.h>
+#include <phantom/reflection/Application.h>
 
 namespace MyNamespace
 {

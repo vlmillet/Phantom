@@ -200,7 +200,7 @@ When you launch your application with Phantom, only the symbols at global or nam
 #### Heap allocation control
 99% of the time, Phantom will never perform heap allocation before entering ***main*** function ; this might happen if you really have a big module with lot of symbols registered. Once in the ***main*** you can use MemoryTraits in phantom to provide your own allocation functions.
 
-#### Template class reflection + User Custom Meta Types
+#### Template Class Reflection 
 
 Phantom reflects template classes very easily. Full, partial and variadic template specializations are supported too.
 
@@ -352,6 +352,27 @@ PHANTOM_END("GameEngine.Core")
 }
 
 ```
+
+#### Custom Meta Types
+
+ You can customize what meta type phantom will use to register your class : 
+- for simple classes
+```cp
+PHANTOM_META_TYPE(<your-ns>::<your_type>, <your-metatype>)
+namespace <your-ns> 
+{
+    PHANTOM_CLASS(<your_type>) { ... }
+}
+``` 
+- for template classes (as seen just above in ```EASTL/basic_string.hxx```) with 
+
+```cp
+PHANTOM_META_TYPE_T(<tpl-signature>, <your-ns>::<your_type>, <your-metatype>)
+namespace <your-ns> 
+{
+    PHANTOM_CLASS_T(<tpl-signature>, <your_type>) { ... }
+}
+``` 
 
 ### Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
 

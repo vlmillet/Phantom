@@ -249,7 +249,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .signal("kindCreated", &_::kindCreated)
-            .signal("kindDestroyed", &_::kindDestroyed)
+            .signal("kindDestroying", &_::kindDestroying)
         
         .protected_()
             .field("m_eTypeKind", &_::m_eTypeKind)

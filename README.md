@@ -168,9 +168,9 @@ Self-introspection and, then, recursive reflection are implemented (Class has a 
 
 #### Module > Package > Source > Symbol
 
-Phantom reflection is organized by *modules* containing *packages*, containing *sources*, containing *symbols*. This is close to the import/module model you can find in modern languages such as *Python*.  This structure ensure unicity accross different libraries. For example the unique full name of `phantom::reflection::Field` is ```Phantom:phantom.reflection.Field.Field```. 
-- ``` Phantom``` is the *module*. 
-- ```phantom.reflection``` is the *package*. 
+Phantom reflection is organized by *modules* containing *packages*, containing *sources*, containing *symbols*. This is close to the import/module model you can find in modern languages such as *Python*.  This structure ensure unicity accross different libraries. For example the unique full name of `phantom::lang::Field` is ```Phantom:phantom.lang.Field.Field```. 
+- ```Phantom``` is the *module*. 
+- ```phantom.lang``` is the *package*. 
 - ```Field``` (first) is the *source* (actual 'module' equivalent in C++20 or Python). 
 - ```Field``` (second) is the actual class *symbol*.
 

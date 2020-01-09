@@ -32,8 +32,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Method")
 
         PHANTOM_STRUCT_TV((class), (R), (class, Args), MethodInvokeH)
@@ -51,23 +51,23 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Method)
         {
-            using Methods = typedef_< phantom::reflection::Methods>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Methods = typedef_< phantom::lang::Methods>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Subroutine>()
+            .inherits<::phantom::lang::Subroutine>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(ABI, Modifiers, uint)>()["ABI::MethodCall"]["0"]["0"]
             .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
-            .method<reflection::ClassType*() const>("getOwnerClassType", &_::getOwnerClassType)
-            .method<reflection::Class*() const>("getOwnerClass", &_::getOwnerClass)
+            .method<lang::ClassType*() const>("getOwnerClassType", &_::getOwnerClassType)
+            .method<lang::Class*() const>("getOwnerClass", &_::getOwnerClass)
             .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("placementInvoke", &_::placementInvoke)
@@ -95,9 +95,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .constructor<void(LanguageElement*, StringView, StringView, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             .method<size_t() const, virtual_>("computeNativeVirtualIndex", &_::computeNativeVirtualIndex)
             .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
@@ -112,7 +112,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Method")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

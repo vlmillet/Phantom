@@ -28,8 +28,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("FunctorProperty")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using SetFunctor = typedef_<_::SetFunctor>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::ValueMember>()
+            .inherits<::phantom::lang::ValueMember>()
         .public_()
             .typedef_<SetFunctor>("SetFunctor")
             .typedef_<GetFunctor>("GetFunctor")
@@ -58,7 +58,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("FunctorProperty")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

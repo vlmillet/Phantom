@@ -6,36 +6,36 @@
 #include "Template.h"
 #include "Type.h"
 #include "phantom/detail/core_internal.h"
-#include "phantom/reflection/EnumT.h"
-#include "phantom/reflection/Module.h"
+#include "phantom/lang/EnumT.h"
+#include "phantom/lang/Module.h"
 
-#include <phantom/reflection/Alias.h>
-#include <phantom/reflection/Application.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Namespace.h>
-#include <phantom/reflection/Package.h>
-#include <phantom/reflection/Source.h>
-#include <phantom/reflection/Template.h>
-#include <phantom/reflection/TemplateParameter.h>
-#include <phantom/reflection/TemplateSignature.h>
-#include <phantom/reflection/TemplateSpecialization.h>
+#include <phantom/lang/Alias.h>
+#include <phantom/lang/Application.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Namespace.h>
+#include <phantom/lang/Package.h>
+#include <phantom/lang/Source.h>
+#include <phantom/lang/Template.h>
+#include <phantom/lang/TemplateParameter.h>
+#include <phantom/lang/TemplateSignature.h>
+#include <phantom/lang/TemplateSpecialization.h>
 #include <phantom/utils/StringUtil.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 SourcePusher::SourcePusher(StringView a_Name)
 {
     PHANTOM_ASSERT(a_Name.size());
-    PHANTOM_ASSERT_DEBUG(reflection::Package::IsValidName(a_Name), "source name must be \"dot.separated\"");
+    PHANTOM_ASSERT_DEBUG(lang::Package::IsValidName(a_Name), "source name must be \"dot.separated\"");
     detail::pushSourceName(a_Name);
 }
 
 PackagePusher::PackagePusher(StringView a_Name)
 {
     PHANTOM_ASSERT(a_Name.size());
-    PHANTOM_ASSERT_DEBUG(reflection::Package::IsValidName(a_Name), "package name must be  \"dot.separated\"");
+    PHANTOM_ASSERT_DEBUG(lang::Package::IsValidName(a_Name), "package name must be  \"dot.separated\"");
     PHANTOM_ASSERT(detail::currentSourceName().empty(),
                    "invalid PHANTOM_PACKAGE(...) declaration inside a PHANTOM_R_SOURCE(...)/PHANTOM_R_END() block "
                    "(have you forgotten a PHANTOM_R_END(...) ?)");
@@ -64,7 +64,7 @@ SourceOrPackagePoper::SourceOrPackagePoper(StringView a_Name)
     }
 }
 
-void MemberBuilder::_apply(reflection::Symbol* a_pSymbol) const
+void MemberBuilder::_apply(lang::Symbol* a_pSymbol) const
 {
     if (metaDatas.size())
     {
@@ -72,24 +72,24 @@ void MemberBuilder::_apply(reflection::Symbol* a_pSymbol) const
     }
 }
 
-void MemberBuilder::_apply(reflection::Subroutine* a_pSubroutine) const
+void MemberBuilder::_apply(lang::Subroutine* a_pSubroutine) const
 {
-    _apply(static_cast<reflection::Symbol*>(a_pSubroutine));
+    _apply(static_cast<lang::Symbol*>(a_pSubroutine));
     if (defaultArguments.size())
         a_pSubroutine->setNativeDefaultArgumentStrings(defaultArguments);
 }
 
 ClassType* MemberBuilder::classType() const
 {
-    return static_cast<reflection::ClassType*>(owner);
+    return static_cast<lang::ClassType*>(owner);
 }
 
 Class* MemberBuilder::class_() const
 {
-    return static_cast<reflection::Class*>(owner);
+    return static_cast<lang::Class*>(owner);
 }
 
-TypeBuilderBase::TypeBuilderBase(reflection::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
+TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
                                  TemplateSpecArgumentRegistrer a_Arguments)
     : m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, a_pSource, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
@@ -104,7 +104,7 @@ TypeBuilderBase::TypeBuilderBase(reflection::Source* a_pSource, Scope* a_pNaming
         a_pSource->addType(a_pType);
     }
 }
-TypeBuilderBase::TypeBuilderBase(reflection::Scope* a_pOwner, Scope* a_pNamingScope, Type* a_pType,
+TypeBuilderBase::TypeBuilderBase(lang::Scope* a_pOwner, Scope* a_pNamingScope, Type* a_pType,
                                  TemplateSpecArgumentRegistrer a_Arguments)
     : m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, nullptr, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
@@ -120,7 +120,7 @@ TypeBuilderBase::TypeBuilderBase(reflection::Scope* a_pOwner, Scope* a_pNamingSc
     }
 }
 
-void TypeBuilderBase::_installFunc(reflection::Type* a_pType, TypeInstallationStep a_Step)
+void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_Step)
 {
     switch (a_Step)
     {
@@ -129,13 +129,13 @@ void TypeBuilderBase::_installFunc(reflection::Type* a_pType, TypeInstallationSt
             a_pType->setMetaDatas(std::move(m_MetaDatas));
         if (m_TemplateSpecArgumentRegistrer)
         {
-            Template* pTemplate = this->_getClassTemplate(static_cast<reflection::ClassType*>(a_pType), m_pNamingScope);
+            Template* pTemplate = this->_getClassTemplate(static_cast<lang::ClassType*>(a_pType), m_pNamingScope);
             PHANTOM_ASSERT(pTemplate);
             auto                    args = m_TemplateSpecArgumentRegistrer();
             TemplateSpecialization* pSpec = pTemplate->getTemplateInstantiation(args);
             if (pSpec == nullptr || pSpec->getModule() != detail::currentModule())
             {
-                detail::newTemplateSpecialization(pTemplate, args, static_cast<reflection::ClassType*>(a_pType));
+                detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType));
             }
             else
             {
@@ -152,7 +152,7 @@ void TypeBuilderBase::_installFunc(reflection::Type* a_pType, TypeInstallationSt
         break;
     case TypeInstallationStep::Inheritance:
         if (m_Inheritance)
-            m_Inheritance(static_cast<reflection::Class*>(a_pType));
+            m_Inheritance(static_cast<lang::Class*>(a_pType));
         break;
     case TypeInstallationStep::Members:
         for (MemberBuilder const& member : m_Members)
@@ -170,7 +170,7 @@ void TypeBuilderBase::_installFunc(reflection::Type* a_pType, TypeInstallationSt
 ClassType* TypeBuilderBase::_PHNTM_getOwnerScope()
 {
     PHANTOM_ASSERT(m_TypeInstallationInfo.type->asClassType());
-    return static_cast<reflection::ClassType*>(m_TypeInstallationInfo.type);
+    return static_cast<lang::ClassType*>(m_TypeInstallationInfo.type);
 }
 ClassType* TypeBuilderBase::_PHNTM_getNamingScope()
 {
@@ -182,12 +182,12 @@ void TypeBuilderBase::_registerTypeInstallationInfo(TypeInstallationInfo* a_pTii
     detail::registerTypeInstallationInfo(a_pTii);
 }
 
-Template* TypeBuilderBase::_getClassTemplate(reflection::ClassType* a_pClass, Namespace* a_pScope)
+Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Namespace* a_pScope)
 {
     return _getClassTemplate(a_pClass, static_cast<Scope*>(a_pScope));
 }
 
-Template* TypeBuilderBase::_getClassTemplate(reflection::ClassType* a_pClass, Scope* a_pScope)
+Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Scope* a_pScope)
 {
     PHANTOM_ASSERT(a_pScope);
     auto name = a_pClass->getName();
@@ -219,9 +219,9 @@ void TypeBuilderBase::_splitEnumValues(StringView a_NameList, StringViews& a_Nam
     }
 }
 
-void TypeBuilderBase::operator()(reflection::MetaDatas&& a_MD)
+void TypeBuilderBase::operator()(lang::MetaDatas&& a_MD)
 {
-    reflection::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
+    lang::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
     PHANTOM_ASSERT(m_Members.empty() || m_Members.back().isSymbol, "last declaration does not accept meta data");
     if (dest.empty())
     {
@@ -251,15 +251,15 @@ void TypeBuilderBase::operator()(StringView a_Annot)
 
 void TypeBuilderBase::operator()(StringView a_Name, Variant&& a_Value)
 {
-    reflection::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
+    lang::MetaDatas& dest = m_Members.size() ? m_Members.back().metaDatas : m_MetaDatas;
     PHANTOM_ASSERT(m_Members.empty() || m_Members.back().isSymbol, "last declaration does not accept meta data");
     dest[StringWithHash(a_Name)] = std::move(a_Value);
 }
 
-void TypeBuilderBase::operator()(reflection::Modifiers a_Modifiers)
+void TypeBuilderBase::operator()(lang::Modifiers a_Modifiers)
 {
     m_TypeInstallationInfo.type->addModifiers(a_Modifiers);
-    // 			reflection::Modifiers& dest = m_Members.size() ? m_Members.back().modifiers
+    // 			lang::Modifiers& dest = m_Members.size() ? m_Members.back().modifiers
     // : m_Modifiers; 			PHANTOM_ASSERT(m_Members.empty() || m_Members.back().isSymbol, "last
     // declaration does not accept meta data"); 			dest |= a_Modifiers;
 }
@@ -272,8 +272,8 @@ NamespaceBuilder::NamespaceBuilder(_PHNTM_GlobalRegistrer* a_pRegistrer) : _PHNT
 
 NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
 {
-    phantom::reflection::Symbols symbols;
-    phantom::reflection::Application::Get()->findCppSymbols(a_Name, symbols, _PHNTM_pNamespace);
+    phantom::lang::Symbols symbols;
+    phantom::lang::Application::Get()->findCppSymbols(a_Name, symbols, _PHNTM_pNamespace);
     PHANTOM_ASSERT(symbols.size(), "using_ : symbol not found '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
     for (auto pSymbol : symbols)
     {
@@ -286,7 +286,7 @@ NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
 
 NamespaceBuilder& NamespaceBuilder::namespace_alias(StringView a_Name, StringView a_Namespace)
 {
-    Symbol* pSymbol = phantom::reflection::Application::Get()->findCppSymbol(a_Namespace, _PHNTM_pNamespace);
+    Symbol* pSymbol = phantom::lang::Application::Get()->findCppSymbol(a_Namespace, _PHNTM_pNamespace);
     PHANTOM_ASSERT(pSymbol && pSymbol->asNamespace(), "cannot find namespace '%.*s' use in namespace alias '%.*s'",
                    PHANTOM_STRING_AS_PRINTF_ARG(a_Name), PHANTOM_STRING_AS_PRINTF_ARG(a_Namespace));
     _PHNTM_pNamespace->addNamespaceAlias(a_Name, static_cast<Namespace*>(pSymbol));
@@ -319,7 +319,7 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     }
     else
     {
-        auto pAlias = _PHNTM_pNamespace->addAlias(phantom::reflection::BuiltInTypes::TYPE_INT,
+        auto pAlias = _PHNTM_pNamespace->addAlias(phantom::lang::BuiltInTypes::TYPE_INT,
                                                   a_Name); // temporary set as 'int'
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pSource->addAlias(pAlias);
@@ -329,15 +329,15 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     return *this;
 }
 
-void TypeBuilderBase::_addAccess(reflection::Symbol* a_pOwner, Access a_Access)
+void TypeBuilderBase::_addAccess(lang::Symbol* a_pOwner, Access a_Access)
 {
     MemberBuilder member{};
-    member.registrer = [](MemberBuilder const& m) { m.classType()->setDefaultAccess(reflection::Access(m.filter)); };
+    member.registrer = [](MemberBuilder const& m) { m.classType()->setDefaultAccess(lang::Access(m.filter)); };
     member.filter = uint(a_Access);
     member.owner = a_pOwner;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addSymbol(reflection::Symbol* a_pOwner, StringView a_Name, MemberRegistrer a_Reg)
+void TypeBuilderBase::_addSymbol(lang::Symbol* a_pOwner, StringView a_Name, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
     member.name = a_Name;
@@ -346,7 +346,7 @@ void TypeBuilderBase::_addSymbol(reflection::Symbol* a_pOwner, StringView a_Name
     member.isSymbol = true;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addSymbol(reflection::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+void TypeBuilderBase::_addSymbol(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
                                  MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
@@ -357,7 +357,7 @@ void TypeBuilderBase::_addSymbol(reflection::Symbol* a_pOwner, StringView a_Name
     member.fwdArgs = a_Args;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addCtor(reflection::Symbol* a_pOwner, MemberRegistrer a_Reg)
+void TypeBuilderBase::_addCtor(lang::Symbol* a_pOwner, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
     member.registrer = a_Reg;
@@ -366,7 +366,7 @@ void TypeBuilderBase::_addCtor(reflection::Symbol* a_pOwner, MemberRegistrer a_R
     member.isFunc = true;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addFunc(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg)
+void TypeBuilderBase::_addFunc(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
     member.registrer = a_Reg;
@@ -377,11 +377,11 @@ void TypeBuilderBase::_addFunc(reflection::Symbol* a_pOwner, StringView a_Name, 
     member.fwdArgs = {a_Arg};
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addMethod(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg)
+void TypeBuilderBase::_addMethod(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg)
 {
     _addFunc(a_pOwner, a_Name, a_Arg, a_Reg);
 }
-void TypeBuilderBase::_addField(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, uint a_Filter,
+void TypeBuilderBase::_addField(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, uint a_Filter,
                                 MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
@@ -393,7 +393,7 @@ void TypeBuilderBase::_addField(reflection::Symbol* a_pOwner, StringView a_Name,
     member.filter = a_Filter;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addProperty(reflection::Symbol* a_pOwner, StringView a_Name,
+void TypeBuilderBase::_addProperty(lang::Symbol* a_pOwner, StringView a_Name,
                                    std::initializer_list<ArgFwd> a_Args, uint a_Filter, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
@@ -405,7 +405,7 @@ void TypeBuilderBase::_addProperty(reflection::Symbol* a_pOwner, StringView a_Na
     member.filter = a_Filter;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addCustom(reflection::Symbol* a_pOwner, std::initializer_list<ArgFwd> a_Args, uint a_UserInt,
+void TypeBuilderBase::_addCustom(lang::Symbol* a_pOwner, std::initializer_list<ArgFwd> a_Args, uint a_UserInt,
                                  MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
@@ -415,11 +415,11 @@ void TypeBuilderBase::_addCustom(reflection::Symbol* a_pOwner, std::initializer_
     member.filter = a_UserInt;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::addMember(reflection::Symbol*, MemberBuilder&& a_Member)
+void TypeBuilderBase::addMember(lang::Symbol*, MemberBuilder&& a_Member)
 {
     m_Members.push_back(std::move(a_Member));
 }
-void TypeBuilderBase::addMember(reflection::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+void TypeBuilderBase::addMember(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
                                 uint a_UserInt, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
@@ -430,19 +430,19 @@ void TypeBuilderBase::addMember(reflection::Symbol* a_pOwner, StringView a_Name,
     member.filter = a_UserInt;
     m_Members.push_back(std::move(member));
 }
-phantom::reflection::SymbolWrapper& SymbolWrapper::operator()(reflection::MetaDatas&& a_MD)
+phantom::lang::SymbolWrapper& SymbolWrapper::operator()(lang::MetaDatas&& a_MD)
 {
     m_pSymbol->addMetaDatas(std::move(a_MD));
     return *this;
 }
 
-phantom::reflection::SymbolWrapper& SymbolWrapper::operator()(StringView a_Name, Variant&& a_Value)
+phantom::lang::SymbolWrapper& SymbolWrapper::operator()(StringView a_Name, Variant&& a_Value)
 {
     m_pSymbol->setMetaData(a_Name, std::move(a_Value));
     return *this;
 }
 
-phantom::reflection::SymbolWrapper& SymbolWrapper::operator()(StringView a_Annot)
+phantom::lang::SymbolWrapper& SymbolWrapper::operator()(StringView a_Annot)
 {
     m_pSymbol->addAnnotation(a_Annot);
     return *this;
@@ -464,7 +464,7 @@ TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strF
 
 void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
 {
-    phantom::reflection::Symbol* pNamingScope =
+    phantom::lang::Symbol* pNamingScope =
     (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->findOrCreateNamespace(m_func(0));
     PHANTOM_ASSERT(pNamingScope,
                    "template scope has not been registered => ensure that the nesting class of "
@@ -472,7 +472,7 @@ void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
     PHANTOM_ASSERT(pNamingScope->asScope());
     if (pNamingScope->asScope()->getTemplate(m_func(3)) == nullptr)
     {
-        reflection::Template* pTemplate =
+        lang::Template* pTemplate =
         Template::Parse(m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
         // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
         pNamingScope->asScope()->addTemplate(pTemplate);
@@ -505,8 +505,8 @@ struct PerThreadScope
         PHANTOM_ASSERT(m_Modules.size() == 1 && m_Modules.back() == nullptr);
         PHANTOM_ASSERT(m_Sources.size() == 1 && m_Sources.back() == nullptr);
     }
-    SmallVector<reflection::Source*> m_Sources;
-    SmallVector<reflection::Module*> m_Modules;
+    SmallVector<lang::Source*> m_Sources;
+    SmallVector<lang::Module*> m_Modules;
 };
 
 static thread_local typename IntTypeBySize<PHANTOM_ALIGNOF(PerThreadScope)>::type
@@ -571,12 +571,12 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
     }
     PHANTOM_ASSERT(a_pTemplate->isNative());
     TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(
-    a_pTemplate, phantom::reflection::TemplateSignature::Create(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
+    a_pTemplate, phantom::lang::TemplateSignature::Create(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
     pSpec->setFlags(PHANTOM_R_FLAG_NATIVE | PHANTOM_R_FLAG_IMPLICIT |
                     pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }
 
-PHANTOM_EXPORT_PHANTOM reflection::Source* nativeSource(StringView a_strFile, StringView a_strPackage,
+PHANTOM_EXPORT_PHANTOM lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage,
                                                         StringView a_strSource)
 {
     return dynamic_initializer_()->nativeSource(a_strFile, a_strPackage, a_strSource);
@@ -726,7 +726,7 @@ PHANTOM_EXPORT_PHANTOM void registerModule(size_t a_ModuleHandle, StringView a_s
     dynamic_initializer_()->registerModule(a_ModuleHandle, a_strName, a_strBinaryFileName, a_strSource, a_uiFlags,
                                            a_Dependencies, onLoad, onUnload);
 }
-PHANTOM_EXPORT_PHANTOM void stepTypeInstallation(reflection::Type* a_pType)
+PHANTOM_EXPORT_PHANTOM void stepTypeInstallation(lang::Type* a_pType)
 {
     dynamic_initializer_()->stepTypeInstallation(a_pType);
 }
@@ -763,20 +763,20 @@ PHANTOM_EXPORT_PHANTOM void setAutoRegistrationLocked(bool a_bLocked)
     dynamic_initializer_()->setAutoRegistrationLocked(a_bLocked);
 }
 
-PHANTOM_EXPORT_PHANTOM void registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo)
+PHANTOM_EXPORT_PHANTOM void registerTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo)
 {
     dynamic_initializer_()->registerTypeInstallationInfo(a_pTypeInstallInfo);
 }
-PHANTOM_EXPORT_PHANTOM void registerTemplateInstance(size_t a_ModuleHandle, reflection::TypeInstallationInfo* a_pTii)
+PHANTOM_EXPORT_PHANTOM void registerTemplateInstance(size_t a_ModuleHandle, lang::TypeInstallationInfo* a_pTii)
 {
     dynamic_initializer_()->registerTemplateInstance(a_ModuleHandle, a_pTii);
 }
 PHANTOM_EXPORT_PHANTOM void registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName,
-                                         reflection::Type* a_pType)
+                                         lang::Type* a_pType)
 {
     dynamic_initializer_()->registerType(a_ModuleHandle, a_Hash, a_ScopeName, a_pType);
 }
-PHANTOM_EXPORT_PHANTOM void registerType(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType)
+PHANTOM_EXPORT_PHANTOM void registerType(size_t a_ModuleHandle, hash64 a_Hash, lang::Type* a_pType)
 {
     dynamic_initializer_()->registerType(a_ModuleHandle, a_Hash, a_pType);
 }
@@ -854,5 +854,5 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -11,7 +11,7 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MethodBaseT.h>
+#include <phantom/lang/MethodBaseT.h>
 #include <phantom/traits/indices.h>
 /* **************** Declarations ***************** */
 
@@ -44,7 +44,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<_PHNTM_MTHD_typename_t_TyT class t_Signature>
 class MethodT;
@@ -239,7 +239,7 @@ private:
     MethodPtrType m_Pointer;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

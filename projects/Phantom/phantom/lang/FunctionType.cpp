@@ -18,7 +18,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 FunctionType* FunctionType::Create(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
@@ -434,5 +434,5 @@ bool FunctionType::isRVOCandidate() const
     return m_pReturnType->removeConst()->asClassType() != nullptr;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

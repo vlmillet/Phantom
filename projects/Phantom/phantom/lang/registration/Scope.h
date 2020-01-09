@@ -18,7 +18,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class MostDerived>
 struct ScopeBuilderT
@@ -33,7 +33,7 @@ public:
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_class<T>::value, "class_<T> : T must be a class");
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/class>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Private, nullptr);
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), lang::Access::Private, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -48,7 +48,7 @@ public:
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_class<T>::value, "struct_<T> : T must be a struct");
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/struct>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Public, nullptr);
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), lang::Access::Public, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -63,7 +63,7 @@ public:
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_union<T>::value, "union_<T> : T must be an union");
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/union>");
-        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), reflection::Access::Public, nullptr);
+        auto pType = PHANTOM_NEW(BuilderType)(static_cast<MostDerived*>(this), lang::Access::Public, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;
@@ -86,5 +86,5 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

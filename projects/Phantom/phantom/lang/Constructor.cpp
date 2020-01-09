@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Constructor::Constructor() : Method(ABI::MethodCall)
 {
@@ -29,5 +29,5 @@ Constructor::Constructor(ClassType* a_pClassType, StringView a_strName, StringVi
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

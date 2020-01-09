@@ -26,14 +26,14 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("DataElement")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(DataElement)
         {
-            using Fields = typedef_< phantom::reflection::Fields>;
+            using Fields = typedef_< phantom::lang::Fields>;
             this_()
         .public_()
             .method<size_t() const, pure_virtual>("getAlignment", &_::getAlignment)
@@ -49,7 +49,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("DataElement")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

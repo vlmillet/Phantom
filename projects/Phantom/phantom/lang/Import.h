@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -18,7 +18,7 @@ class Phantom;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents an import directive.
 class PHANTOM_EXPORT_PHANTOM Import : public Symbol
@@ -60,5 +60,5 @@ public:
     Source* m_pImportedSource;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

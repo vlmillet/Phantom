@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Pointer::Pointer(Type* a_pPointeeType)
     : PointerType(a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, a_pPointeeType->getModifiers(),
@@ -272,5 +272,5 @@ void Pointer::subtract(void** a_pArgs, void* a_pOutput)
     *(byte**)a_pOutput = *(byte**)a_pArgs[0] - m_pUnderlyingType->getSize() * (*(ptrdiff_t*)a_pArgs[1]);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -17,7 +17,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct NamespaceBuilder;
 
@@ -25,7 +25,7 @@ struct PHANTOM_EXPORT_PHANTOM _PHNTM_GlobalRegistrer : phantom::detail::_PHNTM_S
                                                        _PHNTM_RegistrerKeyWords
 {
     _PHNTM_REG_FRIENDS_NO_GLOBAL;
-    friend struct phantom::reflection::NamespaceBuilder;
+    friend struct phantom::lang::NamespaceBuilder;
 
 public:
     // never put this function to cpp file
@@ -45,14 +45,14 @@ public:
     _PHNTM_GlobalRegistrer(_PHNTM_GlobalRegistrer&&) = delete;
     ~_PHNTM_GlobalRegistrer();
 
-    reflection::Namespace* _PHNTM_getNamingScope();
-    reflection::Source*    _PHNTM_getOwnerScope();
+    lang::Namespace* _PHNTM_getNamingScope();
+    lang::Source*    _PHNTM_getOwnerScope();
 
-    void _PHNTM_setLastSymbol(reflection::Symbol* a_pSym)
+    void _PHNTM_setLastSymbol(lang::Symbol* a_pSym)
     {
         _PHNTM_pLastSymbol = a_pSym;
     }
-    reflection::Symbol* _PHNTM_getLastSymbol() const
+    lang::Symbol* _PHNTM_getLastSymbol() const
     {
         return _PHNTM_pLastSymbol;
     }
@@ -64,10 +64,10 @@ private:
 
 private:
     TypeInfosGetter        _PHNTM_TypeInfosGetter;
-    reflection::Namespace* _PHNTM_pNamingScope = nullptr;
-    reflection::Source*    _PHNTM_pOwnerScope = nullptr;
-    reflection::Symbol*    _PHNTM_pLastSymbol = nullptr;
+    lang::Namespace* _PHNTM_pNamingScope = nullptr;
+    lang::Source*    _PHNTM_pOwnerScope = nullptr;
+    lang::Symbol*    _PHNTM_pLastSymbol = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

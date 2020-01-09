@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ClassType.h>
+#include <phantom/lang/ClassType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief Represents a placeholder (in C++ for example it is used for 'auto' or template
 /// parameters)
@@ -69,5 +69,5 @@ public:
     virtual Placeholder* clone(uint a_Flags = 0) const = 0;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

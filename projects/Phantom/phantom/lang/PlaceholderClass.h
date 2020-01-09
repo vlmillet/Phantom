@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Placeholder.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Placeholder.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Placeholder class.
 /// \code{.cpp}
@@ -83,5 +83,5 @@ public:
     Placeholder* clone(uint a_Flags = 0) const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

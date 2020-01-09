@@ -9,12 +9,12 @@
 HAUNT_STOP;
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/SequentialContainerClassT.h>
-#include <phantom/reflection/VectorClass.h>
+#include <phantom/lang/SequentialContainerClassT.h>
+#include <phantom/lang/VectorClass.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename T, class Base = VectorClass>
 class VectorClassT : public SequentialContainerClassT<T, Base>
@@ -43,5 +43,5 @@ public:
 	}
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

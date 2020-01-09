@@ -8,12 +8,12 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/ClassTypeT.h>
-#include <phantom/reflection/Structure.h>
+#include <phantom/lang/ClassTypeT.h>
+#include <phantom/lang/Structure.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty, typename t_Base>
 class StructureT : public ClassTypeT<t_Ty, t_Base>
@@ -45,6 +45,6 @@ struct MetaTypeOf<StructureT<t_Ty, t_Base> >
     typedef MetaTypeOf<Class>::type type;
 };
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

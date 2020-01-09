@@ -30,7 +30,7 @@ struct __assertion_failure_is_union<true>
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
 
 #    define _PHNTM_TYPEOF_CHECK(meta, Meta, ...)                                                   \
-        ((::phantom::reflection::Meta*)((void)__assertion_failure_##is_##meta<                     \
+        ((::phantom::lang::Meta*)((void)__assertion_failure_##is_##meta<                     \
                                         std::is_##meta<__VA_ARGS__>::value>(),                     \
                                         (void)#__VA_ARGS__ " is not a '" #meta "'",                \
                                         PHANTOM_TYPEOF(__VA_ARGS__)))
@@ -38,13 +38,13 @@ struct __assertion_failure_is_union<true>
 #else
 
 #    define _PHNTM_TYPEOF_CHECK(meta, Meta, ...)                                                   \
-        ((::phantom::reflection::Meta*)(PHANTOM_TYPEOF(__VA_ARGS__)))
+        ((::phantom::lang::Meta*)(PHANTOM_TYPEOF(__VA_ARGS__)))
 
 #endif
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class>
 struct TypeOfUndefined;
@@ -71,7 +71,7 @@ auto TypeOf(TypeOfTag<T> t)
 template<class T>
 auto TypeOf(TypeOfIndirect<T>)
 {
-    return reflection::TypeOfUndefined<T>::object();
+    return lang::TypeOfUndefined<T>::object();
 }
 
 namespace _TypeOf

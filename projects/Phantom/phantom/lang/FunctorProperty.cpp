@@ -11,12 +11,12 @@
 #include "Signature.h"
 #include "phantom/detail/new.h"
 
-#include <phantom/reflection/Signal.h>
+#include <phantom/lang/Signal.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 FunctorProperty::FunctorProperty(Type* a_pType, StringView a_Name, uint a_uiFilterMask /*= PHANTOM_R_FILTER_PROPERTY*/)
     : ValueMember(a_pType, a_Name, a_uiFilterMask)
@@ -47,5 +47,5 @@ void FunctorProperty::setValue(void* a_pObject, void const* a_pSrc) const
     m_Set(a_pObject, a_pSrc);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

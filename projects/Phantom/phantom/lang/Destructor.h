@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Type.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a constructor member function.
 class PHANTOM_EXPORT_PHANTOM Destructor : public Method
@@ -75,5 +75,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

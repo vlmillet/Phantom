@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Scope.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Scope.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 
@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Namespace : public Symbol, public Scope
 {
@@ -222,5 +222,5 @@ private:
     void release(Types& out_types);
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

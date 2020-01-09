@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElement* a_pDefaultArgument,
                                      Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -95,5 +95,5 @@ Template* TemplateParameter::getTemplate() const
     return getTemplateSignature()->getTemplate();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

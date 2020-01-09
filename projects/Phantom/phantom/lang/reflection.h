@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 enum class Access
 {
@@ -30,28 +30,28 @@ using Accesses = SmallVector<Access, 10, 10>;
 typedef void (*SymbolExtender)(Symbol*);
 using SymbolExtenders = SmallVector<SymbolExtender, 4, 4>;
 
-#define PHANTOM_R_VIRTUAL ::phantom::reflection::Modifier::Virtual
-#define PHANTOM_R_ABSTRACT ::phantom::reflection::Modifier::Abstract
-#define PHANTOM_R_PURE_VIRTUAL ::phantom::reflection::Modifier::PureVirtual
-#define PHANTOM_R_EXPLICIT ::phantom::reflection::Modifier::Explicit
-#define PHANTOM_R_STATIC ::phantom::reflection::Modifier::Static
-#define PHANTOM_R_FINAL ::phantom::reflection::Modifier::Final
-#define PHANTOM_R_TRANSIENT ::phantom::reflection::Modifier::Transient
-#define PHANTOM_R_VIRTUAL_GET ::phantom::reflection::Modifier::VirtualGet // for properties
-#define PHANTOM_R_VIRTUAL_SET ::phantom::reflection::Modifier::VirtualSet // for properties
-#define PHANTOM_R_NOEXCEPT ::phantom::reflection::Modifier::NoExcept
-#define PHANTOM_R_OVERRIDE ::phantom::reflection::Modifier::Override
-#define PHANTOM_R_SINGLETON ::phantom::reflection::Modifier::Singleton
-#define PHANTOM_R_CONST ::phantom::reflection::Modifier::Const
-#define PHANTOM_R_NOCONST ::phantom::reflection::Modifier::NoConst
-#define PHANTOM_R_LVALUEREF ::phantom::reflection::Modifier::LValueRef // cpp11 signature lvalue ref-qualifiers
-#define PHANTOM_R_RVALUEREF ::phantom::reflection::Modifier::RValueRef // cpp11 signature rvalue ref-qualifiers
-#define PHANTOM_R_VOLATILE ::phantom::reflection::Modifier::Volatile
-#define PHANTOM_R_MUTABLE ::phantom::reflection::Modifier::Mutable
-#define PHANTOM_R_INLINE ::phantom::reflection::Modifier::Inline
-#define PHANTOM_R_SLOT_METHOD ::phantom::reflection::Modifier::Slot
-#define PHANTOM_R_DEFAULTED ::phantom::reflection::Modifier::Defaulted
-#define PHANTOM_R_DELETED ::phantom::reflection::Modifier::Deleted
+#define PHANTOM_R_VIRTUAL ::phantom::lang::Modifier::Virtual
+#define PHANTOM_R_ABSTRACT ::phantom::lang::Modifier::Abstract
+#define PHANTOM_R_PURE_VIRTUAL ::phantom::lang::Modifier::PureVirtual
+#define PHANTOM_R_EXPLICIT ::phantom::lang::Modifier::Explicit
+#define PHANTOM_R_STATIC ::phantom::lang::Modifier::Static
+#define PHANTOM_R_FINAL ::phantom::lang::Modifier::Final
+#define PHANTOM_R_TRANSIENT ::phantom::lang::Modifier::Transient
+#define PHANTOM_R_VIRTUAL_GET ::phantom::lang::Modifier::VirtualGet // for properties
+#define PHANTOM_R_VIRTUAL_SET ::phantom::lang::Modifier::VirtualSet // for properties
+#define PHANTOM_R_NOEXCEPT ::phantom::lang::Modifier::NoExcept
+#define PHANTOM_R_OVERRIDE ::phantom::lang::Modifier::Override
+#define PHANTOM_R_SINGLETON ::phantom::lang::Modifier::Singleton
+#define PHANTOM_R_CONST ::phantom::lang::Modifier::Const
+#define PHANTOM_R_NOCONST ::phantom::lang::Modifier::NoConst
+#define PHANTOM_R_LVALUEREF ::phantom::lang::Modifier::LValueRef // cpp11 signature lvalue ref-qualifiers
+#define PHANTOM_R_RVALUEREF ::phantom::lang::Modifier::RValueRef // cpp11 signature rvalue ref-qualifiers
+#define PHANTOM_R_VOLATILE ::phantom::lang::Modifier::Volatile
+#define PHANTOM_R_MUTABLE ::phantom::lang::Modifier::Mutable
+#define PHANTOM_R_INLINE ::phantom::lang::Modifier::Inline
+#define PHANTOM_R_SLOT_METHOD ::phantom::lang::Modifier::Slot
+#define PHANTOM_R_DEFAULTED ::phantom::lang::Modifier::Defaulted
+#define PHANTOM_R_DELETED ::phantom::lang::Modifier::Deleted
 
 #define o_virtual PHANTOM_R_VIRTUAL
 #define o_abstract PHANTOM_R_ABSTRACT
@@ -132,7 +132,7 @@ HAUNT_PAUSE;
 
 #define PHANTOM_DECLARE_META_CLASS(_type_)                                                                             \
 public:                                                                                                                \
-    static phantom::reflection::Class* MetaClass();                                                                    \
+    static phantom::lang::Class* MetaClass();                                                                    \
                                                                                                                        \
 private:
 
@@ -143,7 +143,7 @@ public:                                                                         
 private:
 
 #define PHANTOM_DEFINE_META_CLASS(_type_)                                                                              \
-    phantom::reflection::Class* _type_::MetaClass()                                                                    \
+    phantom::lang::Class* _type_::MetaClass()                                                                    \
     {                                                                                                                  \
         return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta();                                             \
     }
@@ -197,7 +197,7 @@ public:
     static void Register();
 
 private:
-    friend PHANTOM_EXPORT_PHANTOM void phantom::reflection::initializeSystem();
+    friend PHANTOM_EXPORT_PHANTOM void phantom::lang::initializeSystem();
 };
 
 /// @cond INTERNAL.
@@ -316,7 +316,7 @@ enum class CastKind
 
 /// @cond ADVANCED
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #if PHANTOM_CUSTOM_THREAD_SAFE
@@ -325,7 +325,7 @@ enum class CastKind
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PHANTOM_EXPORT_PHANTOM ReflectionMutex
 {
@@ -337,11 +337,11 @@ struct PHANTOM_EXPORT_PHANTOM ReflectionMutex
 };
 PHANTOM_EXPORT_PHANTOM ReflectionMutex& read_mutex();
 PHANTOM_EXPORT_PHANTOM ReflectionMutex& write_mutex();
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #    define _PHNTM_R_MTX_GUARD()                                                                                       \
-        phantom::LockGuard<phantom::reflection::ReflectionMutex> __grd_(phantom::reflection::write_mutex());
+        phantom::LockGuard<phantom::lang::ReflectionMutex> __grd_(phantom::lang::write_mutex());
 
 #    define PHANTOM_STATIC_RECURSIVE_MUTEX_GUARD()                                                                     \
         static phantom::RecursiveSpinMutex              __recursive_mutex_;                                            \

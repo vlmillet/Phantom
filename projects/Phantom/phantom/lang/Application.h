@@ -8,18 +8,18 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/MemoryContext.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Signal.h>
 #include <phantom/utils/SmallMap.h>
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class ModuleRegistrationInfo;
 }
 
-namespace reflection
+namespace lang
 {
 class SourceFile;
 class Undefineds;
@@ -53,7 +53,7 @@ class PHANTOM_EXPORT_PHANTOM Application : public Symbol
     friend class Source;
     friend class SourceFile;
     friend class phantom::detail::DynamicCppInitializerH;
-    friend struct phantom::reflection::BuiltInTypes;
+    friend struct phantom::lang::BuiltInTypes;
     template<typename>
     friend class IntegralTypeT;
     template<typename>
@@ -303,7 +303,7 @@ public:
     Module* getModule(StringView a_strName) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the modules list containing every symbol reflection for each loaded library.
+    /// \brief  Gets the modules list containing every symbol lang for each loaded library.
     ///
     /// \return The modules list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,7 +550,7 @@ public:
     /// instanciable (not abstract + default constructible).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void findClasses(Classes& a_Classes, reflection::Class* a_pBaseClass = nullptr,
+    void findClasses(Classes& a_Classes, lang::Class* a_pBaseClass = nullptr,
                      bool a_bDefaultInstanciable = false) const;
 
     Undefineds* getUndefineds(StringView a_TypeName) const;
@@ -662,5 +662,5 @@ private:
     UndefinedsMap                         m_Undefineds;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

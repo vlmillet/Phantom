@@ -9,14 +9,14 @@
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/FunctionPointer.h>
-#include <phantom/reflection/native/native.h>
+#include <phantom/lang/FunctionPointer.h>
+#include <phantom/lang/native/native.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// STDCALL
 
@@ -75,7 +75,7 @@ namespace reflection
 #    pragma pop_macro("fastcall")
 #endif
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

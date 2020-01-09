@@ -17,7 +17,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static Instructions m_EmptyInstructions;
 
@@ -125,7 +125,7 @@ Type* Subroutine::getParameterType(size_t i) const
     return m_pSignature ? m_pSignature->getParameterType(i) : nullptr;
 }
 
-phantom::reflection::Parameters const& Subroutine::getParameters() const
+phantom::lang::Parameters const& Subroutine::getParameters() const
 {
     return m_pSignature->getParameters();
 }
@@ -619,5 +619,5 @@ Source* Instruction::getSource() const
     return getSubroutine()->getSource();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Alias : public Symbol
 {
@@ -118,5 +118,5 @@ private:
     Aliases* m_pAliases = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

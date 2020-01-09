@@ -8,13 +8,13 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/ClassOfFwd.h>
-#include <phantom/reflection/ClassType.h>
+#include <phantom/lang/ClassType.h>
 #include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class InstanceCache;
 
@@ -63,7 +63,7 @@ public:
 
 public:
     friend class phantom::Phantom;
-    friend class phantom::reflection::Namespace;
+    friend class phantom::lang::Namespace;
 
     template<typename t_Ty, int t_default_installer_id>
     friend struct phantom::detail::DefaultInstallerH;
@@ -1138,5 +1138,5 @@ inline ptrdiff_t Class::getBaseClassOffsetCascade(Class* a_pBaseType) const
     return -1;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

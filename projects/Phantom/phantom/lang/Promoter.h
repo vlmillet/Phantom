@@ -13,14 +13,14 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
 template<typename t_Ty, bool t_is_fundamental>
 struct DefaultPromoterH
 {
-    static reflection::Type* apply(reflection::Type*)
+    static lang::Type* apply(lang::Type*)
     {
         return PHANTOM_TYPEOF(PHANTOM_TYPENAME Promote<t_Ty>::type);
     }
@@ -28,7 +28,7 @@ struct DefaultPromoterH
 template<typename t_Ty>
 struct DefaultPromoterH<t_Ty, false>
 {
-    static reflection::Type* apply(reflection::Type* a_pType)
+    static lang::Type* apply(lang::Type* a_pType)
     {
         return a_pType;
     }
@@ -39,5 +39,5 @@ template<typename t_Ty>
 struct Promoter : public detail::DefaultPromoterH<t_Ty, std::is_fundamental<t_Ty>::value>
 {
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

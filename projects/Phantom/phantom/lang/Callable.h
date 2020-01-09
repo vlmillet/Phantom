@@ -14,7 +14,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Callable
 {
@@ -30,5 +30,5 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

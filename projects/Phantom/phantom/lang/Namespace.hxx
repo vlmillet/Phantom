@@ -33,27 +33,27 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Namespace")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Namespace)
         {
-            using Aliases = typedef_< phantom::reflection::Aliases>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Namespaces = typedef_< phantom::reflection::Namespaces>;
+            using Aliases = typedef_< phantom::lang::Aliases>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Namespaces = typedef_< phantom::lang::Namespaces>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol, ::phantom::reflection::Scope>()
+            .inherits<::phantom::lang::Symbol, ::phantom::lang::Scope>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
         
@@ -107,7 +107,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Namespace")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

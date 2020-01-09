@@ -29,14 +29,14 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Plugin")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Plugin)
         {
-            using Plugins = typedef_< phantom::reflection::Plugins>;
+            using Plugins = typedef_< phantom::lang::Plugins>;
             using StringView = typedef_< phantom::StringView>;
             this_()
         
@@ -68,7 +68,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Plugin")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class  AnonymousSection
@@ -175,5 +175,5 @@ protected:
     LanguageElements  m_DataElements;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,12 +7,12 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Subroutine.h>
+#include <phantom/lang/Subroutine.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class ExecutionContext;
 
@@ -56,8 +56,8 @@ public:
     Method(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     ~Method() override;
 
-    reflection::ClassType* getOwnerClassType() const;
-    reflection::Class*     getOwnerClass() const;
+    lang::ClassType* getOwnerClassType() const;
+    lang::Class*     getOwnerClass() const;
 
     void invoke(void* a_pObject, void** a_pArgs) const override;
     void invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) const override;
@@ -335,5 +335,5 @@ void MethodInvokeH<void, Args...>::invoke(Method const* a_pMethod, void* a_pThis
     a_pMethod->invoke(a_pThis, addresses);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

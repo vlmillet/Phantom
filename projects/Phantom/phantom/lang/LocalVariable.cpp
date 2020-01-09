@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 LocalVariable::LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
                              uint a_uiFlags /*= 0*/)
@@ -103,5 +103,5 @@ bool LocalVariable::isThis() const
     return pMethod AND pMethod->getThis() == this;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

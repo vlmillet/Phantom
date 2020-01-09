@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ValueMember.h>
+#include <phantom/lang/ValueMember.h>
 #include <phantom/utils/Functor.h>
 /* **************** Declarations ***************** */
 
@@ -15,7 +15,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a get/set property using functors.
 class PHANTOM_EXPORT_PHANTOM FunctorProperty : public ValueMember
@@ -98,5 +98,5 @@ private:
     GetFunctor m_Get;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

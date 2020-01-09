@@ -31,23 +31,23 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Field")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Field)
         {
-            using Fields = typedef_< phantom::reflection::Fields>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Fields = typedef_< phantom::lang::Fields>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::ValueMember, ::phantom::reflection::DataElement>()
+            .inherits<::phantom::lang::ValueMember, ::phantom::lang::DataElement>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .constant("InvalidOffset", _::InvalidOffset)
@@ -82,7 +82,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Field")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

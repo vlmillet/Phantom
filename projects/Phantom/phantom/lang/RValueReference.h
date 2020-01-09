@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Reference.h>
+#include <phantom/lang/Reference.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents an r-value reference type.
 /// \code{.cpp}
@@ -83,5 +83,5 @@ public:
     bool isSame(Symbol* a_pOther) const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

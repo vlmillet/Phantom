@@ -11,12 +11,12 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Union::Union(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : ClassType(TypeKind::Union, PHANTOM_NEW(ExtraData), a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 VirtualMethodTable::VirtualMethodTable() : m_pMethods(PHANTOM_NEW(Methods))
 {
@@ -357,5 +357,5 @@ void VirtualMethodTable::copyOnWrite()
     m_bShared = false;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -8,16 +8,16 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/ClassTypeT.h>
-#include <phantom/reflection/NativeVTableInspector.h>
-#include <phantom/reflection/NativeVTablePointerExtractor.h>
-#include <phantom/reflection/NativeVTableSizeComputer.h>
-#include <phantom/reflection/VirtualMethodTable.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/ClassTypeT.h>
+#include <phantom/lang/NativeVTableInspector.h>
+#include <phantom/lang/NativeVTablePointerExtractor.h>
+#include <phantom/lang/NativeVTableSizeComputer.h>
+#include <phantom/lang/VirtualMethodTable.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty, int t_meta_flags>
 struct TplNestedModifiersFilter;
@@ -82,5 +82,5 @@ struct MetaTypeOf<NestedT<t_Ty, t_ms> >
     typedef MetaTypeOf<Class>::type type;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

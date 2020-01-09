@@ -2,11 +2,11 @@
 
 #include "SmallMap.h"
 
-#include <phantom/reflection/MapClassT.h>
+#include <phantom/lang/MapClassT.h>
 #include <phantom/meta_type>
 
 PHANTOM_META_TYPE_T((typename, typename, size_t, size_t, typename), (K, V, S, D, P), phantom::SmallMap,
-                      phantom::reflection::MapClassT);
+                      phantom::lang::MapClassT);
 
 // haunt {
 

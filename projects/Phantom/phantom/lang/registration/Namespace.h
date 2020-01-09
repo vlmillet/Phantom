@@ -12,14 +12,14 @@ HAUNT_STOP;
 
 #include "GlobalRegistrer.h"
 #include "Scope.h"
-#include "phantom/reflection/MetaNewDelete.h"
+#include "phantom/lang/MetaNewDelete.h"
 
 #include <locale>
 #include <phantom/detail/StaticGlobals.h>
 #include <phantom/detail/new.h>
-#include <phantom/reflection/Namespace.h>
-#include <phantom/reflection/Source.h>
-#include <phantom/reflection/Subroutine.h>
+#include <phantom/lang/Namespace.h>
+#include <phantom/lang/Source.h>
+#include <phantom/lang/Subroutine.h>
 #include <phantom/traits/FunctionTypeToFunctionPointerType.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/utils/Placement.h>
@@ -27,7 +27,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
                                                  _PHNTM_RegistrerKeyWords,
@@ -74,7 +74,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     {
         PHANTOM_ASSERT(m_Symbols.size(), "last declaration does not accept default arguments");
         PHANTOM_ASSERT(m_Symbols.back()->asSubroutine(), "last declaration does not accept default arguments");
-        auto        pFunc = static_cast<reflection::Subroutine*>(m_Symbols.back());
+        auto        pFunc = static_cast<lang::Subroutine*>(m_Symbols.back());
         StringViews defaultArgs = pFunc->getNativeDefaultArgumentStrings();
         while (a_DefaultArg.size() && StringUtil::IsBlank(a_DefaultArg.front()))
             a_DefaultArg = a_DefaultArg.substr(1);
@@ -88,11 +88,11 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     {
         _PHNTM_REG_STATIC_ASSERT(
         IsTypeDefined<
-        reflection::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
+        lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
         "missing #include <phantom/function>");
         auto pFunc =
-        reflection::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
-        a_Name, reflection::SignatureH<Sign>::Create(), a_Ptr);
+        lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
+        a_Name, lang::SignatureH<Sign>::Create(), a_Ptr);
         _PHNTM_pNamespace->addFunction(pFunc);
         _PHNTM_pSource->addFunction(pFunc);
         m_Symbols.push_back(pFunc);
@@ -103,9 +103,9 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     template<class ConstantT>
     NamespaceBuilder& constant(StringView a_Name, ConstantT a_Val)
     {
-        _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<reflection::ConstantT<ConstantT>>::value,
+        _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::ConstantT<ConstantT>>::value,
                                  "missing #include <phantom/constant>");
-        auto pConst = PHANTOM_META_NEW(reflection::ConstantT<ConstantT>)(a_Name, a_Val, reflection::Modifier::None,
+        auto pConst = PHANTOM_META_NEW(lang::ConstantT<ConstantT>)(a_Name, a_Val, lang::Modifier::None,
                                                                          PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pNamespace->addConstant(pConst);
         _PHNTM_pSource->addConstant(pConst);
@@ -117,8 +117,8 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     template<class T>
     NamespaceBuilder& variable(StringView a_Name, T* a_pVar)
     {
-        _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<reflection::VariableT<T>>::value, "missing #include <phantom/variable>");
-        auto pVar = PHANTOM_META_NEW(reflection::VariableT<T>)(a_Name, a_pVar);
+        _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::VariableT<T>>::value, "missing #include <phantom/variable>");
+        auto pVar = PHANTOM_META_NEW(lang::VariableT<T>)(a_Name, a_pVar);
         _PHNTM_pNamespace->addVariable(pVar);
         _PHNTM_pSource->addVariable(pVar);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pVar);
@@ -131,7 +131,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         return variable(a_Name, &a_Var);
     }
 
-    template<class TypedefT, class DontTouchThis = reflection::Alias>
+    template<class TypedefT, class DontTouchThis = lang::Alias>
     NamespaceBuilder& typedef_(StringView a_Name)
     {
         _PHNTM_REG_STATIC_ASSERT(phantom::IsTypeDefined<DontTouchThis>::value, "missing #include <phantom/typedef>");
@@ -166,17 +166,17 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         return *this;
     }
 
-    reflection::Namespace* _PHNTM_getMeta() const
+    lang::Namespace* _PHNTM_getMeta() const
     {
         return _PHNTM_pNamespace;
     }
 
-    reflection::Source* _PHNTM_getSource();
-    reflection::Source* _PHNTM_getOwnerScope()
+    lang::Source* _PHNTM_getSource();
+    lang::Source* _PHNTM_getOwnerScope()
     {
         return _PHNTM_pSource;
     }
-    reflection::Namespace* _PHNTM_getNamingScope()
+    lang::Namespace* _PHNTM_getNamingScope()
     {
         return _PHNTM_pNamespace;
     }
@@ -191,18 +191,18 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     }
 
 private:
-    void _PHNTM_setLastSymbol(reflection::Symbol* a_pSymbol)
+    void _PHNTM_setLastSymbol(lang::Symbol* a_pSymbol)
     {
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pSymbol);
     }
     NamespaceBuilder& _PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType);
 
 private:
-    reflection::Namespace*           _PHNTM_pNamespace;
+    lang::Namespace*           _PHNTM_pNamespace;
     SmallVector<PhantomBuilderBase*> _PHNTM_m_Types;
-    reflection::Source*              _PHNTM_pSource;
+    lang::Source*              _PHNTM_pSource;
     _PHNTM_GlobalRegistrer*          _PHNTM_pRegistrer;
-    reflection::Symbols              m_Symbols;
+    lang::Symbols              m_Symbols;
 };
 
 template<class T>
@@ -224,7 +224,7 @@ struct NamespaceBuilderConstructOnCall
     _PHNTM_GlobalRegistrer* globalReg;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @brief used to insert registration code into the successive Phantom registration steps (see
@@ -238,13 +238,13 @@ struct NamespaceBuilderConstructOnCall
     class _PHNTM_NSDeduce;                                                                                              \
     namespace                                                                                                           \
     {                                                                                                                   \
-    struct PHANTOM_PP_CAT(_PHNTM_, Counter) : phantom::reflection::_PHNTM_GlobalRegistrer                               \
+    struct PHANTOM_PP_CAT(_PHNTM_, Counter) : phantom::lang::_PHNTM_GlobalRegistrer                               \
     {                                                                                                                   \
         PHANTOM_PP_CAT(_PHNTM_, Counter)                                                                                \
         ()                                                                                                              \
-            : phantom::reflection::_PHNTM_GlobalRegistrer(                                                              \
+            : phantom::lang::_PHNTM_GlobalRegistrer(                                                              \
               {PHANTOM_PP_ADD_PREFIX_EACH_NO_CAT(phantom::RegistrationStep::, __VA_ARGS__)},                            \
-              &phantom::reflection::TypeInfosOf<_PHNTM_NSDeduce>::object, __FILE__, __LINE__, Counter, false),          \
+              &phantom::lang::TypeInfosOf<_PHNTM_NSDeduce>::object, __FILE__, __LINE__, Counter, false),          \
               namespace_(this)                                                                                          \
         {                                                                                                               \
             _PHNTM_attach();                                                                                            \
@@ -255,7 +255,7 @@ struct NamespaceBuilderConstructOnCall
             namespace_().end();                                                                                         \
         }                                                                                                               \
         inline void _PHNTM_processUserCode(phantom::RegistrationStep);                                                  \
-        phantom::reflection::NamespaceBuilderConstructOnCall<phantom::reflection::NamespaceBuilder> namespace_;         \
+        phantom::lang::NamespaceBuilderConstructOnCall<phantom::lang::NamespaceBuilder> namespace_;         \
         decltype(namespace_)&                                                                       this_ = namespace_; \
     } PHANTOM_PP_CAT(_PHNTM_i_, Counter);                                                                               \
     }                                                                                                                   \

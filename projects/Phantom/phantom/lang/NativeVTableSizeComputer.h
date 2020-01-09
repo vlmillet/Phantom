@@ -13,7 +13,7 @@ HAUNT_STOP;
 /* ****************** Includes ******************* */
 #include "NativeVTableInspector.h"
 
-#include <phantom/reflection/Class.h>
+#include <phantom/lang/Class.h>
 #include <type_traits>
 /* *********************************************** */
 
@@ -21,7 +21,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty, typename t_Signature>
 struct NativeVTableSizeComputer;
@@ -91,7 +91,7 @@ struct VTableSizeOfDefaultConstructibleH<t_Ty, false>
         auto& ctors = a_pClass->getConstructors();
         if (ctors.size())
             return ctors.front()->getNativeVTableSize();
-        // PHANTOM_WARNING(false, "No constructor declared in reflection of %s, cannot extract
+        // PHANTOM_WARNING(false, "No constructor declared in lang of %s, cannot extract
         // vtable information", a_pClass->getQualifiedDecoratedName().c_str());
         return 0;
     };
@@ -119,7 +119,7 @@ struct VTableSizeOf : detail::VTableSizeOfH<t_Ty, std::is_polymorphic<t_Ty>::val
 {
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 namespace phantom
@@ -127,7 +127,7 @@ namespace phantom
 template<typename t_Ty>
 size_t virtualMethodCountOf()
 {
-    return phantom::reflection::VTableSizeOf<t_Ty>::apply(PHANTOM_PRECISE_TYPEOF(t_Ty));
+    return phantom::lang::VTableSizeOf<t_Ty>::apply(PHANTOM_PRECISE_TYPEOF(t_Ty));
 }
 } // namespace phantom
 

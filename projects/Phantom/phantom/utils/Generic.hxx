@@ -43,10 +43,10 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(::phantom::reflection::Type *)>()
-            .PHANTOM_T method<::phantom::reflection::Type *() const>("operator ::phantom::reflection::Type *", &_::operator notypedef<::phantom::reflection::Type *>)
-            .PHANTOM_T method<reflection::Type*() const>("getType", &_::getType)
-            .PHANTOM_T method<reflection::Class*() const>("getClass", &_::getClass)
+            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()
+            .PHANTOM_T method<::phantom::lang::Type *() const>("operator ::phantom::lang::Type *", &_::operator notypedef<::phantom::lang::Type *>)
+            .PHANTOM_T method<lang::Type*() const>("getType", &_::getType)
+            .PHANTOM_T method<lang::Class*() const>("getClass", &_::getClass)
             ;
         }
         PHANTOM_STRUCT_T((class), (T), Param)
@@ -56,7 +56,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(::phantom::reflection::Type *)>()
+            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()
             ;
         }
         PHANTOM_STRUCT_T((class), (TypeRef), ConstructorParams)

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief Represents a function function type with return type, parameters and qualifiers.
 class PHANTOM_EXPORT_PHANTOM FunctionType : public Type
@@ -309,5 +309,5 @@ protected:
     Types m_ParameterTypes;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -13,14 +13,14 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/CallHelpers.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/NativeVTableInspector.h>
+#include <phantom/lang/CallHelpers.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/NativeVTableInspector.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class MethodBaseT : public Method
 {
@@ -43,7 +43,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

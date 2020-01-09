@@ -13,16 +13,16 @@ HAUNT_STOP;
 /* ****************** Includes ******************* */
 #include "ExecutionContext.h"
 
-#include <phantom/reflection/Destructor.h>
-#include <phantom/reflection/NativeVTableInspector.h>
-#include <phantom/reflection/Signature.h>
+#include <phantom/lang/Destructor.h>
+#include <phantom/lang/NativeVTableInspector.h>
+#include <phantom/lang/Signature.h>
 #include <phantom/traits/HasVirtualDestructor.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 class DestructorT : public Destructor
@@ -91,7 +91,7 @@ private:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

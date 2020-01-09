@@ -33,8 +33,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("ClassType")
 
         PHANTOM_CLASS_T((class), (Sign), FunctionTypeH)
@@ -44,7 +44,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         PHANTOM_STRUCT_TVS((class), (R), (class, Params), (R(Params...)), FunctionTypeH)
         {
-            using Types = typedef_< phantom::reflection::Types>;
+            using Types = typedef_< phantom::lang::Types>;
             this_()
             .PHANTOM_T staticMethod<Type*(Types&)>("ReadReturnTypeAndParameterTypes", &_::ReadReturnTypeAndParameterTypes)
             ;
@@ -52,29 +52,29 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(ClassType)
         {
-            using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
-            using Constructors = typedef_< phantom::reflection::Constructors>;
-            using DataElements = typedef_< phantom::reflection::DataElements>;
+            using AggregateFields = typedef_< phantom::lang::AggregateFields>;
+            using Constructors = typedef_< phantom::lang::Constructors>;
+            using DataElements = typedef_< phantom::lang::DataElements>;
             using ExtraData = typedef_<_::ExtraData>;
-            using Fields = typedef_< phantom::reflection::Fields>;
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using MemberAnonymousSections = typedef_< phantom::reflection::MemberAnonymousSections>;
-            using Methods = typedef_< phantom::reflection::Methods>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Parameters = typedef_< phantom::reflection::Parameters>;
-            using Properties = typedef_< phantom::reflection::Properties>;
+            using Fields = typedef_< phantom::lang::Fields>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using MemberAnonymousSections = typedef_< phantom::lang::MemberAnonymousSections>;
+            using Methods = typedef_< phantom::lang::Methods>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Parameters = typedef_< phantom::lang::Parameters>;
+            using Properties = typedef_< phantom::lang::Properties>;
             using StringView = typedef_< phantom::StringView>;
-            using Subroutines = typedef_< phantom::reflection::Subroutines>;
-            using Types = typedef_< phantom::reflection::Types>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
-            using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
+            using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using Types = typedef_< phantom::lang::Types>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
+            using ValueMembers = typedef_< phantom::lang::ValueMembers>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Type, ::phantom::reflection::Scope, ::phantom::reflection::Aggregate>()
+            .inherits<::phantom::lang::Type, ::phantom::lang::Scope, ::phantom::lang::Aggregate>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .struct_<ExtraData>()
@@ -231,7 +231,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("ClassType")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

@@ -39,8 +39,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Source")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -48,19 +48,19 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using Import = typedef_<_::Import>;
             using Imports = typedef_<_::Imports>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Sources = typedef_< phantom::reflection::Sources>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Sources = typedef_< phantom::lang::Sources>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol, ::phantom::reflection::Scope>()
+            .inherits<::phantom::lang::Symbol, ::phantom::lang::Scope>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .struct_<Import>()
@@ -82,9 +82,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Source*() const>("getNativeArchive", &_::getNativeArchive)
             .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
             .method<FunctionType*(Type*, TypesView, Modifiers, uint)>("functionType", &_::functionType)["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<FunctionPointer*(Type*, ABI, TypesView, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
             .method<InitializerListType*(TypesView)>("initializerListType", &_::initializerListType)
             .method<MethodPointer*(ClassType*, Type*, TypesView, Modifiers, uint)>("methodPointerType", &_::methodPointerType)["0"]["0"]
@@ -143,7 +143,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Source")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

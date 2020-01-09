@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Placeholder.h>
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Placeholder.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Placeholder type.
 /// \code{.cpp}
@@ -83,5 +83,5 @@ protected:
     mutable ClassType* m_pAsClassType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

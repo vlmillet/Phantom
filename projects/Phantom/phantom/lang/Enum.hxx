@@ -33,24 +33,24 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Enum")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Enum)
         {
-            using Constants = typedef_< phantom::reflection::Constants>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Constants = typedef_< phantom::lang::Constants>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::PrimitiveType>()
+            .inherits<::phantom::lang::PrimitiveType>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .staticMethod<PrimitiveType*()>("IntType", &_::IntType)
@@ -109,7 +109,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Enum")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

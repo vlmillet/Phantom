@@ -25,7 +25,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Type::Type(TypeKind a_eTypeKind, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_Modifiers, a_uiFlags), m_eTypeKind(a_eTypeKind)
@@ -950,5 +950,5 @@ void Type::moveAssign(void* a_pDest, void* a_pSrc) const
 	copyAssign(a_pDest, a_pSrc);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

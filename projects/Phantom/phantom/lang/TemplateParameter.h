@@ -8,13 +8,13 @@
 // #pragma __PragmaPrintFile__
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a template signature parameter.
 class PHANTOM_EXPORT_PHANTOM TemplateParameter : public Symbol
@@ -185,5 +185,5 @@ protected:
     bool             m_bPack{};
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

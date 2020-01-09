@@ -13,7 +13,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MemberAnonymousSection::MemberAnonymousSection(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", modifiers, a_uiFlags), DataElement(this), m_uiSize(0), m_uiAlignment(0), m_uiOffset(0)
@@ -145,5 +145,5 @@ void MemberAnonymousSection::setOffset(size_t a_uiOffset)
     m_uiOffset = a_uiOffset;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a package.
 class PHANTOM_EXPORT_PHANTOM Package : public Symbol
@@ -158,5 +158,5 @@ protected:
     Sources        m_ArchivedSources;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

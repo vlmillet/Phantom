@@ -11,10 +11,10 @@
 HAUNT_STOP;
 #include "phantom/traits/HasStaticFunction.h"
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/TypeInfos.h>
-#include <phantom/reflection/Undefineds.h>
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/TypeInfos.h>
+#include <phantom/lang/Undefineds.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/traits/IsDataPointer.h>
 #include <phantom/traits/IsDefinedInContext.h>
 #include <phantom/traits/IsFunctionPointer.h>
@@ -25,15 +25,15 @@ HAUNT_STOP;
 
 /// @cond ADVANCED
 
-#define PHANTOM_TYPE_BY_NAME(...) (::phantom::reflection::TypeOfUndefined<__VA_ARGS__>::object())
+#define PHANTOM_TYPE_BY_NAME(...) (::phantom::lang::TypeOfUndefined<__VA_ARGS__>::object())
 
-#define PHANTOM_PRECISE_TYPEOF(...) (phantom::reflection::PreciseTypeOf<__VA_ARGS__>::object())
+#define PHANTOM_PRECISE_TYPEOF(...) (phantom::lang::PreciseTypeOf<__VA_ARGS__>::object())
 
 namespace phantom
 {
 PHANTOM_EXPORT_PHANTOM size_t _dllModuleHandleFromAddress(void const*);
 
-namespace reflection
+namespace lang
 {
 template<typename>
 struct TypeOfUndefined;
@@ -41,9 +41,9 @@ template<typename>
 struct MetaTypeOf;
 template<typename>
 struct TemplateSpecializationRegistrer;
-} // namespace reflection
+} // namespace lang
 
-namespace reflection
+namespace lang
 {
 namespace detail
 {
@@ -96,15 +96,15 @@ PHANTOM_EXPORT_PHANTOM Type* type_cast(ConstVolatileType* a_pElement);
 PHANTOM_EXPORT_PHANTOM Type* type_cast(VolatileType* a_pElement);
 PHANTOM_EXPORT_PHANTOM Type* type_cast(Array* a_pElement);
 
-#    define PHANTOM_R_TYPE_CAST(...) ::phantom::reflection::type_cast(__VA_ARGS__)
-#    define PHANTOM_R_SYM_CAST(...) ::phantom::reflection::symbol_cast(__VA_ARGS__)
+#    define PHANTOM_R_TYPE_CAST(...) ::phantom::lang::type_cast(__VA_ARGS__)
+#    define PHANTOM_R_SYM_CAST(...) ::phantom::lang::symbol_cast(__VA_ARGS__)
 
 #else
 // dirty c-style cast to avoid includes (we know that every Type derived class is single inherited
 #    define PHANTOM_R_TYPE_CAST(...)                                                                                   \
-        ((::phantom::reflection::Type*)(__VA_ARGS__)) //((::phantom::reflection::Type*)(__VA_ARGS__))
+        ((::phantom::lang::Type*)(__VA_ARGS__)) //((::phantom::lang::Type*)(__VA_ARGS__))
 #    define PHANTOM_R_SYM_CAST(...)                                                                                    \
-        ((::phantom::reflection::Symbol*)(__VA_ARGS__)) //((::phantom::reflection::Symbol*)(__VA_ARGS__))
+        ((::phantom::lang::Symbol*)(__VA_ARGS__)) //((::phantom::lang::Symbol*)(__VA_ARGS__))
 
 #endif
 
@@ -187,16 +187,16 @@ struct MetaTypeOfH
         typedef __VA_ARGS__ type;                                                                                      \
     };
 
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_fundamental_type, phantom::reflection::FundamentalTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_arithmetic_type, phantom::reflection::ArithmeticTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_floating_point_type, phantom::reflection::FloatingPointTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_integral_type, phantom::reflection::IntegralTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_nullptr_type, phantom::reflection::FundamentalTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_structure, phantom::reflection::StructureT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_union, phantom::reflection::UnionT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_class, phantom::reflection::ClassT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_special, phantom::reflection::FundamentalTypeT<t_Ty>);
-_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_enum, phantom::reflection::EnumT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_fundamental_type, phantom::lang::FundamentalTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_arithmetic_type, phantom::lang::ArithmeticTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_floating_point_type, phantom::lang::FloatingPointTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_integral_type, phantom::lang::IntegralTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_nullptr_type, phantom::lang::FundamentalTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_structure, phantom::lang::StructureT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_union, phantom::lang::UnionT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_class, phantom::lang::ClassT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_special, phantom::lang::FundamentalTypeT<t_Ty>);
+_PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER(meta_enum, phantom::lang::EnumT<t_Ty>);
 
 #undef _PHNTM_SPEC_MTYPE_BSE_CLASS_SLVER
 
@@ -350,8 +350,8 @@ struct TypeOfByName
             else
             {
                 PHANTOM_LOG(Warning,
-                            "cannot find type '%.*s' in any module, ensure it has reflection "
-                            "declared or, if it is a template instance, ensure the reflection is "
+                            "cannot find type '%.*s' in any module, ensure it has lang "
+                            "declared or, if it is a template instance, ensure the lang is "
                             "available above in the compilation unit (.hxx included for example)",
                             PHANTOM_STRING_AS_PRINTF_ARG(infos.qualifiedDecoratedName()));
             }
@@ -415,9 +415,9 @@ struct ClassTypeOf
 template<typename t_Ty>
 struct PreciseTypeOf
 {
-    static PHANTOM_TYPENAME::phantom::reflection::MetaTypeOf<t_Ty>::type* object()
+    static PHANTOM_TYPENAME::phantom::lang::MetaTypeOf<t_Ty>::type* object()
     {
-        return (PHANTOM_TYPENAME::phantom::reflection::MetaTypeOf<t_Ty>::type*)(PHANTOM_TYPEOF(t_Ty));
+        return (PHANTOM_TYPENAME::phantom::lang::MetaTypeOf<t_Ty>::type*)(PHANTOM_TYPEOF(t_Ty));
     }
 };
 
@@ -731,7 +731,7 @@ T* Type::cast(void* a_pPointer) const
     return reinterpret_cast<T*>(cast(PHANTOM_TYPEOF(T), a_pPointer));
 }
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom
 

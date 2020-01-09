@@ -8,12 +8,12 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/ClassT.h>
+#include <phantom/lang/ClassT.h>
 #include <phantom/traits/ContainerTraits.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct EraseOrAssert
 {
@@ -131,5 +131,5 @@ public:
         return PHANTOM_TYPEOF(ContainerConstIterator);
     }
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

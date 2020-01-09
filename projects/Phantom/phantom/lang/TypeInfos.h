@@ -10,7 +10,7 @@
 HAUNT_STOP;
 #include <phantom/detail/core.h>
 #include <phantom/detail/typedefs.h>
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/utils/SmallString.h>
 #include <phantom/utils/StringHash.h>
 #include <phantom/utils/StringView.h>
@@ -25,7 +25,7 @@ namespace detail
 PHANTOM_EXPORT_PHANTOM void registerOrphanMemory(void*);
 }
 
-namespace reflection
+namespace lang
 {
 struct TypeInfos
 {
@@ -245,14 +245,14 @@ struct TypeInfosOf<std::nullptr_t>
     }
 };
 
-} // namespace reflection
+} // namespace lang
 
 template<typename t_Ty>
 struct TypeNameOf
 {
     static StringView name()
     {
-        return reflection::TypeInfosOf<t_Ty>::object().qualifiedDecoratedName();
+        return lang::TypeInfosOf<t_Ty>::object().qualifiedDecoratedName();
     }
 };
 

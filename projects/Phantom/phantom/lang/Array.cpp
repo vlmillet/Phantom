@@ -10,7 +10,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Array::Array(Type* a_pType, size_t a_uiCount)
     : ExtendedType(a_pType, TypeKind::Array,
@@ -177,5 +177,5 @@ Type* Array::replicate(Type* a_pInput) const
     return m_pUnderlyingType->replicate(a_pInput->removeArray())->addArray(m_uiCount);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Subroutine.h>
+#include <phantom/lang/Subroutine.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a procedural function.
 class PHANTOM_EXPORT_PHANTOM Function : public Subroutine
@@ -84,5 +84,5 @@ protected:
              Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

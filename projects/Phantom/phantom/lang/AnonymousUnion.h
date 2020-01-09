@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/AnonymousSection.h>
+#include <phantom/lang/AnonymousSection.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class  AnonymousUnion
@@ -36,5 +36,5 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

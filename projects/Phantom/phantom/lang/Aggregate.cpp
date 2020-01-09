@@ -1,10 +1,10 @@
 #include "Aggregate.h"
 
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 void Aggregate::getFlattenedFields(AggregateFields& _flattenedfields) const
 {
@@ -41,5 +41,5 @@ Array* Aggregate::asArray() const
     return m_pThisType->asArray();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

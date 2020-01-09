@@ -11,14 +11,14 @@ HAUNT_STOP
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MethodPointerBaseT.h>
-#include <phantom/reflection/MethodT.h>
+#include <phantom/lang/MethodPointerBaseT.h>
+#include <phantom/lang/MethodT.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 #define MethodPointer_NativeSignatureProvider_self_type_TT(Ctx) SignatureH <
 
@@ -117,7 +117,7 @@ class MethodPointerT<R (t_Ty::*)(v_Params...) const>
 {
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/DataElement.h>
-#include <phantom/reflection/ValueMember.h>
+#include <phantom/lang/DataElement.h>
+#include <phantom/lang/ValueMember.h>
 /* ************* Class Declarations ************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a class type Data member.
 class PHANTOM_EXPORT_PHANTOM Field : public ValueMember, public DataElement
@@ -157,5 +157,5 @@ protected:
     MemberAnonymousSection* m_pMemberAnonymousSection;
     size_t                  m_Alignment = 0;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

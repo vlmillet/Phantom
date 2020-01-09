@@ -8,7 +8,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 InitializerListType::InitializerListType(TypesView a_Types) : Type(TypeKind::Unknown, "", 0, 0, 0, 0), m_Types(a_Types)
 {
@@ -89,5 +89,5 @@ void InitializerListType::onReferencedElementRemoved(LanguageElement* a_pElement
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

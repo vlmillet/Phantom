@@ -37,7 +37,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this)
@@ -689,5 +689,5 @@ void Source::_removeDepending(Source* _source)
     m_Dependings.erase(found);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

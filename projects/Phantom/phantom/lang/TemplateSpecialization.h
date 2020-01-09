@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM TemplateSpecialization : public Symbol
 {
@@ -234,5 +234,5 @@ private:
     PlaceholderMap          m_PlaceholderSubstitutions;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

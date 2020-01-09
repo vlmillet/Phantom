@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ContainerClass::ContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
                                Modifiers a_Modifiers, uint a_uiFlags)
@@ -251,5 +251,5 @@ Property* ContainerClass::createSizeProperty() const
 	return pProp;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

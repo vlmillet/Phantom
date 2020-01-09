@@ -7,7 +7,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PHANTOM_DEFINE_META_CLASS(ConstVolatileType);
 }

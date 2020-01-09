@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Method.h>
+#include <phantom/lang/Method.h>
 /* ************* Class Declarations ************** */
 
 /* *********************************************** */
@@ -17,7 +17,7 @@ namespace connection
 {
 struct PIMPL;
 }
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a signal function.
 class PHANTOM_EXPORT_PHANTOM Signal : public Method
@@ -26,7 +26,7 @@ class PHANTOM_EXPORT_PHANTOM Signal : public Method
 
     PHANTOM_DECLARE_META_CLASS(Signal);
 
-    friend class phantom::reflection::Class;
+    friend class phantom::lang::Class;
     friend class Property;
 
 public:
@@ -104,5 +104,5 @@ protected:
     size_t m_FieldOffset = ~size_t(0);
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

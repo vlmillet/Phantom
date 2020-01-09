@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ContainerClass.h>
+#include <phantom/lang/ContainerClass.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base base for set containers class representation (set, multiset, ...).
 class PHANTOM_EXPORT_PHANTOM SetClass : public ContainerClass
@@ -55,5 +55,5 @@ protected:
     mutable RTData* m_Data = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

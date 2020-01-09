@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct TemplateRegistrer;
 
@@ -318,5 +318,5 @@ protected:
     TemplateSpecializations m_TemplateSpecializations;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

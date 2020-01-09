@@ -11,12 +11,12 @@
 #include "Signature.h"
 #include "phantom/detail/new.h"
 
-#include <phantom/reflection/Signal.h>
+#include <phantom/lang/Signal.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static Type* Property_ValueTypeFromParamType(Type* a_pParamType)
 {
@@ -192,5 +192,5 @@ Method* Property::addGet(StringView a_strName /*= ""*/)
     return m_pGet;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

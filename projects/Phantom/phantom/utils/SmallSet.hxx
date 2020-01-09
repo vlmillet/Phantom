@@ -2,11 +2,11 @@
 
 #include "SmallSet.h"
 
-#include <phantom/reflection/SetClassT.h>
+#include <phantom/lang/SetClassT.h>
 #include <phantom/meta_type>
 
 PHANTOM_META_TYPE_T((typename, size_t, size_t, typename), (V, S, D, P), phantom::SmallSet,
-                      phantom::reflection::SetClassT);
+                      phantom::lang::SetClassT);
 
 // haunt {
 

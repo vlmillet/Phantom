@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class Block;
 
@@ -51,7 +51,7 @@ public:
     /// \return null if it fails, else the value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    reflection::Type* getValueType() const
+    lang::Type* getValueType() const
     {
         return m_pValueType;
     }
@@ -150,5 +150,5 @@ protected:
     ptrdiff_t m_iNativeFrameOffset = -1;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

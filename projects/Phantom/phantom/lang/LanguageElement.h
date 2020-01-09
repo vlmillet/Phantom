@@ -10,16 +10,16 @@
 #include <phantom/detail/Constructor.h>
 #include <phantom/detail/core.h>
 #include <phantom/detail/newImpl.h>
-#include <phantom/reflection/CodeLocation.h>
-#include <phantom/reflection/LanguageElementVisitor.h>
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/CodeLocation.h>
+#include <phantom/lang/LanguageElementVisitor.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/utils/SmallVector.h>
 #include <phantom/utils/StringBuffer.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class MembersBase;
 
@@ -32,13 +32,13 @@ class Ellipsis
 {
 };
 
-#define PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT PHANTOM_REGISTER_FOR_VISIT(phantom::reflection::LanguageElementVisitor)
+#define PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT PHANTOM_REGISTER_FOR_VISIT(phantom::lang::LanguageElementVisitor)
 
 #define PHANTOM_REGISTER_FOR_VISIT(Visitor_)                                                                           \
 public:                                                                                                                \
     friend class Visitor_;                                                                                             \
-    virtual void visit(phantom::reflection::LanguageElementVisitor* a_pVisitor,                                        \
-                       phantom::reflection::VisitorData             a_Data) override                                               \
+    virtual void visit(phantom::lang::LanguageElementVisitor* a_pVisitor,                                        \
+                       phantom::lang::VisitorData             a_Data) override                                               \
     {                                                                                                                  \
         static_cast<Visitor_*>(a_pVisitor)->visit(this, a_Data);                                                       \
     }                                                                                                                  \
@@ -52,22 +52,22 @@ typedef SmallSet<Module*>                        ModuleSet;
 class PHANTOM_EXPORT_PHANTOM LanguageElement : public Object
 {
 public:
-    friend class phantom::reflection::LanguageElementVisitor;
-    virtual void visit(phantom::reflection::LanguageElementVisitor* a_pVisitor, VisitorData a_Data);
+    friend class phantom::lang::LanguageElementVisitor;
+    virtual void visit(phantom::lang::LanguageElementVisitor* a_pVisitor, VisitorData a_Data);
 
     PHANTOM_DECLARE_META_CLASS(LanguageElement);
 
-    friend class phantom::reflection::ClassType;
-    friend class phantom::reflection::Class;
-    friend class phantom::reflection::Scope;
-    friend class phantom::reflection::TemplateSpecialization;
-    friend class phantom::reflection::Module;
-    friend class phantom::reflection::Application;
-    friend class phantom::reflection::Source;
-    friend class phantom::reflection::Namespace;
-    friend class phantom::reflection::Symbol;
-    friend class phantom::reflection::Semantic;
-    friend class phantom::reflection::MembersBase;
+    friend class phantom::lang::ClassType;
+    friend class phantom::lang::Class;
+    friend class phantom::lang::Scope;
+    friend class phantom::lang::TemplateSpecialization;
+    friend class phantom::lang::Module;
+    friend class phantom::lang::Application;
+    friend class phantom::lang::Source;
+    friend class phantom::lang::Namespace;
+    friend class phantom::lang::Symbol;
+    friend class phantom::lang::Semantic;
+    friend class phantom::lang::MembersBase;
 
 public:
     typedef Delegate<Symbol*(Symbol*, bool)> SymbolFilter;
@@ -928,7 +928,7 @@ private:
     static LanguageElements sm_Elements;
 };
 
-} // namespace reflection
+} // namespace lang
 
 template<class T, bool Is>
 struct ConstructorIfLanguageElement
@@ -949,7 +949,7 @@ struct ConstructorIfLanguageElement<T, false>
 
 template<class T>
 struct Constructor<T, ConstructorOverloadTag::MetaElement>
-    : ConstructorIfLanguageElement<T, std::is_base_of<reflection::LanguageElement, T>::value>
+    : ConstructorIfLanguageElement<T, std::is_base_of<lang::LanguageElement, T>::value>
 {
 };
 

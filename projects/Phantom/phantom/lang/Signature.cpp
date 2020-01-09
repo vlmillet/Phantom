@@ -17,7 +17,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Signature* Signature::Create(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
@@ -605,5 +605,5 @@ FunctionType* Signature::getFunctionType() const
     return getSource()->functionType(m_pReturnType, getParameterTypes(), m_Modifiers);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -12,25 +12,25 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/MethodProviderT.h>
-#include <phantom/reflection/MethodT.h>
-#include <phantom/reflection/SignatureH.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/MethodProviderT.h>
+#include <phantom/lang/MethodT.h>
+#include <phantom/lang/SignatureH.h>
 #include <phantom/traits/FunctionTypeToMethodPointerType.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T, class Sign, class MethodPtrT, int Modifiers>
 struct MethodH
 {
-    static reflection::Method* Create(StringView a_Name, MethodPtrT a_Ptr)
+    static lang::Method* Create(StringView a_Name, MethodPtrT a_Ptr)
     {
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #define PHANTOM_METHOD(...) PHANTOM_PP_VARARG(_PHNTM_METHOD_, ##__VA_ARGS__) _PHNTM_MTRAILING_METADATA

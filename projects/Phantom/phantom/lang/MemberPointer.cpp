@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MemberPointer::MemberPointer(TypeKind a_TypeId, ClassType* a_pObjectType, size_t a_uiSize, size_t a_uiAlignment,
                              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -25,5 +25,5 @@ PHANTOM_DTOR MemberPointer::~MemberPointer()
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

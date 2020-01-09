@@ -9,14 +9,14 @@
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MethodPointer.h>
+#include <phantom/lang/MethodPointer.h>
 /* *********************************************** */
 
 HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Class>
 class MethodPointerBaseT : public MethodPointer
@@ -40,7 +40,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MemberPointer.h>
+#include <phantom/lang/MemberPointer.h>
 /* ************* Class Declarations ************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a Data member pointer type.
 /// \code{.cpp}
@@ -130,5 +130,5 @@ protected:
     Type* m_pValueType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

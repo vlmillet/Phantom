@@ -22,7 +22,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Template::Template(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
     : Symbol("", a_Modifiers,
@@ -387,5 +387,5 @@ void Template::onReferencedElementRemoved(LanguageElement* a_pElement)
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

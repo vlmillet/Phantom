@@ -9,7 +9,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PHANTOM_EXPORT_PHANTOM TemplateRegistrer : public ::phantom::detail::_PHNTM_StaticGlobalRegistrer
 {
@@ -19,5 +19,5 @@ struct PHANTOM_EXPORT_PHANTOM TemplateRegistrer : public ::phantom::detail::_PHN
 private:
     StringView (*m_func)(int);
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

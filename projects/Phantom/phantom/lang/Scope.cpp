@@ -25,7 +25,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static Variables               m_EmptyVariables;
 static Constants               m_EmptyConstants;
@@ -847,5 +847,5 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
     return pTemplateSpecialization;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

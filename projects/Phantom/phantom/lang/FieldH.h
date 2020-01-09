@@ -12,7 +12,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
@@ -128,5 +128,5 @@ struct FieldH<t_Ty[t_size]>
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a global/static variable.
 class PHANTOM_EXPORT_PHANTOM Variable : public Symbol
@@ -143,5 +143,5 @@ protected:
     Expression*       m_pInitializationExpression;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ClassType.h>
+#include <phantom/lang/ClassType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// \brief  Represents an extended POD class with user defined constructors (classic POD forbid
@@ -69,5 +69,5 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

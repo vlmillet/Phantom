@@ -7,30 +7,30 @@
 #include "GlobalRegistrer.h"
 
 #include "phantom/detail/core_internal.h"
-#include "phantom/reflection/Application.h"
+#include "phantom/lang/Application.h"
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 _PHNTM_GlobalRegistrer::~_PHNTM_GlobalRegistrer()
 {
 }
 
-reflection::Namespace* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
+lang::Namespace* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
 {
     if (!_PHNTM_pNamingScope)
     {
         StringView scope = _PHNTM_TypeInfosGetter().scope();
         if (!scope.empty())
-            _PHNTM_pNamingScope = phantom::reflection::Namespace::Global()->findOrCreateNamespace(scope);
+            _PHNTM_pNamingScope = phantom::lang::Namespace::Global()->findOrCreateNamespace(scope);
         else
-            _PHNTM_pNamingScope = phantom::reflection::Namespace::Global();
+            _PHNTM_pNamingScope = phantom::lang::Namespace::Global();
     }
     return _PHNTM_pNamingScope;
 }
 
-reflection::Source* _PHNTM_GlobalRegistrer::_PHNTM_getOwnerScope()
+lang::Source* _PHNTM_GlobalRegistrer::_PHNTM_getOwnerScope()
 {
     if (!_PHNTM_pOwnerScope)
         _PHNTM_pOwnerScope = _PHNTM_getSource();
@@ -47,5 +47,5 @@ StringView _PHNTM_GlobalRegistrer::_PHNTM_currentPackageName()
     return phantom::dynamic_initializer_()->currentPackage();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

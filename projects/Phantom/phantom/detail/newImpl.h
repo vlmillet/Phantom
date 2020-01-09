@@ -27,7 +27,7 @@ struct NewHH<t_Ty, true>
     PHANTOM_FORCEINLINE static t_Ty* apply(t_Ty* a_pInstance)
     {
         a_pInstance->rtti.instance = a_pInstance;
-        a_pInstance->rtti.metaClass = (reflection::Class*)TypeOf<t_Ty>(TypeOfTag<t_Ty>());
+        a_pInstance->rtti.metaClass = (lang::Class*)TypeOf<t_Ty>(TypeOfTag<t_Ty>());
         a_pInstance->rtti.metaClass->registerInstance(a_pInstance);
         return a_pInstance;
     }

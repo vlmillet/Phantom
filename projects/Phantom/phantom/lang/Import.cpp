@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Import::Import(Source* a_pSource, StringView a_strSymbolName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strSymbolName, a_Modifiers, a_uiFlags), m_pImportedSource(a_pSource)
@@ -19,5 +19,5 @@ Import::Import(Source* a_pSource, StringView a_strSymbolName, Modifiers a_Modifi
     addReferencedElement(a_pSource);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

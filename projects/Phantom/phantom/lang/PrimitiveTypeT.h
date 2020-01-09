@@ -9,14 +9,14 @@
 HAUNT_STOP;
 
 #include <phantom/detail/StringConverter.h>
-#include <phantom/reflection/PrimitiveType.h>
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/PrimitiveType.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/traits/SafeAlignOf.h>
 #include <phantom/traits/SafeSizeOf.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 #define _PHNTM_HAS_LONG                                                                                                \
     (std::is_same<t_Ty, long>::value OR std::is_same<t_Ty, double>::value OR std::is_same<t_Ty, int>::value OR         \
@@ -131,7 +131,7 @@ class PrimitiveTypeT : public PrimitiveType
 
 public:
     PrimitiveTypeT(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
-        : PrimitiveType(::phantom::reflection::detail::PrimitiveTypeKindH<t_Ty>::value, a_strName, a_uiSize,
+        : PrimitiveType(::phantom::lang::detail::PrimitiveTypeKindH<t_Ty>::value, a_strName, a_uiSize,
                         a_uiAlignment, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
@@ -203,5 +203,5 @@ public:
         StringConverter<t_Ty>::toLiteral(this, a_Buf, (const t_Ty*)a_pSrc);
     }
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

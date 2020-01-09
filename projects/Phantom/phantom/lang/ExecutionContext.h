@@ -15,7 +15,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM ExecutionContext
 {
@@ -72,5 +72,5 @@ private:
     };
     SmallVector<TempDestruction, 20> m_Temporaries;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

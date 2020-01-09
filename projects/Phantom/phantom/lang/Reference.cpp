@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Reference::Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName)
     : ExtendedType(a_pReferencedType, a_eTypeKind, a_strName, sizeof(void*), std::alignment_of<void*>::value,
@@ -30,5 +30,5 @@ void Reference::onReferencedElementRemoved(LanguageElement* a_pElement)
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

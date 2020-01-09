@@ -34,8 +34,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("LanguageElement")
 
         PHANTOM_CLASS_T((class), (t_Scope), Members)
@@ -53,19 +53,19 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<ModuleSet>("ModuleSet"); }
         PHANTOM_CLASS(LanguageElement)
         {
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
             this_()
             .inherits<::phantom::Object>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, VisitorData), virtual_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, VisitorData), virtual_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -88,7 +88,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<AnonymousUnion*() const, virtual_>("asAnonymousUnion", &_::asAnonymousUnion)
             .method<PrimitiveType*() const, virtual_>("asArithmeticType", &_::asArithmeticType)
             .method<Array*() const, virtual_>("asArray", &_::asArray)
-            /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Block*() const, virtual_>("asBlock", &_::asBlock)
             .method<Class*() const, virtual_>("asClass", &_::asClass)
             .method<Pointer*() const, virtual_>("asClassPointer", &_::asClassPointer)
@@ -113,9 +113,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Destructor*() const, virtual_>("asDestructor", &_::asDestructor)
             .method<Ellipsis*() const, virtual_>("asEllipsis", &_::asEllipsis)
             .method<Enum*() const, virtual_>("asEnum", &_::asEnum)
-            /// missing symbol(s) reflection (phantom::reflection::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Evaluable*() const, virtual_>("asEvaluable", &_::asEvaluable)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*() const, virtual_>("asExpression", &_::asExpression)
             .method<Field*() const, virtual_>("asField", &_::asField)
             .method<PrimitiveType*() const, virtual_>("asFloatingPointType", &_::asFloatingPointType)
@@ -157,7 +157,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Signature*() const, virtual_>("asSignature", &_::asSignature)
             .method<Method*() const, virtual_>("asSlot", &_::asSlot)
             .method<Source*() const, virtual_>("asSource", &_::asSource)
-            /// missing symbol(s) reflection (phantom::reflection::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Statement*() const, virtual_>("asStatement", &_::asStatement)
             .method<StaticField*() const, virtual_>("asStaticField", &_::asStaticField)
             .method<StaticMethod*() const, virtual_>("asStaticMethod", &_::asStaticMethod)
@@ -198,9 +198,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<LanguageElement*() const, virtual_>("removeExpression", &_::removeExpression)
             .method<Symbol*() const>("removeExpressionAsSymbol", &_::removeExpressionAsSymbol)
             .method<ClassType*() const>("getEnclosingClassType", &_::getEnclosingClassType)
-            /// missing symbol(s) reflection (phantom::reflection::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Statement*() const>("getEnclosingStatement", &_::getEnclosingStatement)
-            /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Block*() const>("getEnclosingBlock", &_::getEnclosingBlock)
             .method<Scope*() const>("getEnclosingScope", &_::getEnclosingScope)
             .method<Namespace*() const>("getEnclosingNamespace", &_::getEnclosingNamespace)
@@ -293,9 +293,9 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("LanguageElement")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
-PHANTOM_PACKAGE("phantom.reflection")
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("LanguageElement")
 
         PHANTOM_STRUCT_T((class, bool), (T, Is), ConstructorIfLanguageElement)
@@ -315,11 +315,11 @@ PHANTOM_PACKAGE("phantom.reflection")
         /* PHANTOM_STRUCT_TS((class), (T), (T, ConstructorOverloadTag::MetaElement), Constructor)
         {
             this_()
-            // .PHANTOM_T inherits<::phantom::ConstructorIfLanguageElement<T, std::is_base_of<reflection::LanguageElement, T>::value>>()
+            // .PHANTOM_T inherits<::phantom::ConstructorIfLanguageElement<T, std::is_base_of<lang::LanguageElement, T>::value>>()
             ;
         } */
     PHANTOM_END("LanguageElement")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 
 #if defined(_MSC_VER)

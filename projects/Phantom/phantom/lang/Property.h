@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ValueMember.h>
+#include <phantom/lang/ValueMember.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a get/set property.
 class PHANTOM_EXPORT_PHANTOM Property : public ValueMember
@@ -194,5 +194,5 @@ private:
     Method* m_pGet = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

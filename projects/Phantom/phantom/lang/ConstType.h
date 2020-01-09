@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/QualifiedType.h>
+#include <phantom/lang/QualifiedType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a const type
 ///         \code{.cpp}
@@ -27,8 +27,8 @@ class PHANTOM_EXPORT_PHANTOM ConstType : public QualifiedType
 
     PHANTOM_DECLARE_META_CLASS(ConstType);
 
-    friend class phantom::reflection::Namespace;
-    friend class phantom::reflection::Type;
+    friend class phantom::lang::Namespace;
+    friend class phantom::lang::Type;
 
 private:
     ConstType(Type* a_pType);
@@ -117,5 +117,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

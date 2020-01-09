@@ -8,7 +8,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 size_t NativeVTableInspector::sm_ResultIndex = ~size_t(0);
 
@@ -2529,5 +2529,5 @@ VTableInspectorGeneric::VTableInspectorGeneric()
     m_vptr_impostor = &vptr_imspostor;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

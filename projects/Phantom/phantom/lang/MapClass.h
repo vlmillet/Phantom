@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ContainerClass.h>
+#include <phantom/lang/ContainerClass.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a specialized version of Class for map containers.
 class PHANTOM_EXPORT_PHANTOM MapClass : public ContainerClass
@@ -69,5 +69,5 @@ protected:
     mutable Data* m_Data = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Function::Function(StringView a_strName, ABI a_eABI, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Subroutine(a_strName, a_eABI, a_Modifiers, a_uiFlags)
@@ -38,5 +38,5 @@ Function::Function(LanguageElement* a_pScope, StringView a_strName, StringView a
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

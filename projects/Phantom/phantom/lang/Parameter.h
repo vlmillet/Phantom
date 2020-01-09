@@ -8,13 +8,13 @@
 // #pragma __PragmaPrintFile__
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/LocalVariable.h>
+#include <phantom/lang/LocalVariable.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class Block;
 
@@ -114,5 +114,5 @@ private:
     mutable StringView m_NativeDefaultArgumentStr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

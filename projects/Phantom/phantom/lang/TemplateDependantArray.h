@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Array.h>
+#include <phantom/lang/Array.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Template dependant array type. \brief  Template dependant template instance.
 /// \code{.cpp}
@@ -61,5 +61,5 @@ protected:
     PlaceholderConstant* m_pDeductibleConstant;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

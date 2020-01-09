@@ -7,11 +7,11 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PHANTOM_EXPORT_PHANTOM CppSymbolParser
 {
@@ -23,5 +23,5 @@ struct PHANTOM_EXPORT_PHANTOM CppSymbolParser
 private:
     StringBuffer m_LastError;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -3,9 +3,9 @@
 #include "SmallString.h"
 
 #include <phantom/meta_type>
-#include <phantom/reflection/StringClassT.h>
+#include <phantom/lang/StringClassT.h>
 
-PHANTOM_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallString, phantom::reflection::StringClassT);
+PHANTOM_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallString, phantom::lang::StringClassT);
 
 
 // haunt {

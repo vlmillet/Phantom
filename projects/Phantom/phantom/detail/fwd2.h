@@ -30,9 +30,9 @@ struct NullMutex
 template<class S, class Mtx = NullMutex>
 class Signal;
 
-namespace reflection
+namespace lang
 {
-HAUNT_PACKAGE("phantom.reflection");
+HAUNT_PACKAGE("phantom.lang");
 PHANTOM_DECL_LISTABLE_S(Alias);
 PHANTOM_DECL_LISTABLE_S(Class);
 PHANTOM_DECL_LISTABLE(ValueMember, 10);
@@ -75,10 +75,10 @@ template<class, class t_Base = Class>
 class ClassT;
 HAUNT_RESUME;
 
-HAUNT_END("phantom.reflection");
-} // namespace reflection
+HAUNT_END("phantom.lang");
+} // namespace lang
 
-namespace reflection
+namespace lang
 {
 class ModuleRegistrationInfo;
 }

@@ -13,11 +13,11 @@ HAUNT_STOP;
 #include "ClassType.h"
 #include "GlobalRegistrer.h"
 
-#include <phantom/reflection/ClassT.h>
+#include <phantom/lang/ClassT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T>
 struct RemoveBaseAccessWrapper
@@ -80,16 +80,16 @@ struct InheritanceH
 {
     PHANTOM_STATIC_ASSERT((std::is_same<Derived, RemoveForwardT<Derived>>::value));
     PHANTOM_STATIC_ASSERT((IsTypeDefined<Derived>::value), "derived class is not defined");
-    static void Add(reflection::Class* a_pDerivedClass) { _add(a_pDerivedClass, _get<Bases>()...); }
+    static void Add(lang::Class* a_pDerivedClass) { _add(a_pDerivedClass, _get<Bases>()...); }
 
 private:
     template<class... LastPairs>
-    inline static void _add(reflection::Class* a_pDerivedClass, BaseClass const& a_BC, LastPairs... a_LastPairs)
+    inline static void _add(lang::Class* a_pDerivedClass, BaseClass const& a_BC, LastPairs... a_LastPairs)
     {
         a_pDerivedClass->addBaseClass(a_BC.baseClass, a_BC.offset, a_BC.access);
         _add(a_pDerivedClass, a_LastPairs...);
     }
-    inline static void _add(reflection::Class*) {} // end recursion
+    inline static void _add(lang::Class*) {} // end recursion
     template<typename BaseWrapped>
     inline static BaseClass _get()
     {
@@ -100,9 +100,9 @@ private:
         PHANTOM_STATIC_ASSERT((std::is_base_of<BaseNoForward, Derived>::value),
                               "class is not a base class (" PHANTOM_DIAGNOSTIC_FUNCTION ")");
         PHANTOM_STATIC_ASSERT((IsTypeDefined<BaseNoForward>::value), "base class is not defined");
-        reflection::Class* pBaseClass = PHANTOM_CLASSOF(Base);
+        lang::Class* pBaseClass = PHANTOM_CLASSOF(Base);
         PHANTOM_ASSERT(pBaseClass,
-                       "base class reflection was not found, check your reflection definitions/reflection files");
+                       "base class lang was not found, check your lang definitions/lang files");
         BaseClass bc;
         bc.access = BaseClassAccessH<BaseWrapped>::value;
         bc.baseClass = pBaseClass;
@@ -113,7 +113,7 @@ private:
 template<class... Ts>
 struct TypesH
 {
-    static reflection::Types Get() { return reflection::Types{phantom::reflection::TypeOf<Ts>::object()...}; }
+    static lang::Types Get() { return lang::Types{phantom::lang::TypeOf<Ts>::object()...}; }
 };
 
 template<class T, class Top, class MostDerived>
@@ -128,7 +128,7 @@ public:
 
     PHANTOM_DECL_OVERRIDE_DELETE_METHOD(SelfType);
 
-    ClassBuilderT(Top* a_pTop, reflection::Access a_StartAccess, TemplateSpecArgumentRegistrer a_Arguments)
+    ClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer a_Arguments)
         : BaseType(a_StartAccess, a_pTop, a_Arguments)
     {
         m_pClass = this->_PHNTM_getMeta();
@@ -139,7 +139,7 @@ public:
     template<class... Bases>
     MostDerived& inherits()
     {
-        this->m_Inheritance = [](reflection::Class* a_pClass) { InheritanceH<T, Bases...>::Add(a_pClass); };
+        this->m_Inheritance = [](lang::Class* a_pClass) { InheritanceH<T, Bases...>::Add(a_pClass); };
         return static_cast<MostDerived&>(*this);
     }
 
@@ -150,12 +150,12 @@ public:
     MostDerived& signal(StringView a_Name, phantom::Signal<Sign>(T::*a_SignalPtr))
     {
         using SignalType = decltype(a_SignalPtr);
-        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<phantom::reflection::SignalT<T, Sign>>::value),
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<phantom::lang::SignalT<T, Sign>>::value),
                                  "missing #include <phantom/signal>");
         this->_addSymbol(
         m_pClass, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_SignalPtr)}, [](MemberBuilder const& a_Member) {
-            a_Member.class_()->addSignal(a_Member.apply(PHANTOM_META_NEW(phantom::reflection::SignalT<T, Sign>)(
-            a_Member.name, reflection::SignatureH<Sign>::Create(), PHANTOM_REG_MEMBER_GETBACK_ARG(0, SignalType))));
+            a_Member.class_()->addSignal(a_Member.apply(PHANTOM_META_NEW(phantom::lang::SignalT<T, Sign>)(
+            a_Member.name, lang::SignatureH<Sign>::Create(), PHANTOM_REG_MEMBER_GETBACK_ARG(0, SignalType))));
         });
         return static_cast<MostDerived&>(*this);
     }
@@ -174,16 +174,16 @@ public:
     MostDerived& operator()() { return *this; }
 
 private:
-    reflection::Class*          m_pClass;
-    reflection::SymbolExtenders m_SymbolExtenders;
+    lang::Class*          m_pClass;
+    lang::SymbolExtenders m_SymbolExtenders;
 };
 
 template<class Top, class MostDerived>
 struct ClassBuilderT<AnonymousStructProxy, Top, MostDerived>
-    : MemberAnonymousSectionBuilderT<reflection::MemberAnonymousStruct, Top>
+    : MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, Top>
 {
-    ClassBuilderT(Top* a_pTop, reflection::Access a_StartAccess, TemplateSpecArgumentRegistrer)
-        : MemberAnonymousSectionBuilderT<reflection::MemberAnonymousStruct, Top>(a_pTop)
+    ClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer)
+        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, Top>(a_pTop)
     {
     }
 };
@@ -192,13 +192,13 @@ template<class T, class Top>
 struct DefaultClassBuilderT : ClassBuilderT<T, Top, DefaultClassBuilderT<T, Top>>
 {
     using BaseType = ClassBuilderT<T, Top, DefaultClassBuilderT<T, Top>>;
-    DefaultClassBuilderT(Top* a_pTop, reflection::Access a_StartAccess, TemplateSpecArgumentRegistrer a_TArgs)
+    DefaultClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer a_TArgs)
         : BaseType(a_pTop, a_StartAccess, a_TArgs)
     {
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #define PHANTOM_INHERITS(class_, ...) (this_()).inherits<class_, __VA_ARGS__>()

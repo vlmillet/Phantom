@@ -29,7 +29,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ClassType::ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, Modifiers a_Modifiers /*= 0*/,
                      uint a_uiFlags /*= 0*/)
@@ -375,7 +375,7 @@ Method* ClassType::getMethod(StringView a_strName, TypesView a_Types, Modifiers 
     return nullptr;
 }
 
-phantom::reflection::Method* ClassType::getMethod(Type* a_pReturnType, StringView a_strName, TypesView a_ParameterTypes,
+phantom::lang::Method* ClassType::getMethod(Type* a_pReturnType, StringView a_strName, TypesView a_ParameterTypes,
                                                   Modifiers a_Qualifiers /*= 0*/) const
 {
     if (Method* pMethod = getMethod(a_strName, a_ParameterTypes, a_Qualifiers))
@@ -386,7 +386,7 @@ phantom::reflection::Method* ClassType::getMethod(Type* a_pReturnType, StringVie
     return nullptr;
 }
 
-phantom::reflection::Method* ClassType::getMethodByPtr(void* a_ppMethodPtr) const
+phantom::lang::Method* ClassType::getMethodByPtr(void* a_ppMethodPtr) const
 {
     for (auto pMethod : *m_Methods)
     {
@@ -791,19 +791,19 @@ void ClassType::addImplicitDestructor()
 
 void ClassType::_onNativeElementsAccessImpl()
 {
-    Source* pCurrentSource = phantom::reflection::detail::currentSource();
+    Source* pCurrentSource = phantom::lang::detail::currentSource();
     if (!pCurrentSource)
-        phantom::reflection::detail::pushSource(getSource());
-    bool wasActive = phantom::reflection::detail::isActive();
+        phantom::lang::detail::pushSource(getSource());
+    bool wasActive = phantom::lang::detail::isActive();
     if (!wasActive)
-        phantom::reflection::detail::pushInstallation();
+        phantom::lang::detail::pushInstallation();
     phantom::TypeInstallationDelegate func = m_OnDemandMembersFunc;
     m_OnDemandMembersFunc = nullptr;
     func(phantom::TypeInstallationStep::Members);
     if (!wasActive)
-        phantom::reflection::detail::popInstallation();
+        phantom::lang::detail::popInstallation();
     if (!pCurrentSource)
-        phantom::reflection::detail::popSource();
+        phantom::lang::detail::popSource();
 }
 
 void ClassType::_onNativeElementsAccess()
@@ -815,9 +815,9 @@ void ClassType::_onNativeElementsAccess()
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);
-            phantom::reflection::detail::pushModule(pThisModule);
+            phantom::lang::detail::pushModule(pThisModule);
             _onNativeElementsAccessImpl();
-            phantom::reflection::detail::popModule();
+            phantom::lang::detail::popModule();
         }
     }
 }
@@ -1349,5 +1349,5 @@ void ClassType::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
     PHANTOM_DELETE(ExtraData) this;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

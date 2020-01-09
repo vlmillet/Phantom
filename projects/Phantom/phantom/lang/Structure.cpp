@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Structure::Structure(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : ClassType(TypeKind::Structure, PHANTOM_NEW(ExtraData), a_strName, a_Modifiers, a_uiFlags)
@@ -25,5 +25,5 @@ Structure::Structure(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

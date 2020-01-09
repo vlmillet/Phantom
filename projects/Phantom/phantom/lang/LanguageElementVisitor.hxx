@@ -22,8 +22,8 @@
 #include <phantom/field>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("LanguageElementVisitor")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -117,51 +117,51 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(Variable*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(VirtualMethodTable*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(VolatileType*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(FundamentalTypeT<void>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (std::nullptr_t, phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::phantom::reflection::FundamentalTypeT<std::nullptr_t> *, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (std::nullptr_t, phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(::phantom::lang::FundamentalTypeT<std::nullptr_t> *, VisitorData), virtual_>("visit", &_::visit)
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<bool>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<char>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<uchar>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<schar>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<short>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<ushort>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<int>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<uint>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<long>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<ulong>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<longlong>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<ulonglong>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(FloatingPointTypeT<float>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(FloatingPointTypeT<double>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FloatingPointTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(FloatingPointTypeT<longdouble>*, VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(IntegralTypeT<wchar_t>*, ::phantom::reflection::VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(IntegralTypeT<char16_t>*, ::phantom::reflection::VisitorData), virtual_>("visit", &_::visit)
-            /// missing symbol(s) reflection (phantom::reflection::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(IntegralTypeT<char32_t>*, ::phantom::reflection::VisitorData), virtual_>("visit", &_::visit)
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(IntegralTypeT<wchar_t>*, ::phantom::lang::VisitorData), virtual_>("visit", &_::visit)
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(IntegralTypeT<char16_t>*, ::phantom::lang::VisitorData), virtual_>("visit", &_::visit)
+            /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(IntegralTypeT<char32_t>*, ::phantom::lang::VisitorData), virtual_>("visit", &_::visit)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("LanguageElementVisitor")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

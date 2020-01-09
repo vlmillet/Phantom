@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/VectorClass.h>
+#include <phantom/lang/VectorClass.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base base for stl compliant String classes.
 class PHANTOM_EXPORT_PHANTOM StringClass : public VectorClass
@@ -37,5 +37,5 @@ public:
 	virtual void append(void* a_pString, const void* a_pChars) const = 0;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

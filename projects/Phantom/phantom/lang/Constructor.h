@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Type.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a constructor member function.
 class PHANTOM_EXPORT_PHANTOM Constructor : public Method
@@ -22,7 +22,7 @@ class PHANTOM_EXPORT_PHANTOM Constructor : public Method
 
 public:
     template<typename t_Ty, bool t_is_default_constructible>
-    friend struct phantom::reflection::detail::VTableSizeOfDefaultConstructibleH;
+    friend struct phantom::lang::detail::VTableSizeOfDefaultConstructibleH;
 
     friend class Class;
 
@@ -81,5 +81,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

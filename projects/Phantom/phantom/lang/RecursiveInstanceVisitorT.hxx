@@ -22,8 +22,8 @@
 #include <phantom/typedef>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("RecursiveInstanceVisitorT")
 
         PHANTOM_STRUCT_T((class), (Meta), InstanceT)
@@ -41,15 +41,15 @@ PHANTOM_PACKAGE("phantom.reflection")
             .PHANTOM_T method<Meta*() const>("getMeta", &_::getMeta)
             ;
         }
-        PHANTOM_STRUCT_S((phantom::reflection::BaseClass), InstanceT)
+        PHANTOM_STRUCT_S((phantom::lang::BaseClass), InstanceT)
         {
             this_()
             .constructor<void(), default_>()
             .constructor<void(InstanceT<Class>, BaseClass const&)>()
             .method<bool() const>("operator bool", &_::operator notypedef<bool>)
-            .method<bool(const ::phantom::reflection::InstanceT<BaseClass> &) const>("operator==", &_::operator==)
-            .method<bool(const ::phantom::reflection::InstanceT<BaseClass> &) const>("operator!=", &_::operator!=)
-            .method<::phantom::reflection::InstanceT<BaseClass>(InstanceT<Class>)>("rebind", &_::rebind)
+            .method<bool(const ::phantom::lang::InstanceT<BaseClass> &) const>("operator==", &_::operator==)
+            .method<bool(const ::phantom::lang::InstanceT<BaseClass> &) const>("operator!=", &_::operator!=)
+            .method<::phantom::lang::InstanceT<BaseClass>(InstanceT<Class>)>("rebind", &_::rebind)
             .method<InstanceT<Class>() const>("getDerivedInstance", &_::getDerivedInstance)
             .method<InstanceT<Class>() const>("getBaseClassInstance", &_::getBaseClassInstance)
             .method<BaseClass const&() const>("getBaseClass", &_::getBaseClass)
@@ -70,9 +70,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
     PHANTOM_END("RecursiveInstanceVisitorT")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 namespace _RecursiveInstanceVisitorT {
-PHANTOM_PACKAGE("phantom.reflection")
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("RecursiveInstanceVisitorT")
 
         PHANTOM_STRUCT_T((class), (T), DerivedSelector)
@@ -90,9 +90,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
     PHANTOM_END("RecursiveInstanceVisitorT")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
-PHANTOM_PACKAGE("phantom.reflection")
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("RecursiveInstanceVisitorT")
 
         PHANTOM_CLASS_T((class), (Derived), RecursiveInstanceVisitorT)
@@ -112,84 +112,84 @@ PHANTOM_PACKAGE("phantom.reflection")
             .PHANTOM_T method<bool(InstanceT<Type>)>("walkUpEndFromType", &_::walkUpEndFromType)
             .PHANTOM_T method<bool(InstanceT<Type>)>("traverse", &_::traverse)
             .PHANTOM_T method<bool(InstanceT<Type>)>("traverseType", &_::traverseType)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<bool> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<bool> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(bool*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(char*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int8> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int8> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int8> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int8> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(int8*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint8> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint8> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint8> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint8> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(uint8*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int16> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int16> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int16> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int16> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(int16*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint16> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint16> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint16> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint16> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(uint16*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int32> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int32> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int32> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int32> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(int32*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint32> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint32> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint32> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint32> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(uint32*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int64> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<int64> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int64> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<int64> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(int64*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint64> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<uint64> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint64> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<uint64> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(uint64*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<float> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<float> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(float*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<double> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<double> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(double*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<longdouble> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(::phantom::reflection::InstanceT<FundamentalTypeT<longdouble> >)>("traverseFundamentalType", &_::traverseFundamentalType)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<longdouble> >)>("traverse", &_::traverse)
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<bool(::phantom::lang::InstanceT<FundamentalTypeT<longdouble> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(longdouble*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<wchar_t> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<wchar_t> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(wchar_t*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char16_t> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char16_t> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(char16_t*)>("traverseFundamental", &_::traverseFundamental)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char32_t> >)>("traverse", &_::traverse)
-            /// missing symbol(s) reflection (phantom::reflection::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char32_t> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(char32_t*)>("traverseFundamental", &_::traverseFundamental)
             .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("visitExtendedType", &_::visitExtendedType)
@@ -378,7 +378,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             ;
         }
     PHANTOM_END("RecursiveInstanceVisitorT")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

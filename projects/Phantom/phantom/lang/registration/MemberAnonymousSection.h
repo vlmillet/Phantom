@@ -13,12 +13,12 @@ HAUNT_STOP;
 #include "Type.h"
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/MemberAnonymousStruct.h>
-#include <phantom/reflection/MemberAnonymousUnion.h>
+#include <phantom/lang/MemberAnonymousStruct.h>
+#include <phantom/lang/MemberAnonymousUnion.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T>
 struct MemberAnonymousSectionRoot
@@ -53,7 +53,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     PHANTOM_DECL_OVERRIDE_DELETE_METHOD(SelfType);
 
     MemberAnonymousSectionBuilderT(Top* a_pTop)
-        : m_pMeta(PHANTOM_NEW(Meta)(reflection::Modifier::None, PHANTOM_R_FLAG_NATIVE)), m_pTop(a_pTop)
+        : m_pMeta(PHANTOM_NEW(Meta)(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)), m_pTop(a_pTop)
     {
         m_pTop->_PHNTM_getOwnerScope()->addMemberAnonymousSection(m_pMeta);
     }
@@ -74,11 +74,11 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     // member anonymous struct
 
     template<class DontTouchThis = void>
-    MemberAnonymousSectionBuilderT<reflection::MemberAnonymousStruct, SelfType>& struct_()
+    MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>& struct_()
     {
         _PHNTM_REG_STATIC_ASSERT((std::is_same<DontTouchThis, void>::value),
                                  "struct_<>() requires empty template signature if no name provided");
-        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<reflection::MemberAnonymousStruct, SelfType>)(this);
+        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>)(this);
         this->m_MASections.push_back(pSec);
         return *pSec;
     }
@@ -86,11 +86,11 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     // member anonymous union
 
     template<class DontTouchThis = void>
-    MemberAnonymousSectionBuilderT<reflection::MemberAnonymousUnion, SelfType>& union_()
+    MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>& union_()
     {
         _PHNTM_REG_STATIC_ASSERT(std::is_same<DontTouchThis, void>::value,
                                  "union_<>() requires empty template signature if no name provided");
-        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<reflection::MemberAnonymousUnion, SelfType>)(this);
+        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>)(this);
         this->m_MASections.push_back(pSec);
         return *pSec;
     }
@@ -100,14 +100,14 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         using MetaType = Meta;
         using FieldPtrT = decltype(a_FPtr);
-        _PHNTM_REG_STATIC_ASSERT(phantom::IsTypeDefined<reflection::FieldT<ValueType(ReflectedType::*)>>::value,
+        _PHNTM_REG_STATIC_ASSERT(phantom::IsTypeDefined<lang::FieldT<ValueType(ReflectedType::*)>>::value,
                                  "missing #include <phantom/field>");
         _root()->_addField(
         m_pMeta, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_FPtr), a_FilterMask, [](MemberBuilder const& a_Member) {
             static_cast<MetaType*>(a_Member.owner)
-            ->addField(a_Member.apply(PHANTOM_META_NEW(reflection::FieldT<ValueType(ReflectedType::*)>)(
+            ->addField(a_Member.apply(PHANTOM_META_NEW(lang::FieldT<ValueType(ReflectedType::*)>)(
             PHANTOM_TYPEOF(ValueType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, FieldPtrT), a_Member.filter,
-            reflection::Modifiers(Modifiers))));
+            lang::Modifiers(Modifiers))));
         });
         return *this;
     }
@@ -133,5 +133,5 @@ private:
     Meta*                            m_pMeta;
     SmallVector<PhantomBuilderBase*> m_MASections;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

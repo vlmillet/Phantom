@@ -27,8 +27,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("CppSymbolParser")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -36,7 +36,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         {
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
             this_()
             .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
             .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
@@ -44,7 +44,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("CppSymbolParser")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

@@ -25,8 +25,8 @@ struct PHANTOM_EXPORT_PHANTOM _PHNTM_StaticGlobalRegistrer
     ~_PHNTM_StaticGlobalRegistrer();
     void                              __PHNTM_process(RegistrationStep);
     virtual void                      _PHNTM_process(RegistrationStep) = 0;
-    reflection::Source*               _PHNTM_getSource() const;
-    reflection::Module*               _PHNTM_getModule() const;
+    lang::Source*               _PHNTM_getSource() const;
+    lang::Module*               _PHNTM_getModule() const;
     void                              _PHNTM_attach();
     void                              _PHNTM_detach();
     StringView                        _PHNTM_file;
@@ -39,7 +39,7 @@ struct PHANTOM_EXPORT_PHANTOM _PHNTM_StaticGlobalRegistrer
     int                               _PHNTM_tag;
 
 private:
-    mutable reflection::Source* _PHNTM_source_cache = nullptr;
+    mutable lang::Source* _PHNTM_source_cache = nullptr;
 };
 } // namespace detail
 } // namespace phantom

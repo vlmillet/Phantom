@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/LanguageElement.h>
+#include <phantom/lang/LanguageElement.h>
 #include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM TemplateSignature : public LanguageElement
 {
@@ -72,7 +72,7 @@ public:
     template<class T>
     TemplateParameter* addTemplateValueParameter(StringView a_Name)
     {
-        return addTemplateValueParameter(phantom::reflection::TypeOf<T>::object(), a_Name);
+        return addTemplateValueParameter(phantom::lang::TypeOf<T>::object(), a_Name);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,5 +277,5 @@ private:
     SmallMap<String, size_t> m_TemplateParameterAliasNames;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

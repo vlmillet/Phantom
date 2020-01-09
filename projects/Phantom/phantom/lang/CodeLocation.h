@@ -13,7 +13,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class Source;
 
@@ -234,5 +234,5 @@ typedef phantom::SmallVector<CodeRangeLocation> CodeRangeLocations;
 typedef phantom::SmallVector<CodePosition>      CodePositions;
 typedef phantom::SmallVector<CodeRange>         CodeRanges;
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/PointerType.h>
+#include <phantom/lang/PointerType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a Data pointer type.
 /// \code{.cpp}
@@ -152,5 +152,5 @@ protected:
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

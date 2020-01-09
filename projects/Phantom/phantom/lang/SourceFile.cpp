@@ -22,7 +22,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 SourceFile::SourceFile(StringView a_strAbsolutePath) : SourceStream("file:", a_strAbsolutePath)
 {
@@ -106,5 +106,5 @@ SourceFile* SourceFile::clone() const
     return PHANTOM_NEW(SourceFile)(getPath());
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

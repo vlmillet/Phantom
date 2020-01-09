@@ -26,7 +26,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "cleanup Module ctor arguments")
@@ -243,7 +243,7 @@ void Module::fetchDependencies(Modules& a_Modules) const
     }
 }
 
-void Module::findClasses(Classes& a_Classes, reflection::Class* a_pBaseClass /*= nullptr*/,
+void Module::findClasses(Classes& a_Classes, lang::Class* a_pBaseClass /*= nullptr*/,
                          bool a_bDefaultInstanciable /*= false*/) const
 {
     for (Package* p : m_Packages)
@@ -326,5 +326,5 @@ hash64 Module::computeHash() const
     return ComputeHash(buffer.c_str(), buffer.size());
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -22,7 +22,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateSignature* TemplateSignature::Create(uint a_Flags)
 {
@@ -289,5 +289,5 @@ TemplateSignature* TemplateSignature::clone(uint a_Flags) const
     return PHANTOM_NEW(TemplateSignature)(params, isVariadic(), a_Flags);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

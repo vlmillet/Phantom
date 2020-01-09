@@ -9,21 +9,21 @@
 HAUNT_STOP;
 
 #include <phantom/detail/StringConverter.h>
-#include <phantom/reflection/ClassType.h>
-#include <phantom/reflection/Constructor.h>
-#include <phantom/reflection/ConstructorT.h>
-#include <phantom/reflection/DestructorT.h>
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/MethodT.h>
-#include <phantom/reflection/TypeT.h>
+#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Constructor.h>
+#include <phantom/lang/ConstructorT.h>
+#include <phantom/lang/DestructorT.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/MethodT.h>
+#include <phantom/lang/TypeT.h>
 
 #define _PHNTM_do_not_declare_trivials_text                                                                            \
-    "do not declare reflection for default or trivial constructors/operators or destructors, it "                      \
-    "is automatic because required by the reflection system"
+    "do not declare lang for default or trivial constructors/operators or destructors, it "                      \
+    "is automatic because required by the lang system"
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
@@ -413,6 +413,6 @@ struct MetaTypeOf<ClassTypeT<t_Ty, t_Base> >
     typedef MetaTypeOf<Class>::type type;
 };
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

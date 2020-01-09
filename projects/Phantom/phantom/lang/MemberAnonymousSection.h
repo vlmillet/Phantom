@@ -7,15 +7,15 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/DataElement.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/DataElement.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for member anonymous sections (unions and structs).
 class PHANTOM_EXPORT_PHANTOM MemberAnonymousSection : public Symbol, public DataElement
@@ -194,5 +194,5 @@ protected:
     size_t                  m_uiOffset;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

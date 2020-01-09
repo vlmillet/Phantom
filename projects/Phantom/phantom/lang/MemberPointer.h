@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for member pointer types representations.
 class PHANTOM_EXPORT_PHANTOM MemberPointer : public Type
@@ -96,5 +96,5 @@ protected:
     ClassType* m_pObjectType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

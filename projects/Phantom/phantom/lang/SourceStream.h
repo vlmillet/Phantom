@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM SourceStream : public Object
 {
@@ -105,5 +105,5 @@ protected:
     String m_Path;
     String m_Protocol;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

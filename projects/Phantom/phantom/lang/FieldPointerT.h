@@ -11,13 +11,13 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/FieldPointer.h>
+#include <phantom/lang/FieldPointer.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Any>
 class FieldPointerT;
@@ -61,7 +61,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

@@ -22,8 +22,8 @@
 #include "registration/registration.h"
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/Function.h> // phantom::reflection::detail::pushModule
-#include <phantom/reflection/registration/Main.h>
+#include <phantom/lang/Function.h> // phantom::lang::detail::pushModule
+#include <phantom/lang/registration/Main.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/StringUtil.h>
 
@@ -31,10 +31,10 @@ namespace phantom
 {
 namespace detail
 {
-extern reflection::ClassHookFunc g_InstanceHook_func;
+extern lang::ClassHookFunc g_InstanceHook_func;
 }
 
-namespace reflection
+namespace lang
 {
 static_assert(IsObject<Class>::value, "HasRtti<Class>::value");
 
@@ -976,9 +976,9 @@ void Class::_onNativeElementsAccess()
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);
-            phantom::reflection::detail::pushModule(pThisModule);
+            phantom::lang::detail::pushModule(pThisModule);
             _onNativeElementsAccessImpl();
-            phantom::reflection::detail::popModule();
+            phantom::lang::detail::popModule();
         }
     }
 }
@@ -1216,7 +1216,7 @@ void Class::getDerivedClassesCascade(Classes& out) const
 }
 
 #if PHANTOM_CUSTOM_ENABLE_DERIVED_CLASS_CACHE
-phantom::reflection::Classes const& Class::getDerivedClassesCascade() const
+phantom::lang::Classes const& Class::getDerivedClassesCascade() const
 {
     return m_RecurseDerivedClasses;
 }
@@ -1835,5 +1835,5 @@ Class* StructBuilder::end()
     return pRes;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

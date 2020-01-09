@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ValueMember::ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask, Modifiers a_Modifiers /*= 0*/,
                          uint a_uiFlags /*= 0*/)
@@ -81,5 +81,5 @@ void ValueMember::copyValue(void* a_pDestinationObject, void const* a_pSourceObj
     getValueType()->deleteInstance(sourceBuffer);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -11,7 +11,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Undefineds
 {
@@ -34,5 +34,5 @@ private:
     Type*                   m_pConstVolatileType;
     SmallMap<size_t, Type*> m_Arrays;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

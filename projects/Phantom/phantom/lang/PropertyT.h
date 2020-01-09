@@ -11,14 +11,14 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Property.h>
+#include <phantom/lang/Property.h>
 #include <phantom/traits/RemoveConstReference.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class t_Ty, class t_ParamType, class t_ReturnType = t_ParamType, class t_SignalSign = void(t_ParamType)>
 class PropertyT : public Property
@@ -117,7 +117,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

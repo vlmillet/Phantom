@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ContainerClass.h>
+#include <phantom/lang/ContainerClass.h>
 #include <phantom/traits/MoveArg.h>
 /* **************** Declarations ***************** */
 
@@ -15,7 +15,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base base for sequential containers class representation (vector, list, ...).
 class PHANTOM_EXPORT_PHANTOM SequentialContainerClass : public ContainerClass
@@ -53,5 +53,5 @@ private:
     mutable RTData* m_Data = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

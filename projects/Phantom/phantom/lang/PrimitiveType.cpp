@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Constant* PrimitiveType::createConstant(void*, StringView /*= ""*/, PrimitiveType* /*= nullptr*/) const
 {
@@ -26,5 +26,5 @@ PrimitiveType::PrimitiveType(TypeKind a_eTypeKind, StringView a_strName, size_t 
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

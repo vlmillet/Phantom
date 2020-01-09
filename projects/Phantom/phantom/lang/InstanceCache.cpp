@@ -8,7 +8,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 InstanceCache::InstanceCache(Class* a_pClass) : m_pClass(a_pClass)
 {
@@ -35,5 +35,5 @@ void InstanceCache::kindDestroying(void* a_pInstance)
     PHANTOM_ASSERT(found != m_Instances.end());
     m_Instances.erase(found);
 }
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Constant : public Symbol
 {
@@ -73,14 +73,14 @@ protected:
     Type* m_pValueType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
-#include <phantom/reflection/ConstantT.h>
+#include <phantom/lang/ConstantT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 inline Constant* Constant::Create(t_Ty a_Constant, StringView name, Type* a_pType)
@@ -90,5 +90,5 @@ inline Constant* Constant::Create(t_Ty a_Constant, StringView name, Type* a_pTyp
     return PHANTOM_META_NEW(ConstantT<t_Ty>)(name, a_Constant);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

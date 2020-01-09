@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct AggregateField
 {
@@ -40,5 +40,5 @@ public:
 private:
     Type* m_pThisType = nullptr;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

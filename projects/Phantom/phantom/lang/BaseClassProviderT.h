@@ -14,7 +14,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_DerivedClass, typename... t_BaseClasses>
 struct BaseClassProviderT
@@ -53,7 +53,7 @@ struct BaseClassProviderT
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

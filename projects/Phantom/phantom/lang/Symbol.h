@@ -8,7 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/UserData.h>
-#include <phantom/reflection/LanguageElement.h>
+#include <phantom/lang/LanguageElement.h>
 #include <phantom/utils/SmallSet.h>
 #include <phantom/utils/StringHash.h>
 #include <phantom/utils/StringWithHash.h>
@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 typedef SmallMap<StringWithHash, Variant> MetaDatas;
 typedef SmallSet<String, 1>               Annotations;
@@ -44,15 +44,15 @@ class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement
 
     PHANTOM_DECLARE_META_CLASS(Symbol);
 
-    friend class phantom::reflection::LanguageElement;
-    friend class phantom::reflection::ClassType;
-    friend class phantom::reflection::Class;
-    friend class phantom::reflection::Scope;
-    friend class phantom::reflection::TemplateSpecialization;
-    friend class phantom::reflection::Module;
-    friend class phantom::reflection::Application;
-    friend class phantom::reflection::Source;
-    friend class phantom::reflection::Namespace;
+    friend class phantom::lang::LanguageElement;
+    friend class phantom::lang::ClassType;
+    friend class phantom::lang::Class;
+    friend class phantom::lang::Scope;
+    friend class phantom::lang::TemplateSpecialization;
+    friend class phantom::lang::Module;
+    friend class phantom::lang::Application;
+    friend class phantom::lang::Source;
+    friend class phantom::lang::Namespace;
 
 public:
     static bool IsCppIdentifier(StringView a_Name);
@@ -503,7 +503,7 @@ protected:
     UserData          m_UserData;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 //#include "Symbol.hxx"

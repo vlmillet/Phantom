@@ -13,7 +13,7 @@ HAUNT_STOP;
 #include <phantom/utils/Object.h>
 
 // --------------------------------------------------------------------------------------------
-// this file contains macro helper for instancing meta elements avoiding reflection recursivity
+// this file contains macro helper for instancing meta elements avoiding lang recursivity
 // --------------------------------------------------------------------------------------------
 
 /// @cond ADVANCED

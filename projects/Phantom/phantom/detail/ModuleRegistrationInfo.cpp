@@ -8,15 +8,15 @@
 
 #include <phantom/detail/StaticGlobalRegistrer.h>
 #include <phantom/detail/core_internal.h>
-#include <phantom/reflection/ClassType.h>
-#include <phantom/reflection/Module.h>
-#include <phantom/reflection/registration/registration.h>
+#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Module.h>
+#include <phantom/lang/registration/registration.h>
 
 // #define PHANTOM_CUSTOM_PLUGIN_ALWAYS_REGISTER_CLASS_MEMBERS
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ModuleRegistrationInfo::ModuleRegistrationInfo(size_t a_ModuleHandle)
     : m_uiFlags(0),
@@ -79,18 +79,18 @@ void ModuleRegistrationInfo::removeRegistrer(RegistrerId a_UniqueId)
     m_RegistrersById.erase(found);
 }
 
-void ModuleRegistrationInfo::setModule(reflection::Module* a_pModule)
+void ModuleRegistrationInfo::setModule(lang::Module* a_pModule)
 {
     m_pModule = a_pModule;
     m_pModule->m_HashToTypeMap = std::move(m_HashToTypeMap);
     m_HashToTypeMap.clear();
 }
 
-void ModuleRegistrationInfo::registerTypeByHash(uint64 a_Hash, reflection::Type* a_pType)
+void ModuleRegistrationInfo::registerTypeByHash(uint64 a_Hash, lang::Type* a_pType)
 {
     if (m_pModule == nullptr)
     {
-        reflection::Type*& pType = m_HashToTypeMap[a_Hash];
+        lang::Type*& pType = m_HashToTypeMap[a_Hash];
         PHANTOM_ASSERT(pType == nullptr);
         pType = a_pType;
         return;
@@ -98,7 +98,7 @@ void ModuleRegistrationInfo::registerTypeByHash(uint64 a_Hash, reflection::Type*
     m_pModule->_registerType(a_Hash, a_pType);
 }
 
-reflection::Type* ModuleRegistrationInfo::registeredTypeByHash(uint64 a_Hash)
+lang::Type* ModuleRegistrationInfo::registeredTypeByHash(uint64 a_Hash)
 {
     if (m_pModule == nullptr)
     {
@@ -116,12 +116,12 @@ void ModuleRegistrationInfo::addTypeInstallationInfos(TypeInstallationInfo* a_pT
     int i = int(TypeInstallationStep::TemplateSignature);
     for (; i <= int(m_CurrentInstallationStep); ++i)
     {
-        if (a_pTii->type->getTypeKind() != reflection::TypeKind::Enum)
+        if (a_pTii->type->getTypeKind() != lang::TypeKind::Enum)
         {
             if (i == int(TypeInstallationStep::TemplateSignature))
             {
                 ModuleRegistrationInfo::_SetOnRequestMembersFunc(
-                static_cast<reflection::ClassType*>(a_pTii->type),
+                static_cast<lang::ClassType*>(a_pTii->type),
                 TypeInstallationDelegate(a_pTii, &TypeInstallationInfo::exec));
             }
             if (i == int(TypeInstallationStep::Members))
@@ -151,10 +151,10 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
         for (size_t i = 0; i < count; ++i)
         {
             TypeInstallationInfo* pTii = m_TypeInstallationInfos[i];
-            if (pTii->type->getTypeKind() != reflection::TypeKind::Enum)
+            if (pTii->type->getTypeKind() != lang::TypeKind::Enum)
             {
                 PHANTOM_ASSERT(pTii->type->asClassType());
-                _SetOnRequestMembersFunc(static_cast<reflection::ClassType*>(pTii->type),
+                _SetOnRequestMembersFunc(static_cast<lang::ClassType*>(pTii->type),
                                          TypeInstallationDelegate(pTii, &TypeInstallationInfo::exec));
             }
         }
@@ -170,9 +170,9 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
             for (size_t i = 0; i < count; ++i)
             {
                 TypeInstallationInfo* pTii = m_TypeInstallationInfos[i];
-                if (pTii->type->getTypeKind() != reflection::TypeKind::Enum)
+                if (pTii->type->getTypeKind() != lang::TypeKind::Enum)
                 {
-                    struct FakeClassType : public reflection::ClassType
+                    struct FakeClassType : public lang::ClassType
                     {
                     public:
                         using ClassType::_onElementsAccess;
@@ -198,7 +198,7 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
         }
     }
 }
-void ModuleRegistrationInfo::stepTypeInstallation(reflection::Type* a_pType)
+void ModuleRegistrationInfo::stepTypeInstallation(lang::Type* a_pType)
 {
     if (m_bInstalled OR m_CurrentInstallationStep == TypeInstallationStep::Uninstalled)
         return;
@@ -239,7 +239,7 @@ void ModuleRegistrationInfo::stepRegistration(RegistrationStep a_Step)
     _PHNTM_APPLY_TO_REGISTRERS(a_Step, _PHNTM_CALL__PHNTM_process);
 }
 
-TypeInstallationInfo::TypeInstallationInfo(reflection::Type* a_pType, reflection::Source* a_pSource,
+TypeInstallationInfo::TypeInstallationInfo(lang::Type* a_pType, lang::Source* a_pSource,
                                            TypeInstallFunc a_setupFunc)
     : installFunc(a_setupFunc), type(a_pType), m_pSource(a_pSource), steps(uint(TypeInstallationStep::Uninstalled))
 {
@@ -251,7 +251,7 @@ void TypeInstallationInfo::exec(TypeInstallationStep a_Step)
     if (steps & (1 << int(a_Step)))
         return;
     steps |= (1 << int(a_Step));
-    reflection::Source* pSource = type->getSource();
+    lang::Source* pSource = type->getSource();
 
     if (pSource == nullptr)
     // on the fly templates come here :
@@ -259,27 +259,27 @@ void TypeInstallationInfo::exec(TypeInstallationStep a_Step)
         if (m_pSource)
             pSource = m_pSource;
         else
-            pSource = phantom::reflection::detail::currentSource();
+            pSource = phantom::lang::detail::currentSource();
     }
     if (pSource)
-        phantom::reflection::detail::pushSource(pSource);
+        phantom::lang::detail::pushSource(pSource);
     installFunc(type, a_Step);
     if (pSource)
-        phantom::reflection::detail::popSource();
+        phantom::lang::detail::popSource();
 }
 
 void TypeInstallationInfo::installSymbolExtenders()
 {
 }
 
-void ModuleRegistrationInfo::_SetOnRequestMembersFunc(reflection::ClassType* a_pType, TypeInstallationDelegate func)
+void ModuleRegistrationInfo::_SetOnRequestMembersFunc(lang::ClassType* a_pType, TypeInstallationDelegate func)
 {
     PHANTOM_ASSERT(a_pType->m_OnDemandMembersFunc == nullptr,
                    "Type with same name already registered in the same module, please check that "
-                   "you don't have duplicate reflection declaration or wrong .hxx include");
+                   "you don't have duplicate lang declaration or wrong .hxx include");
     a_pType->m_OnDemandMembersFunc = func;
 }
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

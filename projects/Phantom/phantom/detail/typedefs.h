@@ -236,7 +236,7 @@ struct Closure
     int   offset = 0;
 };
 
-namespace reflection
+namespace lang
 {
 class Type;
 }
@@ -289,9 +289,9 @@ typedef uint64 hash64;
 
 HAUNT_END("phantom.Core");
 
-namespace reflection
+namespace lang
 {
-HAUNT_SOURCE("phantom.reflection.Core");
+HAUNT_SOURCE("phantom.lang.Core");
 
 enum ABI
 {
@@ -317,8 +317,8 @@ enum ABI
 
 typedef ABI ECallingConv; // synonyms
 
-HAUNT_END("phantom.reflection.Core");
-} // namespace reflection
+HAUNT_END("phantom.lang.Core");
+} // namespace lang
 
 template<typename t_Output, typename t_Input>
 PHANTOM_FORCEINLINE t_Output union_cast(t_Input i)

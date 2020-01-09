@@ -22,8 +22,8 @@
 #include <phantom/constructor>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("ExecutionContext")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -42,13 +42,13 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void*()>("resultPointer", &_::resultPointer)
             .method<void(void*)>("pushResultPointer", &_::pushResultPointer)
             .method<void()>("popResultPointer", &_::popResultPointer)
-            /// missing symbol(s) reflection (phantom::reflection::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Evaluable*, Type*, void*)>("pushTempDestruction", &_::pushTempDestruction)
-            /// missing symbol(s) reflection (phantom::reflection::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Evaluable*)>("releaseTemporaries", &_::releaseTemporaries)
             .method<void()>("releaseTemporaries", &_::releaseTemporaries)
             .method<bool(Subroutine*, void**, size_t), pure_virtual>("call", &_::call)
-            /// missing symbol(s) reflection (phantom::reflection::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Statement*), pure_virtual>("setNextStatement", &_::setNextStatement)
             .method<byte*() const, pure_virtual>("getStackPointer", &_::getStackPointer)
             .method<byte*() const, pure_virtual>("getBasePointer", &_::getBasePointer)
@@ -59,7 +59,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("ExecutionContext")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

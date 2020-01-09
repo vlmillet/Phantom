@@ -9,8 +9,8 @@
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Signal.h>
-#include <phantom/reflection/SignatureH.h>
+#include <phantom/lang/Signal.h>
+#include <phantom/lang/SignatureH.h>
 #include <phantom/traits/indices.h>
 /* *********************************************** */
 
@@ -18,7 +18,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty, class t_Signature>
 class SignalT;
@@ -96,7 +96,7 @@ private:
     FieldPtrType m_Pointer;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

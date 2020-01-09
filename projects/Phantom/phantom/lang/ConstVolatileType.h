@@ -7,15 +7,15 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ConstType.h>
-#include <phantom/reflection/QualifiedType.h>
-#include <phantom/reflection/VolatileType.h>
+#include <phantom/lang/ConstType.h>
+#include <phantom/lang/QualifiedType.h>
+#include <phantom/lang/VolatileType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a const volatile type
 ///         \code{.cpp}
@@ -29,8 +29,8 @@ class PHANTOM_EXPORT_PHANTOM ConstVolatileType : public QualifiedType
 
     PHANTOM_DECLARE_META_CLASS(ConstVolatileType);
 
-    friend class phantom::reflection::Namespace;
-    friend class phantom::reflection::Type;
+    friend class phantom::lang::Namespace;
+    friend class phantom::lang::Type;
 
 private:
     ConstVolatileType(Type* a_pType);
@@ -118,5 +118,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

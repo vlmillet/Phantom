@@ -21,7 +21,7 @@ phantom::Variant::TypeConverter Variant::GetTypeConverter()
     return s_VariantTypeConverter;
 }
 
-Variant::Variant(reflection::Type* a_pType, void const* a_pValue)
+Variant::Variant(lang::Type* a_pType, void const* a_pValue)
 {
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
     ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
@@ -30,7 +30,7 @@ Variant::Variant(reflection::Type* a_pType, void const* a_pValue)
     a_pType->copyConstruct(pBuffer, a_pValue);
 }
 
-Variant::Variant(reflection::Type* a_pType, void* a_pValue, bool a_bMove)
+Variant::Variant(lang::Type* a_pType, void* a_pValue, bool a_bMove)
 {
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
     ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
@@ -58,7 +58,7 @@ void Variant::moveAssign(void* a_pValue)
     m_pType->moveAssign(data(), a_pValue);
 }
 
-void Variant::copyConstruct(reflection::Type* a_pType, const void* a_pValue)
+void Variant::copyConstruct(lang::Type* a_pType, const void* a_pValue)
 {
     if (m_pType)
     {
@@ -73,7 +73,7 @@ void Variant::copyConstruct(reflection::Type* a_pType, const void* a_pValue)
     a_pType->copyConstruct(pBuffer, a_pValue);
 }
 
-void Variant::moveConstruct(reflection::Type* a_pType, void* a_pValue)
+void Variant::moveConstruct(lang::Type* a_pType, void* a_pValue)
 {
     if (m_pType)
     {

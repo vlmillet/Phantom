@@ -29,8 +29,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("SourceFile")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             using String = typedef_< phantom::String>;
             using StringView = typedef_< phantom::StringView>;
             this_()
-            .inherits<::phantom::reflection::SourceStream>()
+            .inherits<::phantom::lang::SourceStream>()
         
         .public_()
             .staticMethod<SourceFile*(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
@@ -61,7 +61,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("SourceFile")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

@@ -22,10 +22,10 @@ namespace phantom
 {
 namespace detail
 {
-extern RawPlacement<reflection::Namespace> g_pGlobalNamespace;
+extern RawPlacement<lang::Namespace> g_pGlobalNamespace;
 }
 
-namespace reflection
+namespace lang
 {
 PHANTOM_DEFINE_META_CLASS(Namespace);
 
@@ -348,6 +348,6 @@ void Namespace::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     return getQualifiedName(a_Buf);
 }
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

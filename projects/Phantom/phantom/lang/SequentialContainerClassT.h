@@ -9,12 +9,12 @@
 HAUNT_STOP;
 
 #include <phantom/detail/newImpl.h>
-#include <phantom/reflection/SequentialContainerClass.h>
-#include <phantom/reflection/ContainerClassT.h>
+#include <phantom/lang/SequentialContainerClass.h>
+#include <phantom/lang/ContainerClassT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PushBackOrAssert
 {
@@ -80,5 +80,5 @@ public:
 	}
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ClassType.h>
-#include <phantom/reflection/Placeholder.h>
+#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Placeholder.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Placeholder class type.
 class PHANTOM_EXPORT_PHANTOM PlaceholderClassType : public ClassType, public Placeholder
@@ -86,5 +86,5 @@ public:
     Placeholder* clone(uint a_Flags = 0) const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -12,11 +12,11 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/reflection/PropertyT.h>
+#include <phantom/lang/PropertyT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 }
 } // namespace phantom

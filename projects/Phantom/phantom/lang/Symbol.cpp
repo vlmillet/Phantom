@@ -20,7 +20,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static Symbols          empty_elements;
 static MetaDatas        empty_metas;
@@ -596,5 +596,5 @@ hash64 Symbol::getHash() const
     return m_Hash;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

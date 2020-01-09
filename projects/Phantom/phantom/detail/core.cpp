@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include <phantom/plugin>
-#include <phantom/reflection/SourceFile.h>
-#include <phantom/reflection/registration/Main.h>
+#include <phantom/lang/SourceFile.h>
+#include <phantom/lang/registration/Main.h>
 #include <phantom/utils/StringUtil.h>
 #include <sstream>
 
@@ -25,11 +25,11 @@
 #endif
 /* *********************************************** */
 
-#include <phantom/reflection/Application.h>
-#include <phantom/reflection/Module.h>
-#include <phantom/reflection/Namespace.h>
-#include <phantom/reflection/Package.h>
-#include <phantom/reflection/Source.h>
+#include <phantom/lang/Application.h>
+#include <phantom/lang/Module.h>
+#include <phantom/lang/Namespace.h>
+#include <phantom/lang/Package.h>
+#include <phantom/lang/Source.h>
 #include <phantom/utils/Console.h>
 #if PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_WINDOWS
 #    include <thread>
@@ -50,7 +50,7 @@ void macosx_moduleAdded(const struct mach_header* mh, intptr_t vmaddr_slide)
 #include "core_internal.h"
 
 #include <phantom/alignof>
-#include <phantom/reflection/Plugin.h>
+#include <phantom/lang/Plugin.h>
 #include <phantom/traits/IntTypeBySize.h>
 #include <phantom/utils/SmallMultimap.h>
 #include <phantom/utils/SmallSet.h>
@@ -62,9 +62,9 @@ void macosx_moduleAdded(const struct mach_header* mh, intptr_t vmaddr_slide)
 #include "StaticGlobalRegistrer.h"
 
 #include <phantom/detail/ClassOfFwd.h>
-#include <phantom/reflection/reflection.h>
-#include <phantom/reflection/registration/GlobalRegistrer.h>
-#include <phantom/reflection/registration/Main.h>
+#include <phantom/lang/reflection.h>
+#include <phantom/lang/registration/GlobalRegistrer.h>
+#include <phantom/lang/registration/Main.h>
 #include <phantom/traits/FunctionTypeToMethodPointerType.h>
 #include <phantom/utils/crc64.h>
 
@@ -82,14 +82,14 @@ PHANTOM_STATIC_ASSERT(PHANTOM_PP_ARGCOUNT(0, 1) == 2);
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
 void InitGlobals();
 void ReleaseGlobals();
 } // namespace detail
-} // namespace reflection
+} // namespace lang
 
 PHANTOM_STATIC_ASSERT(PHANTOM_SIZE_OF_LONGLONG == sizeof(long long));
 
@@ -171,41 +171,41 @@ void staticAllocatedDeleteEx(RawPlacement<T>& a_Placement)
     a_Placement.destroy();
 }
 
-static reflection::Main* g_instance;
+static lang::Main* g_instance;
 static StringView        g_pSource;
 static StringView        g_pPackage;
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
-static reflection::LanguageElements* g_elements;
+static lang::LanguageElements* g_elements;
 #endif
 static MessageReportFunc  g_assert_func;
 static MessageReportFunc  g_warning_func;
 static MessageReportFunc  g_error_func;
 static LogFunc            g_LogFunc;
-reflection::ClassHookFunc g_InstanceHook_func;
+lang::ClassHookFunc g_InstanceHook_func;
 
-typedef SmallMap<String, reflection::Package*> PackageMap;
+typedef SmallMap<String, lang::Package*> PackageMap;
 
 typedef SmallVector<void*, 4096> ToFree;
 
-RawPlacement<reflection::Namespace>        g_pGlobalNamespace;
-static RawPlacement<reflection::Namespace> g_pPhantomNamespace;
-static RawPlacement<reflection::Namespace> g_pStdNamespace;
-static RawPlacement<reflection::Namespace> g_pReflectionNamespace;
+RawPlacement<lang::Namespace>        g_pGlobalNamespace;
+static RawPlacement<lang::Namespace> g_pPhantomNamespace;
+static RawPlacement<lang::Namespace> g_pStdNamespace;
+static RawPlacement<lang::Namespace> g_pReflectionNamespace;
 static RawPlacement<Strings>               g_pMetaDataNames;
 
 static std::thread::id g_MainThreadId = std::this_thread::get_id();
 
 static void*               g_typeOf_cycling_address_workaround_ptr;
-static reflection::Module* g_module;
+static lang::Module* g_module;
 
-RawPlacement<reflection::Application> g_pApplication;
+RawPlacement<lang::Application> g_pApplication;
 
-PHANTOM_EXPORT_PHANTOM reflection::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, StringView a_File, int a_Line,
+PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, StringView a_File, int a_Line,
                                                               int a_Tag)
 {
     _PHNTM_StaticGlobalRegistrer* pReg =
     dynamic_initializer_()->moduleRegistrationInfo(a_ModuleHandle)->findRegistrer(a_File, a_Line, a_Tag);
-    return pReg ? static_cast<reflection::_PHNTM_GlobalRegistrer*>(pReg)->_PHNTM_getLastSymbol() : nullptr;
+    return pReg ? static_cast<lang::_PHNTM_GlobalRegistrer*>(pReg)->_PHNTM_getLastSymbol() : nullptr;
 }
 
 void DynamicCppInitializerH::StaticGlobalsInit()
@@ -215,7 +215,7 @@ void DynamicCppInitializerH::StaticGlobalsInit()
     g_pApplication->addElement(g_pGlobalNamespace);
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
-    g_pReflectionNamespace.construct("reflection");
+    g_pReflectionNamespace.construct("lang");
 
     g_pGlobalNamespace->addNamespace(g_pStdNamespace);
     g_pGlobalNamespace->addNamespace(g_pPhantomNamespace);
@@ -227,12 +227,12 @@ void DynamicCppInitializerH::StaticGlobalsInit()
     PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pReflectionNamespace);
     PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pApplication);
 
-    reflection::initializeSystem();
+    lang::initializeSystem();
 }
 
 void DynamicCppInitializerH::StaticGlobalsRelease()
 {
-    reflection::releaseSystem();
+    lang::releaseSystem();
 
     g_pPhantomNamespace->removeNamespace(g_pReflectionNamespace);
     g_pGlobalNamespace->removeNamespace(g_pPhantomNamespace);
@@ -244,10 +244,10 @@ void DynamicCppInitializerH::StaticGlobalsRelease()
     staticAllocatedDeleteEx(g_pPhantomNamespace);
     staticAllocatedDeleteEx(g_pGlobalNamespace);
 
-    PHANTOM_CLASSOF(reflection::Application)->unregisterInstance(g_pApplication);
+    PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
     g_pApplication->terminate();
-    g_pApplication->~Application(); // special case for Application which cannot use reflection because it is the
-                                    // one holding the reflection and releasing it on 'terminate'
+    g_pApplication->~Application(); // special case for Application which cannot use lang because it is the
+                                    // one holding the lang and releasing it on 'terminate'
     StaticGlobals::Release();
 }
 
@@ -275,7 +275,7 @@ void DynamicCppInitializerH::init()
     g_pPackage.clear();
 
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
-    g_elements = PHANTOM_NEW(reflection::LanguageElements);
+    g_elements = PHANTOM_NEW(lang::LanguageElements);
 #endif
 
     g_PHNTM_slot_pool_mutex.construct();
@@ -285,12 +285,12 @@ void DynamicCppInitializerH::init()
 
     g_typeOf_cycling_address_workaround_ptr = &g_typeOf_cycling_address_workaround_ptr;
 
-    reflection::detail::InitGlobals();
+    lang::detail::InitGlobals();
 }
 
 void DynamicCppInitializerH::release()
 {
-    reflection::detail::ReleaseGlobals();
+    lang::detail::ReleaseGlobals();
     g_PHNTM_slot_pool_mutex.destroy();
     g_pMetaDataNames.destroy();
 }
@@ -311,14 +311,14 @@ void DynamicCppInitializerH::registerModule(size_t a_ModuleHandle, StringView a_
     popInstallation();
 }
 
-void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, phantom::reflection::Type* a_pType)
+void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, phantom::lang::Type* a_pType)
 {
     _PHNTM_R_MTX_GUARD();
     registerTypeHash(a_ModuleHandle, a_Hash, a_pType);
-    reflection::Namespace::Global()->addType(a_pType);
+    lang::Namespace::Global()->addType(a_pType);
 }
 
-void DynamicCppInitializerH::registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, phantom::reflection::Type* a_pType)
+void DynamicCppInitializerH::registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, phantom::lang::Type* a_pType)
 {
     _PHNTM_R_MTX_GUARD();
     PHANTOM_ASSERT(moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash) == nullptr,
@@ -327,16 +327,16 @@ void DynamicCppInitializerH::registerTypeHash(size_t a_ModuleHandle, hash64 a_Ha
 }
 
 void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName,
-                                          phantom::reflection::Type* a_pType)
+                                          phantom::lang::Type* a_pType)
 {
     _PHNTM_R_MTX_GUARD();
     bool isTemplateInstance = a_pType->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     registerTypeHash(a_ModuleHandle, a_Hash, a_pType);
     if (!isTemplateInstance)
     {
-        phantom::reflection::Symbol* pNamingScope = a_ScopeName.empty()
-        ? reflection::Namespace::Global()
-        : reflection::Application::Get()->findCppSymbol(a_ScopeName);
+        phantom::lang::Symbol* pNamingScope = a_ScopeName.empty()
+        ? lang::Namespace::Global()
+        : lang::Application::Get()->findCppSymbol(a_ScopeName);
         PHANTOM_ASSERT(pNamingScope, "scope '%.*s' has not been registered => check your type's nesting class",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_ScopeName));
         PHANTOM_ASSERT(pNamingScope->asScope(), "'%.*s' is not a valid C++ scope (class, namespace, etc...)",
@@ -346,28 +346,28 @@ void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, 
     }
 }
 
-void DynamicCppInitializerH::stepTypeInstallation(reflection::Type* a_pType)
+void DynamicCppInitializerH::stepTypeInstallation(lang::Type* a_pType)
 {
-    reflection::Module* pModule = a_pType->getModule();
+    lang::Module* pModule = a_pType->getModule();
     if (pModule == nullptr)
         return;
     moduleRegistrationInfo(pModule->getHandle())->stepTypeInstallation(a_pType);
 }
 
-void DynamicCppInitializerH::stepTemplateInstanceInstallation(size_t a_ModuleHandle, reflection::Type* a_pType)
+void DynamicCppInitializerH::stepTemplateInstanceInstallation(size_t a_ModuleHandle, lang::Type* a_pType)
 {
     moduleRegistrationInfo(a_ModuleHandle)->stepTypeInstallation(a_pType);
 }
 
-reflection::Namespace* DynamicCppInitializerH::parseNamespace(StringView a_strNamespace) const
+lang::Namespace* DynamicCppInitializerH::parseNamespace(StringView a_strNamespace) const
 {
-    return reflection::Namespace::Global()->findOrCreateNamespace(a_strNamespace);
+    return lang::Namespace::Global()->findOrCreateNamespace(a_strNamespace);
 }
 
-void DynamicCppInitializerH::registerTemplateInstance(size_t a_ModuleHandle, reflection::TypeInstallationInfo* a_pTii)
+void DynamicCppInitializerH::registerTemplateInstance(size_t a_ModuleHandle, lang::TypeInstallationInfo* a_pTii)
 {
     _PHNTM_R_MTX_GUARD();
-    if (reflection::detail::currentModule())
+    if (lang::detail::currentModule())
     {
         /// auto registration by template argument use or explicit instanciation => fallback to
         /// classical registerTypeInstallationInfo
@@ -376,26 +376,26 @@ void DynamicCppInitializerH::registerTemplateInstance(size_t a_ModuleHandle, ref
     else
     {
         /// auto registration by TypeOf<>::object() in user defined functions
-        reflection::Module* pModule = reflection::Application::Get()->getModuleByHandle(a_ModuleHandle);
+        lang::Module* pModule = lang::Application::Get()->getModuleByHandle(a_ModuleHandle);
         PHANTOM_ASSERT(pModule,
                        "No module installed which match the given module handle, ensure "
                        "'PHANTOM_PLUGIN(...)' or 'PHANTOM_MAIN(...)' has been used correctly");
-        reflection::detail::pushModule(pModule);
-        reflection::detail::pushSource(pModule->getAnonymousSource());
+        lang::detail::pushModule(pModule);
+        lang::detail::pushSource(pModule->getAnonymousSource());
         registerTypeInstallationInfo(a_pTii);
-        reflection::detail::popSource();
-        reflection::detail::popModule();
+        lang::detail::popSource();
+        lang::detail::popModule();
     }
 }
 
-void DynamicCppInitializerH::registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo)
+void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo)
 {
     if (a_pTypeInstallInfo->installFunc == nullptr)
         return;
 
     _PHNTM_R_MTX_GUARD();
 
-    PHANTOM_ASSERT(reflection::detail::currentModule());
+    PHANTOM_ASSERT(lang::detail::currentModule());
 
     if (a_pTypeInstallInfo->type->getOwner() ==
         nullptr AND NOT(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM)))
@@ -406,7 +406,7 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(reflection::TypeInstal
         a_pTypeInstallInfo->m_pSource->addType(a_pTypeInstallInfo->type);
     }
 
-    reflection::ModuleRegistrationInfo* info = moduleRegistrationInfo(reflection::detail::currentModule()->getHandle());
+    lang::ModuleRegistrationInfo* info = moduleRegistrationInfo(lang::detail::currentModule()->getHandle());
 
     PHANTOM_ASSERT(info);
 
@@ -450,12 +450,12 @@ void DynamicCppInitializerH::unregisterModule(size_t a_ModuleHandle)
         if (it->m_ModuleHandle == a_ModuleHandle)
         {
             m_ModuleRegistrationInfos.erase(it);
-            if (reflection::Application::Get())
+            if (lang::Application::Get())
             {
-                if (reflection::Plugin::HasUnloadingInProgress())
+                if (lang::Plugin::HasUnloadingInProgress())
                 {
-                    reflection::Application::Get()->_uninstallNativeModule(
-                    reflection::Application::Get()->getModuleByHandle(a_ModuleHandle));
+                    lang::Application::Get()->_uninstallNativeModule(
+                    lang::Application::Get()->getModuleByHandle(a_ModuleHandle));
                 }
             }
             return;
@@ -470,9 +470,9 @@ void DynamicCppInitializerH::stepRegistration(RegistrationStep step)
     {
         if (it->m_bInstalled)
             continue;
-        reflection::detail::pushModule(it->m_pModule);
+        lang::detail::pushModule(it->m_pModule);
         it->stepRegistration(step);
-        reflection::detail::popModule();
+        lang::detail::popModule();
     }
 }
 
@@ -482,13 +482,13 @@ void DynamicCppInitializerH::stepTypeInstallation(TypeInstallationStep step)
     {
         if (it->m_bInstalled)
             continue;
-        reflection::detail::pushModule(it->m_pModule);
+        lang::detail::pushModule(it->m_pModule);
         it->installTypes(step);
-        reflection::detail::popModule();
+        lang::detail::popModule();
     }
 }
 
-size_t DynamicCppInitializerH::computeModuleRegistrationInfoLevel(reflection::ModuleRegistrationInfo const& m)
+size_t DynamicCppInitializerH::computeModuleRegistrationInfoLevel(lang::ModuleRegistrationInfo const& m)
 {
     if (m.m_Dependencies.empty())
         return 0;
@@ -521,14 +521,14 @@ void DynamicCppInitializerH::installModules()
         setAutoRegistrationLocked(false);
     size_t modulesToInstallCount = 0;
 
-    SmallVector<reflection::ModuleRegistrationInfo*> infos;
+    SmallVector<lang::ModuleRegistrationInfo*> infos;
     for (auto& info : m_ModuleRegistrationInfos)
     {
         infos.push_back(&info);
     }
 
     std::sort(infos.begin(), infos.end(),
-              [this](reflection::ModuleRegistrationInfo* m0, reflection::ModuleRegistrationInfo* m1) -> bool {
+              [this](lang::ModuleRegistrationInfo* m0, lang::ModuleRegistrationInfo* m1) -> bool {
                   return computeModuleRegistrationInfoLevel(*m0) < computeModuleRegistrationInfoLevel(*m1);
               });
 
@@ -536,7 +536,7 @@ void DynamicCppInitializerH::installModules()
     {
         auto phantomModuleIt =
         std::find_if(infos.begin(), infos.end(),
-                     [](reflection::ModuleRegistrationInfo* info) -> bool { return info->m_Name == "Phantom"; });
+                     [](lang::ModuleRegistrationInfo* info) -> bool { return info->m_Name == "Phantom"; });
         PHANTOM_ASSERT(phantomModuleIt != infos.end());
         if (phantomModuleIt != infos.begin())
         {
@@ -575,15 +575,15 @@ void DynamicCppInitializerH::installModules()
 #    endif
 #endif
         }
-        reflection::Application::Get()->_createNativeModule(&*it);
+        lang::Application::Get()->_createNativeModule(&*it);
         modulesToInstallCount++;
     }
 
     if (!m_bPhantomInstalled)
-        reflection::Application::Get()->_registerBuiltInTypes();
+        lang::Application::Get()->_registerBuiltInTypes();
 
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
-    PHANTOM_ASSERT(reflection::Plugin::HasLoadingInProgress() OR reflection::Application::Get()->getMainModule() ==
+    PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() OR lang::Application::Get()->getMainModule() ==
                    nullptr OR                                    modulesToInstallCount == 1);
 
     // no module to install
@@ -665,7 +665,7 @@ void DynamicCppInitializerH::installModules()
         if (it->rtti) // if not rtti, means cancelled
         {
             // TODO : remove ?
-            reflection::Class* pClass = reflection::Application::Get()->findCppClass(it->typeName);
+            lang::Class* pClass = lang::Application::Get()->findCppClass(it->typeName);
             PHANTOM_ASSERT(pClass);
             // Force dynamic delete function to the proxy one if required
             it->rtti->metaClass = pClass;
@@ -680,7 +680,7 @@ void DynamicCppInitializerH::installModules()
         setAutoRegistrationLocked(autoRegistrationLocked);
 
     PHANTOM_LOG_NATIVE_REFLECTION("check modules completeness and auto load meta data...");
-    for (reflection::ModuleRegistrationInfo* it : infos)
+    for (lang::ModuleRegistrationInfo* it : infos)
     {
         if (it->m_bInstalled)
             continue;
@@ -689,7 +689,7 @@ void DynamicCppInitializerH::installModules()
 
         for (auto dep : it->m_Dependencies)
         {
-            reflection::Module* pDep = reflection::Application::Get()->getModule(dep);
+            lang::Module* pDep = lang::Application::Get()->getModule(dep);
             PHANTOM_ASSERT(pDep, "module '%s' is a dependency of module '%s' and has not been loaded", dep, it->m_Name);
             it->m_pModule->addDependency(pDep);
         }
@@ -697,11 +697,11 @@ void DynamicCppInitializerH::installModules()
         it->m_bInstalled = true;
         if (it->m_pModule->getOnLoadFunc())
             it->m_pModule->getOnLoadFunc()();
-        reflection::Application::Get()->_moduleAdded(it->m_pModule);
+        lang::Application::Get()->_moduleAdded(it->m_pModule);
     }
 }
 
-reflection::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(StringView name)
+lang::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(StringView name)
 {
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
@@ -711,7 +711,7 @@ reflection::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistratio
     return nullptr;
 }
 
-reflection::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(size_t a_ModuleHandle)
+lang::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(size_t a_ModuleHandle)
 {
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
@@ -721,9 +721,9 @@ reflection::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistratio
     return nullptr;
 }
 
-reflection::ModuleRegistrationInfo* DynamicCppInitializerH::moduleRegistrationInfo(size_t a_ModuleHandle)
+lang::ModuleRegistrationInfo* DynamicCppInitializerH::moduleRegistrationInfo(size_t a_ModuleHandle)
 {
-    reflection::ModuleRegistrationInfo* info = nullptr;
+    lang::ModuleRegistrationInfo* info = nullptr;
     size_t                              uninstalledModuleCount = 0;
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
@@ -742,10 +742,10 @@ reflection::ModuleRegistrationInfo* DynamicCppInitializerH::moduleRegistrationIn
     return info;
 }
 
-reflection::Package* DynamicCppInitializerH::package(reflection::Module* a_pModule, StringView a_strName, bool* a_pNew)
+lang::Package* DynamicCppInitializerH::package(lang::Module* a_pModule, StringView a_strName, bool* a_pNew)
 {
     PHANTOM_ASSERT(a_pModule);
-    for (auto pModule : reflection::Application::Get()->getModules())
+    for (auto pModule : lang::Application::Get()->getModules())
     {
         for (auto pPck : pModule->getPackages())
         {
@@ -766,12 +766,12 @@ reflection::Package* DynamicCppInitializerH::package(reflection::Module* a_pModu
     }
     if (a_pNew)
         *a_pNew = true;
-    return PHANTOM_DEFERRED_NEW(reflection::Package)(a_strName);
+    return PHANTOM_DEFERRED_NEW(lang::Package)(a_strName);
 }
 
-reflection::Module* DynamicCppInitializerH::findSourceInModules(StringView a_strFilePath, Strings& a_Words)
+lang::Module* DynamicCppInitializerH::findSourceInModules(StringView a_strFilePath, Strings& a_Words)
 {
-    reflection::Module* pBestModule = nullptr;
+    lang::Module* pBestModule = nullptr;
     size_t              bestScore = 0;
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
@@ -795,7 +795,7 @@ reflection::Module* DynamicCppInitializerH::findSourceInModules(StringView a_str
 }
 
 size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Strings& words,
-                                                  reflection::Module* a_pModule)
+                                                  lang::Module* a_pModule)
 {
     PHANTOM_ASSERT(a_pModule);
     PHANTOM_ASSERT(a_strFilePath.size());
@@ -813,8 +813,8 @@ size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Stri
         if (moduleNamePath.hasChildPath(sourceRelativePath))
         {
             /// the source path contains in its path the module path name (ex:
-            /// phantom/reflection/jit/jit contains phantom/reflection/jit =>
-            /// phantom.reflection.jit)
+            /// phantom/lang/jit/jit contains phantom/lang/jit =>
+            /// phantom.lang.jit)
             words.insert(words.end(), sourceRelativePath.begin(), sourceRelativePath.end());
             return 2;
         }
@@ -844,13 +844,13 @@ size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Stri
     }
 }
 
-phantom::reflection::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile, StringView a_strPackage,
+phantom::lang::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile, StringView a_strPackage,
                                                                   StringView a_strSource)
 {
-    reflection::Module* pModule = reflection::detail::currentModule();
+    lang::Module* pModule = lang::detail::currentModule();
     PHANTOM_ASSERT(pModule);
 
-    reflection::ModuleRegistrationInfo* info = getModuleRegistrationInfo(pModule->getHandle());
+    lang::ModuleRegistrationInfo* info = getModuleRegistrationInfo(pModule->getHandle());
     PHANTOM_ASSERT(info);
 
     Strings words;
@@ -877,8 +877,8 @@ phantom::reflection::Source* DynamicCppInitializerH::nativeSource(StringView a_s
                        PHANTOM_STRING_AS_PRINTF_ARG(a_strPackage), PHANTOM_STRING_AS_PRINTF_ARG(a_strFile));
     }
 
-    reflection::Package* pPackage = pModule->getDefaultPackage();
-    reflection::Source*  pSource = pModule->getAnonymousSource();
+    lang::Package* pPackage = pModule->getDefaultPackage();
+    lang::Source*  pSource = pModule->getAnonymousSource();
     if (words.size())
     {
         String sourceName = words.back();
@@ -896,7 +896,7 @@ phantom::reflection::Source* DynamicCppInitializerH::nativeSource(StringView a_s
             pPackage = pModule->getPackage(packageName);
             if (pPackage == nullptr)
             {
-                pPackage = PHANTOM_DEFERRED_NEW(reflection::Package)(packageName);
+                pPackage = PHANTOM_DEFERRED_NEW(lang::Package)(packageName);
                 pModule->addPackage(pPackage);
             }
         }
@@ -906,7 +906,7 @@ phantom::reflection::Source* DynamicCppInitializerH::nativeSource(StringView a_s
         pSource = pPackage->getSource(sourceName);
         if (pSource == nullptr)
         {
-            pSource = PHANTOM_DEFERRED_NEW(reflection::Source)(sourceName, 0, PHANTOM_R_FLAG_NATIVE);
+            pSource = PHANTOM_DEFERRED_NEW(lang::Source)(sourceName, 0, PHANTOM_R_FLAG_NATIVE);
             pPackage->addSource(pSource);
             return pSource;
         }
@@ -928,7 +928,7 @@ PHANTOM_EXPORT_PHANTOM bool installed()
 
 } // namespace detail
 
-void reflection::LanguageElement::Register(phantom::reflection::LanguageElement*
+void lang::LanguageElement::Register(phantom::lang::LanguageElement*
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
                                            pElement
 #endif
@@ -939,7 +939,7 @@ void reflection::LanguageElement::Register(phantom::reflection::LanguageElement*
 #endif
 }
 
-void reflection::LanguageElement::Unregister(phantom::reflection::LanguageElement*
+void lang::LanguageElement::Unregister(phantom::lang::LanguageElement*
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
                                              pElement
 #endif
@@ -990,7 +990,7 @@ void CppTypeIdToPhantomQualifiedDecoratedName(char* a_Name, size_t& a_Length)
     memcpy(a_Name, a_typeid_name.c_str(), a_Length + 1);
 }
 
-void QualifiedDecoratedNameToTypeInfos(char* a_Name, size_t a_Length, reflection::TypeInfos& a_type_infos)
+void QualifiedDecoratedNameToTypeInfos(char* a_Name, size_t a_Length, lang::TypeInfos& a_type_infos)
 {
     a_type_infos.buffer = a_Name;
     char* end = a_Name + a_Length;
@@ -1051,7 +1051,7 @@ void CppTypeIdToPhantomQualifiedDecoratedNamePtr(char* a_Name, size_t& a_Length)
     }
 }
 
-PHANTOM_EXPORT_PHANTOM StringView reflection::detail::PrettyFunctionToTypeName(StringView a_TypeName)
+PHANTOM_EXPORT_PHANTOM StringView lang::detail::PrettyFunctionToTypeName(StringView a_TypeName)
 {
     size_t start = a_TypeName.find_first_of('<');
     if (start != StringView::npos)
@@ -1066,7 +1066,7 @@ PHANTOM_EXPORT_PHANTOM StringView reflection::detail::PrettyFunctionToTypeName(S
     return a_TypeName;
 }
 
-PHANTOM_EXPORT_PHANTOM void reflection::detail::BuildTypeInfos(StringView a_TypeName, TypeInfos& a_TI)
+PHANTOM_EXPORT_PHANTOM void lang::detail::BuildTypeInfos(StringView a_TypeName, TypeInfos& a_TI)
 {
     a_TypeName = PrettyFunctionToTypeName(a_TypeName);
     char* demangled = (char*)PHANTOM_MALLOC(a_TypeName.size() + 1);
@@ -1104,16 +1104,16 @@ PHANTOM_EXPORT_PHANTOM size_t _dllModuleHandleFromAddress(void const* address)
 
 namespace detail
 {
-PHANTOM_EXPORT_PHANTOM reflection::Module* mainModule()
+PHANTOM_EXPORT_PHANTOM lang::Module* mainModule()
 {
-    if (reflection::Application::Get())
-        return reflection::Application::Get()->getMainModule();
+    if (lang::Application::Get())
+        return lang::Application::Get()->getMainModule();
     return nullptr;
 }
 
 PHANTOM_EXPORT_PHANTOM void registerOrphanMemory(void* a_pMem)
 {
-    reflection::Module* pModule = phantom::reflection::detail::currentModule();
+    lang::Module* pModule = phantom::lang::detail::currentModule();
     if (!pModule)
         pModule = phantom::detail::mainModule();
     if (pModule)
@@ -1121,8 +1121,8 @@ PHANTOM_EXPORT_PHANTOM void registerOrphanMemory(void* a_pMem)
         pModule->getMemoryContext().registerMemory(a_pMem);
         return;
     }
-    PHANTOM_ASSERT(reflection::Application::Get(), "no memory context is ready yet to receive this orphan memory");
-    reflection::Application::Get()->getMemoryContext().registerMemory(a_pMem);
+    PHANTOM_ASSERT(lang::Application::Get(), "no memory context is ready yet to receive this orphan memory");
+    lang::Application::Get()->getMemoryContext().registerMemory(a_pMem);
 }
 
 } // namespace detail
@@ -1179,14 +1179,14 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
 }
 
 PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
-                                                             reflection::LanguageElement* a_pScope)
+                                                             lang::LanguageElement* a_pScope)
 {
     if (a_strName.find("operator ") == 0)
     {
-        reflection::Type* pType = a_strName.find_first_of('.') == String::npos
-        ? reflection::Application::Get()->findCppType(a_strName.substr(9),
+        lang::Type* pType = a_strName.find_first_of('.') == String::npos
+        ? lang::Application::Get()->findCppType(a_strName.substr(9),
                                                       a_pScope) // no dot => c++ name search
-        : reflection::Application::Get()->findType(a_strName.substr(9),
+        : lang::Application::Get()->findType(a_strName.substr(9),
                                                    a_pScope); // dot => phantom unique name search
         if (pType)
         {
@@ -1198,27 +1198,27 @@ PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strNam
     a_Buf += a_strName;
 }
 
-void reflection::Main::setAssertFunc(MessageReportFunc a_func)
+void lang::Main::setAssertFunc(MessageReportFunc a_func)
 {
     phantom::detail::g_assert_func = a_func;
 }
 
-void reflection::Main::setErrorFunc(MessageReportFunc a_func)
+void lang::Main::setErrorFunc(MessageReportFunc a_func)
 {
     phantom::detail::g_error_func = a_func;
 }
 
-void reflection::Main::setLogFunc(LogFunc a_func)
+void lang::Main::setLogFunc(LogFunc a_func)
 {
     phantom::detail::g_LogFunc = a_func;
 }
 
-void reflection::Main::setWarningFunc(MessageReportFunc a_func)
+void lang::Main::setWarningFunc(MessageReportFunc a_func)
 {
     phantom::detail::g_warning_func = a_func;
 }
 
-reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
+lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
                        CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
@@ -1261,11 +1261,11 @@ reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, in
 #else
     base_exe_path = Path(argv[0]).parentPath();
 #endif
-    auto pApp = reflection::Application::Get();
+    auto pApp = lang::Application::Get();
     if (pApp->getDefaultBinaryPath().empty())
         pApp->setDefaultBinaryPath(base_exe_path.genericString());
 
-    PHANTOM_LOG_NATIVE_REFLECTION("loading main reflection...");
+    PHANTOM_LOG_NATIVE_REFLECTION("loading main lang...");
     if (argv)
     {
         Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, argv[0], a_strFile, a_uiFlags);
@@ -1276,11 +1276,11 @@ reflection::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, in
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
         GetModuleFileNameA(0, buffer, 1024);
 #endif
-        reflection::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags);
+        lang::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags);
     }
 }
 
-reflection::Main::~Main()
+lang::Main::~Main()
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
     Application::Get()->_unloadMain();

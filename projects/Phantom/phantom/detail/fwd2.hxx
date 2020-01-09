@@ -32,14 +32,14 @@ PHANTOM_PACKAGE("phantom")
     PHANTOM_SOURCE("State")
 
         #if PHANTOM_NOT_TEMPLATE
-        /// missing symbol(s) reflection (phantom::State) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        /// missing symbol(s) lang (phantom::State) -> use the 'haunt.bind' to bind symbols with your custom haunt files
         // PHANTOM_REGISTER(Typedefs) { this_().typedef_<States>("States"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("State")
     PHANTOM_SOURCE("Track")
 
         #if PHANTOM_NOT_TEMPLATE
-        /// missing symbol(s) reflection (phantom::Track) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        /// missing symbol(s) lang (phantom::Track) -> use the 'haunt.bind' to bind symbols with your custom haunt files
         // PHANTOM_REGISTER(Typedefs) { this_().typedef_<Tracks>("Tracks"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Track")
@@ -59,8 +59,8 @@ PHANTOM_PACKAGE("phantom")
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("fwd2")
 PHANTOM_END("phantom")
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Alias")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -191,7 +191,7 @@ PHANTOM_PACKAGE("phantom.reflection")
     PHANTOM_REGISTER(Typedefs) { this_().typedef_<LanguageElementsView>("LanguageElementsView"); }
     PHANTOM_REGISTER(Typedefs) { this_().typedef_<TypesView>("TypesView"); }
     #endif // PHANTOM_NOT_TEMPLATE
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 PHANTOM_PACKAGE("phantom")
     PHANTOM_SOURCE("fwd2")

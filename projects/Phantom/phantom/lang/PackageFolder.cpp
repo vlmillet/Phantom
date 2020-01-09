@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PHANTOM_DEFINE_META_CLASS(PackageFolder);
 
@@ -147,5 +147,5 @@ Source* PackageFolder::getSource(StringView a_strName) const
     return nullptr;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

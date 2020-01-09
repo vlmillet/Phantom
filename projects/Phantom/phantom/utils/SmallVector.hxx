@@ -2,11 +2,11 @@
 
 #include "SmallVector.h"
 
-#include <phantom/reflection/VectorClassT.h>
+#include <phantom/lang/VectorClassT.h>
 #include <phantom/meta_type>
 
 PHANTOM_META_TYPE_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), phantom::SmallVector,
-                      phantom::reflection::VectorClassT);
+                      phantom::lang::VectorClassT);
 
 // haunt {
 

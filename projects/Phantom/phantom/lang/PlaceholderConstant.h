@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Constant.h>
-#include <phantom/reflection/Placeholder.h>
+#include <phantom/lang/Constant.h>
+#include <phantom/lang/Placeholder.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Placeholder constant.
 /// \code{.cpp}
@@ -93,5 +93,5 @@ private:
     Constant* cloneImpl() const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

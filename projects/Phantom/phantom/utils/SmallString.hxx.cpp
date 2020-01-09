@@ -23,5 +23,5 @@ PHANTOM_EXPORT_PHANTOM size_t SmallStringTotalCount = 0;
 
 PHANTOM_REGISTER(ClassTypes)
 {
-    ::phantom::reflection::BuiltInTypes::TYPE_STRING = (::phantom::reflection::Class*)PHANTOM_TYPEOF(phantom::String);
+    ::phantom::lang::BuiltInTypes::TYPE_STRING = (::phantom::lang::Class*)PHANTOM_TYPEOF(phantom::String);
 }

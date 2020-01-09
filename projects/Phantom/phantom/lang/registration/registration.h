@@ -8,15 +8,15 @@ HAUNT_STOP;
 #include <phantom/detail/VirtualDelete.h>
 
 #include <phantom/detail/core.h>
-#include <phantom/reflection/Namespace.h>
-#include <phantom/reflection/Source.h>
-#include <phantom/reflection/TypeInfos.h>
+#include <phantom/lang/Namespace.h>
+#include <phantom/lang/Source.h>
+#include <phantom/lang/TypeInfos.h>
 
 #pragma warning(disable : 4868)
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct TypeInstallationInfo;
 
@@ -60,10 +60,10 @@ PHANTOM_EXPORT_PHANTOM StringView currentSourceName();
 PHANTOM_EXPORT_PHANTOM void       pushPackageName(StringView a_strPackage);
 PHANTOM_EXPORT_PHANTOM void       popPackageName();
 PHANTOM_EXPORT_PHANTOM StringView getCurrentPackageName();
-PHANTOM_EXPORT_PHANTOM void       stepTypeInstallation(reflection::Type* a_pType);
+PHANTOM_EXPORT_PHANTOM void       stepTypeInstallation(lang::Type* a_pType);
 PHANTOM_EXPORT_PHANTOM void       stepTemplateInstanceInstallation(size_t            a_ModuleHandle,
-                                                                   reflection::Type* a_pType);
-PHANTOM_EXPORT_PHANTOM reflection::Type* registeredTypeByHash(size_t a_ModuleHandle, hash64);
+                                                                   lang::Type* a_pType);
+PHANTOM_EXPORT_PHANTOM lang::Type* registeredTypeByHash(size_t a_ModuleHandle, hash64);
 PHANTOM_EXPORT_PHANTOM void              registerModule(size_t a_ModuleHandle, StringView a_strName,
                                                         StringView a_strBinaryFileName, StringView a_strSource,
                                                         uint                              a_uiFlags,
@@ -75,22 +75,22 @@ PHANTOM_EXPORT_PHANTOM bool              isAutoRegistrationLocked();
 PHANTOM_EXPORT_PHANTOM void              pushInstallation();
 PHANTOM_EXPORT_PHANTOM void              popInstallation();
 PHANTOM_EXPORT_PHANTOM void              setAutoRegistrationLocked(bool a_bLocked);
-PHANTOM_EXPORT_PHANTOM                   reflection::Source*
+PHANTOM_EXPORT_PHANTOM                   lang::Source*
                                          nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
 PHANTOM_EXPORT_PHANTOM bool              installed();
 PHANTOM_EXPORT_PHANTOM void              installModules();
-PHANTOM_EXPORT_PHANTOM reflection::Module* mainModule();
+PHANTOM_EXPORT_PHANTOM lang::Module* mainModule();
 PHANTOM_EXPORT_PHANTOM void                registerOrphanMemory(void* a_pMem);
-PHANTOM_EXPORT_PHANTOM                     reflection::Symbol*
+PHANTOM_EXPORT_PHANTOM                     lang::Symbol*
                                            symbolRegisteredAt(size_t a_ModuleHandle, StringView a_File, int a_Line, int a_Tag);
 PHANTOM_EXPORT_PHANTOM void
-                            registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo);
+                            registerTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo);
 PHANTOM_EXPORT_PHANTOM void registerTemplateInstance(size_t a_ModuleHandle,
-                                                     reflection::TypeInstallationInfo* a_pTii);
+                                                     lang::TypeInstallationInfo* a_pTii);
 PHANTOM_EXPORT_PHANTOM void registerType(size_t a_ModuleHandle, hash64 a_Hash,
-                                         StringView a_ScopeName, reflection::Type* a_pType);
+                                         StringView a_ScopeName, lang::Type* a_pType);
 PHANTOM_EXPORT_PHANTOM void registerType(size_t a_ModuleHandle, hash64 a_Hash,
-                                         reflection::Type* a_pType);
+                                         lang::Type* a_pType);
 #define PHANTOM_ASSERT_ON_MAIN_THREAD() PHANTOM_ASSERT(phantom::isMainThread())
 } // namespace detail
 
@@ -119,9 +119,9 @@ struct _PHNTM_RegistrerKeyWords
     struct public_;
 
     template<class _PHNTM_T>
-    using typedef_ = ::phantom::reflection::Forward<_PHNTM_T>;
+    using typedef_ = ::phantom::lang::Forward<_PHNTM_T>;
     template<class _PHNTM_T>
-    using notypedef = ::phantom::reflection::RemoveForwardT<_PHNTM_T>;
+    using notypedef = ::phantom::lang::RemoveForwardT<_PHNTM_T>;
 };
 
 struct _PHNTM_GlobalRegistrer;
@@ -240,12 +240,12 @@ template<class Top, class T, class = std::enable_if_t<std::is_union<T>::value, v
 DefaultUnionBuilderT<T, Top>* DefaultBuilder(T*, char);
 
 template<class Top, class T>
-decltype(phantom::reflection::DefaultBuilder<Top, T>((T*)0, 0)) SelectBuilder(ImplConv<T*>);
+decltype(phantom::lang::DefaultBuilder<Top, T>((T*)0, 0)) SelectBuilder(ImplConv<T*>);
 
 #define PHANTOM_BUILDER_TYPE(Top, ...)                                                             \
     std::remove_pointer_t<decltype(                                                                \
-    phantom::reflection::SelectBuilder<Top, __VA_ARGS__>((__VA_ARGS__*)0))>
-} // namespace reflection
+    phantom::lang::SelectBuilder<Top, __VA_ARGS__>((__VA_ARGS__*)0))>
+} // namespace lang
 } // namespace phantom
 
 #define PHANTOM_REGISTRATION_STATIC_ASSERT_ENABLED 1
@@ -258,22 +258,22 @@ decltype(phantom::reflection::DefaultBuilder<Top, T>((T*)0, 0)) SelectBuilder(Im
 
 #define _PHNTM_REG_FRIENDS_NO_GLOBAL                                                               \
     template<class, class, class, class>                                                           \
-    friend struct phantom::reflection::TypeBuilderT;                                               \
+    friend struct phantom::lang::TypeBuilderT;                                               \
     template<class, class, class>                                                                  \
-    friend struct phantom::reflection::ClassTypeBuilderT;                                          \
+    friend struct phantom::lang::ClassTypeBuilderT;                                          \
     template<class, class>                                                                         \
-    friend struct phantom::reflection::EnumBuilderT;                                               \
+    friend struct phantom::lang::EnumBuilderT;                                               \
     template<class, class, class>                                                                  \
-    friend struct phantom::reflection::ClassBuilderT;                                              \
+    friend struct phantom::lang::ClassBuilderT;                                              \
     template<class, class, class>                                                                  \
-    friend struct phantom::reflection::UnionBuilderT;                                              \
+    friend struct phantom::lang::UnionBuilderT;                                              \
     template<class>                                                                                \
-    friend struct phantom::reflection::ScopeBuilderT;                                              \
+    friend struct phantom::lang::ScopeBuilderT;                                              \
     template<class, class>                                                                         \
-    friend struct phantom::reflection::MemberAnonymousSectionBuilderT;
+    friend struct phantom::lang::MemberAnonymousSectionBuilderT;
 
 #define _PHNTM_REG_FRIENDS                                                                         \
-    friend struct phantom::reflection::_PHNTM_GlobalRegistrer;                                     \
+    friend struct phantom::lang::_PHNTM_GlobalRegistrer;                                     \
     _PHNTM_REG_FRIENDS_NO_GLOBAL
 
 // user accessible predefined inside registrers
@@ -281,7 +281,7 @@ decltype(phantom::reflection::DefaultBuilder<Top, T>((T*)0, 0)) SelectBuilder(Im
 #define PHANTOM_IF_NOT_TEMPLATE_ONLY(...) __VA_ARGS__
 #define PHANTOM_REGISTRATION_STEP _PHNTM_RegStep
 #define PHANTOM_SCOPE                                                                              \
-    phantom::reflection::BuilderProxyTypeT<std::remove_reference_t<decltype(this_())>>
+    phantom::lang::BuilderProxyTypeT<std::remove_reference_t<decltype(this_())>>
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define _PHTNM_FMT_DEFAULTS(...)                                                               \
@@ -322,7 +322,7 @@ static const int _PHNTM_MTRAILING_METADATA = 0;
     0;                                                                                             \
     PHANTOM_REGISTER(End)                                                                          \
     {                                                                                              \
-        phantom::reflection::SymbolWrapper(phantom::detail::symbolRegisteredAt(                    \
+        phantom::lang::SymbolWrapper(phantom::detail::symbolRegisteredAt(                    \
         phantom::currentModuleHandle(), __FILE__, __LINE__, __COUNTER__ - 1)) __VA_ARGS__;         \
     }
 
@@ -330,7 +330,7 @@ static const int _PHNTM_MTRAILING_METADATA = 0;
     0;                                                                                             \
     PHANTOM_REGISTER(End)                                                                          \
     {                                                                                              \
-        phantom::reflection::SymbolWrapper(phantom::detail::symbolRegisteredAt(                    \
+        phantom::lang::SymbolWrapper(phantom::detail::symbolRegisteredAt(                    \
         phantom::currentModuleHandle(), __FILE__, __LINE__, __COUNTER__ - 2)) __VA_ARGS__;         \
     }
 

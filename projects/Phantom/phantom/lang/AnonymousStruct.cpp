@@ -9,12 +9,12 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 AnonymousStruct::AnonymousStruct(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : AnonymousSection(modifiers, a_uiFlags)
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

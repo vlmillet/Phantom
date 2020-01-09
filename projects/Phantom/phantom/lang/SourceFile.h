@@ -20,7 +20,7 @@ class Phantom;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents an user repository source file for Source compilation.
 class PHANTOM_EXPORT_PHANTOM SourceFile : public SourceStream
@@ -80,5 +80,5 @@ public:
     SourceFile* clone() const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

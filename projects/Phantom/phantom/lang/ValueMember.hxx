@@ -29,22 +29,22 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("ValueMember")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(ValueMember)
         {
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .constructor<void(Type*, StringView, uint, Modifiers, uint)>()["0"]["0"]
@@ -62,10 +62,10 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<ClassType*() const>("getOwnerClassType", &_::getOwnerClassType)
             .method<Class*() const>("getOwnerClass", &_::getOwnerClass)
             .method<void*(void const*) const, virtual_>("getAddress", &_::getAddress)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Expression*)>("setDefaultExpression", &_::setDefaultExpression)
             .method<void(const char*)>("setDefaultExpression", &_::setDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*() const>("getDefaultExpression", &_::getDefaultExpression)
         
         .protected_()
@@ -73,14 +73,14 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .field("m_pValueType", &_::m_pValueType)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pDefaultExpression", &_::m_pDefaultExpression)
             .field("m_uiFilterMask", &_::m_uiFilterMask)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("ValueMember")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

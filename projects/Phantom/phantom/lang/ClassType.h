@@ -9,8 +9,8 @@
 /* ****************** Includes ******************* */
 #include "Aggregate.h"
 
-#include <phantom/reflection/Scope.h>
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Scope.h>
+#include <phantom/lang/Type.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/utils/Delegate.h>
@@ -20,7 +20,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class ModuleRegistrationInfo;
 
@@ -1068,7 +1068,7 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
                                                uint a_uiFilterMask)
 {
     PHANTOM_STATIC_ASSERT(phantom::IsTypeDefined<DontTouchThis>::value,
-                          "missing #include <phantom/reflection/FunctorProperty.h");
+                          "missing #include <phantom/lang/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
     auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
     new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
@@ -1089,7 +1089,7 @@ template<class ClassT, class ValueT, class GetFunctor, class SetFunctor, class D
 FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&& a_Get, uint a_uiFilterMask)
 {
     PHANTOM_STATIC_ASSERT(phantom::IsTypeDefined<DontTouchThis>::value,
-                          "missing #include <phantom/reflection/FunctorProperty.h");
+                          "missing #include <phantom/lang/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
     auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
     new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
@@ -1103,5 +1103,5 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
     return pFProp;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

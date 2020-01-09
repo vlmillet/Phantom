@@ -20,7 +20,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct PHANTOM_EXPORT_PHANTOM MemoryLocation
 {
@@ -891,5 +891,5 @@ void SubroutineCallH<void, Args...>::call(Subroutine const* a_pSubroutine, Args&
     a_pSubroutine->call(addresses);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -25,6 +25,7 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -32,26 +33,26 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("TemplateSpecialization")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(TemplateSpecialization)
         {
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using LanguageElementsView = typedef_< phantom::reflection::LanguageElementsView>;
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using LanguageElementsView = typedef_< phantom::lang::LanguageElementsView>;
+            using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using TemplateParameters = typedef_< phantom::reflection::TemplateParameters>;
+            using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .protected_()
             .staticMethod<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&, Symbol*, uint)>("Create", &_::Create)
@@ -114,7 +115,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("TemplateSpecialization")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

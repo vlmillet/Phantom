@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ConstType::ConstType(Type* a_pType)
     : QualifiedType(a_pType, a_pType->getTypeKind(), "const", 0, 0, a_pType->getModifiers() | PHANTOM_R_CONST,
@@ -79,5 +79,5 @@ void ConstType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += " const";
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

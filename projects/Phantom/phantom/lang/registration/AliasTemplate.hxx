@@ -24,15 +24,15 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection.registration")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang.registration")
     PHANTOM_SOURCE("AliasTemplate")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Functions) { this_().function<void(TemplateSignature*, StringView)>("SolveAliasTemplateDefaultArguments", SolveAliasTemplateDefaultArguments);}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("AliasTemplate")
-PHANTOM_END("phantom.reflection.registration")
+PHANTOM_END("phantom.lang.registration")
 }
 }
 

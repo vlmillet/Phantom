@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ClassType.h>
+#include <phantom/lang/ClassType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents an union type.
 class PHANTOM_EXPORT_PHANTOM Union : public ClassType
@@ -59,5 +59,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

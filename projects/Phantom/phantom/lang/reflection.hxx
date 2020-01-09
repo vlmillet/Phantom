@@ -35,8 +35,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("reflection")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -198,12 +198,12 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("reflection")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -220,7 +220,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_REGISTER(Functions) { this_().function<ReflectionMutex&()>("write_mutex", write_mutex);}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

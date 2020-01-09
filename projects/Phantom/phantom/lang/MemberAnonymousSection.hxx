@@ -29,22 +29,22 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("MemberAnonymousSection")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(MemberAnonymousSection)
         {
-            using DataElements = typedef_< phantom::reflection::DataElements>;
-            using Fields = typedef_< phantom::reflection::Fields>;
-            using MemberAnonymousSections = typedef_< phantom::reflection::MemberAnonymousSections>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using DataElements = typedef_< phantom::lang::DataElements>;
+            using Fields = typedef_< phantom::lang::Fields>;
+            using MemberAnonymousSections = typedef_< phantom::lang::MemberAnonymousSections>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol, ::phantom::reflection::DataElement>()
+            .inherits<::phantom::lang::Symbol, ::phantom::lang::DataElement>()
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
@@ -86,7 +86,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("MemberAnonymousSection")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

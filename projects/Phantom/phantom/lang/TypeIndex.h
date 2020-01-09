@@ -7,12 +7,12 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// @brief struct that can be used in associative containers for Type
 /// @note don't use Type* directly if you are reflecting templates. Indeed templates can be
@@ -54,5 +54,5 @@ struct TypeIndex
     hash64 const hash = 0;
     Type* const  type = nullptr;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/traits/Dereferencer.h>
 #include <phantom/traits/ReferenceToPointer.h>
 #include <phantom/typeof>
@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for value members representations (Data members, properties, ...).
 class PHANTOM_EXPORT_PHANTOM ValueMember : public Symbol
@@ -216,5 +216,5 @@ private:
     mutable const char* m_pNativeDefaultExpressionStr{};
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -15,7 +15,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunctionType, Modifiers a_Modifiers /*= 0*/,
                              uint a_uiFlags /*= 0*/)
@@ -212,5 +212,5 @@ void MethodPointer::getDecoratedName(StringBuffer& a_Buf) const
     a_Buf += ')';
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

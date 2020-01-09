@@ -37,8 +37,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Type")
 
         PHANTOM_STRUCT_T((class), (ScopeExit), ScopedConstruction)
@@ -51,23 +51,23 @@ PHANTOM_PACKAGE("phantom.reflection")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Type)
         {
-            using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
+            using AggregateFields = typedef_< phantom::lang::AggregateFields>;
             using AlignmentComputer = typedef_<_::AlignmentComputer>;
-            using DataElements = typedef_< phantom::reflection::DataElements>;
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
+            using DataElements = typedef_< phantom::lang::DataElements>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using RecursiveSpinMutex = typedef_< phantom::RecursiveSpinMutex>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Types = typedef_< phantom::reflection::Types>;
+            using Types = typedef_< phantom::lang::Types>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -165,9 +165,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void(void*, size_t) const, virtual_>("deallocate", &_::deallocate)
             .method<void(void*) const, virtual_>("construct", &_::construct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:840:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
+            // .method<::phantom::lang::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/lang/Type.h:840:53)> >(void*) const>("scopedConstruct", &_::scopedConstruct)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<::phantom::reflection::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/reflection/Type.h:840:53)> >(void*) const>("localConstruct", &_::localConstruct)
+            // .method<::phantom::lang::ScopedConstruction<ScopeExit<(lambda at C:/Development/Phantom/projects/phantom/phantom/lang/Type.h:840:53)> >(void*) const>("localConstruct", &_::localConstruct)
             .method<void(void*) const, virtual_>("destroy", &_::destroy)
             .method<uint64_t(const void*) const, virtual_>("hash", &_::hash)
             .method<void*() const, virtual_>("newInstance", &_::newInstance)
@@ -261,7 +261,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Type")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

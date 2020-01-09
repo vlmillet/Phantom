@@ -34,37 +34,37 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Application")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Application)
         {
-            using Classes = typedef_< phantom::reflection::Classes>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using LoadedLibraries = typedef_<_::LoadedLibraries>;
             using LoadedLibraryModules = typedef_<_::LoadedLibraryModules>;
-            using Modules = typedef_< phantom::reflection::Modules>;
-            using Plugins = typedef_< phantom::reflection::Plugins>;
-            using Sources = typedef_< phantom::reflection::Sources>;
+            using Modules = typedef_< phantom::lang::Modules>;
+            using Plugins = typedef_< phantom::lang::Plugins>;
+            using Sources = typedef_< phantom::lang::Sources>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
-            using Types = typedef_< phantom::reflection::Types>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
+            using Types = typedef_< phantom::lang::Types>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .typedef_<LoadedLibraryModules>("LoadedLibraryModules")
             .typedef_<LoadedLibraries>("LoadedLibraries")
-            /// missing symbol(s) reflection (phantom::reflection::Expression, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .typedef_<CppExpressionParser>("CppExpressionParser")
         
         .public_()
@@ -76,7 +76,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             // .method<void(CppExpressionParser)>("setCppExpressionParser", &_::setCppExpressionParser)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<CppExpressionParser()>("getCppExpressionParser", &_::getCppExpressionParser)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(StringView, LanguageElement*) const>("cppExpression", &_::cppExpression)
             .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
             .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
@@ -134,7 +134,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Type*(hash64) const>("findType", &_::findType)
             .method<Symbol*(StringView, LanguageElement*) const>("findSymbol", &_::findSymbol)["nullptr"]
             .method<Type*(StringView, LanguageElement*) const>("findType", &_::findType)["nullptr"]
-            .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
+            .method<void(Classes&, ::phantom::lang::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<Undefineds*(StringView) const>("getUndefineds", &_::getUndefineds)
             .method<Undefineds*(StringView)>("undefineds", &_::undefineds)
             .method<Constant*() const>("getNullptr", &_::getNullptr)
@@ -169,7 +169,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Application")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

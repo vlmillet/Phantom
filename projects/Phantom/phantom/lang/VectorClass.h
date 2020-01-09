@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/SequentialContainerClass.h>
+#include <phantom/lang/SequentialContainerClass.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base base for stl compliant vector containers.
 class PHANTOM_EXPORT_PHANTOM VectorClass : public SequentialContainerClass
@@ -53,5 +53,5 @@ private:
     mutable RTData* m_pData = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -8,7 +8,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Undefineds::Undefineds()
     : m_pPointerType(nullptr),
@@ -55,5 +55,5 @@ Type* Undefineds::makeArray(size_t s)
     return m_Arrays[s];
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Scope.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Scope.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 
@@ -20,11 +20,11 @@ class Phantom;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class SourceStream;
 
-/// \brief  Represents a source code (not a source file, see phantom::reflection::SourceStream for
+/// \brief  Represents a source code (not a source file, see phantom::lang::SourceStream for
 /// this).
 class PHANTOM_EXPORT_PHANTOM Source : public Symbol, public Scope
 {
@@ -420,5 +420,5 @@ private:
     Sources               m_Dependings;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

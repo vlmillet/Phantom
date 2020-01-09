@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 FunctionPointer::FunctionPointer(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers /*= 0*/,
                                  uint a_uiFlags /*= 0*/)
@@ -114,5 +114,5 @@ void FunctionPointer::getDecoratedName(StringBuffer& a_Buf) const
     a_Buf += ')';
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

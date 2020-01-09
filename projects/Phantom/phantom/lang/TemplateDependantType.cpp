@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateDependantType::TemplateDependantType(TemplateDependantElement* a_pElement)
     : Type(TypeKind::TemplateDependant, a_pElement->getName(), 0, 0, a_pElement->getModifiers(),
@@ -21,5 +21,5 @@ TemplateDependantType::TemplateDependantType(TemplateDependantElement* a_pElemen
     addElement(a_pElement);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

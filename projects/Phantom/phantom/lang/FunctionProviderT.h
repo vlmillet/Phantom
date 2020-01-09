@@ -12,16 +12,16 @@ HAUNT_STOP;
 
 /* ****************** Includes ******************* */
 
-#include <phantom/reflection/FunctionT.h>
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/SignatureH.h>
+#include <phantom/lang/FunctionT.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/SignatureH.h>
 
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class Sign>
 struct StaticMethodPointerSimplifier;
@@ -125,7 +125,7 @@ public:
 #    pragma pop_macro("cdecl")
 #endif
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

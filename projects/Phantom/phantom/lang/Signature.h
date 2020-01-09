@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/ArrayView.h>
 #include <phantom/utils/StringViews.h>
 /* **************** Declarations ***************** */
@@ -15,7 +15,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief Represents a function signature with return type, parameters and qualifiers.
 class PHANTOM_EXPORT_PHANTOM Signature : public Symbol
@@ -461,5 +461,5 @@ protected:
     bool       m_bVariadic = false;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

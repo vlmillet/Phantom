@@ -17,7 +17,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Signal::Signal(ClassType* a_pClassType, size_t a_uiFieldOffset, StringView a_strName,
                StringView a_strSignature, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -78,5 +78,5 @@ void Signal::onAncestorChanged(LanguageElement* a_pLanguageElement)
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

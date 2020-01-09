@@ -30,28 +30,28 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Scope")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Scope)
         {
-            using Aliases = typedef_< phantom::reflection::Aliases>;
-            using AnonymousSections = typedef_< phantom::reflection::AnonymousSections>;
-            using Constants = typedef_< phantom::reflection::Constants>;
-            using Functions = typedef_< phantom::reflection::Functions>;
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
+            using Aliases = typedef_< phantom::lang::Aliases>;
+            using AnonymousSections = typedef_< phantom::lang::AnonymousSections>;
+            using Constants = typedef_< phantom::lang::Constants>;
+            using Functions = typedef_< phantom::lang::Functions>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringView = typedef_< phantom::StringView>;
-            using Subroutines = typedef_< phantom::reflection::Subroutines>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
-            using TemplateSpecializations = typedef_< phantom::reflection::TemplateSpecializations>;
-            using Templates = typedef_< phantom::reflection::Templates>;
-            using Types = typedef_< phantom::reflection::Types>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
-            using Variables = typedef_< phantom::reflection::Variables>;
+            using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
+            using TemplateSpecializations = typedef_< phantom::lang::TemplateSpecializations>;
+            using Templates = typedef_< phantom::lang::Templates>;
+            using Types = typedef_< phantom::lang::Types>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
+            using Variables = typedef_< phantom::lang::Variables>;
             this_()
         .protected_()
             .constructor<void(LanguageElement*)>()
@@ -151,7 +151,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Scope")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

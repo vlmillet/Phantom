@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Variable::Variable(Type* a_pValueType, void* a_pAddress, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(phantom::lexical_cast<String>(a_pAddress), a_Modifiers, a_uiFlags),
@@ -109,5 +109,5 @@ void Variable::getValue(void* a_pOutputBuffer) const
     m_pValueType->copyConstruct(a_pOutputBuffer, m_pAddress);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

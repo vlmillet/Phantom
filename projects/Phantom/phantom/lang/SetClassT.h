@@ -8,12 +8,12 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/SetClass.h>
-#include <phantom/reflection/ContainerClassT.h>
+#include <phantom/lang/SetClass.h>
+#include <phantom/lang/ContainerClassT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename T, typename Base = SetClass>
 class SetClassT : public ContainerClassT<T, Base>
@@ -44,5 +44,5 @@ public:
         pContainer->erase(pContainer->find(*pKey));
     }
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

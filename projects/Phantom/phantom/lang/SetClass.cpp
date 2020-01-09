@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 SetClass::SetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
     : ContainerClass(TypeKind::SetClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
@@ -59,5 +59,5 @@ void SetClass::find(void const* a_pContainer, void const* a_pKey, void* a_pIt) c
     m_Data->m_pFunc_find->invoke((void*)a_pContainer, args, a_pIt);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

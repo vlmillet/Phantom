@@ -9,12 +9,12 @@
 HAUNT_STOP;
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/VectorClassT.h>
-#include <phantom/reflection/StringClass.h>
+#include <phantom/lang/VectorClassT.h>
+#include <phantom/lang/StringClass.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename T, typename Base = StringClass>
 class StringClassT : public VectorClassT<T, Base>
@@ -49,5 +49,5 @@ public:
 	}
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

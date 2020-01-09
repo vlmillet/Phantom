@@ -23,7 +23,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 bool Package::IsValidName(StringView a_strName)
 {
@@ -232,5 +232,5 @@ void Package::getPackageFolders(PackageFolders& a_Folders) const
     m_pFolder->getPackageFolders(a_Folders);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

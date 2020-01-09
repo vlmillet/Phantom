@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Template dependant type.
 /// \code{.cpp}
@@ -64,5 +64,5 @@ private:
     TemplateDependantElement* m_pElement;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -344,15 +344,15 @@ public:
         new (&m_DynDelegate) DynDelegateType(std::move(a_In));
     }
 
-    Functor(reflection::Function* a_pFunction) : m_Type(_Type::DynDelegate)
+    Functor(lang::Function* a_pFunction) : m_Type(_Type::DynDelegate)
     {
         new (&m_DynDelegate) DynDelegateType(a_pFunction);
     }
-    Functor(void* a_pInstance, reflection::Class* a_pClass, reflection::Method* a_pMethod) : m_Type(_Type::DynDelegate)
+    Functor(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod) : m_Type(_Type::DynDelegate)
     {
         new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_pMethod);
     }
-    Functor(void* a_pInstance, reflection::Class* a_pClass, StringView a_MethodName) : m_Type(_Type::DynDelegate)
+    Functor(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName) : m_Type(_Type::DynDelegate)
     {
         new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_MethodName);
     }

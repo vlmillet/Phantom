@@ -15,9 +15,9 @@ HAUNT_STOP;
 #include <phantom/detail/Hasher.h>
 #include <phantom/detail/Mover.h>
 #include <phantom/detail/StringConverter.h>
-#include <phantom/reflection/ClassType.h>
-#include <phantom/reflection/Promoter.h>
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Promoter.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/ModifiersAndFlags.h>
 #include <phantom/traits/MoveTraits.h>
@@ -26,7 +26,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty, typename t_Base>
 class TypeT : public t_Base
@@ -195,6 +195,6 @@ struct MetaTypeOf<TypeT<t_Ty, t_Base> >
     typedef MetaTypeOf<Class>::type type;
 };
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

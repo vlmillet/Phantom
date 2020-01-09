@@ -8,11 +8,11 @@
 
 #include "registration.h"
 
-#include <phantom/reflection/FieldT.h>
+#include <phantom/lang/FieldT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 }
 } // namespace phantom

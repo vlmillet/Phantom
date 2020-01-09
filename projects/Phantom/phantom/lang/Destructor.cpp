@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Destructor::Destructor()
 {
@@ -27,5 +27,5 @@ Destructor::Destructor(ClassType* a_pClassType, StringView a_strName, StringView
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

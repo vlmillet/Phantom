@@ -11,9 +11,9 @@ HAUNT_STOP;
 
 #include "Promoter.h"
 
-#include <phantom/reflection/Constant.h>
-#include <phantom/reflection/PrimitiveTypeT.h>
-#include <phantom/reflection/TypeT.h>
+#include <phantom/lang/Constant.h>
+#include <phantom/lang/PrimitiveTypeT.h>
+#include <phantom/lang/TypeT.h>
 
 /// @cond INTERNAL
 
@@ -56,7 +56,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 class FundamentalTypeT : public TypeT<t_Ty, PrimitiveTypeT<t_Ty>>
@@ -253,7 +253,7 @@ public:
     Constant* createConstant(void* a_pSrc, StringView a_strName = "",
                              PrimitiveType* a_pPrimitiveType = nullptr) const override
     {
-        return reflection::Constant::Create<t_Ty>(*(t_Ty*)a_pSrc, a_strName, a_pPrimitiveType);
+        return lang::Constant::Create<t_Ty>(*(t_Ty*)a_pSrc, a_strName, a_pPrimitiveType);
     }
 
     bool convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const override
@@ -315,7 +315,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

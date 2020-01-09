@@ -7,14 +7,14 @@
 /* ******************* Includes ****************** */
 #include "TemplateDependantTemplateInstance.h"
 
-#include "phantom/reflection/Placeholder.h"
+#include "phantom/lang/Placeholder.h"
 
-#include <phantom/reflection/Template.h>
-#include <phantom/reflection/TemplateSpecialization.h>
+#include <phantom/lang/Template.h>
+#include <phantom/lang/TemplateSpecialization.h>
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpecialization* a_pTemplateSpecialization,
                                                                      const LanguageElements& a_Arguments,
@@ -79,5 +79,5 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
     return true;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

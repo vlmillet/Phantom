@@ -2,7 +2,7 @@
 
 #include "Variable.h"
 
-#include <phantom/reflection/ConstantT.h>
+#include <phantom/lang/ConstantT.h>
 
 #define PHANTOM_CONSTANT(Name)                                                                                         \
     PHANTOM_REGISTER(Variables)                                                                                        \

@@ -23,7 +23,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
@@ -214,13 +214,9 @@ PHANTOM_EXPORT_PHANTOM ReflectionMutex& write_mutex()
     return m;
 }
 
-ReflectionMutex::ReflectionMutex()
-{
-}
+ReflectionMutex::ReflectionMutex() {}
 
-ReflectionMutex::~ReflectionMutex()
-{
-}
+ReflectionMutex::~ReflectionMutex() {}
 
 void ReflectionMutex::lock()
 {
@@ -234,5 +230,5 @@ void ReflectionMutex::unlock()
 
 #endif // PHANTOM_CUSTOM_THREAD_SAFE
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

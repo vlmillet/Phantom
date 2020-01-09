@@ -35,8 +35,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Symbol")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -45,7 +45,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_CLASS(SymbolExtension)
         {
             this_()
-            .inherits<::phantom::reflection::LanguageElement>()
+            .inherits<::phantom::lang::LanguageElement>()
         
         .protected_()
             .constructor<void(), default_>()
@@ -58,18 +58,18 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<SymbolExtensions>("SymbolExtensions"); }
         PHANTOM_CLASS(Symbol)
         {
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::reflection::Symbols>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::LanguageElement>()
+            .inherits<::phantom::lang::LanguageElement>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .staticMethod<bool(StringView)>("IsCppIdentifier", &_::IsCppIdentifier)
@@ -179,7 +179,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Symbol")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

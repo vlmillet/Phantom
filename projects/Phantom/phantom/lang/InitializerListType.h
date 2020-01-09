@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \Brief For conversion and overload resolution purpose only, it is not a real type !
 
@@ -79,5 +79,5 @@ protected:
     Types m_Types;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

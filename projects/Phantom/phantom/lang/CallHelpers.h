@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/reflection/ExecutionContext.h>
+#include <phantom/lang/ExecutionContext.h>
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/MoveTraits.h>
 #include <phantom/traits/SimplifiedType.h>
@@ -15,7 +15,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 struct CallAddresser
@@ -220,5 +220,5 @@ struct FunctionPointerTypeFromFunctionType<ABI::CDecl, t_ReturnType(v_Params...)
 #    pragma pop_macro("cdecl")
 #endif
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -85,7 +85,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 void LanguageElementVisitor::visit(Alias* a_pInput, VisitorData a_Data)
 {
@@ -450,5 +450,5 @@ PHANTOM_IF_CHAR32_T(void LanguageElementVisitor::visit(IntegralTypeT<char32_t>* 
     visit(static_cast<PrimitiveType*>(a_pInput), a_Data);
 });
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

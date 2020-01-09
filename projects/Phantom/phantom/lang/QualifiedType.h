@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ExtendedType.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base for const/volatile qualified type
 
@@ -23,8 +23,8 @@ class PHANTOM_EXPORT_PHANTOM QualifiedType : public ExtendedType
 
     PHANTOM_DECLARE_META_CLASS(QualifiedType);
 
-    friend class phantom::reflection::Namespace;
-    friend class phantom::reflection::Type;
+    friend class phantom::lang::Namespace;
+    friend class phantom::lang::Type;
 
 protected:
     QualifiedType(Type* a_pType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
@@ -91,5 +91,5 @@ public:
     uint getDataPointerLevel() const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -8,13 +8,13 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/core.h>
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/reflection.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Visitor data (used in LanguageElementVisitor visitor functions).
 struct VisitorData
@@ -136,5 +136,5 @@ public:
     PHANTOM_IF_CHAR32_T(virtual void visit(IntegralTypeT<char32_t>* a_pInput, VisitorData a_Data);)
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

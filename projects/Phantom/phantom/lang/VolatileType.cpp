@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 VolatileType::VolatileType(Type* a_pType)
     : QualifiedType(a_pType, a_pType->getTypeKind(), "volatile", 0, 0, a_pType->getModifiers() | PHANTOM_R_VOLATILE,
@@ -88,5 +88,5 @@ void VolatileType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += " volatile";
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MemberAnonymousStruct::MemberAnonymousStruct(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : MemberAnonymousSection(modifiers, a_uiFlags)
@@ -23,5 +23,5 @@ void MemberAnonymousStruct::computeSizeAndAlignment(size_t& a_uiSize, size_t& a_
     Type::AlignmentComputer().alignStruct(m_DataElements, a_uiSize, a_uiAlignment);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

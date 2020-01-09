@@ -15,7 +15,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PlaceholderType::PlaceholderType(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Type(TypeKind::Placeholder, a_strName, 0, 0, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT),
@@ -54,10 +54,10 @@ bool PlaceholderType::isSame(Symbol* a_pOther) const
             getName() AND a_pOther->asPlaceholder() AND pSpec AND pOtherSpec AND pSpec->isSame(pOtherSpec));
 }
 
-phantom::reflection::Placeholder* PlaceholderType::clone(uint) const
+phantom::lang::Placeholder* PlaceholderType::clone(uint) const
 {
     return PHANTOM_NEW(PlaceholderType)(getName(), getModifiers(), 0);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

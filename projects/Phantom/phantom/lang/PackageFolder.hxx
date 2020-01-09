@@ -32,24 +32,24 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("PackageFolder")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(PackageFolder)
         {
-            using PackageFolders = typedef_< phantom::reflection::PackageFolders>;
-            using Packages = typedef_< phantom::reflection::Packages>;
+            using PackageFolders = typedef_< phantom::lang::PackageFolders>;
+            using Packages = typedef_< phantom::lang::Packages>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .protected_()
             .staticMethod<PackageFolder*()>("Create", &_::Create)
@@ -79,7 +79,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("PackageFolder")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

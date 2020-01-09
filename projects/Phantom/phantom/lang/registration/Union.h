@@ -12,11 +12,11 @@ HAUNT_STOP;
 
 #include "ClassType.h"
 
-#include <phantom/reflection/UnionT.h>
+#include <phantom/lang/UnionT.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T, class Top, class MostDerived>
 struct UnionBuilderT : ClassTypeBuilderT<T, Top, MostDerived>
@@ -32,8 +32,8 @@ public:
 
     PHANTOM_DECL_OVERRIDE_DELETE_METHOD(SelfType);
 
-    UnionBuilderT(Top* a_pTop, phantom::reflection::TemplateSpecArgumentRegistrer a_TArgs)
-        : BaseType(reflection::Access::Public, a_pTop, a_TArgs)
+    UnionBuilderT(Top* a_pTop, phantom::lang::TemplateSpecArgumentRegistrer a_TArgs)
+        : BaseType(lang::Access::Public, a_pTop, a_TArgs)
     {
         m_pUnion = this->_PHNTM_getMeta();
     }
@@ -44,10 +44,10 @@ private:
 
 template<class Top, class MostDerived>
 struct UnionBuilderT<AnonymousUnionProxy, Top, MostDerived>
-    : MemberAnonymousSectionBuilderT<reflection::MemberAnonymousUnion, Top>
+    : MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, Top>
 {
     UnionBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer)
-        : MemberAnonymousSectionBuilderT<reflection::MemberAnonymousUnion, Top>(a_pTop)
+        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, Top>(a_pTop)
     {
     }
 };
@@ -62,7 +62,7 @@ struct DefaultUnionBuilderT : UnionBuilderT<T, Top, DefaultUnionBuilderT<T, Top>
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #define PHANTOM_UNION(TypeName, ...) _PHANTOM_CLASS(TypeName, Public, (__VA_ARGS__))

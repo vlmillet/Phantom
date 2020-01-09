@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Field::Field(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask /*= 0xffffffff*/,
              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -95,5 +95,5 @@ size_t Field::getSize() const
     return m_pValueType->getSize();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -15,11 +15,11 @@ HAUNT_STOP
 /* *********************************************** */
 /// @cond INTERNAL
 
-#    include <phantom/reflection/Class.h>
+#    include <phantom/lang/Class.h>
 #    include <phantom/traits/IsDefaultConstructible.h>
 
 namespace phantom {
-    namespace reflection {
+    namespace lang {
 
         template<typename t_Ty, typename t_CtorSignature>
         struct NativeVTablePointerExtractor
@@ -462,7 +462,7 @@ namespace phantom {
                     auto it = a_pClass->beginConstructors();
                     if (it != a_pClass->endConstructors())
                         return (*it)->getNativeVTablePointer();
-                    // PHANTOM_WARNING(false, "No constructor declared in reflection of %s, cannot extract vtable information", a_pClass->getQualifiedDecoratedName().c_str());
+                    // PHANTOM_WARNING(false, "No constructor declared in lang of %s, cannot extract vtable information", a_pClass->getQualifiedDecoratedName().c_str());
                     return nullptr;
                 };
             };
@@ -486,7 +486,7 @@ namespace phantom {
 
         };
 
-    } // namespace reflection
+    } // namespace lang
 } // namespace phantom
 
 #endif

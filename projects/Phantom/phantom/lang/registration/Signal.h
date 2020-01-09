@@ -12,8 +12,8 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/reflection/SignalT.h>
-#include <phantom/reflection/SignatureH.h>
+#include <phantom/lang/SignalT.h>
+#include <phantom/lang/SignatureH.h>
 #include <phantom/utils/Signal.h>
 
 #define PHANTOM_T_SIGNAL(name) PHANTOM_T PHANTOM_SIGNAL(name)

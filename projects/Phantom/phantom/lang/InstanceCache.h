@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/register>
 #include <phantom/utils/ArrayView.h>
 /* **************** Declarations ***************** */
@@ -22,7 +22,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents an object oriented class.
 class PHANTOM_EXPORT_PHANTOM InstanceCache
@@ -59,5 +59,5 @@ protected:
     Class*   m_pClass;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

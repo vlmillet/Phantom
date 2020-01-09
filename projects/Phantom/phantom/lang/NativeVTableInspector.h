@@ -25,7 +25,7 @@ size_t virtualMethodCountOf();
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM NativeVTableInspector
 {
@@ -187,7 +187,7 @@ public:
     VTableInspectorGeneric();
 
     // -----------------------------------------------------
-    // A CRASH HERE MEANS YOU PROBABLY DECLARED a non-virtual method as 'virtual' in your reflection
+    // A CRASH HERE MEANS YOU PROBABLY DECLARED a non-virtual method as 'virtual' in your lang
     VTableInspector_commonT((nullptr))
     // -----------------------------------------------------
 };
@@ -207,7 +207,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 // Create easy access traits
@@ -221,7 +221,7 @@ struct VirtualDtorIndexProviderH
 {
     static size_t apply()
     {
-        return phantom::reflection::NativeDestructorInspector().getDestructorIndex<t_Ty>();
+        return phantom::lang::NativeDestructorInspector().getDestructorIndex<t_Ty>();
     }
 };
 
@@ -251,7 +251,7 @@ struct VTableIndexOf
     template<typename t_MemberFuncPtrTy>
     static size_t apply(t_MemberFuncPtrTy ptr)
     {
-        return ::phantom::reflection::VTableInspectorGeneric().getIndexOf(ptr);
+        return ::phantom::lang::VTableInspectorGeneric().getIndexOf(ptr);
     }
 };
 

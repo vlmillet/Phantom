@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/reflection.h>
-#include <phantom/reflection/registration/registration.h>
+#include <phantom/lang/reflection.h>
+#include <phantom/lang/registration/registration.h>
 #include <phantom/utils/String.h>
 /* **************** Declarations ***************** */
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -60,7 +60,7 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
             PHANTOM_PP_CAT(_PHNTM_static_plugin, PHANTOM_STATIC_LIB_HANDLE)()                                          \
             {                                                                                                          \
                 static int address_dummy;                                                                              \
-                ::phantom::reflection::detail::registerModule(                                                         \
+                ::phantom::lang::detail::registerModule(                                                         \
                 PHANTOM_STATIC_LIB_HANDLE, name, "", __FILE__, flags,                                                  \
                 {PHANTOM_PLUGIN_DEPENDENCIES_UNROLL(PHANTOM_PLUGIN_DEPENDENCIES)}, func_on_load, func_on_unload);      \
             }                                                                                                          \
@@ -83,13 +83,13 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
                     static char moduleName[512];                                                                       \
                     GetModuleFileNameA(_HDllHandle, moduleName, 512);                                                  \
                     static_assert(sizeof(name) > 1, "plugin must have a non-empty name");                              \
-                    ::phantom::reflection::detail::registerModule(                                                     \
+                    ::phantom::lang::detail::registerModule(                                                     \
                     (::phantom::size_t)_HDllHandle, name, moduleName, __FILE__, flags,                                 \
                     {PHANTOM_PLUGIN_DEPENDENCIES_UNROLL(PHANTOM_PLUGIN_DEPENDENCIES)}, func_on_load, func_on_unload);  \
                 }                                                                                                      \
                 break;                                                                                                 \
                 case DLL_PROCESS_DETACH:                                                                               \
-                    ::phantom::reflection::detail::unregisterModule((::phantom::size_t)_HDllHandle);                   \
+                    ::phantom::lang::detail::unregisterModule((::phantom::size_t)_HDllHandle);                   \
                     break;                                                                                             \
                 case DLL_THREAD_ATTACH:                                                                                \
                     break;                                                                                             \
@@ -104,14 +104,14 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
 #        define _PHNTM_PLUGIN_4(name, flags, func_on_load, func_on_unload)                                             \
             int module_start(size_t argc, const void* argv)                                                            \
             {                                                                                                          \
-                ::phantom::reflection::detail::registerModule(                                                         \
+                ::phantom::lang::detail::registerModule(                                                         \
                 (size_t)module_stop, name, *(const char**)argv, __FILE__, flags,                                       \
                 {PHANTOM_PLUGIN_DEPENDENCIES_UNROLL(PHANTOM_PLUGIN_DEPENDENCIES)}, func_on_load, func_on_unload);      \
                 return 0;                                                                                              \
             }                                                                                                          \
             int module_stop(size_t, const void*)                                                                       \
             {                                                                                                          \
-                ::phantom::reflection::detail::unregisterModule((size_t)module_stop);                                  \
+                ::phantom::lang::detail::unregisterModule((size_t)module_stop);                                  \
                 return 0;                                                                                              \
             }
 
@@ -122,7 +122,7 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
             {                                                                                                          \
                 static Dl_info info;                                                                                   \
                 dladdr((const void*)&_shared_library_posix_load, &info);                                               \
-                ::phantom::reflection::detail::registerModule(                                                         \
+                ::phantom::lang::detail::registerModule(                                                         \
                 (size_t)info.dli_fbase, name, info.dli_fname, __FILE__, flags,                                         \
                 {PHANTOM_PLUGIN_DEPENDENCIES_UNROLL(PHANTOM_PLUGIN_DEPENDENCIES)}, func_on_load, func_on_unload);      \
             }                                                                                                          \
@@ -130,7 +130,7 @@ inline void _PHNTM_PLUGIN_EMPTY_FUNC()
             {                                                                                                          \
                 static Dl_info info;                                                                                   \
                 dladdr((const void*)&_shared_library_posix_unload, &info);                                             \
-                ::phantom::reflection::detail::unregisterModule((size_t)info.dli_fbase);                               \
+                ::phantom::lang::detail::unregisterModule((size_t)info.dli_fbase);                               \
             }
 #    else
 

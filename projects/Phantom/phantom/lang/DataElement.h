@@ -13,7 +13,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM DataElement
 {
@@ -37,5 +37,5 @@ protected:
 private:
     Symbol* m_pThisElement;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

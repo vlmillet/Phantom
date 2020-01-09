@@ -3,4 +3,4 @@
 // Distributed under license available here at http://www.wiwila.com/tools/phantom/license/
 // ]
 
-// #include "reflection.hxx" (in reflection.cpp)
+// #include "lang.hxx" (in lang.cpp)

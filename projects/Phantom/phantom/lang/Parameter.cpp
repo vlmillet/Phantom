@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Parameter::Parameter(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : LocalVariable(a_pValueType, a_strName, a_Modifiers, a_uiFlags)
@@ -75,5 +75,5 @@ void Parameter::setDefaultArgumentExpression(Expression* a_pDefaultArgumentExpre
     addElement(reinterpret_cast<LanguageElement*>(m_pDefaultArgumentExpression));
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -12,12 +12,12 @@ HAUNT_STOP;
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/Copier.h>
-#include <phantom/reflection/Variable.h>
+#include <phantom/lang/Variable.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 class VariableT : public Variable
@@ -147,7 +147,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

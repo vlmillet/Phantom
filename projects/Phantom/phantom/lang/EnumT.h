@@ -14,13 +14,13 @@ HAUNT_STOP;
 #include "TypeT.h"
 
 #include <phantom/alignof>
-#include <phantom/reflection/Enum.h>
+#include <phantom/lang/Enum.h>
 #include <phantom/traits/IsEnumClass.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 class EnumT : public TypeT<t_Ty, Enum>
@@ -90,7 +90,7 @@ _PHNTM_SPEC_ANON_ENUMT(uint16_t);
 _PHNTM_SPEC_ANON_ENUMT(uint32_t);
 _PHNTM_SPEC_ANON_ENUMT(uint64_t);
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

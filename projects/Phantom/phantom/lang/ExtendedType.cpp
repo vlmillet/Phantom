@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ExtendedType::ExtendedType(Type* a_pUnderlyingType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
                            size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -28,5 +28,5 @@ void ExtendedType::onReferencedElementRemoved(LanguageElement* a_pElement)
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

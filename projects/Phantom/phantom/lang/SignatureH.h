@@ -8,13 +8,13 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/Signature.h>
+#include <phantom/lang/Signature.h>
 
 /// @cond INTERNAL
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 #define _PHNTM_SIGNH_OVERL(...)                                                                    \
     static Signature* Create()                                                                     \
@@ -142,7 +142,7 @@ _PHNTM_SPEC_CV_REF_SIGNH(volatile, PHANTOM_R_VOLATILE);
 _PHNTM_SPEC_CV_REF_SIGNH(volatile&, PHANTOM_R_VOLATILE | PHANTOM_R_LVALUEREF);
 _PHNTM_SPEC_CV_REF_SIGNH(volatile&&, PHANTOM_R_VOLATILE | PHANTOM_R_RVALUEREF);
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

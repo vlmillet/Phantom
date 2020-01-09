@@ -3,7 +3,7 @@
 // Distributed under the MIT license. Text available here at http://www.wiwila.com/tools/phantom/license/ 
 // ]
 
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/TypeOf.h>
 
 namespace phantom {
 
@@ -13,17 +13,17 @@ namespace phantom {
         struct VariantTypeOf
         {
             PHANTOM_STATIC_ASSERT(!(std::is_same<t_Ty, Variant>::value));
-            static reflection::Type* object() { return PHANTOM_TYPEOF(t_Ty); }
+            static lang::Type* object() { return PHANTOM_TYPEOF(t_Ty); }
         };
 
         template<class t_Ty>
         struct VariantTypeOf<t_Ty*>
         {
-            static reflection::Type* object() 
+            static lang::Type* object() 
             { 
                 if (auto pType = PHANTOM_TYPEOF(t_Ty))
                     return pType->addPointer();
-                return phantom::reflection::BuiltInTypes::TYPE_VOID_PTR;
+                return phantom::lang::BuiltInTypes::TYPE_VOID_PTR;
             }
         };
     }
@@ -53,8 +53,8 @@ namespace phantom {
     inline Variant::Variant(const char* a_Str) 
     {
         new (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(String))) String(a_Str);
-        PHANTOM_ASSERT(phantom::reflection::BuiltInTypes::TYPE_STRING);
-        m_pType = (reflection::Type*)phantom::reflection::BuiltInTypes::TYPE_STRING;
+        PHANTOM_ASSERT(phantom::lang::BuiltInTypes::TYPE_STRING);
+        m_pType = (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING;
     }
 
     Variant::Variant(Variant&& a_Other)
@@ -139,7 +139,7 @@ namespace phantom {
             _release();
         }
         new (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(String))) String(a_Str);
-        m_pType = (reflection::Type*)phantom::reflection::BuiltInTypes::TYPE_STRING;
+        m_pType = (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING;
         return *this;
     }
 
@@ -187,7 +187,7 @@ namespace phantom {
         return *this;
     }
 
-    inline void Variant::setType(reflection::Type* a_pType)
+    inline void Variant::setType(lang::Type* a_pType)
     {
         if (m_pType)
         {
@@ -229,12 +229,12 @@ namespace phantom {
 
     inline bool Variant::operator==(const char* other) const
     {
-        return (m_pType == (reflection::Type*)phantom::reflection::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
+        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
     }
 
     inline bool Variant::operator==(StringView other) const
     {
-        return (m_pType == (reflection::Type*)phantom::reflection::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
+        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
     }
 
     inline bool Variant::operator==(const Variant& other) const 
@@ -243,7 +243,7 @@ namespace phantom {
             return other.m_pType == nullptr;
         else if (other.m_pType == nullptr)
             return m_pType == nullptr;
-        if (m_pType->isSame((reflection::Type*)phantom::reflection::BuiltInTypes::TYPE_STRING))
+        if (m_pType->isSame((lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING))
         {
             return (m_pType->isSame(other.m_pType)) AND (*((String*)_buffer()) == *((String*)other._buffer()));
         }
@@ -277,11 +277,11 @@ namespace phantom {
     }
 
     inline bool Variant::isString() const {
-        PHANTOM_ASSERT(phantom::reflection::BuiltInTypes::TYPE_STRING);
-        return m_pType == phantom::reflection::BuiltInTypes::TYPE_STRING;
+        PHANTOM_ASSERT(phantom::lang::BuiltInTypes::TYPE_STRING);
+        return m_pType == phantom::lang::BuiltInTypes::TYPE_STRING;
     }
 
-    inline bool Variant::_as(reflection::Type* a_pType, void* a_pDest) const
+    inline bool Variant::_as(lang::Type* a_pType, void* a_pDest) const
     {
         if(a_pType == nullptr OR m_pType == nullptr)
         {
@@ -298,7 +298,7 @@ namespace phantom {
             return m_pType->convert(a_pType, a_pDest, _buffer());
     }
 
-    inline Variant Variant::as(reflection::Type* a_pType) const
+    inline Variant Variant::as(lang::Type* a_pType) const
     {
         if(a_pType == nullptr OR m_pType == nullptr)
         {

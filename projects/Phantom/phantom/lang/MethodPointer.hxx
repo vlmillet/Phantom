@@ -32,24 +32,24 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("MethodPointer")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(MethodPointer)
         {
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::MemberPointer>()
+            .inherits<::phantom::lang::MemberPointer>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .constructor<void(ClassType*, FunctionType*, Modifiers, uint)>()["0"]["0"]
@@ -94,7 +94,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("MethodPointer")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

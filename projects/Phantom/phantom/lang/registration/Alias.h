@@ -12,7 +12,7 @@ HAUNT_STOP;
 
 #include "Namespace.h"
 
-#include <phantom/reflection/Alias.h>
+#include <phantom/lang/Alias.h>
 
 #define PHANTOM_ALIAS(name, ...) PHANTOM_TYPEDEF(name, ##__VA_ARGS__)
 #define PHANTOM_MALIAS(name) PHANTOM_MTYPEDEF(name)

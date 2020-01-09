@@ -10,7 +10,7 @@
 #include "StringView.h"
 
 #include <phantom/detail/TypeOfFwd.h>
-#include <phantom/reflection/CallHelpers.h>
+#include <phantom/lang/CallHelpers.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -26,23 +26,23 @@ class PHANTOM_EXPORT_PHANTOM OpaqueDynDelegate
 
 public:
     OpaqueDynDelegate() = default;
-    OpaqueDynDelegate(void* a_pInstance, reflection::Class* a_pClass, reflection::Method* a_pMethod);
-    OpaqueDynDelegate(reflection::Function* a_pFunction);
-    OpaqueDynDelegate(void* a_pInstance, reflection::Class* a_pClass, StringView a_MethodName);
+    OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod);
+    OpaqueDynDelegate(lang::Function* a_pFunction);
+    OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName);
 
     void* getThis() const
     {
         return m_pMethod ? m_pThis : nullptr;
     }
-    reflection::Function* getFunction() const
+    lang::Function* getFunction() const
     {
         return m_pMethod ? nullptr : m_pFunction;
     }
-    reflection::Method* getMethod() const
+    lang::Method* getMethod() const
     {
         return m_pMethod;
     }
-    reflection::Subroutine* getSubroutine() const;
+    lang::Subroutine* getSubroutine() const;
 
     bool isEmpty() const
     {
@@ -74,13 +74,13 @@ public:
     void call(void** a_pArgs, void* a_pReturnAddress) const;
 
 private:
-    bool _CheckSignature(reflection::Type* a_pRetType, reflection::TypesView a_Types) const;
+    bool _CheckSignature(lang::Type* a_pRetType, lang::TypesView a_Types) const;
 
 private:
-    reflection::Method* m_pMethod = nullptr;
+    lang::Method* m_pMethod = nullptr;
     union {
         void*                 m_pThis = nullptr;
-        reflection::Function* m_pFunction;
+        lang::Function* m_pFunction;
     };
 };
 
@@ -107,18 +107,18 @@ public:
 public:
     DynDelegate() = default;
 
-    DynDelegate(reflection::Function* a_pFunction) : OpaqueDynDelegate(a_pFunction)
+    DynDelegate(lang::Function* a_pFunction) : OpaqueDynDelegate(a_pFunction)
     {
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    DynDelegate(void* a_pInstance, reflection::Class* a_pClass, reflection::Method* a_pMethod)
+    DynDelegate(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod)
         : OpaqueDynDelegate(a_pInstance, a_pClass, a_pMethod)
     {
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    DynDelegate(void* a_pInstance, reflection::Class* a_pClass, StringView a_MethodName)
+    DynDelegate(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName)
         : OpaqueDynDelegate(a_pInstance, a_pClass, a_MethodName)
     {
         PHANTOM_ASSERT(_CheckSignature());
@@ -139,8 +139,8 @@ public:
 private:
     bool _CheckSignature() const
     {
-        reflection::Types types{PHANTOM_TYPEOF(Params)...};
-        reflection::Type* pRetType = PHANTOM_TYPEOF(R);
+        lang::Types types{PHANTOM_TYPEOF(Params)...};
+        lang::Type* pRetType = PHANTOM_TYPEOF(R);
         return OpaqueDynDelegate::_CheckSignature(pRetType, types);
     }
 };
@@ -150,7 +150,7 @@ namespace _DynDelegate
 template<class R, class... Params>
 R Caller<R, Params...>::Call(OpaqueDynDelegate const& a_Dgt, Params... a_Args)
 {
-    typename reflection::CallReturnTypeH<R>::type r{};
+    typename lang::CallReturnTypeH<R>::type r{};
     void*                                         args[] = {((void*)(&a_Args))..., nullptr};
     a_Dgt.call(args, &r);
     return (R)r;

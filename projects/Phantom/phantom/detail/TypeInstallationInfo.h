@@ -12,31 +12,31 @@ HAUNT_STOP;
 
 #include "Registrer.h"
 
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/utils/SmallMultimap.h>
 #include <phantom/utils/SmallVector.h>
 #include <phantom/utils/StringView.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
-using TypeInstallFunc = Delegate<void(reflection::Type*, TypeInstallationStep)>;
+using TypeInstallFunc = Delegate<void(lang::Type*, TypeInstallationStep)>;
 
 struct PHANTOM_EXPORT_PHANTOM TypeInstallationInfo
 {
     TypeInstallationInfo() = default;
-    // TypeInstallationInfo(reflection::Type* a_pType, reflection::Source* a_pSource,
-    // TypeInstallFunc a_setupFunc, reflection::SymbolExtenders&& a_Exts);
-    TypeInstallationInfo(reflection::Type* a_pType, reflection::Source* a_pSource, TypeInstallFunc a_setupFunc);
+    // TypeInstallationInfo(lang::Type* a_pType, lang::Source* a_pSource,
+    // TypeInstallFunc a_setupFunc, lang::SymbolExtenders&& a_Exts);
+    TypeInstallationInfo(lang::Type* a_pType, lang::Source* a_pSource, TypeInstallFunc a_setupFunc);
     void                exec(TypeInstallationStep step);
     void                installSymbolExtenders();
     TypeInstallFunc     installFunc;
-    reflection::Type*   type;
-    reflection::Source* m_pSource;
+    lang::Type*   type;
+    lang::Source* m_pSource;
     uint                steps;
-    // reflection::SymbolExtenders extenders;
+    // lang::SymbolExtenders extenders;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

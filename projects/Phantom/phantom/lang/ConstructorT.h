@@ -12,16 +12,16 @@ HAUNT_STOP;
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/ConstructorCaller.h>
-#include <phantom/reflection/CallHelpers.h>
-#include <phantom/reflection/ClassType.h>
-#include <phantom/reflection/Constructor.h>
-#include <phantom/reflection/NativeVTableSizeComputer.h>
-#include <phantom/reflection/SignatureH.h>
+#include <phantom/lang/CallHelpers.h>
+#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Constructor.h>
+#include <phantom/lang/NativeVTableSizeComputer.h>
+#include <phantom/lang/SignatureH.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /* ************* t_Ty Declarations ************** */
 
@@ -115,7 +115,7 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

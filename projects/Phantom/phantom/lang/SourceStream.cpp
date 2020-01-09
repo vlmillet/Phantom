@@ -11,14 +11,14 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
-phantom::reflection::SourceStream* SourceStream::CreateFromUrl(StringView a_Url)
+phantom::lang::SourceStream* SourceStream::CreateFromUrl(StringView a_Url)
 {
     if (a_Url.find("file:") == 0)
         return SourceFile::CreateOnDisk(a_Url.substr(5), false);
     return nullptr;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

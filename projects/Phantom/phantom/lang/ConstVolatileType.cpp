@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 ConstVolatileType::ConstVolatileType(Type* a_pType)
     : QualifiedType(a_pType, a_pType->getTypeKind(), "const volatile", 0, 0,
@@ -64,5 +64,5 @@ void ConstVolatileType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += " const volatile";
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

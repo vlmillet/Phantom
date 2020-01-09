@@ -14,7 +14,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, StringView a_strName,
                                                    OptionalArrayView<LanguageElement*> a_pTemplateArguments /*= 0*/,
@@ -77,5 +77,5 @@ Type* TemplateDependantElement::toType() const
     return PHANTOM_NEW(TemplateDependantType)((TemplateDependantElement*)this);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

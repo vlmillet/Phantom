@@ -8,11 +8,11 @@
 
 #include "registration/registration.h"
 
-#include <phantom/reflection/Source.h>
+#include <phantom/lang/Source.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PHANTOM_EXPORT_PHANTOM FunctionType* functionType(Type* a_pReturnType, TypesView a_ParameterTypes,
                                                   Modifiers a_Qualifiers)
@@ -172,5 +172,5 @@ PHANTOM_EXPORT_PHANTOM Type* type_cast(Array* a_pElement)
 }
 
 #endif
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

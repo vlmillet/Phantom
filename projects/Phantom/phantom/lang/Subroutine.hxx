@@ -35,8 +35,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Subroutine")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -112,25 +112,25 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         PHANTOM_CLASS(Subroutine)
         {
-            using Instructions = typedef_< phantom::reflection::Instructions>;
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Parameters = typedef_< phantom::reflection::Parameters>;
+            using Instructions = typedef_< phantom::lang::Instructions>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Parameters = typedef_< phantom::lang::Parameters>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using StringViews = typedef_< phantom::StringViews>;
-            using Types = typedef_< phantom::reflection::Types>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
+            using Types = typedef_< phantom::lang::Types>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol, ::phantom::reflection::Callable>()
+            .inherits<::phantom::lang::Symbol, ::phantom::lang::Callable>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<ABI() const>("getABI", &_::getABI)
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Callable*() const, virtual_>("asCallable", &_::asCallable)
@@ -188,9 +188,9 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Instruction*(const CodePosition&) const>("findInstructionAtCodePosition", &_::findInstructionAtCodePosition)
             .method<Instruction*(const byte*) const>("getInstructionAtMemoryAddress", &_::getInstructionAtMemoryAddress)
             .method<Instruction*(const byte*) const>("findInstructionStartingAtMemoryAddress", &_::findInstructionStartingAtMemoryAddress)
-            /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Block*() const>("getBlock", &_::getBlock)
-            /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Block*)>("setBlock", &_::setBlock)
             .method<bool(const byte*)>("containsMemoryAddress", &_::containsMemoryAddress)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -206,13 +206,13 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .constructor<void()>()
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(ABI, Modifiers, uint)>()["0"]["0"]
             .method<void(void**, size_t, void*) const>("apply", &_::apply)
             .method<void(void**, size_t, void*) const>("placementApply", &_::placementApply)
@@ -223,13 +223,13 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .protected_()
             .field("m_pSignature", &_::m_pSignature)
-            /// missing symbol(s) reflection (phantom::reflection::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_eABI", &_::m_eABI)
             .field("m_pInstructions", &_::m_pInstructions)
-            /// missing symbol(s) reflection (phantom::reflection::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pBlock", &_::m_pBlock)
             .field("m_MemoryLocation", &_::m_MemoryLocation)
-            /// missing symbol(s) reflection (phantom::reflection::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_CallDelegate", &_::m_CallDelegate)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_Closure", &_::m_Closure)
@@ -238,7 +238,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Subroutine")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

@@ -17,7 +17,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Plugin
 {
@@ -105,6 +105,6 @@ private:
 private:
     friend class phantom::detail::DynamicCppInitializerH;
 };
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom

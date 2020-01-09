@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Constant::Constant(Type* a_pValueType, Modifiers a_Modifiers /*= 0*/, uint a_Flags /*= 0*/)
     : Symbol("", a_Modifiers, a_Flags), m_pValueType(a_pValueType)
@@ -71,5 +71,5 @@ Constant* Constant::clone() const
     return pC;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -116,8 +116,8 @@ PHANTOM_SOURCE("phantom.Core")
     PHANTOM_REGISTER(Typedefs) { this_().typedef_<hash64>("hash64"); }
     #endif // PHANTOM_NOT_TEMPLATE
 PHANTOM_END("phantom.Core")
-namespace reflection {
-PHANTOM_SOURCE("phantom.reflection.Core")
+namespace lang {
+PHANTOM_SOURCE("phantom.lang.Core")
 
     #if PHANTOM_NOT_TEMPLATE
     PHANTOM_REGISTER(Enums) { this_().enum_<ABI>().values({
@@ -134,7 +134,7 @@ PHANTOM_SOURCE("phantom.reflection.Core")
     }
     PHANTOM_REGISTER(Typedefs) { this_().typedef_<ECallingConv>("ECallingConv"); }
     #endif // PHANTOM_NOT_TEMPLATE
-PHANTOM_END("phantom.reflection.Core")
+PHANTOM_END("phantom.lang.Core")
 }
 }
 

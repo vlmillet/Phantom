@@ -8,7 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/MemoryContext.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Signal.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/SmallSet.h>
@@ -16,7 +16,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM Module : public Symbol
 {
@@ -24,7 +24,7 @@ class PHANTOM_EXPORT_PHANTOM Module : public Symbol
 
     PHANTOM_DECLARE_META_CLASS(Module);
 
-    friend class phantom::reflection::Application;
+    friend class phantom::lang::Application;
     friend class phantom::detail::DynamicCppInitializerH;
     friend class ModuleRegistrationInfo;
     friend class Source;
@@ -215,7 +215,7 @@ public:
     /// (not abstract + default constructible).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void findClasses(Classes& a_Classes, reflection::Class* a_pBaseClass = nullptr,
+    void findClasses(Classes& a_Classes, lang::Class* a_pBaseClass = nullptr,
                      bool a_bDefaultInstanciable = false) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,5 +357,5 @@ struct ModuleDependencySorter
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -8,14 +8,14 @@
 // #pragma message("Including "__FILE__)
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ExtendedType.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for pointer/address type representations (Data pointer types, function
 /// pointer types, etc...).
@@ -74,5 +74,5 @@ public:
 protected:
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 QualifiedType::QualifiedType(Type* a_pType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
                              size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
@@ -17,32 +17,32 @@ QualifiedType::QualifiedType(Type* a_pType, TypeKind a_eTypeKind, StringView a_s
 {
 }
 
-phantom::reflection::Type* QualifiedType::removeAllVolatile() const
+phantom::lang::Type* QualifiedType::removeAllVolatile() const
 {
     return m_pUnderlyingType->removeAllVolatile();
 }
 
-phantom::reflection::Type* QualifiedType::removeAllQualifiers() const
+phantom::lang::Type* QualifiedType::removeAllQualifiers() const
 {
     return m_pUnderlyingType->removeAllQualifiers();
 }
 
-phantom::reflection::Type* QualifiedType::removeQualifiers() const
+phantom::lang::Type* QualifiedType::removeQualifiers() const
 {
     return m_pUnderlyingType->removeQualifiers();
 }
 
-phantom::reflection::Type* QualifiedType::removePointerOrArray() const
+phantom::lang::Type* QualifiedType::removePointerOrArray() const
 {
     return m_pUnderlyingType->removePointerOrArray();
 }
 
-phantom::reflection::Type* QualifiedType::removeAddress() const
+phantom::lang::Type* QualifiedType::removeAddress() const
 {
     return m_pUnderlyingType->removeAddress();
 }
 
-phantom::reflection::Type* QualifiedType::removeArray() const
+phantom::lang::Type* QualifiedType::removeArray() const
 {
     return m_pUnderlyingType->removeArray();
 }
@@ -82,7 +82,7 @@ void QualifiedType::deleteInstance(void* a_pInstance) const
     m_pUnderlyingType->deleteInstance(a_pInstance);
 }
 
-phantom::reflection::Type::TypeRelation QualifiedType::getRelationWith(Type* a_pType) const
+phantom::lang::Type::TypeRelation QualifiedType::getRelationWith(Type* a_pType) const
 {
     return m_pUnderlyingType->getRelationWith(a_pType);
 }
@@ -127,7 +127,7 @@ bool QualifiedType::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) 
     return m_pUnderlyingType->convert(a_pDstType, a_pDst, a_pSrc);
 }
 
-phantom::reflection::Type* QualifiedType::removeEverything() const
+phantom::lang::Type* QualifiedType::removeEverything() const
 {
     return m_pUnderlyingType->removeEverything();
 }
@@ -202,17 +202,17 @@ bool QualifiedType::isEquivalent(Type* a_pType) const
     return m_pUnderlyingType->isEquivalent(a_pType);
 }
 
-phantom::reflection::Type* QualifiedType::unsignedType() const
+phantom::lang::Type* QualifiedType::unsignedType() const
 {
     return replicate(m_pUnderlyingType->unsignedType());
 }
 
-phantom::reflection::Type* QualifiedType::signedType() const
+phantom::lang::Type* QualifiedType::signedType() const
 {
     return replicate(m_pUnderlyingType->signedType());
 }
 
-phantom::reflection::Type* QualifiedType::longType() const
+phantom::lang::Type* QualifiedType::longType() const
 {
     return replicate(m_pUnderlyingType->longType());
 }
@@ -227,7 +227,7 @@ bool QualifiedType::isUnsignedInteger() const
     return m_pUnderlyingType->isUnsignedInteger();
 }
 
-phantom::reflection::Type* QualifiedType::promote() const
+phantom::lang::Type* QualifiedType::promote() const
 {
     return replicate(m_pUnderlyingType->promote());
 }
@@ -237,5 +237,5 @@ uint QualifiedType::getDataPointerLevel() const
     return m_pUnderlyingType->getDataPointerLevel();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

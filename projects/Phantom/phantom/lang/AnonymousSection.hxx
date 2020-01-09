@@ -28,21 +28,21 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("AnonymousSection")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(AnonymousSection)
         {
-            using AnonymousSections = typedef_< phantom::reflection::AnonymousSections>;
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Variables = typedef_< phantom::reflection::Variables>;
+            using AnonymousSections = typedef_< phantom::lang::AnonymousSections>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Variables = typedef_< phantom::lang::Variables>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
@@ -73,7 +73,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("AnonymousSection")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

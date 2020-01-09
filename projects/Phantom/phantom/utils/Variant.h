@@ -26,7 +26,7 @@ class PHANTOM_EXPORT_PHANTOM Variant
     };
 
 public:
-    typedef Delegate<bool(reflection::Type*, void*, reflection::Type*, const void*)> TypeConverter;
+    typedef Delegate<bool(lang::Type*, void*, lang::Type*, const void*)> TypeConverter;
     static void          SetTypeConverter(TypeConverter a_TC);
     static TypeConverter GetTypeConverter();
 
@@ -56,8 +56,8 @@ public:
                                 void>>
     inline Variant(t_Ty&& a_In);
 
-    Variant(reflection::Type* a_pType, void* a_pValue, bool a_bMove = false);
-    Variant(reflection::Type* a_pType, void const* a_pValue);
+    Variant(lang::Type* a_pType, void* a_pValue, bool a_bMove = false);
+    Variant(lang::Type* a_pType, void const* a_pValue);
 
     inline Variant& operator=(const Variant& a_Other);
     inline Variant& operator=(Variant&& a_Other);
@@ -87,7 +87,7 @@ public:
             _release();
     }
 
-    inline void setType(reflection::Type* a_pType);
+    inline void setType(lang::Type* a_pType);
 
     inline bool operator==(const Variant& other) const;
 
@@ -104,12 +104,12 @@ public:
     void copyAssign(const void* a_pValue);
     void moveAssign(void* a_pValue);
 
-    void copyConstruct(reflection::Type* a_pType, const void* a_pValue);
-    void moveConstruct(reflection::Type* a_pType, void* a_pValue);
+    void copyConstruct(lang::Type* a_pType, const void* a_pValue);
+    void moveConstruct(lang::Type* a_pType, void* a_pValue);
 
     inline size_t size() const;
 
-    inline reflection::Type* type() const
+    inline lang::Type* type() const
     {
         return m_pType;
     }
@@ -143,7 +143,7 @@ public:
         return _as(a_Param0.getType(), a_Arg0.getValue());
     }
 
-    inline phantom::Variant as(reflection::Type* a_pType) const;
+    inline phantom::Variant as(lang::Type* a_pType) const;
 
     template<typename t_Ty>
     inline bool as(t_Ty* a_pDest) const;
@@ -162,14 +162,14 @@ public:
     inline void fundamental(T value);
 
 private:
-    inline bool _as(reflection::Type* a_pType, void* a_pDest) const;
+    inline bool _as(lang::Type* a_pType, void* a_pDest) const;
 
     inline byte* _buffer() const
     {
         return (size() > StaticBufferSize) ? m_Buffer.dynamicBuffer : (byte*)m_Buffer.staticBuffer;
     }
     inline void       _release();
-    reflection::Type* m_pType;
+    lang::Type* m_pType;
     union { // storage for small buffer or pointer to larger one
         byte  staticBuffer[StaticBufferSize];
         byte* dynamicBuffer;
@@ -178,5 +178,5 @@ private:
 
 } // namespace phantom
 
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/utils/Variant.inl>

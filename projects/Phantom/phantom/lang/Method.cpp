@@ -18,7 +18,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 Method::Method(ABI a_eABI, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
     : Subroutine(a_eABI, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
@@ -93,14 +93,14 @@ Method::~Method()
     PHANTOM_DELETE(SmallMap<size_t, void*>) m_pVTableClosures;
 }
 
-reflection::ClassType* Method::getOwnerClassType() const
+lang::ClassType* Method::getOwnerClassType() const
 {
-    return static_cast<reflection::ClassType*>(getOwner());
+    return static_cast<lang::ClassType*>(getOwner());
 }
 
-reflection::Class* Method::getOwnerClass() const
+lang::Class* Method::getOwnerClass() const
 {
-    return static_cast<reflection::ClassType*>(getOwner())->asClass();
+    return static_cast<lang::ClassType*>(getOwner())->asClass();
 }
 
 bool Method::canOverride(Method* a_pMethod) const
@@ -275,5 +275,5 @@ void Method::placementInvoke(void*, void**, void*) const
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

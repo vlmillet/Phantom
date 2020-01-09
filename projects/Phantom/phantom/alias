@@ -1,3 +1,3 @@
 #pragma once
 
-#include <phantom/reflection/registration/Alias.h>
+#include <phantom/lang/registration/Alias.h>

@@ -8,14 +8,14 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/newImpl.h>
-#include <phantom/reflection/LanguageElement.h>
+#include <phantom/lang/LanguageElement.h>
 /* *********************************************** */
 
 HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class MembersBase
 {
@@ -121,5 +121,5 @@ inline void MembersBase::onAccess() const
         pOwner->_onElementsAccess();
     }
 }
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -18,7 +18,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// Full specialization constructor
 TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature,
@@ -198,7 +198,7 @@ void TemplateSpecialization::setArgument(size_t a_uiIndex, LanguageElement* a_pE
     size_t index = a_uiIndex;
     PHANTOM_ASSERT(!isNative() OR a_pElement,
                    "invalid template argument ; if argument is a type, check that your type has "
-                   "reflection declared before its use in any template signature");
+                   "lang declared before its use in any template signature");
     PHANTOM_ASSERT(index != ~size_t(0));
     PHANTOM_ASSERT(m_Arguments[index] == nullptr);
     if (a_pElement == nullptr)
@@ -257,7 +257,7 @@ void TemplateSpecialization::removeArgument(LanguageElement* a_pElement)
         removeElement(a_pElement);
 }
 
-phantom::reflection::TemplateParameters const& TemplateSpecialization::getTemplateParameters() const
+phantom::lang::TemplateParameters const& TemplateSpecialization::getTemplateParameters() const
 {
     return m_pTemplateSignature->getTemplateParameters();
 }
@@ -486,5 +486,5 @@ TemplateSpecialization* TemplateSpecialization::Create(Template* a_pTemplate, Te
                                                            a_Flags);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

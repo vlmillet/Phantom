@@ -12,21 +12,21 @@ HAUNT_STOP;
 
 /* ****************** Includes ******************* */
 #include <phantom/utils/LexicalCast.h>
-#include <phantom/reflection/Constant.h>
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/Constant.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/IsNullptrT.h>
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<typename t_Ty>
 class ConstantT : public Constant
 {
-    friend class phantom::reflection::PrimitiveType;
+    friend class phantom::lang::PrimitiveType;
 
     using SelfType = ConstantT<t_Ty>;
     using ValueTypeNoConst = std::remove_const_t<t_Ty>;
@@ -119,7 +119,7 @@ protected:
     t_Ty m_Value;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

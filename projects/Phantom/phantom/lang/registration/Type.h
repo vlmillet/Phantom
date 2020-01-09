@@ -13,8 +13,8 @@ HAUNT_STOP;
 #include "Scope.h"
 
 #include <phantom/detail/TypeInstallationInfo.h>
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/traits/SelectType.h>
 #include <phantom/utils/Delegate.h>
@@ -23,16 +23,16 @@ HAUNT_STOP;
 #include <phantom/utils/Variant.h>
 
 #define PHANTOM_REFLECTED_TYPE                                                                                         \
-    phantom::reflection::ReflectedTypeOfT<std::remove_reference_t<decltype(_PHNTM_IDTTY(this_()))>>
+    phantom::lang::ReflectedTypeOfT<std::remove_reference_t<decltype(_PHNTM_IDTTY(this_()))>>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct MemberBuilder;
 using MemberRegistrer = void (*)(MemberBuilder const&);
 using TemplateSpecArgumentRegistrer = LanguageElements (*)();
-using InheritanceRegistrer = void (*)(reflection::Class*);
+using InheritanceRegistrer = void (*)(lang::Class*);
 
 template<class Builder>
 using ReflectedTypeOfT = PHANTOM_TYPENAME Builder::ReflectedType;
@@ -58,7 +58,7 @@ struct ArgFwdT
     ArgFwd fwd;
 };
 
-#define PHANTOM_REG_MEMBER_FORWARD_ARG(any) phantom::reflection::ArgFwdT<sizeof(any)>(&any)
+#define PHANTOM_REG_MEMBER_FORWARD_ARG(any) phantom::lang::ArgFwdT<sizeof(any)>(&any)
 #define PHANTOM_REG_MEMBER_GETBACK_ARG(idx, any) (*(any*)(&a_Member.fwdArgs[idx]))
 
 struct PHANTOM_EXPORT_PHANTOM MemberBuilder
@@ -73,7 +73,7 @@ struct PHANTOM_EXPORT_PHANTOM MemberBuilder
     uint                   filter;
     bool                   isSymbol;
     bool                   isFunc;
-    reflection::Modifiers  modifiers;
+    lang::Modifiers  modifiers;
     uint                   flags;
 
     ClassType* classType() const;
@@ -87,8 +87,8 @@ struct PHANTOM_EXPORT_PHANTOM MemberBuilder
     }
 
 private:
-    void _apply(reflection::Symbol* a_pSymbol) const;
-    void _apply(reflection::Subroutine* a_pSubroutine) const;
+    void _apply(lang::Symbol* a_pSymbol) const;
+    void _apply(lang::Subroutine* a_pSubroutine) const;
 };
 
 struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
@@ -97,49 +97,49 @@ struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
     _PHNTM_REG_FRIENDS;
 
 protected:
-    TypeBuilderBase(reflection::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
+    TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
                     TemplateSpecArgumentRegistrer a_Arguments);
-    TypeBuilderBase(reflection::Scope*, Scope* a_pNamingScope, Type* a_pType,
+    TypeBuilderBase(lang::Scope*, Scope* a_pNamingScope, Type* a_pType,
                     TemplateSpecArgumentRegistrer a_Arguments);
 
-    virtual void _installFunc(reflection::Type* a_pType, TypeInstallationStep a_Step);
+    virtual void _installFunc(lang::Type* a_pType, TypeInstallationStep a_Step);
     void         _registerTypeInstallationInfo(TypeInstallationInfo* a_pTii);
-    Template*    _getClassTemplate(reflection::ClassType* a_pClass, Namespace* a_pScope);
-    Template*    _getClassTemplate(reflection::ClassType* a_pClass, Scope* a_pScope);
+    Template*    _getClassTemplate(lang::ClassType* a_pClass, Namespace* a_pScope);
+    Template*    _getClassTemplate(lang::ClassType* a_pClass, Scope* a_pScope);
     void         _splitEnumValues(StringView a_NameList, StringViews& a_Names);
 
     // meta data
 
-    void operator()(reflection::MetaDatas&& a_MD);
+    void operator()(lang::MetaDatas&& a_MD);
 
     void operator()(StringView a_Name, Variant&& a_Value);
     void operator()(StringView a_Annot);
     void operator()(uint a_Flags);
-    void operator()(reflection::Modifiers a_Modifiers);
+    void operator()(lang::Modifiers a_Modifiers);
 
-    void addMember(reflection::Symbol* a_pOwner, MemberBuilder&& a_Member);
-    void addMember(reflection::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+    void addMember(lang::Symbol* a_pOwner, MemberBuilder&& a_Member);
+    void addMember(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
                    uint a_UserInt, MemberRegistrer a_Reg);
 
 private:
     ClassType* _PHNTM_getOwnerScope();
     ClassType* _PHNTM_getNamingScope();
-    void       _PHNTM_setLastSymbol(reflection::Symbol*)
+    void       _PHNTM_setLastSymbol(lang::Symbol*)
     {
     } // skip
 
 protected:
-    void _addAccess(reflection::Symbol* a_pOwner, Access _access);
-    void _addSymbol(reflection::Symbol* a_pOwner, StringView a_Name, MemberRegistrer a_Reg);
-    void _addSymbol(reflection::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+    void _addAccess(lang::Symbol* a_pOwner, Access _access);
+    void _addSymbol(lang::Symbol* a_pOwner, StringView a_Name, MemberRegistrer a_Reg);
+    void _addSymbol(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
                     MemberRegistrer a_Reg);
-    void _addCtor(reflection::Symbol* a_pOwner, MemberRegistrer a_Reg);
-    void _addFunc(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg);
-    void _addMethod(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg);
-    void _addField(reflection::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, uint a_Filter, MemberRegistrer a_Reg);
-    void _addCustom(reflection::Symbol* a_pOwner, std::initializer_list<ArgFwd> a_Arg, uint a_UserInt,
+    void _addCtor(lang::Symbol* a_pOwner, MemberRegistrer a_Reg);
+    void _addFunc(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg);
+    void _addMethod(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, MemberRegistrer a_Reg);
+    void _addField(lang::Symbol* a_pOwner, StringView a_Name, ArgFwd a_Arg, uint a_Filter, MemberRegistrer a_Reg);
+    void _addCustom(lang::Symbol* a_pOwner, std::initializer_list<ArgFwd> a_Arg, uint a_UserInt,
                     MemberRegistrer a_Reg);
-    void _addProperty(reflection::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+    void _addProperty(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
                       uint a_Filter, MemberRegistrer a_Reg);
 
     Scope*                         m_pNamingScope;
@@ -148,7 +148,7 @@ protected:
     MetaDatas                      m_MetaDatas;
     Strings                        m_Annotations;
     uint                           m_Flags = 0;
-    reflection::Modifiers          m_Modifiers = 0;
+    lang::Modifiers          m_Modifiers = 0;
     TemplateSpecArgumentRegistrer  m_TemplateSpecArgumentRegistrer;
     InheritanceRegistrer           m_Inheritance = nullptr;
 };
@@ -191,7 +191,7 @@ struct TypeBuilderT : TypeBuilderBase
     {
         return static_cast<MostDerived&>(*this);
     }
-    MostDerived& this_(reflection::MetaDatas&& a_MD)
+    MostDerived& this_(lang::MetaDatas&& a_MD)
     {
         m_MetaDatas = std::move(a_MD);
         return static_cast<MostDerived&>(*this);
@@ -202,7 +202,7 @@ struct TypeBuilderT : TypeBuilderBase
         return static_cast<MostDerived&>(*this);
     }
 
-    MostDerived& operator()(reflection::MetaDatas&& a_MD)
+    MostDerived& operator()(lang::MetaDatas&& a_MD)
     {
         BaseType::operator()(std::move(a_MD));
         return static_cast<MostDerived&>(*this);
@@ -220,7 +220,7 @@ struct TypeBuilderT : TypeBuilderBase
         return static_cast<MostDerived&>(*this);
     }
 
-    MostDerived& operator()(reflection::Modifiers a_Modifiers)
+    MostDerived& operator()(lang::Modifiers a_Modifiers)
     {
         BaseType::operator()(a_Modifiers);
         return static_cast<MostDerived&>(*this);
@@ -242,7 +242,7 @@ private:
         auto pMetaClass = MetaType::MetaClass();
         if (pMetaClass == nullptr)
         {
-            PHANTOM_ASSERT((std::is_same<MetaType, PHANTOM_TYPENAME MetaTypeOf<reflection::Class>::type>::value),
+            PHANTOM_ASSERT((std::is_same<MetaType, PHANTOM_TYPENAME MetaTypeOf<lang::Class>::type>::value),
                            "you probably forgot a PHANTOM_DECLARE_META_CLASS() for your derivation of Class");
             pMetaClass = Class::metaClass =
             (decltype(pMetaClass))(m_pType); /// meta meta type (the meta type of the meta type of
@@ -269,7 +269,7 @@ inline std::nullptr_t TemplateArgsOfADL(void*)
 {
     return nullptr;
 }
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom
 
@@ -278,24 +278,24 @@ inline std::nullptr_t TemplateArgsOfADL(void*)
 #define _PHNTM_MTYPE_1(keyword)                                                                                        \
     auto& PHANTOM_PP_CAT(keyword, __LINE__) = this_();                                                                 \
     if (auto this_ =                                                                                                   \
-        phantom::reflection::makeScopedIf(PHANTOM_PP_CAT(keyword, __LINE__).PHANTOM_PP_CAT(keyword, _) < > ()))
+        phantom::lang::makeScopedIf(PHANTOM_PP_CAT(keyword, __LINE__).PHANTOM_PP_CAT(keyword, _) < > ()))
 
 #define _PHNTM_MTYPE_X(keyword, Name, ...)                                                                             \
     auto& PHANTOM_PP_CAT(keyword, __LINE__) = this_();                                                                 \
-    if (auto this_ = phantom::reflection::makeScopedIf(                                                                \
+    if (auto this_ = phantom::lang::makeScopedIf(                                                                \
         PHANTOM_PP_CAT(keyword, __LINE__).PHANTOM_PP_CAT(keyword, _) <                                                 \
-        phantom::reflection::BuilderProxyTypeT<decltype(PHANTOM_PP_CAT(keyword, __LINE__))>::Name > () __VA_ARGS__))
+        phantom::lang::BuilderProxyTypeT<decltype(PHANTOM_PP_CAT(keyword, __LINE__))>::Name > () __VA_ARGS__))
 
 #define PHANTOM_T_MTYPE(keyword, ...) PHANTOM_PP_VARARG_1_X(_PHNTM_T_MTYPE_, keyword, ##__VA_ARGS__)
 
 #define _PHNTM_T_MTYPE_1(keyword)                                                                                      \
     auto& PHANTOM_PP_CAT(keyword, __LINE__) = this_();                                                                 \
-    if (auto this_ = phantom::reflection::makeScopedIf(                                                                \
+    if (auto this_ = phantom::lang::makeScopedIf(                                                                \
         PHANTOM_PP_CAT(keyword, __LINE__).PHANTOM_T PHANTOM_PP_CAT(keyword, _) < > ()))
 
 #define _PHNTM_T_MTYPE_X(keyword, Name, ...)                                                                           \
     auto& PHANTOM_PP_CAT(keyword, __LINE__) = this_();                                                                 \
-    if (auto this_ = phantom::reflection::makeScopedIf(                                                                \
+    if (auto this_ = phantom::lang::makeScopedIf(                                                                \
         PHANTOM_PP_CAT(keyword, __LINE__).PHANTOM_T PHANTOM_PP_CAT(keyword, _) <                                       \
-        PHANTOM_TYPENAME phantom::reflection::BuilderProxyTypeT<decltype(PHANTOM_PP_CAT(keyword, __LINE__))>::Name >   \
+        PHANTOM_TYPENAME phantom::lang::BuilderProxyTypeT<decltype(PHANTOM_PP_CAT(keyword, __LINE__))>::Name >   \
         () __VA_ARGS__))

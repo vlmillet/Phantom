@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PlaceholderClassType::PlaceholderClassType(PlaceholderType* a_pPlaceholderType)
     : PlaceholderClassType(a_pPlaceholderType->getName(), a_pPlaceholderType->getModifiers(),
@@ -29,5 +29,5 @@ Placeholder* PlaceholderClassType::clone(uint a_Flags) const
     return PHANTOM_NEW(PlaceholderClassType)(getName(), getModifiers(), a_Flags);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

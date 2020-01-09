@@ -12,14 +12,14 @@
 
 HAUNT_STOP;
 
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/TypeOf.h>
 
 template<class T>
 T* _PHNTM_RemoveTemplateForwardADL(T**);
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T, bool TIsClassAndIsDefined>
 struct ForwardH : T
@@ -145,27 +145,27 @@ PHANTOM_STATIC_ASSERT(
 class IsForwardTest;
 PHANTOM_STATIC_ASSERT(IsForward<const Forward<IsForwardTest>&>::value);
 
-} // namespace reflection
-namespace reflection
+} // namespace lang
+namespace lang
 {
 template<typename t_Ty>
 struct TypeOfUndefined<Forward<t_Ty>> : TypeOfUndefined<t_Ty>
 {
 };
-} // namespace reflection
+} // namespace lang
 
 namespace _TypeOf
 {
 template<class T>
-struct StaticTypeOf<reflection::Forward<T>>
+struct StaticTypeOf<lang::Forward<T>>
 {
     static auto Get()
     {
-        return reflection::TypeOfUndefined<T>::object();
+        return lang::TypeOfUndefined<T>::object();
     }
 };
 } // namespace _TypeOf
 
 } // namespace phantom
 
-#define PHANTOM_FORWARD(Type) using Type = phantom::reflection::Forward<Type>
+#define PHANTOM_FORWARD(Type) using Type = phantom::lang::Forward<Type>

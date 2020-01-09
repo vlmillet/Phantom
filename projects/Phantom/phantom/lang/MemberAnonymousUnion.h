@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MemberAnonymousSection.h>
+#include <phantom/lang/MemberAnonymousSection.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a member anonymous union.
 /// \code{.cpp}
@@ -40,5 +40,5 @@ protected:
     void computeSizeAndAlignment(size_t& a_uiSize, size_t& a_uiAlignment) const override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

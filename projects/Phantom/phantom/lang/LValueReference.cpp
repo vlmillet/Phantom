@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 LValueReference::LValueReference(Type* a_pReferencedType) : Reference(TypeKind::LValueReference, a_pReferencedType, "&")
 {
@@ -58,5 +58,5 @@ void LValueReference::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += '&';
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

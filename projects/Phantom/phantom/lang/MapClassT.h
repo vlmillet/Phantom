@@ -9,12 +9,12 @@
 HAUNT_STOP;
 
 #include <phantom/detail/new.h>
-#include <phantom/reflection/ContainerClassT.h>
-#include <phantom/reflection/MapClass.h>
+#include <phantom/lang/ContainerClassT.h>
+#include <phantom/lang/MapClass.h>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 // hacker
 template<typename T>
@@ -113,5 +113,5 @@ public:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

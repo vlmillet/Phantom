@@ -25,33 +25,34 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Template")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Template)
         {
-            using LanguageElements = typedef_< phantom::reflection::LanguageElements>;
-            using LanguageElementsView = typedef_< phantom::reflection::LanguageElementsView>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using PlaceholderMap = typedef_< phantom::reflection::PlaceholderMap>;
+            using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using LanguageElementsView = typedef_< phantom::lang::LanguageElementsView>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringView = typedef_< phantom::StringView>;
-            using TemplateParameters = typedef_< phantom::reflection::TemplateParameters>;
-            using TemplateSpecializations = typedef_< phantom::reflection::TemplateSpecializations>;
+            using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
+            using TemplateSpecializations = typedef_< phantom::lang::TemplateSpecializations>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .staticMethod<Template*(StringView, StringView, StringView, LanguageElement*, Modifiers, uint)>("Parse", &_::Parse)
@@ -98,7 +99,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Template")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

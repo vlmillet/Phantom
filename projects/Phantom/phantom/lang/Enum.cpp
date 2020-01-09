@@ -14,7 +14,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace
 {
@@ -208,7 +208,7 @@ void Enum::valueFromString(StringView a_strIn, void* a_pDest) const
     size_t count = getConstantCount();
     for (; i < count; ++i)
     {
-        reflection::Constant* pConstant = getConstant(i);
+        lang::Constant* pConstant = getConstant(i);
         if (pConstant->getName() == a_strIn)
         {
             pConstant->getValue(a_pDest);
@@ -224,7 +224,7 @@ void Enum::valueToString(StringBuffer& a_Buf, const void* a_pSrc) const
     for (; i < count; ++i)
     {
         size_t                constantValue = 0;
-        reflection::Constant* pConstant = getConstant(i);
+        lang::Constant* pConstant = getConstant(i);
         pConstant->getValue(&constantValue);
         if (constantValue == *((size_t*)a_pSrc))
         {
@@ -273,5 +273,5 @@ Constant* Enum::createConstant(void* a_pSrc, StringView a_strName /*= "" */,
     return m_pUnderlyingIntType->createConstant(a_pSrc, a_strName, a_pPrimitiveType ? a_pPrimitiveType : (Enum*)this);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

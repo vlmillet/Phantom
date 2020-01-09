@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a virtual member function table (for polymorphc OOP languages such as C++, C#
 /// or Java).
@@ -211,5 +211,5 @@ private:
     bool                m_bShared{};
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -40,7 +40,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 struct StringViewStream
 {
@@ -520,7 +520,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                 TemplateDependantTemplateInstance* pInst =
                                 PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
                                 pTemplate, templateArgs,
-                                phantom::reflection::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
+                                phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
                                                                              : PHANTOM_R_FLAG_NONE);
                                 a_Symbols.push_back(pInst);
                                 return true;
@@ -589,7 +589,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                                     a_Symbols.push_back(
                                                     PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
                                                     pTemplate, finalArgs,
-                                                    phantom::reflection::detail::currentModule()
+                                                    phantom::lang::detail::currentModule()
                                                     ? PHANTOM_R_FLAG_NATIVE
                                                     : PHANTOM_R_FLAG_NONE));
                                                     return true;
@@ -872,7 +872,7 @@ symbol_post_identifier:
         {
             pConstant = Constant::Create(CPPSYMPARS_IDENTIFIER[0] == 't'); // true / false
         }
-        if (phantom::reflection::detail::currentModule())
+        if (phantom::lang::detail::currentModule())
             pConstant->addFlags(PHANTOM_R_FLAG_NATIVE);
         if (CPPSYMPARS_IS_INSIDE_TEMPLATE)
         {
@@ -1074,5 +1074,5 @@ state_symbol_suffix:
     return 0;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

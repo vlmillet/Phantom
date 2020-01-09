@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/PointerType.h>
+#include <phantom/lang/PointerType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a function pointer type.
 class PHANTOM_EXPORT_PHANTOM FunctionPointer : public PointerType
@@ -108,5 +108,5 @@ protected:
     ABI m_eABI;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

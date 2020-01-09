@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MapClass::MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                          uint a_uiFlags)
@@ -75,5 +75,5 @@ void MapClass::find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) cons
     m_Data->m_pFunc_find->invoke((void*)a_pContainer, args, a_pOutIt);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/QualifiedType.h>
+#include <phantom/lang/QualifiedType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Reprepsents a volatile type.
 class PHANTOM_EXPORT_PHANTOM VolatileType : public QualifiedType
@@ -22,7 +22,7 @@ class PHANTOM_EXPORT_PHANTOM VolatileType : public QualifiedType
 
     PHANTOM_DECLARE_META_CLASS(VolatileType);
 
-    friend class phantom::reflection::Namespace;
+    friend class phantom::lang::Namespace;
 
 public:
     VolatileType(Type* a_pType);
@@ -102,5 +102,5 @@ protected:
     }
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

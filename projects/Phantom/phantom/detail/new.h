@@ -12,8 +12,8 @@ HAUNT_STOP;
 
 #include "newImpl.h"
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/traits/ImplicitConv.h>
 
 namespace phantom

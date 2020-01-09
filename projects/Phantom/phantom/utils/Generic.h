@@ -1,6 +1,6 @@
 #pragma once
 
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 
 namespace phantom
 {
@@ -17,32 +17,32 @@ template<class Decoration = Auto>
 struct Type
 {
     Type() = default;
-    Type(reflection::Type* a_pType) : m_pType(a_pType)
+    Type(lang::Type* a_pType) : m_pType(a_pType)
     {
     }
-    operator reflection::Type*() const
+    operator lang::Type*() const
     {
         return m_pType;
     }
 
-    reflection::Type* getType() const
+    lang::Type* getType() const
     {
         return m_pType;
     }
-    reflection::Class* getClass() const
+    lang::Class* getClass() const
     {
         return m_pType ? m_pType->asClass() : nullptr;
     }
 
 private:
-    reflection::Type* m_pType = nullptr;
+    lang::Type* m_pType = nullptr;
 };
 
 template<class T = Auto>
 struct Param : Type<T>
 {
     Param() = default;
-    Param(reflection::Type* a_pType) : Type<T>(a_pType)
+    Param(lang::Type* a_pType) : Type<T>(a_pType)
     {
     }
 };

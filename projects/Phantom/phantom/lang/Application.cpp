@@ -52,9 +52,9 @@ namespace phantom
 {
 namespace detail
 {
-extern RawPlacement<reflection::Application> g_pApplication;
+extern RawPlacement<lang::Application> g_pApplication;
 }
-namespace reflection
+namespace lang
 {
 PHANTOM_DEFINE_META_CLASS(Source);
 
@@ -535,7 +535,7 @@ void Application::onElementRemoved(LanguageElement* a_pElement)
 void Application::_registerBuiltInTypes()
 {
     /// Install pre defined and convenient types
-    phantom::reflection::BuiltInTypes::Register();
+    phantom::lang::BuiltInTypes::Register();
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
     for (auto pType : m_BuiltInTypes)
@@ -1509,5 +1509,5 @@ void Application::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullpt
     }
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

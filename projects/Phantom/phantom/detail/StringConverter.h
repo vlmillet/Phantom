@@ -8,9 +8,9 @@
 
 
 #include <phantom/detail/core.h>
-#include <phantom/reflection/Array.h>
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Enum.h>
+#include <phantom/lang/Array.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Enum.h>
 #include <phantom/traits/IsFunctionPointer.h>
 #include <phantom/traits/IsNullptrT.h>
 #include <phantom/traits/IsStructure.h>
@@ -20,14 +20,14 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
 template<typename t_Ty>
 struct MetaTypeIdOf;
 }
-} // namespace reflection
+} // namespace lang
 
 namespace detail 
 {
@@ -108,18 +108,18 @@ struct literal_suffix<wchar_t>
 template<typename t_Ty, int t_MetaClassId>
 struct StringConverterH // detail::string_converter_default
 {
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
         String s = phantom::lexical_cast<String>(*a_pSrc);
         a_Buf += s;
     }
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
         String s = phantom::lexical_cast<String>(*a_pSrc);
         a_Buf += s;
         literal_suffix<t_Ty>::suffix(a_Buf);
     }
-    static void from(const reflection::Type*, StringView input, t_Ty* a_pDest)
+    static void from(const lang::Type*, StringView input, t_Ty* a_pDest)
     {
         *a_pDest = phantom::lexical_cast<t_Ty>(input);
     }
@@ -128,68 +128,68 @@ struct StringConverterH // detail::string_converter_default
 template<typename t_Ty>
 struct StringConverterH<t_Ty, detail::string_converter_classtype>
 {
-    static void to(const reflection::ClassType* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void to(const lang::ClassType* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pClass->reflection::ClassType::valueToString(a_Buf, a_pSrc);
+        return a_pClass->lang::ClassType::valueToString(a_Buf, a_pSrc);
     }
-    static void toLiteral(const reflection::ClassType* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void toLiteral(const lang::ClassType* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pClass->reflection::ClassType::valueToString(a_Buf, a_pSrc);
+        return a_pClass->lang::ClassType::valueToString(a_Buf, a_pSrc);
     }
-    static void from(const reflection::ClassType* a_pClass, StringView a_strIn, t_Ty* a_pDest)
+    static void from(const lang::ClassType* a_pClass, StringView a_strIn, t_Ty* a_pDest)
     {
-        a_pClass->reflection::ClassType::valueFromString(a_strIn, a_pDest);
+        a_pClass->lang::ClassType::valueFromString(a_strIn, a_pDest);
     }
 };
 
 template<typename t_Ty>
 struct StringConverterH<t_Ty, detail::string_converter_class>
 {
-    static void to(const reflection::Class* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void to(const lang::Class* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pClass->reflection::Class::valueToString(a_Buf, a_pSrc);
+        return a_pClass->lang::Class::valueToString(a_Buf, a_pSrc);
     }
-    static void toLiteral(const reflection::Class* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void toLiteral(const lang::Class* a_pClass, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pClass->reflection::Class::valueToString(a_Buf, a_pSrc);
+        return a_pClass->lang::Class::valueToString(a_Buf, a_pSrc);
     }
-    static void from(const reflection::Class* a_pClass, StringView a_strIn, t_Ty* a_pDest)
+    static void from(const lang::Class* a_pClass, StringView a_strIn, t_Ty* a_pDest)
     {
-        a_pClass->reflection::Class::valueFromString(a_strIn, a_pDest);
+        a_pClass->lang::Class::valueFromString(a_strIn, a_pDest);
     }
 };
 
 template<typename t_Ty>
 struct StringConverterH<t_Ty, detail::string_converter_enum>
 {
-    static void toLiteral(const reflection::Enum* a_pEnum, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void toLiteral(const lang::Enum* a_pEnum, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pEnum->reflection::Enum::valueToLiteral(a_Buf, a_pSrc);
+        return a_pEnum->lang::Enum::valueToLiteral(a_Buf, a_pSrc);
     }
-    static void to(const reflection::Enum* a_pEnum, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void to(const lang::Enum* a_pEnum, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pEnum->reflection::Enum::valueToString(a_Buf, a_pSrc);
+        return a_pEnum->lang::Enum::valueToString(a_Buf, a_pSrc);
     }
-    static void from(const reflection::Enum* a_pEnum, StringView a_strIn, t_Ty* a_pDest)
+    static void from(const lang::Enum* a_pEnum, StringView a_strIn, t_Ty* a_pDest)
     {
-        a_pEnum->reflection::Enum::valueFromString(a_strIn, a_pDest);
+        a_pEnum->lang::Enum::valueFromString(a_strIn, a_pDest);
     }
 };
 
 template<typename t_Ty>
 struct StringConverterH<t_Ty, detail::string_converter_array>
 {
-    static void toLiteral(const reflection::Array* a_pArray, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void toLiteral(const lang::Array* a_pArray, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pArray->reflection::Array::valueToLiteral(a_Buf, a_pSrc);
+        return a_pArray->lang::Array::valueToLiteral(a_Buf, a_pSrc);
     }
-    static void to(const reflection::Array* a_pArray, StringBuffer& a_Buf, const t_Ty* a_pSrc)
+    static void to(const lang::Array* a_pArray, StringBuffer& a_Buf, const t_Ty* a_pSrc)
     {
-        return a_pArray->reflection::Array::valueToString(a_Buf, a_pSrc);
+        return a_pArray->lang::Array::valueToString(a_Buf, a_pSrc);
     }
-    static void from(const reflection::Array* a_pArray, StringView a_strIn, t_Ty* a_pDest)
+    static void from(const lang::Array* a_pArray, StringView a_strIn, t_Ty* a_pDest)
     {
-        a_pArray->reflection::Array::valueFromString(a_strIn, a_pDest);
+        a_pArray->lang::Array::valueFromString(a_strIn, a_pDest);
     }
 };
 
@@ -221,15 +221,15 @@ struct StringConverter
 template<>
 struct StringConverter<void>
 {
-    static void to(const reflection::Type*, StringBuffer&, const void*)
+    static void to(const lang::Type*, StringBuffer&, const void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }
-    static void toLiteral(const reflection::Type*, StringBuffer&, const void*)
+    static void toLiteral(const lang::Type*, StringBuffer&, const void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }
-    static void from(const reflection::Type*, StringView, void*)
+    static void from(const lang::Type*, StringView, void*)
     {
         PHANTOM_ASSERT_NO_IMPL();
     }
@@ -238,11 +238,11 @@ struct StringConverter<void>
 template<>
 struct StringConverter<std::nullptr_t>
 {
-    static void toLiteral(const reflection::Type* a_pType, StringBuffer& a_Buf, const std::nullptr_t* a_pSrc)
+    static void toLiteral(const lang::Type* a_pType, StringBuffer& a_Buf, const std::nullptr_t* a_pSrc)
     {
         return to(a_pType, a_Buf, a_pSrc);
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const std::nullptr_t* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const std::nullptr_t* a_pSrc)
     {
         if (*a_pSrc != nullptr)
         {
@@ -250,7 +250,7 @@ struct StringConverter<std::nullptr_t>
         }
         a_Buf += "nullptr";
     }
-    static void from(const reflection::Type*, StringView a_strIn, std::nullptr_t* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, std::nullptr_t* a_pDest)
     {
         if (a_strIn != "nullptr")
         {
@@ -263,7 +263,7 @@ struct StringConverter<std::nullptr_t>
 template<>
 struct StringConverter<char>
 {
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const char* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const char* a_pSrc)
     {
         a_Buf += '\'';
         switch (*a_pSrc)
@@ -309,11 +309,11 @@ struct StringConverter<char>
         }
         a_Buf += '\'';
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const char* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const char* a_pSrc)
     {
         a_Buf += *a_pSrc;
     }
-    static void from(const reflection::Type*, StringView a_strIn, char* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, char* a_pDest)
     {
         *a_pDest = a_strIn[0];
     }
@@ -322,18 +322,18 @@ struct StringConverter<char>
 template<>
 struct StringConverter<bool>
 {
-    static void toLiteral(const reflection::Type* a_pType, StringBuffer& a_Buf, const bool* a_pSrc)
+    static void toLiteral(const lang::Type* a_pType, StringBuffer& a_Buf, const bool* a_pSrc)
     {
         return to(a_pType, a_Buf, a_pSrc);
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const bool* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const bool* a_pSrc)
     {
         if (*a_pSrc)
             a_Buf += "true";
         else
             a_Buf += "false";
     }
-    static void from(const reflection::Type*, StringView a_strIn, bool* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, bool* a_pDest)
     {
         if (a_strIn == "true")
         {
@@ -348,17 +348,17 @@ struct StringConverter<bool>
 template<>
 struct StringConverter<uchar>
 {
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const uchar* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const uchar* a_pSrc)
     {
         char buf[8];
         snprintf(buf, 8, "%u", (unsigned)*a_pSrc);
         a_Buf += buf;
     }
-    static void to(const reflection::Type* a_pType, StringBuffer& a_Buf, const uchar* a_pSrc)
+    static void to(const lang::Type* a_pType, StringBuffer& a_Buf, const uchar* a_pSrc)
     {
         return StringConverter<char>::to(a_pType, a_Buf, (const char*)a_pSrc);
     }
-    static void from(const reflection::Type* a_pType, StringView a_strIn, uchar* a_pDest)
+    static void from(const lang::Type* a_pType, StringView a_strIn, uchar* a_pDest)
     {
         StringConverter<char>::from(a_pType, a_strIn, (char*)a_pDest);
     }
@@ -366,15 +366,15 @@ struct StringConverter<uchar>
 template<>
 struct StringConverter<schar>
 {
-    static void toLiteral(const reflection::Type* a_pType, StringBuffer& a_Buf, const schar* a_pSrc)
+    static void toLiteral(const lang::Type* a_pType, StringBuffer& a_Buf, const schar* a_pSrc)
     {
         return StringConverter<char>::toLiteral(a_pType, a_Buf, (const char*)a_pSrc);
     }
-    static void to(const reflection::Type* a_pType, StringBuffer& a_Buf, const schar* a_pSrc)
+    static void to(const lang::Type* a_pType, StringBuffer& a_Buf, const schar* a_pSrc)
     {
         return StringConverter<char>::to(a_pType, a_Buf, (const char*)a_pSrc);
     }
-    static void from(const reflection::Type* a_pType, StringView a_strIn, schar* a_pDest)
+    static void from(const lang::Type* a_pType, StringView a_strIn, schar* a_pDest)
     {
         StringConverter<char>::from(a_pType, a_strIn, (char*)a_pDest);
     }
@@ -384,18 +384,18 @@ struct StringConverter<schar>
 template<>
 struct StringConverter<wchar_t>
 {
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const wchar_t* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const wchar_t* a_pSrc)
     {
         char buf[8];
         snprintf(buf, 8, "'\\u%04X'", (unsigned)*a_pSrc);
         a_Buf += buf;
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const wchar_t* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const wchar_t* a_pSrc)
     {
         a_Buf += *((const char*)a_pSrc);
         a_Buf += *(((const char*)a_pSrc) + 1);
     }
-    static void from(const reflection::Type*, StringView a_strIn, wchar_t* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, wchar_t* a_pDest)
     {
         *((char*)a_pDest) = a_strIn[0];
         *(((char*)a_pDest) + 1) = a_strIn[1];
@@ -407,18 +407,18 @@ struct StringConverter<wchar_t>
 template<>
 struct StringConverter<char16_t>
 {
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const char16_t* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const char16_t* a_pSrc)
     {
         char buf[8];
         snprintf(buf, 8, "'\\u%04X'", (unsigned)*a_pSrc);
         a_Buf += buf;
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const char16_t* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const char16_t* a_pSrc)
     {
         a_Buf += *((const char*)a_pSrc);
         a_Buf += *(((const char*)a_pSrc) + 1);
     }
-    static void from(const reflection::Type*, StringView a_strIn, char16_t* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, char16_t* a_pDest)
     {
         *((char*)a_pDest) = a_strIn[0];
         *(((char*)a_pDest) + 1) = a_strIn[1];
@@ -430,20 +430,20 @@ struct StringConverter<char16_t>
 template<>
 struct StringConverter<char32_t>
 {
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const char32_t* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const char32_t* a_pSrc)
     {
         char buf[8];
         snprintf(buf, 8, "'\\u%08X'", (unsigned int)*a_pSrc);
         a_Buf += buf;
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const char32_t* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const char32_t* a_pSrc)
     {
         a_Buf += *((const char*)a_pSrc);
         a_Buf += *(((const char*)a_pSrc) + 1);
         a_Buf += *(((const char*)a_pSrc) + 2);
         a_Buf += *(((const char*)a_pSrc) + 3);
     }
-    static void from(const reflection::Type*, StringView a_strIn, char32_t* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, char32_t* a_pDest)
     {
         *((char*)a_pDest) = a_strIn[0];
         *(((char*)a_pDest) + 1) = a_strIn[1];
@@ -458,7 +458,7 @@ struct StringConverter<std::basic_string<char, std::char_traits<char>, t_Alloc> 
 {
     typedef std::basic_string<char, std::char_traits<char>, t_Alloc> self_type;
 
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const self_type* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const self_type* a_pSrc)
     {
         a_Buf += '\"';
         for (auto it = a_pSrc->begin(); it != a_pSrc->end(); ++it)
@@ -489,11 +489,11 @@ struct StringConverter<std::basic_string<char, std::char_traits<char>, t_Alloc> 
         }
         a_Buf += '\"';
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const self_type* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const self_type* a_pSrc)
     {
         a_Buf += a_pSrc->c_str();
     }
-    static void from(const reflection::Type*, StringView a_strIn, self_type* a_pDest)
+    static void from(const lang::Type*, StringView a_strIn, self_type* a_pDest)
     {
         a_pDest->insert(a_pDest->end(), a_strIn.begin(), a_strIn.end());
     }
@@ -504,7 +504,7 @@ struct StringConverter<SmallString<char, S, D> >
 {
     typedef SmallString<char, S, D> InputType;
 
-    static void toLiteral(const reflection::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
+    static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
     {
         a_Buf += '\"';
         for (auto it = a_pSrc->begin(); it != a_pSrc->end(); ++it)
@@ -535,11 +535,11 @@ struct StringConverter<SmallString<char, S, D> >
         }
         a_Buf += '\"';
     }
-    static void to(const reflection::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
+    static void to(const lang::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
     {
         a_Buf += *a_pSrc;
     }
-    static void from(const reflection::Type*, StringView a_In, InputType* a_pDest)
+    static void from(const lang::Type*, StringView a_In, InputType* a_pDest)
     {
         (*a_pDest) += a_In;
     }

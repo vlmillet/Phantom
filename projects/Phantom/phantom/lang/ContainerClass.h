@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Class.h>
+#include <phantom/lang/Class.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM ContainerClass : public Class
 {
@@ -79,5 +79,5 @@ private:
     void _initBeginC() const;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

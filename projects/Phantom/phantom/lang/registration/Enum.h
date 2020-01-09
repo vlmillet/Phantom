@@ -13,14 +13,14 @@ HAUNT_STOP;
 #include "Namespace.h"
 #include "Type.h"
 
-#include <phantom/reflection/ConstantT.h>
-#include <phantom/reflection/EnumT.h>
-#include <phantom/reflection/FundamentalsT.h>
+#include <phantom/lang/ConstantT.h>
+#include <phantom/lang/EnumT.h>
+#include <phantom/lang/FundamentalsT.h>
 #include <phantom/register>
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class T, class Top>
 struct EnumBuilderT : TypeBuilderT<T, Top, EnumBuilderT<T, Top>, EnumT<T>>
@@ -80,7 +80,7 @@ public:
     }
 
     // meta data
-    MostDerived& operator()(reflection::MetaDatas&& a_MD)
+    MostDerived& operator()(lang::MetaDatas&& a_MD)
     {
         if (m_pEnum->getConstants().size())
         {
@@ -124,14 +124,14 @@ private:
     void _addConstant(StringView a_Nme, T a_Val)
     {
         m_pEnum->addConstant(
-        PHANTOM_META_NEW(reflection::ConstantT<T>)(m_pEnum, a_Nme, a_Val, 0, PHANTOM_R_FLAG_NATIVE));
+        PHANTOM_META_NEW(lang::ConstantT<T>)(m_pEnum, a_Nme, a_Val, 0, PHANTOM_R_FLAG_NATIVE));
     }
 
 private:
     MetaType* m_pEnum;
     Top*      m_pTop;
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 #define PHANTOM_ENUM(Name)                                                                                             \

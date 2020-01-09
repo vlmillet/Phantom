@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ExtendedType.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for reference types (l-value, r-value or custom reference type).
 class PHANTOM_EXPORT_PHANTOM Reference : public ExtendedType
@@ -169,5 +169,5 @@ protected:
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

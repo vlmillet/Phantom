@@ -35,8 +35,8 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Class")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -63,23 +63,23 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         PHANTOM_CLASS(Class)
         {
-            using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
-            using Classes = typedef_< phantom::reflection::Classes>;
+            using AggregateFields = typedef_< phantom::lang::AggregateFields>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using ExtraData = typedef_<_::ExtraData>;
-            using Methods = typedef_< phantom::reflection::Methods>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Signals = typedef_< phantom::reflection::Signals>;
+            using Methods = typedef_< phantom::lang::Methods>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Signals = typedef_< phantom::lang::Signals>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
-            using Subroutines = typedef_< phantom::reflection::Subroutines>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
-            using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
+            using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
+            using ValueMembers = typedef_< phantom::lang::ValueMembers>;
             using Variants = typedef_< phantom::Variants>;
-            using VirtualMethodTables = typedef_< phantom::reflection::VirtualMethodTables>;
+            using VirtualMethodTables = typedef_< phantom::lang::VirtualMethodTables>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::ClassType>()
+            .inherits<::phantom::lang::ClassType>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
             .staticMethod<Class*()>("MetaClass", &_::MetaClass)
@@ -88,7 +88,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         
         .public_()
             .struct_<ExtraData>()
-                .inherits<::phantom::reflection::ClassType::ExtraData>()
+                .inherits<::phantom::lang::ClassType::ExtraData>()
                 .method<void(), virtual_|override_>("PHANTOM_CUSTOM_VIRTUAL_DELETE", &_::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE)
                 .constructor<void()>()
                 .field("m_uiFieldMemoryOffset", &_::ExtraData::m_uiFieldMemoryOffset)
@@ -178,11 +178,11 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Signal*(StringView) const>("getSignalCascade", &_::getSignalCascade)
             .method<Method*(StringView) const>("getSlot", &_::getSlot)
             .method<Method*(StringView) const>("getSlotCascade", &_::getSlotCascade)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(ValueMember*, Expression*)>("setOverriddenDefaultExpression", &_::setOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpression", &_::getOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpressionCascade", &_::getOverriddenDefaultExpressionCascade)
             .method<bool() const, virtual_|override_>("isPolymorphic", &_::isPolymorphic)
             .using_("Type::allocate")
@@ -259,7 +259,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Class")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

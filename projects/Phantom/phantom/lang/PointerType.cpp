@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 void PointerType::less(void** a_pArgs, void* a_pOutput)
 {
@@ -47,5 +47,5 @@ void PointerType::assignment(void** a_pArgs, void* a_pOutput)
     *(byte***)a_pOutput = (byte**)a_pArgs[0];
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

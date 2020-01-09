@@ -11,8 +11,8 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/CallHelpers.h>
-#include <phantom/reflection/Function.h>
+#include <phantom/lang/CallHelpers.h>
+#include <phantom/lang/Function.h>
 #include <phantom/traits/indices.h>
 /* **************** Declarations ***************** */
 
@@ -24,7 +24,7 @@ extern "C"
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 inline void varArgCall(void* a_pFunc, void* a_pRetAddress, Type* a_pRetType, void** a_pParams, Type** explicitTypes,
                        size_t expCount, Types const& a_VarArgTypes)
@@ -238,7 +238,7 @@ public:
     inline void call(void** a_pParams, Types const& a_VarArgTypes, Indices<Is...>) const
     {
         Type* explicitTypes[] = {
-        phantom::reflection::TypeOf<PHANTOM_TYPENAME std::remove_reference<v_Params>::type>::object()...};
+        phantom::lang::TypeOf<PHANTOM_TYPENAME std::remove_reference<v_Params>::type>::object()...};
 
         varArgCall((void*)m_Pointer, nullptr, a_pParams, explicitTypes, sizeof(explicitTypes) / sizeof(Type*),
                    a_VarArgTypes);
@@ -274,7 +274,7 @@ private:
     FunctionPtrType m_Pointer;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

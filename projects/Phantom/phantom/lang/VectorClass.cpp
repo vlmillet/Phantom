@@ -13,7 +13,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 VectorClass::VectorClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                          uint a_uiFlags)
@@ -95,5 +95,5 @@ void* VectorClass::referenceAt(void* a_pContainer, size_t a_uiIndex) const
     return ref;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

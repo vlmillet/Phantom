@@ -11,12 +11,12 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/FunctionT.h>
-#include <phantom/reflection/MetaNewDelete.h>
-#include <phantom/reflection/MethodT.h>
+#include <phantom/lang/FunctionT.h>
+#include <phantom/lang/MetaNewDelete.h>
+#include <phantom/lang/MethodT.h>
 
 #if PHANTOM_CUSTOM_ENABLE_COMPILE_TIME_SIGNATURE
-#    include <phantom/reflection/SignatureH.h>
+#    include <phantom/lang/SignatureH.h>
 #    define TNMFP_signature_param_insert
 #    define TNMFP_signature_arg_insert(modifiers, ...)                                                                 \
         SignatureH<t_ReturnType(__VA_ARGS__)>::CreateSignature((modifiers) & (PHANTOM_R_METHOD_QUAL_MASK)),
@@ -30,7 +30,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 namespace detail
 {
@@ -177,7 +177,7 @@ struct MethodPointerSimplifier<T, R(Ps...) &&>
 };
 } // namespace detail
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

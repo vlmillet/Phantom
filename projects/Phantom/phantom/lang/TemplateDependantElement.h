@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/utils/Optional.h>
 #include <phantom/utils/OptionalArrayView.h>
 /* **************** Declarations ***************** */
@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Template dependant element.
 /// \code{.cpp}
@@ -70,5 +70,5 @@ protected:
     LanguageElements* m_pFunctionArguments = nullptr;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

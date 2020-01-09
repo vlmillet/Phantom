@@ -7,13 +7,13 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/PrimitiveType.h>
+#include <phantom/lang/PrimitiveType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a C++ like enumeration.
 ///     \code{.cpp}
@@ -337,5 +337,5 @@ private:
     bool           m_scoped = false;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

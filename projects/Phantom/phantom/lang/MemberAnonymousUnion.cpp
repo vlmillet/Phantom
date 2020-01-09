@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 MemberAnonymousUnion::MemberAnonymousUnion(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : MemberAnonymousSection(modifiers, a_uiFlags)
@@ -25,5 +25,5 @@ void MemberAnonymousUnion::computeSizeAndAlignment(size_t& a_uiSize, size_t& a_u
     a_uiAlignment = m_uiSize;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

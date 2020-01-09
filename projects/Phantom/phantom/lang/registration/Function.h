@@ -11,8 +11,8 @@
 HAUNT_STOP;
 
 #include "Namespace.h"
-#include "phantom/reflection/FunctionProviderT.h"
-#include "phantom/reflection/SignatureH.h"
+#include "phantom/lang/FunctionProviderT.h"
+#include "phantom/lang/SignatureH.h"
 #include "phantom/traits/FunctionTypeToFunctionPointerType.h"
 
 #define PHANTOM_FUNCTION(...)                                                                                          \

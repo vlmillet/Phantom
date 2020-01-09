@@ -3,7 +3,7 @@
 #include "Namespace.h"
 #include "registration.h"
 
-#include <phantom/reflection/VariableT.h>
+#include <phantom/lang/VariableT.h>
 
 #define PHANTOM_VARIABLE(Name)                                                                     \
     PHANTOM_REGISTER(Variables, End)                                                               \

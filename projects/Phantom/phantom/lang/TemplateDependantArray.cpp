@@ -7,11 +7,11 @@
 /* ******************* Includes ****************** */
 #include "TemplateDependantArray.h"
 
-#include "phantom/reflection/Placeholder.h"
+#include "phantom/lang/Placeholder.h"
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 TemplateDependantArray::TemplateDependantArray(Type* a_pType, Expression* a_pSize,
                                                PlaceholderConstant* a_pDeductibleConstant)
@@ -61,5 +61,5 @@ bool TemplateDependantArray::isSame(Symbol* a_pOther) const
     ->isSame(reinterpret_cast<LanguageElement*>(m_pItemCountExpression));
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

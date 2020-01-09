@@ -8,15 +8,15 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/core.h>
-#include <phantom/reflection/LanguageElement.h>
-#include <phantom/reflection/Members.h>
+#include <phantom/lang/LanguageElement.h>
+#include <phantom/lang/Members.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for non-abstract scopes (class scope, namespace scope, block...)
 class PHANTOM_EXPORT_PHANTOM Scope
@@ -729,5 +729,5 @@ protected:
     Members<Aliases>                 m_Aliases;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

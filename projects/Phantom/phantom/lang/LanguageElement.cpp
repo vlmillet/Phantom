@@ -22,7 +22,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static StaticGlobal<LanguageElements> g_pEmptyElements;
 
@@ -900,13 +900,13 @@ bool LanguageElement::hasSymbol(StringView a_strName) const
     return false;
 }
 
-phantom::reflection::Module* LanguageElement::getModule() const
+phantom::lang::Module* LanguageElement::getModule() const
 {
     Module* pModule = asModule();
     return pModule ? pModule : (m_pOwner ? m_pOwner->getModule() : nullptr);
 }
 
-phantom::reflection::Package* LanguageElement::getPackage() const
+phantom::lang::Package* LanguageElement::getPackage() const
 {
     Package* pPackage = asPackage();
     return pPackage ? pPackage : (m_pOwner ? m_pOwner->getPackage() : nullptr);
@@ -985,9 +985,9 @@ void LanguageElement::fetchSymbols(Symbols& a_Symbols, SymbolFilter a_Filter,
     }
 }
 
-void LanguageElement::visit(phantom::reflection::LanguageElementVisitor* a_pVisitor, VisitorData a_Data)
+void LanguageElement::visit(phantom::lang::LanguageElementVisitor* a_pVisitor, VisitorData a_Data)
 {
-    static_cast<phantom::reflection::LanguageElementVisitor*>(a_pVisitor)->visit(this, a_Data);
+    static_cast<phantom::lang::LanguageElementVisitor*>(a_pVisitor)->visit(this, a_Data);
 }
 
 Symbol* LanguageElement::PublicFilter(Symbol* a_pSymbol, bool)
@@ -1027,7 +1027,7 @@ void LanguageElement::setIncomplete()
     }
 }
 
-phantom::reflection::Source* LanguageElement::getSource() const
+phantom::lang::Source* LanguageElement::getSource() const
 {
     Source* pSource = asSource();
     return pSource ? pSource : (m_pOwner ? m_pOwner->getSource() : nullptr);
@@ -1044,5 +1044,5 @@ void LanguageElement::setInvalid()
     setIncomplete();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

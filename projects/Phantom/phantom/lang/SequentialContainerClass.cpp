@@ -12,7 +12,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
                                                    size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
@@ -65,5 +65,5 @@ void SequentialContainerClass::pop_back(void* a_pContainer) const
     m_Data->m_pFunc_pop_back->invoke((void*)a_pContainer, nullptr);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

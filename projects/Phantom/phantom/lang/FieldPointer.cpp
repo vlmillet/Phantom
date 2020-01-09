@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, Modifiers a_Modifiers /*= 0*/,
                            uint a_uiFlags /*= 0*/)
@@ -62,5 +62,5 @@ void* FieldPointer::getAddress(void* a_pPointer, void const* a_pObject) const
     return static_cast<Field*>(a_pPointer)->getAddress(a_pObject);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

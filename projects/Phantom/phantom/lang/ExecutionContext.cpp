@@ -9,9 +9,9 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
-static thread_local SmallVector<reflection::ExecutionContext*> g_ExecutionContexts;
+static thread_local SmallVector<lang::ExecutionContext*> g_ExecutionContexts;
 
 ExecutionContext::~ExecutionContext()
 {
@@ -76,5 +76,5 @@ void ExecutionContext::releaseTemporaries()
     m_Temporaries.clear();
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

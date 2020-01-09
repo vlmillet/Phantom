@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a primitive type (fundamentals + internals)
 class PHANTOM_EXPORT_PHANTOM PrimitiveType : public Type
@@ -92,5 +92,5 @@ protected:
                   Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

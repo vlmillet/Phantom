@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/MemberPointer.h>
+#include <phantom/lang/MemberPointer.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Represents a member function pointer type.
 /// \code{.cpp}
@@ -167,5 +167,5 @@ protected:
     FunctionType* m_pFunctionType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

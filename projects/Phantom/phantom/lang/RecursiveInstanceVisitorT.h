@@ -34,7 +34,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// @brief Represents an instance of a type as a couple [address, meta-element]. It serves as a
 /// helper for casting applied to reflected instances.
@@ -186,7 +186,7 @@ struct DerivedSelector<void>
 } // namespace _RecursiveInstanceVisitorT
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Traverses an instance reflection. It is implemented with a template polymorphism
+/// @brief Traverses an instance lang. It is implemented with a template polymorphism
 ///        overriding "traverseXxx" means redefining all the traversing hierarchy from the current
 ///        "Symbol". overriding "visitXxx/endXxx" means redefining just the current symbol
 ///        enter/exit in the traversal process. overriding "walkUpVisitXxx/walkUpEndXxx" means
@@ -1388,6 +1388,6 @@ public:
 
     bool endContainer(InstanceT<Type> a_Input) { return true; }
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 #pragma warning(default : 4100)

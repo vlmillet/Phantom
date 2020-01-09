@@ -33,8 +33,8 @@ PHANTOM_PACKAGE("phantom")
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("fwd")
 PHANTOM_END("phantom")
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Package")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -284,12 +284,12 @@ PHANTOM_PACKAGE("phantom.reflection")
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<Properties>("Properties"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Property")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 PHANTOM_PACKAGE("phantom")
     PHANTOM_SOURCE("fwd")
 
         #if PHANTOM_NOT_TEMPLATE
-        /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        /// missing symbol(s) lang (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
         // PHANTOM_REGISTER(Typedefs) { this_().typedef_<CallDelegate>("CallDelegate"); }
         PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate);}
         #endif // PHANTOM_NOT_TEMPLATE

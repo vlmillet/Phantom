@@ -2,12 +2,12 @@
 
 #include "GlobalRegistrer.h"
 
-#include <phantom/reflection/Alias.h>
-#include <phantom/reflection/Application.h>
-#include <phantom/reflection/Namespace.h>
-#include <phantom/reflection/Template.h>
-#include <phantom/reflection/TemplateSignature.h>
-#include <phantom/reflection/TemplateSpecialization.h>
+#include <phantom/lang/Alias.h>
+#include <phantom/lang/Application.h>
+#include <phantom/lang/Namespace.h>
+#include <phantom/lang/Template.h>
+#include <phantom/lang/TemplateSignature.h>
+#include <phantom/lang/TemplateSpecialization.h>
 
 #define _PHNTM_POST_ALIAS_TEMPLATE(...) PHANTOM_PP_VARARG_0_X(_PHNTM_POST_ALIAS_TEMPLATE, ##__VA_ARGS__)
 #define _PHNTM_POST_ALIAS_TEMPLATE0(...)                                                                               \
@@ -21,7 +21,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature* a_pTS, StringView a_Defaults);
 
@@ -57,12 +57,12 @@ void SolveAliasTemplate(RegistrationStep a_Step, Template*& a_rpTemplate, T& a_B
     }
     a_Builder._PHNTM_getRegistrer()->_PHNTM_setLastSymbol(a_rpTemplate);
 }
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 #define _PHANTOM_ALIAS_TEMPLATE_5(TemplateTypes, TemplateParams, Defaults, Name, Aliased)                              \
     PHANTOM_REGISTER(Typedefs, PostTypes)                                                                              \
     {                                                                                                                  \
-        static phantom::reflection::Template* pAliasT = nullptr;                                                       \
+        static phantom::lang::Template* pAliasT = nullptr;                                                       \
         SolveAliasTemplate(PHANTOM_REGISTRATION_STEP, pAliasT, this_(), PHANTOM_PP_QUOTE TemplateTypes,                \
                            PHANTOM_PP_QUOTE TemplateParams, PHANTOM_PP_QUOTE(Name),                                    \
                            PHANTOM_PP_IDENTITY(PHANTOM_PP_QUOTE)(PHANTOM_PP_REMOVE_PARENS(Aliased)),                   \

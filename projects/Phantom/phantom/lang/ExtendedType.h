@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Type.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /// \brief  Base class for pointer/address type representations (Data pointer types, function
 /// pointer types, etc...).
@@ -63,5 +63,5 @@ protected:
     Type* m_pUnderlyingType;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -11,14 +11,14 @@ HAUNT_STOP;
 /// @cond INTERNAL
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/Field.h>
-#include <phantom/reflection/FieldH.h>
+#include <phantom/lang/Field.h>
+#include <phantom/lang/FieldH.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class t_ClassType, class t_ValueType>
 class FieldT<t_ValueType(t_ClassType::*)> final : public Field
@@ -69,7 +69,7 @@ public:
     FieldPointer m_MemberPointer;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom
 
 /// @endcond

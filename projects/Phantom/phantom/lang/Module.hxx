@@ -34,29 +34,29 @@
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Module")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Module)
         {
-            using Classes = typedef_< phantom::reflection::Classes>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using Dependencies = typedef_<_::Dependencies>;
             using FuncT = typedef_<_::FuncT>;
-            using Functions = typedef_< phantom::reflection::Functions>;
-            using Modules = typedef_< phantom::reflection::Modules>;
-            using Packages = typedef_< phantom::reflection::Packages>;
-            using Sources = typedef_< phantom::reflection::Sources>;
+            using Functions = typedef_< phantom::lang::Functions>;
+            using Modules = typedef_< phantom::lang::Modules>;
+            using Packages = typedef_< phantom::lang::Packages>;
+            using Sources = typedef_< phantom::lang::Sources>;
             using StringView = typedef_< phantom::StringView>;
-            using Types = typedef_< phantom::reflection::Types>;
+            using Types = typedef_< phantom::lang::Types>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::Symbol>()
+            .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<::phantom::reflection::Class *()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
             .typedef_<Dependencies>("Dependencies")
@@ -83,7 +83,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool(Module*) const>("hasDependencyCascade", &_::hasDependencyCascade)
             .method<void(Sources&) const>("getSources", &_::getSources)
             .method<void(Modules&) const>("fetchDependencies", &_::fetchDependencies)
-            .method<void(Classes&, ::phantom::reflection::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
+            .method<void(Classes&, ::phantom::lang::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
             .method<void(Functions&, StringView, const Types*, Type*) const>("findFunctions", &_::findFunctions)["\"\""]["nullptr"]["nullptr"]
             .method<Source*() const>("getAnonymousSource", &_::getAnonymousSource)
             /// missing symbol(s) reflection (phantom::MemoryContext) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -122,7 +122,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Module")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 

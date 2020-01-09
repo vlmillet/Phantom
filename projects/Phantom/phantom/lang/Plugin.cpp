@@ -36,7 +36,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 static Plugins g_LoadingPlugins;
 static Plugins g_UnloadingPlugins;
@@ -658,5 +658,5 @@ PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
     return true;
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

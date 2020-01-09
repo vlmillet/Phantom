@@ -7,14 +7,14 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/reflection/ExtendedType.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// \brief  Represents an array type (ex: int[5]).
@@ -229,5 +229,5 @@ protected:
     size_t m_uiCount;
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

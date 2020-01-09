@@ -9,18 +9,18 @@
 /* ****************** Includes ******************* */
 #include "Aggregate.h"
 
-#include <phantom/reflection/Symbol.h>
+#include <phantom/lang/Symbol.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
 #include <phantom/utils/ScopeExit.h>
 #include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
-#define PHANTOM_DECL_TYPE PHANTOM_REGISTER_FOR_VISIT(phantom::reflection::LanguageElementVisitor)
+#define PHANTOM_DECL_TYPE PHANTOM_REGISTER_FOR_VISIT(phantom::lang::LanguageElementVisitor)
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 template<class ScopeExit>
 struct ScopedConstruction
@@ -52,8 +52,8 @@ class PHANTOM_EXPORT_PHANTOM Type : public Symbol
 
     PHANTOM_DECLARE_META_CLASS(Type);
 
-    friend class phantom::reflection::Scope;
-    friend class phantom::reflection::Alias;
+    friend class phantom::lang::Scope;
+    friend class phantom::lang::Alias;
     friend class Pointer;
     friend class Reference;
     friend class LValueReference;
@@ -1314,5 +1314,5 @@ protected:
 
 #define PHANTOM_LOCAL(pType) pType->localConstruct(PHANTOM_ALLOCA(pType->getSize()))
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

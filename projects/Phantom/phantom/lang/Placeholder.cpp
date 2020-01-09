@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

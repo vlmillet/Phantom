@@ -11,7 +11,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 AnonymousSection::AnonymousSection(Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", modifiers, a_uiFlags)
@@ -65,5 +65,5 @@ void AnonymousSection::onElementRemoved(LanguageElement* a_pElement)
     m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), a_pElement));
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

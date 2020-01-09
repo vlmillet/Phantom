@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 bool PlaceholderConstant::accepts(LanguageElement* a_pLanguageElement) const
 {
@@ -35,5 +35,5 @@ Placeholder* PlaceholderConstant::clone(uint a_Flags) const
     return PHANTOM_NEW(PlaceholderConstant)(getValueType(), getName(), getModifiers(), a_Flags);
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

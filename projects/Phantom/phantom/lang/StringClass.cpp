@@ -9,7 +9,7 @@
 /* *********************************************** */
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 StringClass::StringClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                          uint a_uiFlags)
@@ -22,5 +22,5 @@ StringClass::StringClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, ui
 {
 }
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

@@ -12,7 +12,7 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/reflection/reflection.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/utils/Functor.h>
 
 namespace phantom
@@ -22,7 +22,7 @@ Functor<bool(StringView expression, StringView file, int line, const char* forma
 
 using LogFunc = Functor<void(MessageType msgType, StringView file, int line, const char* format, va_list arglist)>;
 
-namespace reflection
+namespace lang
 {
 enum class ClassHookOp
 {
@@ -69,5 +69,5 @@ public:
     void setLogFunc(LogFunc a_func);
     void setWarningFunc(MessageReportFunc a_func);
 };
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

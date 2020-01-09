@@ -50,8 +50,8 @@ This project is under a MIT license which is one of the highest permissive distr
 - Used in the **game industry** (compiles on ORBIS)
 - **Extensions**
 	- *Phantom.Code* (soon)
-		- **Basic C++ grammar and semantic** for evaluating C++ at runtime
-		- AST objects for **building script upon native C++**  
+		- **Lite C++ grammar and semantic with import model (CppLite)** for building C++ like code at runtime
+		- AST objects for **building your own language above native C++**  
 	- *Phantom.Jit* (soon)
 		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation)
 

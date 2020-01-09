@@ -88,12 +88,12 @@
         </Expand>
     </Type>
  
-    <Type Name="phantom::reflection::ConstantT&lt;*&gt;">
+    <Type Name="phantom::lang::ConstantT&lt;*&gt;">
         <DisplayString Condition="m_strName.m_Chars.m_size == 1">{m_Value}</DisplayString>
         <DisplayString Condition="m_strName.m_Chars.m_size > 1">{m_strName}({m_Value})</DisplayString>
     </Type>
 
-    <Type Name="phantom::reflection::ValueMember">
+    <Type Name="phantom::lang::ValueMember">
         <DisplayString>{m_strName, sb} ({*m_pValueType})</DisplayString>
         <Expand>
             <Item Name="Type">
@@ -104,7 +104,7 @@
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::LocalVariable">
+    <Type Name="phantom::lang::LocalVariable">
         <DisplayString>{*m_pValueType} {m_strName, sb}</DisplayString>
         <Expand>
             <Item Name="Type">
@@ -115,7 +115,7 @@
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::Subroutine">
+    <Type Name="phantom::lang::Subroutine">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{*m_pSignature, view(retType)nd} {m_strName,sb} ({*m_pSignature,view(parm0)})</DisplayString>
         <Expand>
@@ -126,11 +126,11 @@
             </CustomListItems>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::Symbol">
+    <Type Name="phantom::lang::Symbol">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{m_strName,sb}</DisplayString>
     </Type>
-    <Type Name="phantom::reflection::Signature">
+    <Type Name="phantom::lang::Signature">
         <DisplayString IncludeView="retType">{*m_pReturnType}</DisplayString>
         <DisplayString IncludeView="parm0" Condition="m_Parameters.m_size &lt; 1"></DisplayString>
         <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0]}{*this,view(parm1)nd}</DisplayString>
@@ -149,7 +149,7 @@
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::TemplateSignature">
+    <Type Name="phantom::lang::TemplateSignature">
         <DisplayString IncludeView="parm0" Condition="m_TemplateParameters.m_size &lt; 1"></DisplayString>
         <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0]}{*this,view(parm1)nd}</DisplayString>
         <DisplayString IncludeView="parm1" Condition="m_TemplateParameters.m_size &lt; 2"></DisplayString>
@@ -167,7 +167,7 @@
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::TemplateSpecialization">
+    <Type Name="phantom::lang::TemplateSpecialization">
         <DisplayString IncludeView="sign">&lt;{*this,view(tparm0)}&gt;</DisplayString>
         <DisplayString IncludeView="tparm0" Condition="m_Arguments.m_size &lt; 1"></DisplayString>
         <DisplayString IncludeView="tparm0">{*m_Arguments.m_data[0]}{*this,view(tparm1)nd}</DisplayString>
@@ -186,20 +186,20 @@
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::reflection::Type">
+    <Type Name="phantom::lang::Type">
         <DisplayString IncludeView="template" Condition="(m_uiFlags &amp; 0x01000000) == 0"></DisplayString>
         <DisplayString IncludeView="template" Condition="m_uiFlags &amp; 0x01000000">{*m_pOwner,view(sign)}</DisplayString>
         <DisplayString>{m_strName, sb}{*this,view(template)}</DisplayString>
     </Type>
-    <Type Name="phantom::reflection::ExtendedType">
+    <Type Name="phantom::lang::ExtendedType">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
     </Type>
-    <Type Name="phantom::reflection::QualifiedType">
+    <Type Name="phantom::lang::QualifiedType">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{*m_pUnderlyingType} {m_strName,sb}</DisplayString>
     </Type>
-    <Type Name="phantom::reflection::Expression">
+    <Type Name="phantom::lang::Expression">
         <DisplayString>Eval As : {*m_pValueType} ({*_PHNTM_Rtti.metaClass})</DisplayString>
     </Type>
 

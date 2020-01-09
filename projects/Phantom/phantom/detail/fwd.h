@@ -125,9 +125,9 @@ typedef SmallVector<Variant, 10, 10> Variants;
 
 /// @endcond
 
-namespace reflection
+namespace lang
 {
-HAUNT_PACKAGE("phantom.reflection");
+HAUNT_PACKAGE("phantom.lang");
 // Listables
 
 PHANTOM_DECL_LISTABLE(Package);
@@ -317,7 +317,7 @@ class SignalT;
 
 HAUNT_RESUME;
 
-HAUNT_END("phantom.reflection");
+HAUNT_END("phantom.lang");
 
 using CallDelegate = Delegate<void(ExecutionContext&, void**, ::size_t)>;
 inline void SilentCallDelegate(ExecutionContext& /*unused*/, void** /*unused*/, ::size_t /*unused*/) {}
@@ -329,7 +329,7 @@ class Block;
 
 /// @endcond
 
-} // namespace reflection
+} // namespace lang
 
 } // namespace phantom
 

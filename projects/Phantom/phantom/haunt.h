@@ -47,7 +47,7 @@
 
 // DIRECT annotations
 #    define HAUNT_ANNOTATE(quotedString)                                                                               \
-        [[clang::annotate(quotedString)]] // user one (end up in phantom::reflection::Symbol::getAnnotations()
+        [[clang::annotate(quotedString)]] // user one (end up in phantom::lang::Symbol::getAnnotations()
 #    define HAUNT_SLOT [[clang::annotate("haunt::slot")]]
 #    define HAUNT_STRUCTURE [[clang::annotate("haunt::structure")]]
 #    define HAUNT_FILTERMASK(filter) [[clang::annotate("haunt::filtermask:" #    filter)]]

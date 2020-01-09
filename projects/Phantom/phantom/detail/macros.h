@@ -402,7 +402,7 @@ HAUNT_STOP;
         typedef _t_class_<t_OtherTy> other;                                                                            \
     };
 
-#define PHANTOM_R_NONE (::phantom::reflection::Modifier::None)
+#define PHANTOM_R_NONE (::phantom::lang::Modifier::None)
 
 /// FLAGS
 #define PHANTOM_R_FLAG_NONE (0)

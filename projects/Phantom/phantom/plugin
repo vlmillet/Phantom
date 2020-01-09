@@ -1,1 +1,1 @@
-#include <phantom/reflection/registration/Plugin.h>
+#include <phantom/lang/registration/Plugin.h>

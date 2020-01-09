@@ -35,9 +35,9 @@ PHANTOM_PACKAGE("phantom.utils")
         
         .public_()
             .method<void*() const>("getMostDerived", &_::getMostDerived)
-            .method<reflection::Class*() const>("getMetaClass", &_::getMetaClass)
-            .method<void const*(::phantom::reflection::Class *) const>("as", &_::as)
-            .method<void*(::phantom::reflection::Class *)>("as", &_::as)
+            .method<lang::Class*() const>("getMetaClass", &_::getMetaClass)
+            .method<void const*(::phantom::lang::Class *) const>("as", &_::as)
+            .method<void*(::phantom::lang::Class *)>("as", &_::as)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

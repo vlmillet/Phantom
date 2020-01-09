@@ -9,7 +9,7 @@
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class Class;
 }
@@ -33,14 +33,14 @@ public:
     /// \brief  meta class of this Object.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    reflection::Class* getMetaClass() const { return rtti.metaClass; }
+    lang::Class* getMetaClass() const { return rtti.metaClass; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  dynamic meta cast.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void const* as(reflection::Class* a_pClass) const;
-    void*       as(reflection::Class* a_pClass);
+    void const* as(lang::Class* a_pClass) const;
+    void*       as(lang::Class* a_pClass);
 };
 
 template<class T>

@@ -2,8 +2,8 @@
 
 #include "core_internal.h"
 
-#include <phantom/reflection/Module.h>
-#include <phantom/reflection/registration/registration.h>
+#include <phantom/lang/Module.h>
+#include <phantom/lang/registration/registration.h>
 
 namespace phantom
 {
@@ -63,33 +63,33 @@ void _PHNTM_StaticGlobalRegistrer::__PHNTM_process(RegistrationStep a_Step)
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "cleanup this once quick registration is fully implemented")
 #endif
-    reflection::detail::pushModule(_PHNTM_getModule());
-    reflection::detail::pushSource(_PHNTM_getSource());
+    lang::detail::pushModule(_PHNTM_getModule());
+    lang::detail::pushSource(_PHNTM_getSource());
     _PHNTM_process(a_Step);
-    reflection::detail::popSource();
-    reflection::detail::popModule();
+    lang::detail::popSource();
+    lang::detail::popModule();
 }
 
-reflection::Source* _PHNTM_StaticGlobalRegistrer::_PHNTM_getSource() const
+lang::Source* _PHNTM_StaticGlobalRegistrer::_PHNTM_getSource() const
 {
     // in case of a current module is being installed
     if (_PHNTM_source.empty())
     {
-        if (reflection::Module* pModule = reflection::detail::currentModule())
+        if (lang::Module* pModule = lang::detail::currentModule())
         {
             return pModule->getAnonymousSource();
         }
     }
     if (!_PHNTM_source_cache)
     {
-        reflection::detail::pushModule(_PHNTM_getModule());
+        lang::detail::pushModule(_PHNTM_getModule());
         _PHNTM_source_cache = dynamic_initializer_()->nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
-        reflection::detail::popModule();
+        lang::detail::popModule();
     }
     return _PHNTM_source_cache;
 }
 
-reflection::Module* _PHNTM_StaticGlobalRegistrer::_PHNTM_getModule() const
+lang::Module* _PHNTM_StaticGlobalRegistrer::_PHNTM_getModule() const
 {
     return dynamic_initializer_()->getModuleRegistrationInfo(_PHNTM_ModuleHandle)->m_pModule;
 }

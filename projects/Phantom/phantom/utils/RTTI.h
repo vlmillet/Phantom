@@ -7,7 +7,7 @@ HAUNT_STOP;
 
 namespace phantom
 {
-namespace reflection
+namespace lang
 {
 class Class;
 }
@@ -22,7 +22,7 @@ struct PHANTOM_EXPORT_PHANTOM RTTI
     RTTI& operator=(RTTI&&) noexcept { return *this; }
 
     void*              instance = nullptr;
-    reflection::Class* metaClass = nullptr;
+    lang::Class* metaClass = nullptr;
     CustomDeleteFunc   customDeleteFunc = 0;
 };
 

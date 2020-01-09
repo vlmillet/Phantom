@@ -13,9 +13,9 @@ HAUNT_STOP;
 #include "ModuleRegistrationInfo.h"
 #include "new.h"
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Package.h>
-#include <phantom/reflection/TypeInfos.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Package.h>
+#include <phantom/lang/TypeInfos.h>
 #include <phantom/thread/RecursiveMutex.h>
 #include <phantom/typeof>
 #include <phantom/utils/StringViews.h>
@@ -40,7 +40,7 @@ public:
     DynamicCppInitializerH();
     void                            init();
     void                            release();
-    phantom::reflection::Namespace* parseNamespace(StringView a_strNamespace) const;
+    phantom::lang::Namespace* parseNamespace(StringView a_strNamespace) const;
 
     struct DeferredInstallationInfo
     {
@@ -51,7 +51,7 @@ public:
     void stepRegistration(RegistrationStep step);
     void stepTypeInstallation(TypeInstallationStep step);
 
-    SmallVector<reflection::ModuleRegistrationInfo, 64> m_ModuleRegistrationInfos;
+    SmallVector<lang::ModuleRegistrationInfo, 64> m_ModuleRegistrationInfos;
     RecursiveMutex                                      m_DeferredInstallationsMutex;
     SmallVector<DeferredInstallationInfo>               m_DeferredInstallations;
     int                                                 m_iActive;
@@ -60,19 +60,19 @@ public:
     bool                                                m_bAutoRegistrationLocked;
     bool                                                m_bPhantomInstalled;
 
-    inline reflection::Type* registeredTypeByHash(size_t a_ModuleHandle, hash64 a_Hash)
+    inline lang::Type* registeredTypeByHash(size_t a_ModuleHandle, hash64 a_Hash)
     {
         return moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash);
     }
-    reflection::Package* package(reflection::Module* a_pModule, StringView a_strName, bool* a_pNew = nullptr);
-    size_t               findSourceInModule(StringView a_strFilePath, Strings& words, reflection::Module* a_pModule);
-    reflection::Module*  findSourceInModules(StringView a_strFilePath, Strings& words);
-    reflection::Source*  nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
+    lang::Package* package(lang::Module* a_pModule, StringView a_strName, bool* a_pNew = nullptr);
+    size_t               findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
+    lang::Module*  findSourceInModules(StringView a_strFilePath, Strings& words);
+    lang::Source*  nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
     void                 pushSource(StringView a_strSource)
     {
         PHANTOM_ASSERT(m_source.empty());
         m_source = a_strSource;
-        PHANTOM_ASSERT_DEBUG(reflection::Package::IsValidName(a_strSource),
+        PHANTOM_ASSERT_DEBUG(lang::Package::IsValidName(a_strSource),
                              "invalid source name, only [a-z0-9_] characters (lower case) separated with "
                              "'.' are allowed");
         PHANTOM_ASSERT_DEBUG(m_package.size() OR(a_strSource.find_first_of('.') != StringView::npos),
@@ -85,7 +85,7 @@ public:
     {
         PHANTOM_ASSERT(m_package.empty());
         m_package = a_strPackage;
-        PHANTOM_ASSERT(reflection::Package::IsValidName(m_package),
+        PHANTOM_ASSERT(lang::Package::IsValidName(m_package),
                        "invalid package name, only [a-z0-9_] (lower case) characters separated "
                        "with '.' are allowed");
     }
@@ -94,13 +94,13 @@ public:
     void       registerModule(size_t a_ModuleHandle, StringView a_strName, StringView a_strBinaryFileName,
                               StringView a_strSource, uint a_uiFlags, std::initializer_list<StringView> a_Dependencies,
                               void (*onLoad)(), void (*onUnload)());
-    void       registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
-    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName, reflection::Type* a_pType);
-    void       registerTypeInstallationInfo(reflection::TypeInstallationInfo* a_pTypeInstallInfo);
-    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, reflection::Type* a_pType);
-    void       stepTypeInstallation(reflection::Type* a_pType);
-    void       stepTemplateInstanceInstallation(size_t a_ModuleHandle, reflection::Type* a_pType);
-    void       registerTemplateInstance(size_t a_ModuleHandle, reflection::TypeInstallationInfo* a_pTii);
+    void       registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, lang::Type* a_pType);
+    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName, lang::Type* a_pType);
+    void       registerTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo);
+    void       registerType(size_t a_ModuleHandle, hash64 a_Hash, lang::Type* a_pType);
+    void       stepTypeInstallation(lang::Type* a_pType);
+    void       stepTemplateInstanceInstallation(size_t a_ModuleHandle, lang::Type* a_pType);
+    void       registerTemplateInstance(size_t a_ModuleHandle, lang::TypeInstallationInfo* a_pTii);
     void       unregisterModule(size_t a_ModuleHandle);
     bool       isActive() const { return m_iActive != 0; }
     bool       isAutoRegistrationLocked() const { return m_bAutoRegistrationLocked; }
@@ -111,9 +111,9 @@ public:
         m_iActive--;
     }
     void                                installModules();
-    reflection::ModuleRegistrationInfo* getModuleRegistrationInfo(StringView name);
-    reflection::ModuleRegistrationInfo* getModuleRegistrationInfo(size_t a_ModuleHandle);
-    reflection::ModuleRegistrationInfo* moduleRegistrationInfo(size_t a_ModuleHandle);
+    lang::ModuleRegistrationInfo* getModuleRegistrationInfo(StringView name);
+    lang::ModuleRegistrationInfo* getModuleRegistrationInfo(size_t a_ModuleHandle);
+    lang::ModuleRegistrationInfo* moduleRegistrationInfo(size_t a_ModuleHandle);
     void                                setAutoRegistrationLocked(bool a_bLocked)
     {
         PHANTOM_ASSERT(a_bLocked == !m_bAutoRegistrationLocked);
@@ -181,7 +181,7 @@ public:
         m_DeferredInstallationsMutex.unlock();
     }
 
-    size_t computeModuleRegistrationInfoLevel(reflection::ModuleRegistrationInfo const& m);
+    size_t computeModuleRegistrationInfoLevel(lang::ModuleRegistrationInfo const& m);
 };
 
 PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, RTTI* a_pInstance);
@@ -194,12 +194,12 @@ struct DeferredNewH
         a_pInstance->rtti.instance = a_pInstance;
         if (dynamic_initializer_()->installed())
         {
-            PHANTOM_VERIFY(a_pInstance->rtti.metaClass = static_cast<reflection::Class*>(PHANTOM_TYPEOF(T)));
+            PHANTOM_VERIFY(a_pInstance->rtti.metaClass = static_cast<lang::Class*>(PHANTOM_TYPEOF(T)));
             a_pInstance->rtti.metaClass->registerInstance(a_pInstance);
         }
         else
         {
-            deferInstallation(reflection::TypeInfosOf<T>::object().qualifiedDecoratedName(), &a_pInstance->rtti);
+            deferInstallation(lang::TypeInfosOf<T>::object().qualifiedDecoratedName(), &a_pInstance->rtti);
         }
         return a_pInstance;
     }

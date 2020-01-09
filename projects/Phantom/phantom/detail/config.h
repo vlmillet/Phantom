@@ -734,7 +734,7 @@
 #endif
 
 #if 0
-/// @brief this macro must be defined inside your static lib project configuration so that Phantom can sort your reflection symbols when using static compilation.
+/// @brief this macro must be defined inside your static lib project configuration so that Phantom can sort your lang symbols when using static compilation.
 #    define PHANTOM_STATIC_LIB_HANDLE
 #endif
 

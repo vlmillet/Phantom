@@ -3,8 +3,8 @@
 // Distributed under the MIT license. Text available here at http://www.wiwila.com/tools/phantom/license/ 
 // ]
 #pragma once 
-#include <phantom/reflection/registration/ClassType.h>
-#include <phantom/reflection/registration/Method.h>
+#include <phantom/lang/registration/ClassType.h>
+#include <phantom/lang/registration/Method.h>
 
 #define PHANTOM_CONSTRUCTOR(Parms, ...) (this_()).constructor<void Parms>()
 #define PHANTOM_T_CONSTRUCTOR(Parms, ...) (this_()). PHANTOM_T constructor<void Parms>()

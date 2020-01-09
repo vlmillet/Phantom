@@ -9,10 +9,10 @@
 
 /// use includes
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Field.h>
-#include <phantom/reflection/Application.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Field.h>
+#include <phantom/lang/Application.h>
 
 namespace MyNamespace
 {
@@ -45,7 +45,7 @@ PHANTOM_CLASS(MyClass) // minimal macro usage
 
 int main(int argc, char** argv)
 {
-    using namespace phantom::reflection;
+    using namespace phantom::lang;
 
     // <- at this point no heap allocation have been made, 
     // this is where you can configure allocations with MemoryTraits class 

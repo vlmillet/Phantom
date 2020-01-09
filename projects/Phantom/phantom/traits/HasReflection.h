@@ -7,7 +7,7 @@
 #pragma once
 
 #include <phantom/detail/typedefs.h>
-#include <phantom/reflection/TypeOf.h>
+#include <phantom/lang/TypeOf.h>
 #include <phantom/traits/prerequisites.h>
 
 /// @cond ADVANCED
@@ -16,7 +16,7 @@ namespace phantom
 {
 template<typename t_Ty>
 struct HasReflection
-    : std::integral_constant<bool, !std::is_same<decltype(TypeOf((t_Ty**)nullptr)), reflection::Type*>::value>
+    : std::integral_constant<bool, !std::is_same<decltype(TypeOf((t_Ty**)nullptr)), lang::Type*>::value>
 {
 };
 

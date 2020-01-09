@@ -72,9 +72,9 @@ PHANTOM_FORCEINLINE size_t currentModuleHandle()
 } // namespace
 
 PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
-                                                             reflection::LanguageElement* a_pScope);
+                                                             lang::LanguageElement* a_pScope);
 
-namespace reflection
+namespace lang
 {
 }
 

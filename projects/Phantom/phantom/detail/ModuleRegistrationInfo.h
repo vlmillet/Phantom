@@ -28,7 +28,7 @@ namespace detail
 struct _PHNTM_StaticGlobalRegistrer;
 }
 
-namespace reflection
+namespace lang
 {
 using RegistrerId = size_t;
 
@@ -39,7 +39,7 @@ class ModuleRegistrationInfo
 public:
     ModuleRegistrationInfo(size_t a_ModuleHandle);
 
-    void stepTypeInstallation(reflection::Type* a_pType);
+    void stepTypeInstallation(lang::Type* a_pType);
 
     void processRegistration();
 
@@ -65,7 +65,7 @@ public:
     StringView          m_Source;
     uint                m_uiFlags;
     size_t              m_ModuleHandle;
-    reflection::Module* m_pModule;
+    lang::Module* m_pModule;
     void (*m_OnLoad)();
     void (*m_OnUnload)();
     SmallVector<StringView, 64>        m_Dependencies;
@@ -132,15 +132,15 @@ public:
     SmallMap<hash64, Type*> m_HashToTypeMap;
     bool                    m_bInstalled;
 
-    void              registerTypeByHash(uint64 a_Hash, reflection::Type* a_pType);
-    reflection::Type* registeredTypeByHash(uint64 a_Hash);
+    void              registerTypeByHash(uint64 a_Hash, lang::Type* a_pType);
+    lang::Type* registeredTypeByHash(uint64 a_Hash);
 
     void addTypeInstallationInfos(TypeInstallationInfo* a_pTii);
 
 private:
     friend class phantom::detail::DynamicCppInitializerH;
-    static void _SetOnRequestMembersFunc(reflection::ClassType* a_pType, TypeInstallationDelegate func);
+    static void _SetOnRequestMembersFunc(lang::ClassType* a_pType, TypeInstallationDelegate func);
 };
 
-} // namespace reflection
+} // namespace lang
 } // namespace phantom

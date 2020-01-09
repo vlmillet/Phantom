@@ -3,5 +3,5 @@
 // Distributed under the MIT license. Text available here at http://www.wiwila.com/tools/phantom/license/ 
 // ]
 #pragma once 
-#include <phantom/reflection/registration/Class.h>
-#include <phantom/reflection/registration/MemberAnonymousSection.h>
+#include <phantom/lang/registration/Class.h>
+#include <phantom/lang/registration/MemberAnonymousSection.h>

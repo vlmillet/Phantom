@@ -1,1 +1,1 @@
-#include <phantom/reflection/registration/Main.h>
+#include <phantom/lang/registration/Main.h>

@@ -9,7 +9,7 @@ It has been first developed as a home-made project and then was used inside the 
 
 After years of use inside a professional game studio, it is now made available under a permissive license for whoever want to use it or participate to its development.
 
-It comes with bêta extensions providing scripting features : [Phantom.Lang](#phantomlang--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
+It comes with bêta extensions providing scripting features : [Phantom.Code](#phantomcode--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
 
 ----
 
@@ -49,7 +49,7 @@ This project is under a MIT license which is one of the highest permissive distr
 - Automatic namespace detection at registration (ask for the magic trick ;))
 - Used in the **game industry** (compiles on ORBIS)
 - **Extensions**
-	- *Phantom.Lang* (soon)
+	- *Phantom.Code* (soon)
 		- **Basic C++ grammar and semantic** for evaluating C++ at runtime
 		- AST objects for **building script upon native C++**  
 	- *Phantom.Jit* (soon)
@@ -70,10 +70,10 @@ Code:
 
 /// use includes
 
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Field.h>
-#include <phantom/reflection/Application.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Field.h>
+#include <phantom/lang/Application.h>
 
 namespace MyNamespace
 {
@@ -106,7 +106,7 @@ PHANTOM_CLASS(MyClass) // minimal macro usage
 
 int main(int argc, char** argv)
 {
-    using namespace phantom::reflection;
+    using namespace phantom::lang;
 
     // initializes Phantom, install all pre-main registrations, create the 'main' module (the module related to the .exe)
     Main app(main, "MyApplication", argc, argv);
@@ -220,17 +220,17 @@ See below an example of ```EASTL/basic_string.hxx``` used in a game engine for b
 #include <phantom/constructor>
 #include <phantom/meta_type>
 
-#include <phantom/reflection/StringClassT.h>
+#include <phantom/lang/StringClassT.h>
 
 #include <phantom/template-only-push> // < begin template includes here
 #include "allocator.hxx"
 #include <std/initializer_list.hxx>
 #include <phantom/template-only-pop> // < end template includes here
 
-// 'PHANTOM_META_TYPE_T' tells phantom to use phantom::reflection::StringClassT<> instead of phantom::reflection::ClassT<>
+// 'PHANTOM_META_TYPE_T' tells phantom to use phantom::lang::StringClassT<> instead of phantom::lang::ClassT<>
 // as the meta type for every reflected instance of basic_string.
 
-PHANTOM_META_TYPE_T((typename, typename), (T, Alloc), eastl::basic_string, phantom::reflection::StringClassT);
+PHANTOM_META_TYPE_T((typename, typename), (T, Alloc), eastl::basic_string, phantom::lang::StringClassT);
 
 namespace eastl
 {
@@ -410,7 +410,7 @@ Quick list of features :
   
 Example of file generated with Haunt :
 ```cp
-  #pragma once
+#pragma once
 
 // haunt {
 
@@ -439,13 +439,16 @@ Example of file generated with Haunt :
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Class")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -472,33 +475,32 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         PHANTOM_CLASS(Class)
         {
-            using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
-            using Classes = typedef_< phantom::reflection::Classes>;
+            using AggregateFields = typedef_< phantom::lang::AggregateFields>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using ExtraData = typedef_<_::ExtraData>;
-            using Methods = typedef_< phantom::reflection::Methods>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Signals = typedef_< phantom::reflection::Signals>;
+            using Methods = typedef_< phantom::lang::Methods>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Signals = typedef_< phantom::lang::Signals>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
-            using Subroutines = typedef_< phantom::reflection::Subroutines>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
-            using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
+            using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
+            using ValueMembers = typedef_< phantom::lang::ValueMembers>;
             using Variants = typedef_< phantom::Variants>;
-            using VirtualMethodTables = typedef_< phantom::reflection::VirtualMethodTables>;
+            using VirtualMethodTables = typedef_< phantom::lang::VirtualMethodTables>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::ClassType>()
+            .inherits<::phantom::lang::ClassType>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
             .staticMethod<Class*()>("MetaClass", &_::MetaClass)
-            .staticMethod<StringView()>("GetEmbeddedRttiFieldName", &_::GetEmbeddedRttiFieldName)
         
         .public_()
         
         .public_()
             .struct_<ExtraData>()
-                .inherits<::phantom::reflection::ClassType::ExtraData>()
+                .inherits<::phantom::lang::ClassType::ExtraData>()
                 .method<void(), virtual_|override_>("PHANTOM_CUSTOM_VIRTUAL_DELETE", &_::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE)
                 .constructor<void()>()
                 .field("m_uiFieldMemoryOffset", &_::ExtraData::m_uiFieldMemoryOffset)
@@ -579,8 +581,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool() const>("isRootClass", &_::isRootClass)
             .method<bool(Class*) const>("isA", &_::isA)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
-            .method<ERelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
-            .method<bool(void*, void*) const>("doesInstanceDependOn", &_::doesInstanceDependOn)
+            .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
             .method<void(Method*), virtual_|override_>("addMethod", &_::addMethod)
             .method<void(Signal*), virtual_>("addSignal", &_::addSignal)
             .method<void(Signal*), virtual_>("removeSignal", &_::removeSignal)
@@ -589,17 +590,13 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Signal*(StringView) const>("getSignalCascade", &_::getSignalCascade)
             .method<Method*(StringView) const>("getSlot", &_::getSlot)
             .method<Method*(StringView) const>("getSlotCascade", &_::getSlotCascade)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(ValueMember*, Expression*)>("setOverriddenDefaultExpression", &_::setOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpression", &_::getOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpressionCascade", &_::getOverriddenDefaultExpressionCascade)
             .method<bool() const, virtual_|override_>("isPolymorphic", &_::isPolymorphic)
-            .method<void(void const*) const, virtual_>("mapRtti", &_::mapRtti)
-            .method<void(void const*) const, virtual_>("unmapRtti", &_::unmapRtti)
-            .method<void(void const*) const, virtual_>("installRtti", &_::installRtti)
-            .method<void(void const*) const, virtual_>("uninstallRtti", &_::uninstallRtti)
             .using_("Type::allocate")
             .using_("Type::deallocate")
             .method<void*() const, virtual_|override_>("allocate", &_::allocate)
@@ -625,11 +622,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void*(void*) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void*(void*, Constructor*, void**) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_|override_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<const Variant&(StringView) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<const Variant&(StringHash) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<void(StringView, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<void(StringHash, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<bool(StringView) const>("hasMetaDataCascade", &_::hasMetaDataCascade)
+            .method<const Variant&(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const Variant&(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<void(StringView, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<void(StringWithHash, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<bool(StringWithHash) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
+            .method<bool(StringView) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)
@@ -673,7 +671,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Class")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 
@@ -696,7 +694,7 @@ Yes this really saves you a lot of time :)
 
 Just run the *Premake_vs201X.bat* under windows to build a Visual Studio solution. Under linux and other platforms, you will need to use the command line.
 
-## Phantom.Lang <sub> (soon on GitHub) </sub>
+## Phantom.Code <sub> (soon on GitHub) </sub>
 
 Provide a scripting language layer upon C++ and Phantom, building a nice and transparent native -> runtime interface for interacting with native C++.
 

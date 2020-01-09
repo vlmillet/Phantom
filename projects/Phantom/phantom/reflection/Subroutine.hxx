@@ -139,7 +139,6 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<ESignatureRelation(StringView, Signature*, Modifiers, uint) const>("getSignatureRelationWith", &_::getSignatureRelationWith)["0"]
             .method<ESignatureRelation(Subroutine*) const>("getSignatureRelationWith", &_::getSignatureRelationWith)
             .method<ESignatureRelation(Type*, StringView, TypesView, Modifiers, uint) const>("getSignatureRelationWith", &_::getSignatureRelationWith)["0"]
-            .method<Operator() const>("getOperatorId", &_::getOperatorId)
             .using_("LanguageElement::getQualifiedName")
             .using_("LanguageElement::getDecoratedName")
             .using_("LanguageElement::getQualifiedDecoratedName")

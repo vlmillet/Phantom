@@ -296,59 +296,6 @@ enum class OperatorKind
     Vararg,
 };
 
-/// \brief  C++ compliant operator ids.
-enum class Operator
-{
-    Plus,
-    Minus,
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
-    Address,
-    Dereference,
-    Arrow,
-    ArrowStar,
-    PreDecrement,
-    PreIncrement,
-    PostDecrement,
-    PostIncrement,
-    Equal,
-    NotEqual,
-    Greater,
-    Less,
-    GreaterEqual,
-    LessEqual,
-    LogicalAnd,
-    LogicalOr,
-    XOr,
-    Not,
-    BitAnd,
-    BitOr,
-    Complement,
-    Modulo,
-    Comma,
-    ShiftLeft,
-    ShiftRight,
-    Assignment,
-    AssignmentAdd,
-    AssignmentSubtract,
-    AssignmentMultiply,
-    AssignmentDivide,
-    AssignmentBitAnd,
-    AssignmentBitOr,
-    AssignmentModulo,
-    AssignmentShiftLeft,
-    AssignmentShiftRight,
-    AssignmentXOr,
-    Bracket,
-    Parenthesis,
-
-    Conversion,
-    COUNT,
-    Unknown,
-};
-
 /// \brief  Filters user defined functions (conversion functions and constructors).
 enum class UserDefinedFunctions
 {

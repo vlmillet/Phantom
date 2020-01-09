@@ -21,9 +21,7 @@ namespace reflection
 {
 static Instructions m_EmptyInstructions;
 
-Subroutine::Subroutine()
-{
-}
+Subroutine::Subroutine() {}
 
 Subroutine::Subroutine(ABI a_eABI, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers, a_uiFlags), m_eABI(a_eABI)
@@ -73,9 +71,7 @@ Subroutine::Subroutine(LanguageElement* a_pScope, StringView a_strName, StringVi
     }
 }
 
-Subroutine::~Subroutine()
-{
-}
+Subroutine::~Subroutine() {}
 
 void Subroutine::terminate()
 {
@@ -509,147 +505,31 @@ ESignatureRelation Subroutine::getSignatureRelationWith(Subroutine* a_pSubroutin
                                     a_pSubroutine->getModifiers());
 }
 
-static const char* operatorIdToKeyword(Operator id)
-{
-    switch (id)
-    {
-    case Operator::Plus:
-        return "@plus";
-    case Operator::Minus:
-        return "@minus";
-    case Operator::Add:
-        return "@add";
-    case Operator::Subtract:
-        return "@sub";
-    case Operator::Multiply:
-        return "@mul";
-    case Operator::Divide:
-        return "@div";
-    case Operator::Address:
-        return "@addr";
-    case Operator::Dereference:
-        return "@deref";
-    case Operator::PreDecrement:
-        return "@predec";
-    case Operator::PreIncrement:
-        return "@preinc";
-    case Operator::PostDecrement:
-        return "@postdec";
-    case Operator::PostIncrement:
-        return "@postinc";
-    case Operator::Equal:
-        return "@eq";
-    case Operator::NotEqual:
-        return "@ne";
-    case Operator::Greater:
-        return "@gt";
-    case Operator::Less:
-        return "@lt";
-    case Operator::GreaterEqual:
-        return "@ge";
-    case Operator::LessEqual:
-        return "@le";
-    case Operator::LogicalAnd:
-        return "@land";
-    case Operator::LogicalOr:
-        return "@lor";
-    case Operator::XOr:
-        return "@bxor";
-    case Operator::Not:
-        return "@not";
-    case Operator::BitAnd:
-        return "@band";
-    case Operator::BitOr:
-        return "@bor";
-    case Operator::Complement:
-        return "@compl";
-    case Operator::Modulo:
-        return "@mod";
-    case Operator::Comma:
-        return "@comma";
-    case Operator::ShiftLeft:
-        return "@shl";
-    case Operator::ShiftRight:
-        return "@shr";
-    case Operator::Assignment:
-        return "@assign";
-    case Operator::AssignmentAdd:
-        return "@aadd";
-    case Operator::AssignmentSubtract:
-        return "@asub";
-    case Operator::AssignmentMultiply:
-        return "@amul";
-    case Operator::AssignmentDivide:
-        return "@adiv";
-    case Operator::AssignmentBitAnd:
-        return "@aband";
-    case Operator::AssignmentBitOr:
-        return "@abor";
-    case Operator::AssignmentModulo:
-        return "@amod";
-    case Operator::AssignmentShiftLeft:
-        return "@ashl";
-    case Operator::AssignmentShiftRight:
-        return "@ashr";
-    case Operator::AssignmentXOr:
-        return "@abxor";
-    case Operator::Bracket:
-        return "@elem";
-    case Operator::Arrow:
-        return "@->";
-    case Operator::ArrowStar:
-        return "@->*";
-    case Operator::Parenthesis:
-        return "@()";
-    default:
-        PHANTOM_ASSERT_NO_IMPL();
-    }
-    return "";
-}
-
 void Subroutine::getUniqueName(StringBuffer& a_Buf) const
 {
     StringBuffer baseName;
-    // TODO optimize, lazy guy
     getName(baseName);
-    const char* cstr = m_strName.c_str();
-    if (m_strName.compare(0, 8, "operator") == 0)
+    if (baseName.compare(0, 8, "operator") == 0)
     {
-        cstr += 8;
-        char c = *cstr;
-        if (NOT((c >= 'a' AND c <= 'z') OR(c >= 'A' AND c <= 'Z') OR(c >= '0' AND c <= '9') OR c == '_'))
+        if (StringUtil::IsBlank(baseName[8]))
         {
-            if (*cstr == ' ') // conversion function
+            do
             {
-                baseName += "@operator#";
-                getReturnType()->getUniqueName(baseName);
+                baseName.erase(8);
+            } while (StringUtil::IsBlank(baseName[8]));
+
+            char c = baseName[8];
+            if (NOT((c >= 'a' AND c <= 'z') OR(c >= 'A' AND c <= 'Z') OR(c >= '0' AND c <= '9') OR c == '_'))
+            {
+                // classical operator + - / * ! ? ...
+                // => remain intact
             }
             else
             {
-                Operator id = Operator::Parenthesis;
-                if (strcmp(cstr, "()") == 0)
-                {
-                    id = Operator::Parenthesis;
-                }
-                else
-                    switch (getSignature()->getParameterCount())
-                    {
-                    case 0:
-                        id = Application::Get()->getBuiltInPreUnaryOperatorId(cstr);
-                        if (id == Operator::Unknown)
-                            id = Application::Get()->getBuiltInPostUnaryOperatorId(cstr);
-                        break;
-                    case 1:
-                        id = Application::Get()->getBuiltInBinaryOperatorId(cstr);
-                        if (id == Operator::Unknown)
-                            id = Application::Get()->getBuiltInPostUnaryOperatorId(cstr);
-                        break;
-                    default:
-                        break;
-                    }
-                PHANTOM_ASSERT(id != Operator::Unknown);
-                baseName += "@operator";
-                baseName += operatorIdToKeyword(id);
+                // conversion function
+                baseName.resize(9);
+                baseName[8] = ' ';
+                getReturnType()->getUniqueName(baseName);
             }
         }
     }
@@ -682,10 +562,7 @@ void Subroutine::sortInstructions()
         return;
     struct InstructionSorter
     {
-        bool operator()(Instruction* a_pI0, Instruction* a_pI1) const
-        {
-            return *a_pI0 < *a_pI1;
-        }
+        bool operator()(Instruction* a_pI0, Instruction* a_pI1) const { return *a_pI0 < *a_pI1; }
     };
     std::sort(m_pInstructions->begin(), m_pInstructions->end(), InstructionSorter());
 }
@@ -735,27 +612,6 @@ void MemoryLocation::setEnd(byte* a_pAddress)
 bool MemoryLocation::containsMemoryAddress(const byte* a_pAddress) const
 {
     return a_pAddress >= m_pStart && a_pAddress < m_pEnd;
-}
-
-phantom::reflection::Operator Subroutine::getOperatorId() const
-{
-    if (getName().find("operator") == 0)
-    {
-        StringView view = getName().substr(8);
-        if (view.size() && view.front() == ' ')
-            return Operator::Conversion;
-
-        switch (getParameters().size())
-        {
-        case 2:
-            return Application::Get()->getBuiltInBinaryOperatorId(getName().substr(8));
-        case 1:
-            return Application::Get()->getBuiltInPostUnaryOperatorId(getName().substr(8));
-        case 0:
-            return Application::Get()->getBuiltInPreUnaryOperatorId(getName().substr(8));
-        }
-    }
-    return Operator::Unknown;
 }
 
 Source* Instruction::getSource() const

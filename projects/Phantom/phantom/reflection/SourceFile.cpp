@@ -41,7 +41,7 @@ SourceFile* SourceFile::CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*=
         if (a_bOverwrite)
         {
             Path::Remove(a_strPath);
-            std::ofstream out(std::string(a_strPath.data(), a_strPath.size()));
+            std::ofstream out(String(a_strPath.data(), a_strPath.size()).c_str());
             if (!out.is_open())
                 return nullptr;
         }
@@ -50,7 +50,7 @@ SourceFile* SourceFile::CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*=
     {
         if (!Path::CreateDirectories(Path(a_strPath).parentPath()))
             return nullptr;
-        std::ofstream out(std::string(a_strPath.data(), a_strPath.size()));
+        std::ofstream out(String(a_strPath.data(), a_strPath.size()).c_str());
         if (!out.is_open())
             return nullptr;
     }

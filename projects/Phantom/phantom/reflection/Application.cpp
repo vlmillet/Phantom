@@ -275,7 +275,8 @@ Symbol* Application::findCppSymbol(StringView a_Text, LanguageElement* a_pScope,
                                    StringBuffer* a_pLastError /*= nullptr*/)
 {
     CppSymbolParser parser;
-    PHANTOM_ASSERT(a_pScope);
+    if (a_pScope == nullptr)
+        a_pScope = Namespace::Global();
     return parser.parse(a_Text, a_pScope, a_pLastError);
 }
 
@@ -859,87 +860,6 @@ void Application::getSources(Sources& a_Sources) const
     {
         pModule->getSources(a_Sources);
     }
-}
-
-Operator Application::getBuiltInBinaryOperatorId(StringView a_strName) const
-{
-    PHANTOM_ASSERT(phantom::detail::installed());
-    static SmallMap<String, Operator> s_OperatorNames;
-    if (s_OperatorNames.empty())
-    {
-        s_OperatorNames["+"] = Operator::Add;
-        s_OperatorNames["-"] = Operator::Subtract;
-        s_OperatorNames["*"] = Operator::Multiply;
-        s_OperatorNames["/"] = Operator::Divide;
-        s_OperatorNames["->*"] = Operator::ArrowStar;
-        s_OperatorNames["=="] = Operator::Equal;
-        s_OperatorNames["!="] = Operator::NotEqual;
-        s_OperatorNames[">"] = Operator::Greater;
-        s_OperatorNames["<"] = Operator::Less;
-        s_OperatorNames[">="] = Operator::GreaterEqual;
-        s_OperatorNames["<="] = Operator::LessEqual;
-        s_OperatorNames["&&"] = Operator::LogicalAnd;
-        s_OperatorNames["||"] = Operator::LogicalOr;
-        s_OperatorNames["^"] = Operator::XOr;
-        s_OperatorNames["&"] = Operator::BitAnd;
-        s_OperatorNames["|"] = Operator::BitOr;
-        s_OperatorNames["%"] = Operator::Modulo;
-        s_OperatorNames["<<"] = Operator::ShiftLeft;
-        s_OperatorNames[">>"] = Operator::ShiftRight;
-        s_OperatorNames["="] = Operator::Assignment;
-        s_OperatorNames["+="] = Operator::AssignmentAdd;
-        s_OperatorNames["-="] = Operator::AssignmentSubtract;
-        s_OperatorNames["*="] = Operator::AssignmentMultiply;
-        s_OperatorNames["/="] = Operator::AssignmentDivide;
-        s_OperatorNames["&="] = Operator::AssignmentBitAnd;
-        s_OperatorNames["|="] = Operator::AssignmentBitOr;
-        s_OperatorNames["%="] = Operator::AssignmentModulo;
-        s_OperatorNames["<<="] = Operator::AssignmentShiftLeft;
-        s_OperatorNames[">>="] = Operator::AssignmentShiftRight;
-        s_OperatorNames["^="] = Operator::AssignmentXOr;
-        s_OperatorNames["[]"] = Operator::Bracket;
-    }
-    auto found = s_OperatorNames.find(a_strName);
-    if (found == s_OperatorNames.end())
-        return Operator::Unknown;
-    return found->second;
-}
-
-Operator Application::getBuiltInPreUnaryOperatorId(StringView a_strName) const
-{
-    PHANTOM_ASSERT(phantom::detail::installed());
-    static SmallMap<String, Operator> s_OperatorNames;
-    if (s_OperatorNames.empty())
-    {
-        s_OperatorNames["+"] = Operator::Plus;
-        s_OperatorNames["-"] = Operator::Minus;
-        s_OperatorNames["++"] = Operator::PreIncrement;
-        s_OperatorNames["--"] = Operator::PreDecrement;
-        s_OperatorNames["~"] = Operator::Complement;
-        s_OperatorNames["!"] = Operator::Not;
-        s_OperatorNames["&"] = Operator::Address;
-        s_OperatorNames["*"] = Operator::Dereference;
-    }
-    auto found = s_OperatorNames.find(a_strName);
-    if (found == s_OperatorNames.end())
-        return Operator::Unknown;
-    return found->second;
-}
-
-Operator Application::getBuiltInPostUnaryOperatorId(StringView a_strName) const
-{
-    PHANTOM_ASSERT(phantom::detail::installed());
-    static SmallMap<String, Operator> s_OperatorNames;
-    if (s_OperatorNames.empty())
-    {
-        s_OperatorNames["++"] = Operator::PostIncrement;
-        s_OperatorNames["--"] = Operator::PostDecrement;
-        s_OperatorNames["->"] = Operator::Arrow;
-    }
-    auto found = s_OperatorNames.find(a_strName);
-    if (found == s_OperatorNames.end())
-        return Operator::Unknown;
-    return found->second;
 }
 
 StringView Application::getDefaultSourcePath() const

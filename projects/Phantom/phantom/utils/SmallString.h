@@ -37,15 +37,9 @@ public:
     typedef std::reverse_iterator<const_iterator>            const_reverse_iterator;
     typedef std::reverse_iterator<iterator>                  reverse_iterator;
 
-    SmallString()
-    {
-        m_Chars.push_back(0);
-    }
+    SmallString() { m_Chars.push_back(0); }
     SmallString(SelfType const& a_Other) = default;
-    SmallString(SelfType&& a_Temp) : m_Chars((ContainerType &&) a_Temp.m_Chars)
-    {
-        a_Temp._addNull();
-    }
+    SmallString(SelfType&& a_Temp) : m_Chars((ContainerType &&) a_Temp.m_Chars) { a_Temp._addNull(); }
     SmallString(std::initializer_list<CharT> a_IL) : m_Chars(a_IL)
     {
 #if defined(_PHANTOM_MEASURE_AVERAGE_STRING_SIZE)
@@ -68,12 +62,8 @@ public:
 #endif
         _addNull();
     }
-    SmallString(StringViewType a_View) : SmallString(a_View.data(), a_View.size())
-    {
-    }
-    SmallString(CharT const* a_pCstr) : SmallString(a_pCstr, strlen(a_pCstr))
-    {
-    }
+    SmallString(StringViewType a_View) : SmallString(a_View.data(), a_View.size()) {}
+    SmallString(CharT const* a_pCstr) : SmallString(a_pCstr, strlen(a_pCstr)) {}
 
     template<size_t S, size_t D>
     explicit SmallString(SmallString<T, S, D> const& a_Other) : SmallString(a_Other.data(), a_Other.size())
@@ -86,13 +76,7 @@ public:
         _addNull();
     }
 
-    explicit SmallString(std::string const& a_StdString) : SmallString(a_StdString.c_str(), a_StdString.size())
-    {
-    }
-
-    ~SmallString()
-    {
-    }
+    ~SmallString() {}
 
     SelfType& operator=(SelfType const& a_Other) = default;
 
@@ -110,74 +94,24 @@ public:
         return *this;
     }
 
-    SelfType& operator=(CharT const* a_Other)
-    {
-        return assign(a_Other);
-    }
+    SelfType& operator=(CharT const* a_Other) { return assign(a_Other); }
 
-    SelfType& operator=(CharT a_Ch)
-    {
-        return assign(a_Ch);
-    }
+    SelfType& operator=(CharT a_Ch) { return assign(a_Ch); }
 
-    SelfType& operator=(std::string const& a_Other)
-    {
-        assign(a_Other.c_str(), a_Other.size());
-        return *this;
-    }
+    operator StringViewType() const { return StringViewType(c_str(), size()); }
 
-    explicit operator std::string() const
-    {
-        return std::string(c_str(), size());
-    }
+    CharT const* begin() const { return m_Chars.begin(); }
+    CharT const* end() const { return m_Chars.end() - 1; }
+    CharT*       begin() { return m_Chars.begin(); }
+    CharT*       end() { return m_Chars.end() - 1; }
 
-    operator StringViewType() const
-    {
-        return StringViewType(c_str(), size());
-    }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    reverse_iterator       rbegin() { return reverse_iterator(end()); }
+    reverse_iterator       rend() { return reverse_iterator(begin()); }
 
-    CharT const* begin() const
-    {
-        return m_Chars.begin();
-    }
-    CharT const* end() const
-    {
-        return m_Chars.end() - 1;
-    }
-    CharT* begin()
-    {
-        return m_Chars.begin();
-    }
-    CharT* end()
-    {
-        return m_Chars.end() - 1;
-    }
-
-    const_reverse_iterator rbegin() const
-    {
-        return const_reverse_iterator(end());
-    }
-    const_reverse_iterator rend() const
-    {
-        return const_reverse_iterator(begin());
-    }
-    reverse_iterator rbegin()
-    {
-        return reverse_iterator(end());
-    }
-    reverse_iterator rend()
-    {
-        return reverse_iterator(begin());
-    }
-
-    size_t size() const
-    {
-        return m_Chars.size() - 1;
-    }
-    size_t length() const
-    {
-        return size();
-    }
+    size_t size() const { return m_Chars.size() - 1; }
+    size_t length() const { return size(); }
 
     void resize(size_t s)
     {
@@ -192,15 +126,9 @@ public:
         _endChange();
     }
 
-    size_t capacity() const
-    {
-        return m_Chars.capacity() - 1;
-    }
+    size_t capacity() const { return m_Chars.capacity() - 1; }
 
-    void reserve(size_t s)
-    {
-        m_Chars.reserve(s + 1);
-    }
+    void reserve(size_t s) { m_Chars.reserve(s + 1); }
 
     void clear()
     {
@@ -209,63 +137,26 @@ public:
         _endChange();
     }
 
-    bool empty() const
-    {
-        return size() == 0;
-    }
+    bool empty() const { return size() == 0; }
 
-    CharT const& operator[](size_t i) const
-    {
-        return m_Chars[i];
-    }
-    CharT& operator[](size_t i)
-    {
-        return m_Chars[i];
-    }
+    CharT const& operator[](size_t i) const { return m_Chars[i]; }
+    CharT&       operator[](size_t i) { return m_Chars[i]; }
 
-    CharT const& back() const
-    {
-        return m_Chars[size() - 1];
-    }
-    CharT& back()
-    {
-        return m_Chars[size() - 1];
-    }
+    CharT const& back() const { return m_Chars[size() - 1]; }
+    CharT&       back() { return m_Chars[size() - 1]; }
 
-    CharT const& front() const
-    {
-        return m_Chars.front();
-    }
-    CharT& front()
-    {
-        return m_Chars.front();
-    }
+    CharT const& front() const { return m_Chars.front(); }
+    CharT&       front() { return m_Chars.front(); }
 
-    SelfType& operator+=(CharT const* a_pCstr)
-    {
-        return append(a_pCstr);
-    }
-    SelfType& operator+=(SelfType const& a_Other)
-    {
-        return append(a_Other);
-    }
-    SelfType& operator+=(CharT c)
-    {
-        return append(c);
-    }
-    SelfType& operator+=(std::string const& c)
-    {
-        return append(c.data(), c.size());
-    }
+    SelfType& operator+=(CharT const* a_pCstr) { return append(a_pCstr); }
+    SelfType& operator+=(SelfType const& a_Other) { return append(a_Other); }
+    SelfType& operator+=(CharT c) { return append(c); }
     template<size_t S, size_t D>
     SelfType& operator+=(SmallString<CharT, S, D> const& c)
     {
         return append(c.data(), c.size());
     }
-    SelfType& operator+=(StringViewType v)
-    {
-        return append(v.data(), v.size());
-    }
+    SelfType& operator+=(StringViewType v) { return append(v.data(), v.size()); }
 
     SelfType operator+(CharT const* a_pCstr) const
     {
@@ -283,12 +174,6 @@ public:
     {
         SelfType s = *this;
         s += c;
-        return s;
-    }
-    SelfType operator+(std::string const& a_StdStr) const
-    {
-        SelfType s = *this;
-        s += a_StdStr;
         return s;
     }
     SelfType operator+(StringViewType v) const
@@ -350,10 +235,7 @@ public:
         return *this;
     }
 
-    SelfType& assign(CharT const* a_pCstr)
-    {
-        return assign(a_pCstr, strlen(a_pCstr));
-    }
+    SelfType& assign(CharT const* a_pCstr) { return assign(a_pCstr, strlen(a_pCstr)); }
 
     SelfType& assign(CharT const* a_pCstr, size_t a_Len)
     {
@@ -372,25 +254,13 @@ public:
         return *this;
     }
 
-    SelfType& assign(std::initializer_list<CharT> a_IL)
-    {
-        return (assign(a_IL.begin(), a_IL.size()));
-    }
+    SelfType& assign(std::initializer_list<CharT> a_IL) { return (assign(a_IL.begin(), a_IL.size())); }
 
-    SelfType& append(std::initializer_list<CharT> a_IL)
-    {
-        return (append(a_IL.begin(), a_IL.size()));
-    }
+    SelfType& append(std::initializer_list<CharT> a_IL) { return (append(a_IL.begin(), a_IL.size())); }
 
-    SelfType& append(const SelfType& str, size_t subpos, size_t sublen)
-    {
-        return append(str.data() + subpos, sublen);
-    }
+    SelfType& append(const SelfType& str, size_t subpos, size_t sublen) { return append(str.data() + subpos, sublen); }
 
-    SelfType& insert(size_t a_Pos, SelfType const& a_Str)
-    {
-        return insert(a_Pos, a_Str.data(), a_Str.size());
-    }
+    SelfType& insert(size_t a_Pos, SelfType const& a_Str) { return insert(a_Pos, a_Str.data(), a_Str.size()); }
 
     SelfType& insert(size_t a_Pos, CharT const* a_Cstr, size_t a_Len)
     {
@@ -414,19 +284,10 @@ public:
         return it - begin();
     }
 
-    iterator erase(iterator a_Where)
-    {
-        return m_Chars.erase(a_Where);
-    }
-    iterator erase(iterator a_First, iterator a_Last)
-    {
-        return m_Chars.erase(a_First, a_Last);
-    }
+    iterator erase(iterator a_Where) { return m_Chars.erase(a_Where); }
+    iterator erase(iterator a_First, iterator a_Last) { return m_Chars.erase(a_First, a_Last); }
 
-    void swap(SelfType& a_Other)
-    {
-        m_Chars.swap(a_Other.m_Chars);
-    }
+    void swap(SelfType& a_Other) { m_Chars.swap(a_Other.m_Chars); }
 
     void pop_back()
     {
@@ -435,23 +296,11 @@ public:
         _endChange();
     }
 
-    CharT const* c_str() const
-    {
-        return m_Chars.data();
-    }
-    CharT const* data() const
-    {
-        return m_Chars.data();
-    }
-    CharT* data()
-    {
-        return m_Chars.data();
-    }
+    CharT const* c_str() const { return m_Chars.data(); }
+    CharT const* data() const { return m_Chars.data(); }
+    CharT*       data() { return m_Chars.data(); }
 
-    size_t find(CharT a_Ch) const
-    {
-        return find_first_of(a_Ch);
-    }
+    size_t find(CharT a_Ch) const { return find_first_of(a_Ch); }
 
     size_t find(CharT const* a_pWhat, size_t a_Off = 0) const
     {
@@ -462,11 +311,6 @@ public:
     }
 
     size_t find(SelfType const& a_What, size_t a_Off = 0) const
-    {
-        return find(StringViewType(a_What.data(), a_What.size()), a_Off);
-    }
-
-    size_t find(std::string const& a_What, size_t a_Off = 0) const
     {
         return find(StringViewType(a_What.data(), a_What.size()), a_Off);
     }
@@ -492,18 +336,12 @@ public:
         return find(a_What.data(), a_Off);
     }
 
-    size_t find_first_of(CharT ch, size_t a_Off = 0) const
-    {
-        return StringViewType(*this).find_first_of(ch, a_Off);
-    }
+    size_t find_first_of(CharT ch, size_t a_Off = 0) const { return StringViewType(*this).find_first_of(ch, a_Off); }
     size_t find_first_of(CharT const* chs, size_t a_Off = 0) const
     {
         return StringViewType(*this).find_first_of(chs, a_Off);
     }
-    size_t find_last_of(CharT ch, size_t a_Off = 0) const
-    {
-        return StringViewType(*this).find_last_of(ch, a_Off);
-    }
+    size_t find_last_of(CharT ch, size_t a_Off = 0) const { return StringViewType(*this).find_last_of(ch, a_Off); }
     size_t find_last_of(CharT const* chs, size_t a_Off = 0) const
     {
         return StringViewType(*this).find_last_of(chs, a_Off);
@@ -531,10 +369,7 @@ public:
         return SelfType(begin() + a_Start, a_Offset == npos ? size() - a_Start : a_Offset);
     }
 
-    StringViewType view() const
-    {
-        return StringViewType(begin(), end());
-    }
+    StringViewType view() const { return StringViewType(begin(), end()); }
 
     template<size_t S, size_t D>
     int compare(SmallString<char, S, D> const& a_Other) const
@@ -542,66 +377,28 @@ public:
         return strcmp(data(), a_Other.data());
     }
 
-    int compare(SelfType const& a_Other) const
-    {
-        return strcmp(data(), a_Other.data());
-    }
+    int compare(SelfType const& a_Other) const { return strcmp(data(), a_Other.data()); }
 
-    int compare(std::string const& a_Other) const
-    {
-        return strcmp(data(), a_Other.data());
-    }
+    int compare(CharT const* a_Cstr) const { return strcmp(data(), a_Cstr); }
 
-    int compare(CharT const* a_Cstr) const
-    {
-        return strcmp(data(), a_Cstr);
-    }
-
-    int compare(size_t start, size_t len, CharT const* a_Cstr) const
-    {
-        return strncmp(a_Cstr, data() + start, len);
-    }
+    int compare(size_t start, size_t len, CharT const* a_Cstr) const { return strncmp(a_Cstr, data() + start, len); }
 
     int compare(size_t start, size_t len, SelfType const& a_Other) const
     {
         return strncmp(a_Other.data(), data() + start, len);
     }
 
-    bool operator<(SelfType const& a_Other) const
-    {
-        return compare(a_Other) < 0;
-    }
-    bool operator>(SelfType const& a_Other) const
-    {
-        return compare(a_Other) > 0;
-    }
+    bool operator<(SelfType const& a_Other) const { return compare(a_Other) < 0; }
+    bool operator>(SelfType const& a_Other) const { return compare(a_Other) > 0; }
 
-    bool operator==(SelfType const& a_Other) const
-    {
-        return compare(a_Other) == 0;
-    }
-    bool operator!=(SelfType const& a_Other) const
-    {
-        return compare(a_Other) != 0;
-    }
+    bool operator==(SelfType const& a_Other) const { return compare(a_Other) == 0; }
+    bool operator!=(SelfType const& a_Other) const { return compare(a_Other) != 0; }
 
-    bool operator==(CharT const* a_Cstr) const
-    {
-        return compare(a_Cstr) == 0;
-    }
-    bool operator!=(CharT const* a_Cstr) const
-    {
-        return compare(a_Cstr) != 0;
-    }
+    bool operator==(CharT const* a_Cstr) const { return compare(a_Cstr) == 0; }
+    bool operator!=(CharT const* a_Cstr) const { return compare(a_Cstr) != 0; }
 
-    bool operator==(StringViewType a_Other) const
-    {
-        return compare(a_Other) == 0;
-    }
-    bool operator!=(StringViewType a_Other) const
-    {
-        return compare(a_Other) != 0;
-    }
+    bool operator==(StringViewType a_Other) const { return compare(a_Other) == 0; }
+    bool operator!=(StringViewType a_Other) const { return compare(a_Other) != 0; }
 
     template<size_t S, size_t D>
     bool operator==(SmallString<char, S, D> const& a_Other) const
@@ -615,29 +412,14 @@ public:
         return compare(a_Other) != 0;
     }
 
-    bool operator==(std::string const& a_Other) const
-    {
-        return compare(a_Other) == 0;
-    }
-    bool operator!=(std::string const& a_Other) const
-    {
-        return compare(a_Other) != 0;
-    }
-
 private:
-    PHANTOM_FORCEINLINE void _addNull()
-    {
-        m_Chars.push_back(0);
-    }
+    PHANTOM_FORCEINLINE void _addNull() { m_Chars.push_back(0); }
     PHANTOM_FORCEINLINE void _beginChange()
     {
         PHANTOM_ASSERT(!m_Chars.empty() && m_Chars.back() == 0);
         m_Chars.pop_back();
     }
-    PHANTOM_FORCEINLINE void _endChange()
-    {
-        _addNull();
-    }
+    PHANTOM_FORCEINLINE void _endChange() { _addNull(); }
 
 private:
     ContainerType m_Chars;
@@ -647,12 +429,6 @@ template<class CharT, size_t S, size_t D>
 SmallString<CharT, S, D> operator+(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
 {
     return SmallString<CharT, S, D>(a_pCstr) + a_Other;
-}
-
-template<class CharT, size_t S, size_t D>
-SmallString<CharT, S, D> operator+(std::string const& a_StdStr, SmallString<CharT, S, D> const& a_Other)
-{
-    return SmallString<CharT, S, D>(a_StdStr) + a_Other;
 }
 
 template<class CharT, size_t S, size_t D>
@@ -674,21 +450,9 @@ bool operator==(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
 }
 
 template<class CharT, size_t S, size_t D>
-bool operator==(std::string const& a_StdStr, SmallString<CharT, S, D> const& a_Other)
-{
-    return a_Other.operator==(a_StdStr);
-}
-
-template<class CharT, size_t S, size_t D>
 bool operator!=(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
 {
     return a_Other.operator!=(a_pCstr);
-}
-
-template<class CharT, size_t S, size_t D>
-bool operator!=(std::string const& a_StdStr, SmallString<CharT, S, D> const& a_Other)
-{
-    return a_Other.operator!=(a_StdStr);
 }
 
 template<class CharT, size_t S, size_t D>

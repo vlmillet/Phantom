@@ -172,10 +172,7 @@ public:
     /// \return The default export path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getDefaultExportPath() const
-    {
-        return m_DefaultExportPath;
-    }
+    StringView getDefaultExportPath() const { return m_DefaultExportPath; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the default plugin path where runtime plugin files will be added/removed.
@@ -193,10 +190,7 @@ public:
     /// \return The default plugin path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getDefaultPluginPath() const
-    {
-        return m_DefaultPluginPath;
-    }
+    StringView getDefaultPluginPath() const { return m_DefaultPluginPath; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a plugin path where to look for plugins to load/unload.
@@ -244,10 +238,7 @@ public:
     /// \return The default binary path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getDefaultBinaryPath() const
-    {
-        return m_DefaultBinaryPath;
-    }
+    StringView getDefaultBinaryPath() const { return m_DefaultBinaryPath; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a binary path where to look for binaries to load/unload.
@@ -293,10 +284,7 @@ public:
     /// \brief  Gets the list of c++ built-in types.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Types const& getBuiltInTypes() const
-    {
-        return m_BuiltInTypes;
-    }
+    Types const& getBuiltInTypes() const { return m_BuiltInTypes; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \internal
@@ -320,10 +308,7 @@ public:
     /// \return The modules list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Modules const& getModules() const
-    {
-        return m_Modules;
-    }
+    Modules const& getModules() const { return m_Modules; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the modules that were loaded automatically at startup by static linking.
@@ -333,10 +318,7 @@ public:
     /// \return The startup modules list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Modules const& getStartupModules() const
-    {
-        return m_StartupModules;
-    }
+    Modules const& getStartupModules() const { return m_StartupModules; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the module matching the given handle.
@@ -364,10 +346,7 @@ public:
     /// \return the list of plugins.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Plugins const& getPlugins() const
-    {
-        return m_Plugins;
-    }
+    Plugins const& getPlugins() const { return m_Plugins; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a plugin to the application, creating the plugin file if it doesn't exist or
@@ -412,10 +391,6 @@ public:
 
     void getSources(Sources& a_Sources) const;
 
-    Operator getBuiltInBinaryOperatorId(StringView a_strName) const;
-    Operator getBuiltInPreUnaryOperatorId(StringView a_strName) const;
-    Operator getBuiltInPostUnaryOperatorId(StringView a_strName) const;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the source repository path (source repository is where you can manipulate your
     /// source files, not to be confound with the module path's source folder where only valid
@@ -424,10 +399,7 @@ public:
     /// \return The source repository path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Strings& getSourcePaths() const
-    {
-        return m_SourcePaths;
-    }
+    const Strings& getSourcePaths() const { return m_SourcePaths; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the default source path where PHANTOM_NEW(source) file will be created
@@ -528,10 +500,7 @@ public:
     /// \return the plugin paths.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Strings const& getPluginPaths() const
-    {
-        return m_PluginPaths;
-    }
+    Strings const& getPluginPaths() const { return m_PluginPaths; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Searches for the type matching the given hash.
@@ -607,10 +576,7 @@ public:
     /// life duration.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MemoryContext& getMemoryContext()
-    {
-        return m_MemoryContext;
-    }
+    MemoryContext& getMemoryContext() { return m_MemoryContext; }
 
 public:
     phantom::Signal<void(StringView)> pluginPathAdded;
@@ -639,10 +605,7 @@ private:
     void _registerBuiltInTypes();
     void _addBuiltInType(Type* a_pType);
     void _removeBuiltInType(Type* a_pType);
-    void _registerSourceFile(SourceFile* a_pSourceFile)
-    {
-        m_SourceFiles.push_back(a_pSourceFile);
-    }
+    void _registerSourceFile(SourceFile* a_pSourceFile) { m_SourceFiles.push_back(a_pSourceFile); }
     void _unregisterSourceFile(SourceFile* a_pSourceFile)
     {
         m_SourceFiles.erase(std::find(m_SourceFiles.begin(), m_SourceFiles.end(), a_pSourceFile));
@@ -663,35 +626,17 @@ private:
     void _moduleDiscarded(Module* a_pModule);
     void _moduleAboutToBeRemoved(Module* a_pModule);
 
-    void _sourceAdded(Source* a_pSource)
-    {
-        PHANTOM_EMIT sourceAdded(a_pSource);
-    }
-    void _sourceAboutToBeRemoved(Source* a_pSource)
-    {
-        PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
-    }
+    void _sourceAdded(Source* a_pSource) { PHANTOM_EMIT sourceAdded(a_pSource); }
+    void _sourceAboutToBeRemoved(Source* a_pSource) { PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource); }
 
     void _prefetchPlugins();
     void _prefetchPlugins(StringView a_strPath);
-    void _pluginLoaded(Plugin* p)
-    {
-        PHANTOM_EMIT pluginLoaded(p);
-    }
-    void _pluginLoadingFailed(Plugin* p)
-    {
-        PHANTOM_EMIT pluginLoadingFailed(p);
-    }
-    void _pluginAboutToBeUnloaded(Plugin* p)
-    {
-        PHANTOM_EMIT pluginAboutToBeUnloaded(p);
-    }
+    void _pluginLoaded(Plugin* p) { PHANTOM_EMIT pluginLoaded(p); }
+    void _pluginLoadingFailed(Plugin* p) { PHANTOM_EMIT pluginLoadingFailed(p); }
+    void _pluginAboutToBeUnloaded(Plugin* p) { PHANTOM_EMIT pluginAboutToBeUnloaded(p); }
 
 protected:
-    hash64 computeHash() const override
-    {
-        return 0;
-    }
+    hash64 computeHash() const override { return 0; }
 
 private:
     typedef SmallMap<String, Undefineds*> UndefinedsMap;

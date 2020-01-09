@@ -25,9 +25,7 @@ namespace reflection
 struct PHANTOM_EXPORT_PHANTOM MemoryLocation
 {
     /// \brief  Default constructor.
-    MemoryLocation() : m_pStart(0), m_pEnd(0)
-    {
-    }
+    MemoryLocation() : m_pStart(0), m_pEnd(0) {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a memory location from a start address and an end address.
@@ -49,10 +47,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return true if the two memory locations are isSame.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool operator==(const MemoryLocation& other) const
-    {
-        return m_pStart == other.m_pStart AND m_pEnd == other.m_pEnd;
-    }
+    bool operator==(const MemoryLocation& other) const { return m_pStart == other.m_pStart AND m_pEnd == other.m_pEnd; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Less-than comparison operator.
@@ -62,10 +57,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return true if this memory location is before the given other one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool operator<(const MemoryLocation& other) const
-    {
-        return m_pStart < other.m_pStart;
-    }
+    bool operator<(const MemoryLocation& other) const { return m_pStart < other.m_pStart; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this subroutine is valid.
@@ -73,10 +65,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return true if valid, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isValid() const
-    {
-        return m_pStart && m_pEnd;
-    }
+    bool isValid() const { return m_pStart && m_pEnd; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the start address.
@@ -84,10 +73,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return The start address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getStart() const
-    {
-        return m_pStart;
-    }
+    byte* getStart() const { return m_pStart; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the end address.
@@ -95,10 +81,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return The end address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getEnd() const
-    {
-        return m_pEnd;
-    }
+    byte* getEnd() const { return m_pEnd; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the start address.
@@ -132,10 +115,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return The calculated size of this memory location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline size_t getSize() const
-    {
-        return m_pEnd - m_pStart;
-    }
+    inline size_t getSize() const { return m_pEnd - m_pStart; }
 
 protected:
     byte* m_pStart;
@@ -185,10 +165,7 @@ public:
     /// \return true if this instruction is before the other given one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool operator<(const Instruction& other) const
-    {
-        return m_MemoryLocation < other.m_MemoryLocation;
-    }
+    bool operator<(const Instruction& other) const { return m_MemoryLocation < other.m_MemoryLocation; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the subroutine holding this instruction.
@@ -196,10 +173,7 @@ public:
     /// \return The subroutine.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Subroutine* getSubroutine() const
-    {
-        return m_pSubroutine;
-    }
+    Subroutine* getSubroutine() const { return m_pSubroutine; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets user data.
@@ -207,10 +181,7 @@ public:
     /// \param  a_pUserData The data.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setUserData(void* a_pUserData) const
-    {
-        m_pUserData = a_pUserData;
-    }
+    void setUserData(void* a_pUserData) const { m_pUserData = a_pUserData; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the user data.
@@ -218,10 +189,7 @@ public:
     /// \return The user data.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void* getUserData() const
-    {
-        return m_pUserData;
-    }
+    void* getUserData() const { return m_pUserData; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the operation code of this instruction.
@@ -229,10 +197,7 @@ public:
     /// \return The operation code.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int getOpCode() const
-    {
-        return m_iOpcode;
-    }
+    int getOpCode() const { return m_iOpcode; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the code location of this instruction.
@@ -240,10 +205,7 @@ public:
     /// \return The code location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const CodeRange& getCodeRange() const
-    {
-        return m_CodeRange;
-    }
+    const CodeRange& getCodeRange() const { return m_CodeRange; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the code location of this instruction.
@@ -251,10 +213,7 @@ public:
     /// \return The code location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setCodeRange(const CodeRange& a_CodeRange)
-    {
-        m_CodeRange = a_CodeRange;
-    }
+    void setCodeRange(const CodeRange& a_CodeRange) { m_CodeRange = a_CodeRange; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the memory location of this instruction.
@@ -262,10 +221,7 @@ public:
     /// \return The memory location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const MemoryLocation& getMemoryLocation() const
-    {
-        return m_MemoryLocation;
-    }
+    const MemoryLocation& getMemoryLocation() const { return m_MemoryLocation; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the source containing this instruction.
@@ -281,10 +237,7 @@ public:
     /// \return The memory start address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getMemoryStart() const
-    {
-        return m_MemoryLocation.getStart();
-    }
+    byte* getMemoryStart() const { return m_MemoryLocation.getStart(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the memory end address of this instruction.
@@ -292,10 +245,7 @@ public:
     /// \return The memory end address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getMemoryEnd() const
-    {
-        return m_MemoryLocation.getEnd();
-    }
+    byte* getMemoryEnd() const { return m_MemoryLocation.getEnd(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this instruction contains the given code position.
@@ -323,10 +273,7 @@ public:
         return m_MemoryLocation.containsMemoryAddress(a_pAddress);
     }
 
-    void setMemoryLocation(const MemoryLocation& a_MemoryLocation)
-    {
-        m_MemoryLocation = a_MemoryLocation;
-    }
+    void setMemoryLocation(const MemoryLocation& a_MemoryLocation) { m_MemoryLocation = a_MemoryLocation; }
 
 protected:
     Subroutine*    m_pSubroutine;
@@ -374,23 +321,11 @@ public:
     /// \return The ABI.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ABI getABI() const
-    {
-        return m_eABI;
-    }
+    ABI getABI() const { return m_eABI; }
 
-    Symbol* asSymbol() const override
-    {
-        return const_cast<Subroutine*>(this);
-    }
-    virtual Callable* asCallable() const
-    {
-        return const_cast<Subroutine*>(this);
-    }
-    Subroutine* asSubroutine() const override
-    {
-        return const_cast<Subroutine*>(this);
-    }
+    Symbol*           asSymbol() const override { return const_cast<Subroutine*>(this); }
+    virtual Callable* asCallable() const { return const_cast<Subroutine*>(this); }
+    Subroutine*       asSubroutine() const override { return const_cast<Subroutine*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the signature of this subroutine.
@@ -398,10 +333,7 @@ public:
     /// \return The signature.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Signature* getSignature() const
-    {
-        return m_pSignature;
-    }
+    inline Signature* getSignature() const { return m_pSignature; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the signature relation with another described subroutine.
@@ -439,15 +371,6 @@ public:
 
     ESignatureRelation getSignatureRelationWith(Type* a_pReturnType, StringView a_strName, TypesView a_Types,
                                                 Modifiers a_Modifiers, uint a_uiFlags = 0) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the operator id of this subroutine if it is an operator, else return
-    /// Operator::Unknown.
-    ///
-    /// \return The operator id or Operator::Unknown if not an operator.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Operator getOperatorId() const;
 
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
@@ -692,10 +615,7 @@ public:
     /// \param  a_MemoryLocation    The memory location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setMemoryLocation(const MemoryLocation& a_MemoryLocation)
-    {
-        m_MemoryLocation = a_MemoryLocation;
-    }
+    void setMemoryLocation(const MemoryLocation& a_MemoryLocation) { m_MemoryLocation = a_MemoryLocation; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the memory location of this subroutine.
@@ -703,10 +623,7 @@ public:
     /// \return The memory location.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const MemoryLocation& getMemoryLocation() const
-    {
-        return m_MemoryLocation;
-    }
+    const MemoryLocation& getMemoryLocation() const { return m_MemoryLocation; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the memory start address of this subroutine.
@@ -714,10 +631,7 @@ public:
     /// \return The memory start address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getMemoryStart() const
-    {
-        return m_MemoryLocation.getStart();
-    }
+    byte* getMemoryStart() const { return m_MemoryLocation.getStart(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the memory end address of this subroutine.
@@ -725,10 +639,7 @@ public:
     /// \return The memory end address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    byte* getMemoryEnd() const
-    {
-        return m_MemoryLocation.getEnd();
-    }
+    byte* getMemoryEnd() const { return m_MemoryLocation.getEnd(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the memory start address of this subroutine.
@@ -736,10 +647,7 @@ public:
     /// \param  a_pAddress   The memory start address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setMemoryStart(byte* a_pAddress)
-    {
-        m_MemoryLocation.setStart(a_pAddress);
-    }
+    void setMemoryStart(byte* a_pAddress) { m_MemoryLocation.setStart(a_pAddress); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the memory end address of this subroutine.
@@ -747,10 +655,7 @@ public:
     /// \param  a_pAddress   The memory end address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setMemoryEnd(byte* a_pAddress)
-    {
-        m_MemoryLocation.setEnd(a_pAddress);
-    }
+    void setMemoryEnd(byte* a_pAddress) { m_MemoryLocation.setEnd(a_pAddress); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds an instruction representation to this subroutine for debugging and
@@ -801,10 +706,7 @@ public:
     /// \return The instruction count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getInstructionCount() const
-    {
-        return m_pInstructions ? m_pInstructions->size() : 0;
-    }
+    size_t getInstructionCount() const { return m_pInstructions ? m_pInstructions->size() : 0; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Searches for an instruction at given code position if any.
@@ -843,10 +745,7 @@ public:
     /// \return null if it fails, else the block.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Block* getBlock() const
-    {
-        return m_pBlock;
-    }
+    Block* getBlock() const { return m_pBlock; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a block to this subroutine. The subroutine must not be native.
@@ -872,10 +771,7 @@ public:
     /// \return null if it fails, else the closure.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Closure getClosure() const
-    {
-        return m_Closure;
-    }
+    virtual Closure getClosure() const { return m_Closure; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the closure of this subroutine.
@@ -895,10 +791,7 @@ public:
     /// \return The frame size.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getFrameSize() const
-    {
-        return m_uiFrameSize;
-    }
+    size_t getFrameSize() const { return m_uiFrameSize; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this subroutine is a candidate to Return Value Optimisation (RVO).
@@ -967,10 +860,7 @@ protected:
 
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 
-    uint64_t getUniqueID() const override
-    {
-        return uint64_t(this);
-    }
+    uint64_t getUniqueID() const override { return uint64_t(this); }
 
 protected:
     Signature*     m_pSignature = nullptr;

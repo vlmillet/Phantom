@@ -93,7 +93,7 @@ public:
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Construct a source stream with given url decomposed as protocol + path(ex:
-    /// 'file:C:/MyDev/MySource.soul'").
+    /// 'file:C:/MyDev/MySource.cpplite'").
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol) {}

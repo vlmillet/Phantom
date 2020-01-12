@@ -21,12 +21,8 @@ class InstanceCache;
 /// \brief  Base class data.
 struct BaseClass
 {
-    BaseClass()
-    {
-    }
-    BaseClass(Class* s, size_t o, Access a = Access::Public) : access(a), baseClass(s), offset(o)
-    {
-    }
+    BaseClass() {}
+    BaseClass(Class* s, size_t o, Access a = Access::Public) : access(a), baseClass(s), offset(o) {}
     /// \brief  The base class access (Access::Public, Access::Protected or Access::Private).
     Access access = Access::Public;
     /// \brief  The base class.
@@ -34,10 +30,7 @@ struct BaseClass
     /// \brief  The address offset from the derived address (for cast purpose).
     size_t offset = 0;
 
-    operator Class*() const
-    {
-        return baseClass;
-    }
+    operator Class*() const { return baseClass; }
 };
 typedef SmallVector<BaseClass, 1> BaseClasses;
 
@@ -75,18 +68,11 @@ public:
     struct ExtraData : ClassType::ExtraData
     {
         void PHANTOM_CUSTOM_VIRTUAL_DELETE() override;
-        ExtraData()
-            : m_uiClassPtrOffset(0),
-              m_uiStateMachineDataPtrOffset(0),
-              m_bHasVTablePtr(true),
-              m_bHasStateMachineDataPtr(true)
-        {
-        }
+        ExtraData() : m_uiClassPtrOffset(0), m_uiStateMachineDataPtrOffset(0), m_bHasVTablePtr(true) {}
         size_t m_uiFieldMemoryOffset{};
         size_t m_uiClassPtrOffset;
         size_t m_uiStateMachineDataPtrOffset;
         bool   m_bHasVTablePtr;
-        bool   m_bHasStateMachineDataPtr;
     };
 
 public:
@@ -343,10 +329,7 @@ public:
 
     StaticField* getStaticFieldCascade(StringView a_strName) const;
 
-    Class* asClass() const override
-    {
-        return const_cast<Class*>(this);
-    }
+    Class* asClass() const override { return const_cast<Class*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Gets the size of the virtual method table at a_uindex.
@@ -406,10 +389,7 @@ public:
     /// \return The base class.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Class* getBaseClass(size_t a_uiIndex) const
-    {
-        return m_BaseClasses[a_uiIndex].baseClass;
-    }
+    inline Class* getBaseClass(size_t a_uiIndex) const { return m_BaseClasses[a_uiIndex].baseClass; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Performs a cast from current class to the base class at given index.
@@ -477,10 +457,7 @@ public:
     /// \return the virtual method table list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VirtualMethodTables const& getVirtualMethodTables() const
-    {
-        return m_VirtualMethodTables;
-    }
+    VirtualMethodTables const& getVirtualMethodTables() const { return m_VirtualMethodTables; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a base class.
@@ -507,10 +484,7 @@ public:
     /// \return The base classes table.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const BaseClasses& getBaseClasses() const
-    {
-        return m_BaseClasses;
-    }
+    const BaseClasses& getBaseClasses() const { return m_BaseClasses; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the access of the given base class.
@@ -563,10 +537,7 @@ public:
     /// \return null if it fails, else the derived class.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Class* getDerivedClass(size_t a_uiIndex) const
-    {
-        return m_DerivedClasses[a_uiIndex];
-    }
+    Class* getDerivedClass(size_t a_uiIndex) const { return m_DerivedClasses[a_uiIndex]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the derived classes.
@@ -682,10 +653,7 @@ public:
     /// \return true if root class, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isRootClass() const
-    {
-        return m_BaseClasses.empty();
-    }
+    bool isRootClass() const { return m_BaseClasses.empty(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this class is a kind of the given class (i.e. a derived class).
@@ -696,10 +664,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool isA(Class* a_pType) const;
-    bool isA(Type* a_pType) const override
-    {
-        return a_pType->asClass() ? isA(static_cast<Class*>(a_pType)) : false;
-    }
+    bool isA(Type* a_pType) const override { return a_pType->asClass() ? isA(static_cast<Class*>(a_pType)) : false; }
 
     template<class T>
     bool isA() const
@@ -735,10 +700,7 @@ public:
     /// \return null if it fails, else the signal.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Signals const& getSignals() const
-    {
-        return *m_Signals;
-    }
+    Signals const& getSignals() const { return *m_Signals; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a signal by its signature name.
@@ -851,14 +813,8 @@ public:
     void  construct(void* a_pInstance) const override;
     void  destroy(void* a_pObject) const override;
 
-    void* getSingleton() const
-    {
-        return m_pSingleton;
-    }
-    size_t getInstanceCount() const
-    {
-        return m_InstanceCount;
-    }
+    void*  getSingleton() const { return m_pSingleton; }
+    size_t getInstanceCount() const { return m_InstanceCount; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Upcasts.
@@ -988,10 +944,7 @@ public:
 
     bool hasStrongDependencyOnType(Type* a_pType) const override;
 
-    ExtraData* getExtraData() const
-    {
-        return static_cast<ExtraData*>(ClassType::getExtraData());
-    }
+    ExtraData* getExtraData() const { return static_cast<ExtraData*>(ClassType::getExtraData()); }
 
     /// \cond INTERNAL
 

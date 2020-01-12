@@ -95,7 +95,6 @@ PHANTOM_PACKAGE("phantom.lang")
                 .field("m_uiClassPtrOffset", &_::ExtraData::m_uiClassPtrOffset)
                 .field("m_uiStateMachineDataPtrOffset", &_::ExtraData::m_uiStateMachineDataPtrOffset)
                 .field("m_bHasVTablePtr", &_::ExtraData::m_bHasVTablePtr)
-                .field("m_bHasStateMachineDataPtr", &_::ExtraData::m_bHasStateMachineDataPtr)
             .end()
         
         .public_()

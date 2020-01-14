@@ -30,44 +30,23 @@ public:
     OpaqueDynDelegate(lang::Function* a_pFunction);
     OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName);
 
-    void* getThis() const
-    {
-        return m_pMethod ? m_pThis : nullptr;
-    }
-    lang::Function* getFunction() const
-    {
-        return m_pMethod ? nullptr : m_pFunction;
-    }
-    lang::Method* getMethod() const
-    {
-        return m_pMethod;
-    }
+    void*             getThis() const { return m_pMethod ? m_pThis : nullptr; }
+    lang::Function*   getFunction() const { return m_pMethod ? nullptr : m_pFunction; }
+    lang::Method*     getMethod() const { return m_pMethod; }
     lang::Subroutine* getSubroutine() const;
 
-    bool isEmpty() const
-    {
-        return m_pFunction == nullptr;
-    }
+    bool isEmpty() const { return m_pFunction == nullptr; }
 
-    operator bool() const
-    {
-        return m_pFunction != nullptr;
-    }
+    operator bool() const { return m_pFunction != nullptr; }
 
     bool operator==(const OpaqueDynDelegate& a_Other) const
     {
         return m_pThis == a_Other.m_pThis && m_pMethod == a_Other.m_pMethod;
     }
 
-    bool operator!=(const OpaqueDynDelegate& a_Other) const
-    {
-        return !operator==(a_Other);
-    }
+    bool operator!=(const OpaqueDynDelegate& a_Other) const { return !operator==(a_Other); }
 
-    FunctorID getID() const
-    {
-        return FunctorID(m_pThis, m_pMethod);
-    }
+    FunctorID getID() const { return FunctorID(m_pThis, m_pMethod); }
 
     void call(void** a_pArgs) const;
 
@@ -79,7 +58,7 @@ private:
 private:
     lang::Method* m_pMethod = nullptr;
     union {
-        void*                 m_pThis = nullptr;
+        void*           m_pThis = nullptr;
         lang::Function* m_pFunction;
     };
 };
@@ -107,10 +86,7 @@ public:
 public:
     DynDelegate() = default;
 
-    DynDelegate(lang::Function* a_pFunction) : OpaqueDynDelegate(a_pFunction)
-    {
-        PHANTOM_ASSERT(_CheckSignature());
-    }
+    DynDelegate(lang::Function* a_pFunction) : OpaqueDynDelegate(a_pFunction) { PHANTOM_ASSERT(_CheckSignature()); }
 
     DynDelegate(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod)
         : OpaqueDynDelegate(a_pInstance, a_pClass, a_pMethod)
@@ -128,7 +104,7 @@ public:
     {
         m_pThis = a_Dgt.m_pThis;
         m_pMethod = a_Dgt.m_pMethod;
-        PHANTOM_ASSERT(_CheckSignature());
+        PHANTOM_ASSERT(this->isEmpty() || _CheckSignature());
     }
 
     R operator()(Params... a_Args) const
@@ -151,7 +127,7 @@ template<class R, class... Params>
 R Caller<R, Params...>::Call(OpaqueDynDelegate const& a_Dgt, Params... a_Args)
 {
     typename lang::CallReturnTypeH<R>::type r{};
-    void*                                         args[] = {((void*)(&a_Args))..., nullptr};
+    void*                                   args[] = {((void*)(&a_Args))..., nullptr};
     a_Dgt.call(args, &r);
     return (R)r;
 }

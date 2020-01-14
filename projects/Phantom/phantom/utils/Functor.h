@@ -11,8 +11,8 @@
 #include "DynDelegate.h"
 #include "SmallVector.h"
 
-#include <phantom/alignof>
 #include <functional>
+#include <phantom/alignof>
 #include <type_traits>
 /* *********************************************** */
 
@@ -60,10 +60,7 @@ public:
     // Delegate
 
     /// @brief default constructor (holds a Delegate by default)
-    Functor() : m_Type(_Type::Delegate)
-    {
-        new (&m_Delegate) DelegateType();
-    }
+    Functor() : m_Type(_Type::Delegate) { new (&m_Delegate) DelegateType(); }
 
     /// @brief copy constructor
     Functor(ThisType const& a_Other) : m_Type(a_Other.m_Type)
@@ -160,25 +157,13 @@ public:
     }
 
     /// @brief destructor
-    ~Functor()
-    {
-        _destroy();
-    }
+    ~Functor() { _destroy(); }
 
-    Functor(DelegateType const& a_In) : m_Type(_Type::Delegate)
-    {
-        new (&m_Delegate) DelegateType(a_In);
-    }
+    Functor(DelegateType const& a_In) : m_Type(_Type::Delegate) { new (&m_Delegate) DelegateType(a_In); }
 
-    Functor(DelegateType&& a_In) : m_Type(_Type::Delegate)
-    {
-        new (&m_Delegate) DelegateType(std::move(a_In));
-    }
+    Functor(DelegateType&& a_In) : m_Type(_Type::Delegate) { new (&m_Delegate) DelegateType(std::move(a_In)); }
 
-    Functor(R (*a_Func)(Params...)) : m_Type(_Type::Delegate)
-    {
-        new (&m_Delegate) DelegateType(a_Func);
-    }
+    Functor(R (*a_Func)(Params...)) : m_Type(_Type::Delegate) { new (&m_Delegate) DelegateType(a_Func); }
 
     template<class T>
     Functor(T* a_pThis, R (T::*a_MemberFunc)(Params...)) : m_Type(_Type::Delegate)
@@ -334,10 +319,7 @@ public:
 
     // DynDelegateType
 
-    Functor(DynDelegateType const& a_In) : m_Type(_Type::DynDelegate)
-    {
-        new (&m_DynDelegate) DynDelegateType(a_In);
-    }
+    Functor(DynDelegateType const& a_In) : m_Type(_Type::DynDelegate) { new (&m_DynDelegate) DynDelegateType(a_In); }
 
     Functor(DynDelegateType&& a_In) : m_Type(_Type::DynDelegate)
     {
@@ -356,7 +338,7 @@ public:
     {
         new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_MethodName);
     }
-    explicit Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : m_Type(_Type::DynDelegate)
+    Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : m_Type(_Type::DynDelegate)
     {
         new (&m_DynDelegate) DynDelegateType(a_OpaqueDynDelegate);
     }
@@ -366,6 +348,21 @@ public:
         if (m_Type == _Type::DynDelegate)
         {
             _dynDelegate() = a_In;
+        }
+        else
+        {
+            _destroy();
+            m_Type = _Type::DynDelegate;
+            new (&m_Delegate) DynDelegateType(a_In);
+        }
+        return *this;
+    }
+
+    ThisType& operator=(OpaqueDynDelegate const& a_In)
+    {
+        if (m_Type == _Type::DynDelegate)
+        {
+            _dynDelegate() = DynDelegateType(a_In);
         }
         else
         {
@@ -391,10 +388,7 @@ public:
         return *this;
     }
 
-    bool isEmpty() const
-    {
-        return !operator bool();
-    }
+    bool isEmpty() const { return !operator bool(); }
 
     FunctorID getID() const
     {
@@ -437,15 +431,9 @@ public:
         }
     }
 
-    bool operator==(ThisType const& a_Other) const
-    {
-        return m_Type == a_Other.m_Type && getID() == a_Other.getID();
-    }
+    bool operator==(ThisType const& a_Other) const { return m_Type == a_Other.m_Type && getID() == a_Other.getID(); }
 
-    bool operator!=(ThisType const& a_Other) const
-    {
-        return !operator==(a_Other);
-    }
+    bool operator!=(ThisType const& a_Other) const { return !operator==(a_Other); }
 
     bool as(DelegateType& a_Out)
     {

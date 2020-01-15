@@ -1,8 +1,7 @@
+
 # Phantom
 C++ Reflection and Scripting Library
 
-----
-## Phantom
 ----
 Phantom is a **C++ reflection library**, feature complete, self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (reflection can be in complete separate files from your source code). 
 It has been first developed as a home-made project and then was used inside the game industry as a robust foundation for quick game engine development. 
@@ -16,7 +15,7 @@ It comes with bêta extensions providing scripting features : [Phantom.Code](#ph
 | [Compilers / Platforms](#compilers--platforms) \| [License / Support / Domations](#license--support--donations) \| [Phantom In a Nutshell](#phantom-in-a-nutshell) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
 :----------------------------------------------------------: |
 
-### Compilers / Platforms 
+## Compilers / Platforms 
 - Microsoft Visual Studio 2015 / 2017 / 2019 (requires at least C++11)
 - Clang version  7 and greater
 
@@ -24,11 +23,11 @@ It has been tested on Windows 7/10, Ubuntu and ORBIS platforms.
 More tests are required as it's scope was limited during development.
 <sub>As being mainly used for game engine/editor development, Phantom had a poor maintenance on other platforms than Windows. But things are changing slowly but surely...</sub>
 
-### License / Support / Donations
+## License / Support / Donations
 
 This project is under a MIT license which is one of the highest permissive distribution license. I receive no salary or royalties for developing it and I won't, by pure believes in sharing stuff for a better world <3. Anyone willing to donate is very welcome to help me maintaining and improving it on my spare time :) 
 
-### Phantom In A Nutshell
+## Phantom In A Nutshell
 
 - Classical features : **class, method, field, function, enum, constructor, property ...**
 - **Template class reflection**
@@ -55,7 +54,7 @@ This project is under a MIT license which is one of the highest permissive distr
 	- *Phantom.Jit* (soon)
 		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation)
 
-### HelloWorld
+## HelloWorld
 
 Code:
 ```cp
@@ -129,9 +128,9 @@ int main(int argc, char** argv)
 }
 ```
 
-### Features
+## Features
 
-#### List of reflected C++ symbols 
+### List of reflected C++ symbols 
 
 Almost all C++ symbols are reflectable by Phantom. 
 
@@ -166,7 +165,7 @@ Here is a list of what is/can be introspected :
 
 Self-introspection and, then, recursive reflection are implemented (Class has a meta-class). It has some power for building self-feeding interpreted languages (such as LUA or Ruby). 
 
-#### Module > Package > Source > Symbol
+### Module > Package > Source > Symbol
 
 Phantom reflection is organized by *modules* containing *packages*, containing *sources*, containing *symbols*. This is close to the import/module model you can find in modern languages such as *Python*.  This structure ensure unicity accross different libraries. For example the unique full name of `phantom::lang::Field` is ```Phantom:phantom.lang.Field.Field```. 
 - ```Phantom``` is the *module*. 
@@ -191,16 +190,16 @@ PHANTOM_CLASS("MyClass") { ... }
 PHANTOM_END("MyPackage0.MyPackage1.MySource");
 ```
 <sub>(the module will be automatically detected by the Phantom registration system)</sub>
-#### On demand member registration
+### On demand member registration
 > **Only keep what you need** <sub>you should</sub>
 > 
 When you launch your application with Phantom, only the symbols at global or namespace scopes will be registered by default. Every class member will wait for any access in the reflection system to install. This allows to have everything reflected and still have a **very fast startup** and **low memory use** if not everything is used. 
 
 
-#### Heap allocation control
+### Heap allocation control
 99% of the time, Phantom will never perform heap allocation before entering ***main*** function ; this might happen if you really have a big module with lot of symbols registered. Once in the ***main*** you can use MemoryTraits in phantom to provide your own allocation functions.
 
-#### Template Class Reflection 
+### Template Class Reflection 
 
 Phantom reflects template classes very easily. Full, partial and variadic template specializations are supported too.
 
@@ -353,7 +352,7 @@ PHANTOM_END("GameEngine.Core")
 
 ```
 
-#### Custom Meta Types
+### Custom Meta Types
 
  You can customize what meta type phantom will use to register your class : 
 - for simple classes
@@ -378,7 +377,7 @@ namespace <your-ns>
 ``` 
 these macros are in ```<phantom/meta_type>```
 
-### Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
+## Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
 
 Phantom comes with a reflection generator based on **Clang** which generates files containing fined control reflection output. This is a **boost for iterations and productivity**. 
 **Haunt** is not mandatory like **QT/moc** is. You can create a whole project without. It is just a really handy team mate for hard days of refactoring your other human team mates' code ... <sub>you know what I mean, I know you do</sub>
@@ -686,7 +685,7 @@ PHANTOM_END("phantom.lang")
 ```
 Yes this really saves you a lot of time :)
   
-### Integration
+## Integration
 
 [Premake](https://premake.github.io/) is used as my cross platform project generator.
 
@@ -694,10 +693,10 @@ Yes this really saves you a lot of time :)
 
 Just run the *Premake_vs201X.bat* under windows to build a Visual Studio solution. Under linux and other platforms, you will need to use the command line.
 
-## Phantom.Code <sub> (soon on GitHub) </sub>
+# Phantom.Code <sub> (soon on GitHub) </sub>
 
 Provide a scripting language layer upon C++ and Phantom, building a nice and transparent native -> runtime interface for interacting with native C++.
 
-## Phantom.JIT <sub> (soon on GitHub) </sub>
+# Phantom.JIT <sub> (soon on GitHub) </sub>
 
 A jit compiler based on **llvm** and **MCJIT** is in development with great features (among them is on-the-fly **PDB** generation and hot reloading)

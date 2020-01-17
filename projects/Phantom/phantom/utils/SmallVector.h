@@ -23,47 +23,22 @@ template<class T, bool is_fundamental>
 struct SmallVectorH
 {
     typedef T                       value_type;
-    PHANTOM_FORCEINLINE static void cdef(value_type* out)
-    {
-        *out = value_type();
-    }
-    PHANTOM_FORCEINLINE static void cmove(value_type* out, value_type&& rval)
-    {
-        *out = rval;
-    }
-    PHANTOM_FORCEINLINE static void ccopy(value_type* out, const value_type& lval)
-    {
-        *out = lval;
-    }
-    PHANTOM_FORCEINLINE static void destroy(value_type*)
-    {
-    }
-    PHANTOM_FORCEINLINE static void destroy(value_type*, value_type*)
-    {
-    }
+    PHANTOM_FORCEINLINE static void cdef(value_type* out) { *out = value_type(); }
+    PHANTOM_FORCEINLINE static void cmove(value_type* out, value_type&& rval) { *out = rval; }
+    PHANTOM_FORCEINLINE static void ccopy(value_type* out, const value_type& lval) { *out = lval; }
+    PHANTOM_FORCEINLINE static void destroy(value_type*) {}
+    PHANTOM_FORCEINLINE static void destroy(value_type*, value_type*) {}
 };
 
 template<class T>
 struct SmallVectorH<T, false>
 {
     typedef T          value_type;
-    inline static void cdef(value_type* out)
-    {
-        new (out) value_type();
-    }
-    inline static void cmove(value_type* out, value_type&& rval)
-    {
-        new (out) value_type((value_type &&) rval);
-    }
-    inline static void ccopy(value_type* out, const value_type& lval)
-    {
-        new (out) value_type(lval);
-    }
-    inline static void destroy(value_type* v)
-    {
-        v->~value_type();
-    }
-    static void destroy(value_type* it, value_type* end)
+    inline static void cdef(value_type* out) { new (out) value_type(); }
+    inline static void cmove(value_type* out, value_type&& rval) { new (out) value_type((value_type &&) rval); }
+    inline static void ccopy(value_type* out, const value_type& lval) { new (out) value_type(lval); }
+    inline static void destroy(value_type* v) { v->~value_type(); }
+    static void        destroy(value_type* it, value_type* end)
     {
         for (; it != end; ++it)
             it->~value_type();
@@ -97,10 +72,7 @@ public:
     typedef ArrayView<value_type>                 ArrayViewType;
 
     SmallVector() = default;
-    explicit SmallVector(size_t a_Count)
-    {
-        resize(a_Count);
-    };
+    explicit SmallVector(size_t a_Count) { resize(a_Count); };
     explicit SmallVector(CustomAllocator const* a_pMemTraits) : m_pMemTraits(a_pMemTraits)
     {
         PHANTOM_ASSERT(m_pMemTraits);
@@ -133,9 +105,7 @@ public:
         }
     }
 
-    SmallVector(iterator _it, iterator _end) : SmallVector((const_iterator)_it, (const_iterator)_end)
-    {
-    }
+    SmallVector(iterator _it, iterator _end) : SmallVector((const_iterator)_it, (const_iterator)_end) {}
 
     SmallVector(const_iterator _it, const_iterator _end)
     {
@@ -307,50 +277,20 @@ public:
 
     // TODO : implement operator=(SmallVector<T, S, D>&& temp)
 
-    value_type* data()
-    {
-        return m_data;
-    }
-    value_type const* data() const
-    {
-        return m_data;
-    }
+    value_type*       data() { return m_data; }
+    value_type const* data() const { return m_data; }
 
-    const_iterator begin() const
-    {
-        return m_data;
-    }
-    const_iterator end() const
-    {
-        return m_data + m_size;
-    }
+    const_iterator begin() const { return m_data; }
+    const_iterator end() const { return m_data + m_size; }
 
-    iterator begin()
-    {
-        return m_data;
-    }
-    iterator end()
-    {
-        return m_data + m_size;
-    }
+    iterator begin() { return m_data; }
+    iterator end() { return m_data + m_size; }
 
-    const_reverse_iterator rbegin() const
-    {
-        return const_reverse_iterator(end());
-    }
-    const_reverse_iterator rend() const
-    {
-        return const_reverse_iterator(begin());
-    }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
-    reverse_iterator rbegin()
-    {
-        return reverse_iterator(end());
-    }
-    reverse_iterator rend()
-    {
-        return reverse_iterator(begin());
-    }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
 
     value_type& operator[](size_type i)
     {
@@ -364,18 +304,9 @@ public:
         return m_data[i];
     }
 
-    size_type size() const
-    {
-        return m_size;
-    }
-    size_type capacity() const
-    {
-        return m_capacity;
-    }
-    bool empty() const
-    {
-        return m_size == 0;
-    }
+    size_type         size() const { return m_size; }
+    size_type         capacity() const { return m_capacity; }
+    bool              empty() const { return m_size == 0; }
     value_type const& front() const
     {
         PHANTOM_ASSERT(size());
@@ -651,10 +582,7 @@ public:
         return begin() + index;
     }
 
-    operator ArrayViewType() const
-    {
-        return ArrayViewType(m_data, m_size);
-    }
+    operator ArrayViewType() const { return ArrayViewType(m_data, m_size); }
 
     iterator insert(iterator _where, value_type&& val)
     {
@@ -694,13 +622,13 @@ public:
     }
 
     template<class... Args>
-    void emplace_back(Args&&... args)
+    value_type& emplace_back(Args&&... args)
     {
         if (m_size == m_capacity)
         {
             reserve(m_capacity + DynamicAllocInc);
         }
-        new (&m_data[m_size++]) value_type(std::forward<Args>(args)...);
+        return *(new (&m_data[m_size++]) value_type(std::forward<Args>(args)...));
     }
 
     void clear()
@@ -780,10 +708,7 @@ private:
         return reinterpret_cast<value_type*>(
         m_pMemTraits->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type)));
     }
-    void _dealloc(value_type* t)
-    {
-        m_pMemTraits->deallocFunc(t);
-    }
+    void _dealloc(value_type* t) { m_pMemTraits->deallocFunc(t); }
 
 private:
     size_type   m_capacity = StaticAllocSize;

@@ -68,10 +68,7 @@ public:
     Signal(ThisType const& _other) = delete;
     ThisType& operator=(ThisType const& _other) = delete;
 
-    ~Signal()
-    {
-        clear();
-    }
+    ~Signal() { clear(); }
 
     void clear()
     {
@@ -112,16 +109,10 @@ public:
     }
 
     // @brief connects a void Functor with same parameters
-    FunctorID connect(FunctorType const& a_Functor)
-    {
-        return _connect(a_Functor.getID(), a_Functor);
-    }
+    FunctorID connect(FunctorType const& a_Functor) { return _connect(a_Functor.getID(), a_Functor); }
 
     // @brief connects a void Functor with same parameters (move semantic)
-    FunctorID connect(FunctorType&& a_Functor)
-    {
-        return _connect(a_Functor.getID(), std::move(a_Functor));
-    }
+    FunctorID connect(FunctorType&& a_Functor) { return _connect(a_Functor.getID(), std::move(a_Functor)); }
 
     // @brief connects any other non void Functor with same parameters
     template<class R>
@@ -138,10 +129,7 @@ public:
     }
 
     // @brief connects a void return delegate
-    FunctorID connect(Delegate<void(Parms...)> const& a_Delegate)
-    {
-        return connect(FunctorType(a_Delegate));
-    }
+    FunctorID connect(Delegate<void(Parms...)> const& a_Delegate) { return connect(FunctorType(a_Delegate)); }
 
     // @brief connects a non-void return delegate
     template<class R>
@@ -151,10 +139,7 @@ public:
     }
 
     // @brief connects a void return delegate
-    FunctorID connect(Delegate<void(Parms...)>&& a_Delegate)
-    {
-        return connect(FunctorType(a_Delegate));
-    }
+    FunctorID connect(Delegate<void(Parms...)>&& a_Delegate) { return connect(FunctorType(a_Delegate)); }
 
     // @brief connects a function
     template<class R>
@@ -226,10 +211,7 @@ public:
         _disconnect(FunctorID(a_pThis, MethodClosure(a_Func).getAddress()));
     }
 
-    void disconnect(FunctorID a_ID)
-    {
-        _disconnect(a_ID);
-    }
+    void disconnect(FunctorID a_ID) { _disconnect(a_ID); }
 
     template<class R>
     void disconnect(Delegate<R(Parms...)> const& a_Delegate)
@@ -237,10 +219,7 @@ public:
         _disconnect(a_Delegate.getID());
     }
 
-    void disconnect(Delegate<void(Parms...)> const& a_Delegate)
-    {
-        _disconnect(a_Delegate.getID());
-    }
+    void disconnect(Delegate<void(Parms...)> const& a_Delegate) { _disconnect(a_Delegate.getID()); }
 
     template<class R>
     void disconnect(Delegate<R(Parms...)>&& a_Delegate)
@@ -248,10 +227,7 @@ public:
         _disconnect(a_Delegate.getID());
     }
 
-    void disconnect(Delegate<void(Parms...)>&& a_Delegate)
-    {
-        _disconnect(a_Delegate.getID());
-    }
+    void disconnect(Delegate<void(Parms...)>&& a_Delegate) { _disconnect(a_Delegate.getID()); }
 
     void operator()(Parms... a_Args) const
     {
@@ -274,10 +250,7 @@ public:
         _Signal::EmissionFrame::PopEmitter();
     }
 
-    inline SignalMutexType& mutex()
-    {
-        return m_Mutex;
-    }
+    inline SignalMutexType& mutex() { return m_Mutex; }
 
 private:
     bool _isConnected(FunctorID a_ID) const
@@ -296,13 +269,13 @@ private:
 
     FunctorID _connect(FunctorID a_ID, FunctorType&& a_Functor)
     {
-        _connect(new (phantom::allocate(sizeof(SlotType), PHANTOM_ALIGNOF(SlotType))) SlotType{nullptr, a_ID, std::move(a_Functor)});
+        _connect(new (_Signal::AllocateSlot()) SlotType{nullptr, a_ID, std::move(a_Functor)});
         return a_ID;
     }
 
     FunctorID _connect(FunctorID a_ID, FunctorType const& a_Functor)
     {
-        _connect(new (phantom::allocate(sizeof(SlotType), PHANTOM_ALIGNOF(SlotType))) SlotType{nullptr, a_ID, a_Functor});
+        _connect(new (_Signal::AllocateSlot()) SlotType{nullptr, a_ID, a_Functor});
         return a_ID;
     }
 

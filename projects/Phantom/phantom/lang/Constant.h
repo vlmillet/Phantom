@@ -30,16 +30,10 @@ public:
     Constant(Type* a_pValueType, Modifiers modifiers = 0, uint a_uiFlags = 0);
     Constant(Type* a_pValueType, StringView a_strName, Modifiers modifiers = 0, uint a_uiFlags = 0);
 
-    virtual Type* getValueType() const
-    {
-        return m_pValueType;
-    }
-    virtual void getValue(void* dest) const = 0;
-    virtual bool hasValue(const void* a_pSrc) const = 0;
-    Constant*    asConstant() const override
-    {
-        return const_cast<Constant*>(this);
-    }
+    virtual Type* getValueType() const { return m_pValueType; }
+    virtual void  getValue(void* dest) const = 0;
+    virtual bool  hasValue(const void* a_pSrc) const = 0;
+    Constant*     asConstant() const override { return const_cast<Constant*>(this); }
 
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
@@ -54,20 +48,16 @@ public:
     Constant*         clone() const;
     virtual Constant* cloneImpl() const = 0;
 
-    virtual bool isIntegral() const
-    {
-        return getValueType()->asIntegralType() != nullptr;
-    }
+    virtual bool isIntegral() const { return getValueType()->asIntegralType() != nullptr; }
     virtual bool isZero() const = 0;
 
-    inline bool isIntegralZero() const
-    {
-        return isIntegral() AND isZero();
-    }
+    inline bool isIntegralZero() const { return isIntegral() AND isZero(); }
 
     virtual void toString(StringBuffer& a_Buf) const = 0;
 
     virtual void toLiteral(StringBuffer& a_Buf) const = 0;
+
+    virtual void const* getAddress() const = 0;
 
 protected:
     Type* m_pValueType;

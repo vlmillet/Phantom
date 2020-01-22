@@ -31,24 +31,12 @@ public:
         : Constant(a_pType, a_strName, modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT)
     {
     }
-    bool    accepts(LanguageElement* a_pLanguageElement) const override;
-    Symbol* asSymbol() const override
-    {
-        return (PlaceholderConstant*)this;
-    }
-    Placeholder* asPlaceholder() const override
-    {
-        return (PlaceholderConstant*)this;
-    }
-    PlaceholderConstant* asPlaceholderConstant() const override
-    {
-        return (PlaceholderConstant*)this;
-    }
-    void getValue(void*) const override
-    {
-        PHANTOM_ASSERT_NO_IMPL();
-    }
-    bool hasValue(const void*) const override
+    bool                 accepts(LanguageElement* a_pLanguageElement) const override;
+    Symbol*              asSymbol() const override { return (PlaceholderConstant*)this; }
+    Placeholder*         asPlaceholder() const override { return (PlaceholderConstant*)this; }
+    PlaceholderConstant* asPlaceholderConstant() const override { return (PlaceholderConstant*)this; }
+    void                 getValue(void*) const override { PHANTOM_ASSERT_NO_IMPL(); }
+    bool                 hasValue(const void*) const override
     {
         PHANTOM_ASSERT_NO_IMPL();
         return false;
@@ -58,27 +46,17 @@ public:
         PHANTOM_ASSERT_NO_IMPL();
         return false;
     }
-    void toString(StringBuffer&) const override
+    void        toString(StringBuffer&) const override { PHANTOM_ASSERT_NO_IMPL(); }
+    void        toLiteral(StringBuffer&) const override { PHANTOM_ASSERT_NO_IMPL(); }
+    void const* getAddress() const override
     {
         PHANTOM_ASSERT_NO_IMPL();
-    }
-    void toLiteral(StringBuffer&) const override
-    {
-        PHANTOM_ASSERT_NO_IMPL();
+        return nullptr;
     }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
     void getUniqueName(StringBuffer& a_Buf) const override
     {
         a_Buf += "@ph ";

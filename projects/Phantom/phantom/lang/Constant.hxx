@@ -73,6 +73,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isIntegralZero", &_::isIntegralZero)
             .method<void(StringBuffer&) const, pure_virtual>("toString", &_::toString)
             .method<void(StringBuffer&) const, pure_virtual>("toLiteral", &_::toLiteral)
+            .method<void const*() const, pure_virtual>("getAddress", &_::getAddress)
         
         .protected_()
             .field("m_pValueType", &_::m_pValueType)

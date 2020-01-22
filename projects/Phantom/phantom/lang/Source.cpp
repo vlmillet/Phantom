@@ -420,7 +420,8 @@ InitializerListType* Source::initializerListType(TypesView a_Types)
 bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
 {
     PHANTOM_ASSERT(a_pSource != this);
-    if (NOT(canImport(a_pSource)))
+    if (NOT(canImport(a_pSource, a_bPublic ? Access::Public : Access::Private,
+                      Modifiers(a_bStatic ? Modifier::Static : 0))))
     {
         return false;
     }

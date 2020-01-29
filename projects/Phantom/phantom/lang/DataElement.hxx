@@ -19,12 +19,6 @@
 #include <phantom/method>
 #include <phantom/constructor>
 
-#include <phantom/template-only-push>
-
-#include <phantom/utils/SmallVector.hxx>
-
-#include <phantom/template-only-pop>
-
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
@@ -33,18 +27,20 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(DataElement)
         {
-            using Fields = typedef_< phantom::lang::Fields>;
             this_()
         .public_()
             .method<size_t() const, pure_virtual>("getAlignment", &_::getAlignment)
             .method<size_t() const, pure_virtual>("getSize", &_::getSize)
             .method<size_t() const, pure_virtual>("getOffset", &_::getOffset)
             .method<void(size_t), pure_virtual>("setOffset", &_::setOffset)
-            .method<void(Fields&) const, pure_virtual>("fetchFields", &_::fetchFields)
-            .method<Symbol*() const>("asSymbol", &_::asSymbol)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<void(Fields&) const, pure_virtual>("fetchFields", &_::fetchFields)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<Symbol*() const>("asSymbol", &_::asSymbol)
         
         .protected_()
-            .constructor<void(Symbol*)>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .constructor<void(Symbol*)>()
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -23,7 +23,6 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/SmallVector.hxx>
 
 #include <phantom/template-only-pop>
 

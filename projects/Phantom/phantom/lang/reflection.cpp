@@ -25,6 +25,25 @@ namespace phantom
 {
 namespace lang
 {
+PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
+                                                             lang::LanguageElement* a_pScope)
+{
+    if (a_strName.find("operator ") == 0)
+    {
+        lang::Type* pType = a_strName.find_first_of('.') == String::npos
+        ? lang::Application::Get()->findCppType(a_strName.substr(9),
+                                                a_pScope) // no dot => c++ name search
+        : lang::Application::Get()->findType(a_strName.substr(9),
+                                             a_pScope); // dot => phantom unique name search
+        if (pType)
+        {
+            a_Buf += "operator ";
+            pType->getUniqueName(a_Buf);
+            return;
+        }
+    }
+    a_Buf += a_strName;
+}
 namespace detail
 {
 PHANTOM_EXPORT_PHANTOM Type* findType(StringView a_strName, Namespace* a_pScope /*= Namespace::Global()*/)

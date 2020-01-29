@@ -21,12 +21,6 @@
 #include <phantom/constructor>
 #include <phantom/field>
 
-#include <phantom/template-only-push>
-
-#include <phantom/utils/SmallVector.hxx>
-
-#include <phantom/template-only-pop>
-
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")

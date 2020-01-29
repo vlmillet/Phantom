@@ -8,6 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include "Generic.h"
+#include "SmallVector.h"
 #include "StringView.h"
 #include "phantom/detail/core.h"
 #include "phantom/traits/CopyTraits.h"
@@ -27,8 +28,8 @@ class PHANTOM_EXPORT_PHANTOM Variant
 
 public:
     typedef Delegate<bool(lang::Type*, void*, lang::Type*, const void*)> TypeConverter;
-    static void          SetTypeConverter(TypeConverter a_TC);
-    static TypeConverter GetTypeConverter();
+    static void                                                          SetTypeConverter(TypeConverter a_TC);
+    static TypeConverter                                                 GetTypeConverter();
 
     static Variant From(Generic::Param<> a_Param0, Generic::Arg<Generic::ParamType<0>*, void*> a_Arg0)
     {
@@ -37,9 +38,7 @@ public:
 
 public:
     static const Variant null;
-    inline Variant() : m_pType(nullptr)
-    {
-    }
+    inline Variant() : m_pType(nullptr) {}
 
     inline Variant(const char* a_Str);
 
@@ -76,10 +75,7 @@ public:
                                 void>>
     inline Variant& operator=(t_Ty&& a_In);
 
-    ~Variant()
-    {
-        clear();
-    }
+    ~Variant() { clear(); }
 
     void clear()
     {
@@ -109,34 +105,19 @@ public:
 
     inline size_t size() const;
 
-    inline lang::Type* type() const
-    {
-        return m_pType;
-    }
+    inline lang::Type* type() const { return m_pType; }
 
     const char* c_str() const;
 
     bool isString() const;
 
-    inline const void* data() const
-    {
-        return _buffer();
-    }
+    inline const void* data() const { return _buffer(); }
 
-    inline void* data()
-    {
-        return _buffer();
-    }
+    inline void* data() { return _buffer(); }
 
-    inline bool isValid() const
-    {
-        return m_pType != nullptr;
-    }
+    inline bool isValid() const { return m_pType != nullptr; }
 
-    inline bool isNull() const
-    {
-        return m_pType == nullptr;
-    }
+    inline bool isNull() const { return m_pType == nullptr; }
 
     inline bool as(Generic::Param<> a_Param0, Generic::Arg<Generic::ParamType<0>*, void*> a_Arg0) const
     {
@@ -168,7 +149,7 @@ private:
     {
         return (size() > StaticBufferSize) ? m_Buffer.dynamicBuffer : (byte*)m_Buffer.staticBuffer;
     }
-    inline void       _release();
+    inline void _release();
     lang::Type* m_pType;
     union { // storage for small buffer or pointer to larger one
         byte  staticBuffer[StaticBufferSize];

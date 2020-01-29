@@ -19,7 +19,7 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
+#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
@@ -144,24 +144,24 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
         
         .public_()
-            .signal("pluginPathAdded", &_::pluginPathAdded)
-            .signal("pluginPathRemoved", &_::pluginPathRemoved)
-            .signal("binaryPathAdded", &_::binaryPathAdded)
-            .signal("binaryPathRemoved", &_::binaryPathRemoved)
-            .signal("moduleAdded", &_::moduleAdded)
-            .signal("moduleDiscarded", &_::moduleDiscarded)
-            .signal("moduleAboutToBeRemoved", &_::moduleAboutToBeRemoved)
-            .signal("moduleUnloaded", &_::moduleUnloaded)
-            .signal("pluginAdded", &_::pluginAdded)
-            .signal("pluginAboutToBeRemoved", &_::pluginAboutToBeRemoved)
-            .signal("pluginLoaded", &_::pluginLoaded)
-            .signal("pluginLoadingFailed", &_::pluginLoadingFailed)
-            .signal("pluginAboutToBeUnloaded", &_::pluginAboutToBeUnloaded)
-            .signal("sourceAdded", &_::sourceAdded)
-            .signal("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
-            .signal("packageAdded", &_::packageAdded)
-            .signal("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
-            .signal("sourceDeleted", &_::sourceDeleted)
+            .field("pluginPathAdded", &_::pluginPathAdded)
+            .field("pluginPathRemoved", &_::pluginPathRemoved)
+            .field("binaryPathAdded", &_::binaryPathAdded)
+            .field("binaryPathRemoved", &_::binaryPathRemoved)
+            .field("moduleAdded", &_::moduleAdded)
+            .field("moduleDiscarded", &_::moduleDiscarded)
+            .field("moduleAboutToBeRemoved", &_::moduleAboutToBeRemoved)
+            .field("moduleUnloaded", &_::moduleUnloaded)
+            .field("pluginAdded", &_::pluginAdded)
+            .field("pluginAboutToBeRemoved", &_::pluginAboutToBeRemoved)
+            .field("pluginLoaded", &_::pluginLoaded)
+            .field("pluginLoadingFailed", &_::pluginLoadingFailed)
+            .field("pluginAboutToBeUnloaded", &_::pluginAboutToBeUnloaded)
+            .field("sourceAdded", &_::sourceAdded)
+            .field("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
+            .field("packageAdded", &_::packageAdded)
+            .field("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
+            .field("sourceDeleted", &_::sourceDeleted)
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)

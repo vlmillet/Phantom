@@ -21,7 +21,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/using>
@@ -31,7 +30,6 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -248,8 +246,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(LanguageElement*), virtual_|override_>("onAncestorAboutToBeChanged", &_::onAncestorAboutToBeChanged)
         
         .public_()
-            .signal("kindCreated", &_::kindCreated)
-            .signal("kindDestroying", &_::kindDestroying)
+            .field("kindCreated", &_::kindCreated)
+            .field("kindDestroying", &_::kindDestroying)
         
         .protected_()
             .field("m_eTypeKind", &_::m_eTypeKind)

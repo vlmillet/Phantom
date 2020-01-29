@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/fwd.h>
+#include "reflection_fwd.h"
 /* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
@@ -25,9 +25,7 @@ using AggregateFields = SmallVector<AggregateField, 16>;
 class PHANTOM_EXPORT_PHANTOM Aggregate
 {
 protected:
-    Aggregate(Type* a_pThisType) : m_pThisType(a_pThisType)
-    {
-    }
+    Aggregate(Type* a_pThisType) : m_pThisType(a_pThisType) {}
 
 public:
     virtual void getFields(AggregateFields& _fields) const = 0;

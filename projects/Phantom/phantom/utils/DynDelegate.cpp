@@ -28,6 +28,7 @@ OpaqueDynDelegate::OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, S
     PHANTOM_ASSERT(pMethod, "no method '%.*s' found in class '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_MethodName),
                    PHANTOM_STRING_AS_PRINTF_ARG(a_pClass->getName()));
     m_pThis = a_pClass->cast(pMethod->getOwnerClass(), a_pInstance);
+    PHANTOM_ASSERT(m_pThis);
     m_pMethod = pMethod;
 }
 

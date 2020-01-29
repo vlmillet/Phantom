@@ -19,7 +19,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/friend>
 
@@ -27,7 +26,6 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -72,8 +70,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(PackageFolders&) const>("getPackageFolders", &_::getPackageFolders)
         
         .public_()
-            .signal("sourceAdded", &_::sourceAdded)
-            .signal("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
+            .field("sourceAdded", &_::sourceAdded)
+            .field("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
         
         .protected_()
             .field("m_pNamespace", &_::m_pNamespace)

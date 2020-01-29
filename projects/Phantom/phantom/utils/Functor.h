@@ -9,6 +9,7 @@
 /* ****************** Includes ******************* */
 #include "Delegate.h"
 #include "DynDelegate.h"
+#include "FunctorID.h"
 #include "SmallVector.h"
 
 #include <functional>

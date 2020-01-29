@@ -19,7 +19,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/friend>
 
@@ -27,7 +26,6 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -90,10 +88,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
         
         .public_()
-            .signal("namespaceAdded", &_::namespaceAdded)
-            .signal("namespaceRemoved", &_::namespaceRemoved)
-            .signal("namespaceAliasAdded", &_::namespaceAliasAdded)
-            .signal("namespaceAliasRemoved", &_::namespaceAliasRemoved)
+            .field("namespaceAdded", &_::namespaceAdded)
+            .field("namespaceRemoved", &_::namespaceRemoved)
+            .field("namespaceAliasAdded", &_::namespaceAliasAdded)
+            .field("namespaceAliasRemoved", &_::namespaceAliasRemoved)
         
         .protected_()
             .method<void(Namespace*)>("setParentNamespace", &_::setParentNamespace)

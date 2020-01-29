@@ -14,6 +14,8 @@
 
 HAUNT_STOP;
 
+#include "FunctorID.h"
+
 #include <phantom/detail/MethodClosure.h>
 #include <phantom/detail/typedefs.h>
 
@@ -36,7 +38,7 @@ HAUNT_ON class OpaqueDelegate
 {
     HAUNT_OFF protected : HAUNT_OFF typedef void (detail::DelegateGenericClass::*MFPtr)();
     HAUNT_OFF detail::DelegateGenericClass* m_pThis;
-    HAUNT_OFF MFPtr                         m_pFunction;
+    HAUNT_OFF MFPtr m_pFunction;
 
 public:
     OpaqueDelegate() : m_pThis(0), m_pFunction(0){};
@@ -51,41 +53,17 @@ public:
     {
         return m_pThis == other.m_pThis && m_pFunction == other.m_pFunction;
     }
-    inline bool operator!=(const OpaqueDelegate& other) const
-    {
-        return !operator==(other);
-    }
+    inline bool operator!=(const OpaqueDelegate& other) const { return !operator==(other); }
 
-    inline bool operator!() const
-    {
-        return m_pThis == 0 && m_pFunction == 0;
-    }
-    inline bool empty() const
-    {
-        return m_pThis == 0 && m_pFunction == 0;
-    }
+    inline bool operator!() const { return m_pThis == 0 && m_pFunction == 0; }
+    inline bool empty() const { return m_pThis == 0 && m_pFunction == 0; }
 
-    int getThisOffset() const
-    {
-        return Closure(MethodClosure(m_pFunction)).offset;
-    }
+    int getThisOffset() const { return Closure(MethodClosure(m_pFunction)).offset; }
 
-    MethodClosure getMethod() const
-    {
-        return MethodClosure(m_pFunction);
-    }
-    void* getThis() const
-    {
-        return m_pFunction ? m_pThis : nullptr;
-    }
-    void* getFunction() const
-    {
-        return m_pFunction ? nullptr : m_pThis;
-    }
-    FunctorID getID() const
-    {
-        return FunctorID(m_pThis, MethodClosure(m_pFunction).getAddress());
-    }
+    MethodClosure getMethod() const { return MethodClosure(m_pFunction); }
+    void*         getThis() const { return m_pFunction ? m_pThis : nullptr; }
+    void*         getFunction() const { return m_pFunction ? nullptr : m_pThis; }
+    FunctorID     getID() const { return FunctorID(m_pThis, MethodClosure(m_pFunction).getAddress()); }
 
 public:
     OpaqueDelegate& operator=(const OpaqueDelegate& right)
@@ -99,13 +77,8 @@ public:
             return m_pThis < right.m_pThis;
         return memcmp(&m_pFunction, &right.m_pFunction, sizeof(m_pFunction)) < 0;
     }
-    inline bool operator>(const OpaqueDelegate& right) const
-    {
-        return right.operator<(*this);
-    }
-    OpaqueDelegate(const OpaqueDelegate& right) : m_pThis(right.m_pThis), m_pFunction(right.m_pFunction)
-    {
-    }
+    inline bool operator>(const OpaqueDelegate& right) const { return right.operator<(*this); }
+    OpaqueDelegate(const OpaqueDelegate& right) : m_pThis(right.m_pThis), m_pFunction(right.m_pFunction) {}
 
 protected:
     void setOpaqueFrom(const OpaqueDelegate& right)
@@ -196,10 +169,7 @@ struct MicrosoftVirtualMFP
 struct delegate_generic_virtual_class : virtual public DelegateGenericClass
 {
     typedef delegate_generic_virtual_class* (delegate_generic_virtual_class::*ProbePtrType)();
-    delegate_generic_virtual_class* this_()
-    {
-        return this;
-    }
+    delegate_generic_virtual_class* this_() { return this; }
 };
 
 template<>
@@ -293,14 +263,8 @@ public:
     {
         m_pThis = MFHacker<sizeof(function_to_bind)>::Convert(const_cast<t_Ty*>(pthis), function_to_bind, m_pFunction);
     }
-    inline DelegateGenericClass* getThis() const
-    {
-        return m_pThis;
-    }
-    inline t_GenericMFP getMFPtr() const
-    {
-        return reinterpret_cast<t_GenericMFP>(m_pFunction);
-    }
+    inline DelegateGenericClass* getThis() const { return m_pThis; }
+    inline t_GenericMFP          getMFPtr() const { return reinterpret_cast<t_GenericMFP>(m_pFunction); }
 
     template<class t_DerivedClass>
     inline void copyFrom(t_DerivedClass*, const OpaqueDelegate& right)
@@ -360,24 +324,13 @@ private:
     typedef Delegate<R(Params...)>                                  SelfType;
 
 public:
-    Delegate()
-    {
-        clear();
-    }
+    Delegate() { clear(); }
 
-    Delegate(const SelfType& other)
-    {
-        m_Closure.copyFrom(this, other.m_Closure);
-    }
+    Delegate(const SelfType& other) { m_Closure.copyFrom(this, other.m_Closure); }
 
-    Delegate(SelfType&& a_Temp) : Delegate((const SelfType&)a_Temp)
-    {
-    }
+    Delegate(SelfType&& a_Temp) : Delegate((const SelfType&)a_Temp) {}
 
-    Delegate(FuncPtrT function_to_bind)
-    {
-        bind(function_to_bind);
-    }
+    Delegate(FuncPtrT function_to_bind) { bind(function_to_bind); }
 
     template<
     class T,
@@ -411,22 +364,10 @@ public:
         return operator=(static_cast<FuncPtrT>(a_Functor));
     }
 
-    bool operator==(const SelfType& other) const
-    {
-        return m_Closure == other.m_Closure;
-    }
-    bool operator!=(const SelfType& other) const
-    {
-        return m_Closure != other.m_Closure;
-    }
-    bool operator<(const SelfType& other) const
-    {
-        return m_Closure < other.m_Closure;
-    }
-    bool operator>(const SelfType& other) const
-    {
-        return other.m_Closure < m_Closure;
-    }
+    bool operator==(const SelfType& other) const { return m_Closure == other.m_Closure; }
+    bool operator!=(const SelfType& other) const { return m_Closure != other.m_Closure; }
+    bool operator<(const SelfType& other) const { return m_Closure < other.m_Closure; }
+    bool operator>(const SelfType& other) const { return other.m_Closure < m_Closure; }
 
     template<class t_Ty, class Y>
     Delegate(Y* pthis, R (t_Ty::*function_to_bind)(Params...))
@@ -462,56 +403,23 @@ public:
         m_Closure.bindF(this, &SelfType::callStaticF, function_to_bind);
     }
 
-    R operator()(Params... ps) const
-    {
-        return (m_Closure.getThis()->*(m_Closure.getMFPtr()))(((Params)ps)...);
-    }
+    R operator()(Params... ps) const { return (m_Closure.getThis()->*(m_Closure.getMFPtr()))(((Params)ps)...); }
 
-    FunctorID getID() const
-    {
-        return getOpaque().getID();
-    }
+    FunctorID getID() const { return getOpaque().getID(); }
 
 public:
     // necessary to allow ==0 to work despite the safe_bool idiom
-    inline bool operator==(FuncPtrT funcptr)
-    {
-        return m_Closure.contains(funcptr);
-    }
-    inline bool operator!=(FuncPtrT funcptr)
-    {
-        return !m_Closure.contains(funcptr);
-    }
-    inline bool operator!() const
-    {
-        return !m_Closure;
-    }
-    operator bool() const
-    {
-        return !!m_Closure;
-    }
-    inline bool empty() const
-    {
-        return !m_Closure;
-    }
-    void clear()
-    {
-        m_Closure.clear();
-    }
-    const OpaqueDelegate& getOpaque() const
-    {
-        return m_Closure;
-    }
-    void setOpaque(const OpaqueDelegate& any)
-    {
-        m_Closure.copyFrom(this, any);
-    }
+    inline bool           operator==(FuncPtrT funcptr) { return m_Closure.contains(funcptr); }
+    inline bool           operator!=(FuncPtrT funcptr) { return !m_Closure.contains(funcptr); }
+    inline bool           operator!() const { return !m_Closure; }
+                          operator bool() const { return !!m_Closure; }
+    inline bool           empty() const { return !m_Closure; }
+    void                  clear() { m_Closure.clear(); }
+    const OpaqueDelegate& getOpaque() const { return m_Closure; }
+    void                  setOpaque(const OpaqueDelegate& any) { m_Closure.copyFrom(this, any); }
 
 private:
-    R callStaticF(Params... ps) const
-    {
-        return (*(m_Closure.getStaticFP()))(((Params)ps)...);
-    }
+    R callStaticF(Params... ps) const { return (*(m_Closure.getStaticFP()))(((Params)ps)...); }
 };
 
 template<class t_Ty, class Y, class R, class... Params>

@@ -30,7 +30,9 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/Flags.hxx>
+#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -40,6 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("reflection")
 
         #if PHANTOM_NOT_TEMPLATE
+        PHANTOM_REGISTER(Functions) { this_().function<void(StringView, StringBuffer&, ::phantom::lang::LanguageElement *)>("conversionOperatorNameNormalizer", conversionOperatorNameNormalizer);}
         PHANTOM_REGISTER(Enums) { this_().enum_<Access>().values({
             {"Undefined",Access::Undefined},
             {"Public",Access::Public},

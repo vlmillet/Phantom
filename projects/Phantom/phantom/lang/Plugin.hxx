@@ -23,7 +23,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -36,7 +35,6 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Plugin)
         {
-            using Plugins = typedef_< phantom::lang::Plugins>;
             using StringView = typedef_< phantom::StringView>;
             this_()
         

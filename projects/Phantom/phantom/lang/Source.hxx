@@ -21,7 +21,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
 #include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/using>
@@ -29,7 +28,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/ArrayView.hxx>
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
@@ -133,8 +131,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)
         
         .public_()
-            .signal("sourceStreamChanged", &_::sourceStreamChanged)
-            .signal("buildSucceeded", &_::buildSucceeded)
+            .field("sourceStreamChanged", &_::sourceStreamChanged)
+            .field("buildSucceeded", &_::buildSucceeded)
         
         .protected_()
             .field("m_pSourceStream", &_::m_pSourceStream)

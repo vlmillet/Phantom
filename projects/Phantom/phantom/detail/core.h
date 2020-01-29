@@ -42,10 +42,10 @@
 #    endif // Q_MOC_RUN
 
 /* ******************** PHANTOM ******************* */
-#    include <phantom/detail/fwd.h>
 #    include <phantom/detail/macros.h>
 #    include <phantom/detail/memory.h>
 #    include <phantom/detail/typedefs.h>
+#    include <phantom/fwd.h>
 #    include <phantom/plugin.h>
 
 namespace phantom
@@ -70,13 +70,6 @@ PHANTOM_FORCEINLINE size_t currentModuleHandle()
 #    endif
 }
 } // namespace
-
-PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
-                                                             lang::LanguageElement* a_pScope);
-
-namespace lang
-{
-}
 
 } // namespace phantom
 
@@ -138,12 +131,12 @@ enum class MessageType
 
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
                                                                          const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool warning   PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                         const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool error     PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                         const char* format, ...);
-PHANTOM_EXPORT_PHANTOM void log       PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
-                                                                         const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                       const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                     const char* format, ...);
+PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
+                                                                   const char* format, ...);
 
 PHANTOM_EXPORT_PHANTOM bool isMainThread();
 

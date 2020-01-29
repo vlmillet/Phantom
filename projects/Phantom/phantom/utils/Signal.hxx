@@ -60,16 +60,15 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(), default_>()
             )
             .PHANTOM_T method<void()>("clear", &_::clear)
-            /// missing symbol(s) reflection (phantom::FunctorID) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<FunctorID(FunctorType const&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::FunctorID) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<FunctorID(FunctorType&&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::FunctorID, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            .PHANTOM_T method<FunctorID(OpaqueDynDelegate&&)>("connect", &_::connect)
+            .PHANTOM_T method<FunctorID(OpaqueDynDelegate const&)>("connect", &_::connect)
+            .PHANTOM_T method<FunctorID(FunctorType const&)>("connect", &_::connect)
+            .PHANTOM_T method<FunctorID(FunctorType&&)>("connect", &_::connect)
+            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<FunctorID(const Delegate<void (Parms...)>&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::FunctorID, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<FunctorID(Delegate<void (Parms...)>&&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::FunctorID) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<void(FunctorID)>("disconnect", &_::disconnect)
+            .PHANTOM_T method<void(FunctorID)>("disconnect", &_::disconnect)
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<void(const Delegate<void (Parms...)>&)>("disconnect", &_::disconnect)
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files

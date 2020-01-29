@@ -7,6 +7,7 @@
 #pragma once
 
 #include <phantom/detail/core.h>
+#include <phantom/lang/reflection_fwd.h>
 #include <phantom/thread/RecursiveSpinMutex.h>
 #include <phantom/utils/Flags.h>
 
@@ -18,6 +19,9 @@ namespace phantom
 {
 namespace lang
 {
+PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
+                                                             lang::LanguageElement* a_pScope);
+
 enum class Access
 {
     Undefined,
@@ -132,7 +136,7 @@ HAUNT_PAUSE;
 
 #define PHANTOM_DECLARE_META_CLASS(_type_)                                                                             \
 public:                                                                                                                \
-    static phantom::lang::Class* MetaClass();                                                                    \
+    static phantom::lang::Class* MetaClass();                                                                          \
                                                                                                                        \
 private:
 
@@ -143,10 +147,7 @@ public:                                                                         
 private:
 
 #define PHANTOM_DEFINE_META_CLASS(_type_)                                                                              \
-    phantom::lang::Class* _type_::MetaClass()                                                                    \
-    {                                                                                                                  \
-        return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta();                                             \
-    }
+    phantom::lang::Class* _type_::MetaClass() { return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta(); }
 
 PHANTOM_EXPORT_PHANTOM void initializeSystem();
 PHANTOM_EXPORT_PHANTOM void releaseSystem();

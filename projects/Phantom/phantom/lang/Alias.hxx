@@ -22,7 +22,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>

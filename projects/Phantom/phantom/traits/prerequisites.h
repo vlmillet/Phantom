@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <phantom/detail/fwd.h>
+#include <phantom/fwd.h>
 
 /// @cond ADVANCED
 
@@ -289,20 +289,14 @@ namespace phantom
 template<typename T>
 struct move_if_rvalue
 {
-    PHANTOM_FORCEINLINE static T apply(T a)
-    {
-        return a;
-    }
+    PHANTOM_FORCEINLINE static T apply(T a) { return a; }
 };
 
 #if PHANTOM_HAS_RVALUE_REFERENCES
 template<typename T>
 struct move_if_rvalue<T&&>
 {
-    PHANTOM_FORCEINLINE static T&& apply(const T& a)
-    {
-        return (T &&) a;
-    }
+    PHANTOM_FORCEINLINE static T&& apply(const T& a) { return (T &&) a; }
 };
 #endif
 } // namespace phantom

@@ -57,7 +57,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<bool() const>("operator bool", &_::operator notypedef<bool>)
             .method<bool(const OpaqueDynDelegate&) const>("operator==", &_::operator==)
             .method<bool(const OpaqueDynDelegate&) const>("operator!=", &_::operator!=)
-            /// missing symbol(s) reflection (phantom::FunctorID) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<FunctorID() const>("getID", &_::getID)
             .method<void(void**) const>("call", &_::call)
             .method<void(void**, void*) const>("call", &_::call)

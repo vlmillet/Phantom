@@ -20,7 +20,7 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
+#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
@@ -28,7 +28,6 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallMap.hxx>
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -100,9 +99,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void()>("markUpToDate", &_::markUpToDate)
         
         .public_()
-            .signal("packageAdded", &_::packageAdded)
-            .signal("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
-            .signal("changed", &_::changed)
+            .field("packageAdded", &_::packageAdded)
+            .field("packageAboutToBeRemoved", &_::packageAboutToBeRemoved)
+            .field("changed", &_::changed)
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)

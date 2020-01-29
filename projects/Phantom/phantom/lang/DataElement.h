@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/fwd.h>
+#include <phantom/fwd.h>
 /* ************* Class Declarations ************** */
 /* *********************************************** */
 
@@ -24,15 +24,10 @@ public:
     virtual void   setOffset(size_t a_uiOffset) = 0;
     virtual void   fetchFields(Fields& a_Out) const = 0;
 
-    Symbol* asSymbol() const
-    {
-        return m_pThisElement;
-    }
+    Symbol* asSymbol() const { return m_pThisElement; }
 
 protected:
-    DataElement(Symbol* a_pThis) : m_pThisElement(a_pThis)
-    {
-    }
+    DataElement(Symbol* a_pThis) : m_pThisElement(a_pThis) {}
 
 private:
     Symbol* m_pThisElement;

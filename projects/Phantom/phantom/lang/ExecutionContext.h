@@ -8,7 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/detail/VirtualDelete.h>
-#include <phantom/detail/core.h>
+#include <phantom/lang/reflection.h>
 #include <phantom/utils/SmallVector.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
@@ -26,20 +26,14 @@ public:
     static void              Pop();
     static ExecutionContext* Current();
 
-    ExecutionContext()
-    {
-        m_resultPointers[0] = nullptr;
-    }
+    ExecutionContext() { m_resultPointers[0] = nullptr; }
     ~ExecutionContext();
     enum
     {
         e_max_calls = 1024
     };
-    void* resultPointer()
-    {
-        return m_resultPointers[m_resultPointersIndex];
-    }
-    void pushResultPointer(void* a_pAddress)
+    void* resultPointer() { return m_resultPointers[m_resultPointersIndex]; }
+    void  pushResultPointer(void* a_pAddress)
     {
         PHANTOM_ASSERT(m_resultPointersIndex < e_max_calls - 1);
         m_resultPointers[++m_resultPointersIndex] = (a_pAddress);

@@ -16,7 +16,12 @@
 namespace phantom
 {
 template<class Sign, class SignalMutexType>
-class Signal;
+class Signal
+#if defined(__HAUNT__)
+{
+}
+#endif
+;
 
 PHANTOM_EXPORT_PHANTOM void* Emitter();
 
@@ -107,6 +112,9 @@ public:
     {
         return connect(FunctorType(a_Functor, a_pLambdaDiscriminant));
     }
+
+    FunctorID connect(OpaqueDynDelegate&& a_ODynDelegate) { return connect(FunctorType(std::move(a_ODynDelegate))); }
+    FunctorID connect(OpaqueDynDelegate const& a_ODynDelegate) { return connect(FunctorType(a_ODynDelegate)); }
 
     // @brief connects a void Functor with same parameters
     FunctorID connect(FunctorType const& a_Functor) { return _connect(a_Functor.getID(), a_Functor); }

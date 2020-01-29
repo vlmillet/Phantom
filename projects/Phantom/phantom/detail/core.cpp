@@ -8,9 +8,9 @@
 #include "core.h"
 
 #include <iostream>
-#include <phantom/plugin>
 #include <phantom/lang/SourceFile.h>
 #include <phantom/lang/registration/Main.h>
+#include <phantom/plugin>
 #include <phantom/utils/StringUtil.h>
 #include <sstream>
 
@@ -172,16 +172,16 @@ void staticAllocatedDeleteEx(RawPlacement<T>& a_Placement)
 }
 
 static lang::Main* g_instance;
-static StringView        g_pSource;
-static StringView        g_pPackage;
+static StringView  g_pSource;
+static StringView  g_pPackage;
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
 static lang::LanguageElements* g_elements;
 #endif
-static MessageReportFunc  g_assert_func;
-static MessageReportFunc  g_warning_func;
-static MessageReportFunc  g_error_func;
-static LogFunc            g_LogFunc;
-lang::ClassHookFunc g_InstanceHook_func;
+static MessageReportFunc g_assert_func;
+static MessageReportFunc g_warning_func;
+static MessageReportFunc g_error_func;
+static LogFunc           g_LogFunc;
+lang::ClassHookFunc      g_InstanceHook_func;
 
 typedef SmallMap<String, lang::Package*> PackageMap;
 
@@ -191,17 +191,16 @@ RawPlacement<lang::Namespace>        g_pGlobalNamespace;
 static RawPlacement<lang::Namespace> g_pPhantomNamespace;
 static RawPlacement<lang::Namespace> g_pStdNamespace;
 static RawPlacement<lang::Namespace> g_pReflectionNamespace;
-static RawPlacement<Strings>               g_pMetaDataNames;
+static RawPlacement<Strings>         g_pMetaDataNames;
 
 static std::thread::id g_MainThreadId = std::this_thread::get_id();
 
-static void*               g_typeOf_cycling_address_workaround_ptr;
+static void*         g_typeOf_cycling_address_workaround_ptr;
 static lang::Module* g_module;
 
 RawPlacement<lang::Application> g_pApplication;
 
-PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, StringView a_File, int a_Line,
-                                                              int a_Tag)
+PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, StringView a_File, int a_Line, int a_Tag)
 {
     _PHNTM_StaticGlobalRegistrer* pReg =
     dynamic_initializer_()->moduleRegistrationInfo(a_ModuleHandle)->findRegistrer(a_File, a_Line, a_Tag);
@@ -334,9 +333,8 @@ void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, 
     registerTypeHash(a_ModuleHandle, a_Hash, a_pType);
     if (!isTemplateInstance)
     {
-        phantom::lang::Symbol* pNamingScope = a_ScopeName.empty()
-        ? lang::Namespace::Global()
-        : lang::Application::Get()->findCppSymbol(a_ScopeName);
+        phantom::lang::Symbol* pNamingScope =
+        a_ScopeName.empty() ? lang::Namespace::Global() : lang::Application::Get()->findCppSymbol(a_ScopeName);
         PHANTOM_ASSERT(pNamingScope, "scope '%.*s' has not been registered => check your type's nesting class",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_ScopeName));
         PHANTOM_ASSERT(pNamingScope->asScope(), "'%.*s' is not a valid C++ scope (class, namespace, etc...)",
@@ -534,9 +532,9 @@ void DynamicCppInitializerH::installModules()
 
     if (!m_bPhantomInstalled)
     {
-        auto phantomModuleIt =
-        std::find_if(infos.begin(), infos.end(),
-                     [](lang::ModuleRegistrationInfo* info) -> bool { return info->m_Name == "Phantom"; });
+        auto phantomModuleIt = std::find_if(infos.begin(), infos.end(), [](lang::ModuleRegistrationInfo* info) -> bool {
+            return info->m_Name == "Phantom";
+        });
         PHANTOM_ASSERT(phantomModuleIt != infos.end());
         if (phantomModuleIt != infos.begin())
         {
@@ -584,7 +582,7 @@ void DynamicCppInitializerH::installModules()
 
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
     PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() OR lang::Application::Get()->getMainModule() ==
-                   nullptr OR                                    modulesToInstallCount == 1);
+                   nullptr OR                              modulesToInstallCount == 1);
 
     // no module to install
     if (modulesToInstallCount == 0)
@@ -724,7 +722,7 @@ lang::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(
 lang::ModuleRegistrationInfo* DynamicCppInitializerH::moduleRegistrationInfo(size_t a_ModuleHandle)
 {
     lang::ModuleRegistrationInfo* info = nullptr;
-    size_t                              uninstalledModuleCount = 0;
+    size_t                        uninstalledModuleCount = 0;
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
         if (it->m_ModuleHandle == a_ModuleHandle)
@@ -772,7 +770,7 @@ lang::Package* DynamicCppInitializerH::package(lang::Module* a_pModule, StringVi
 lang::Module* DynamicCppInitializerH::findSourceInModules(StringView a_strFilePath, Strings& a_Words)
 {
     lang::Module* pBestModule = nullptr;
-    size_t              bestScore = 0;
+    size_t        bestScore = 0;
     for (auto it = m_ModuleRegistrationInfos.begin(); it != m_ModuleRegistrationInfos.end(); ++it)
     {
         Strings words;
@@ -794,8 +792,7 @@ lang::Module* DynamicCppInitializerH::findSourceInModules(StringView a_strFilePa
     return pBestModule;
 }
 
-size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Strings& words,
-                                                  lang::Module* a_pModule)
+size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule)
 {
     PHANTOM_ASSERT(a_pModule);
     PHANTOM_ASSERT(a_strFilePath.size());
@@ -845,7 +842,7 @@ size_t DynamicCppInitializerH::findSourceInModule(StringView a_strFilePath, Stri
 }
 
 phantom::lang::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile, StringView a_strPackage,
-                                                                  StringView a_strSource)
+                                                            StringView a_strSource)
 {
     lang::Module* pModule = lang::detail::currentModule();
     PHANTOM_ASSERT(pModule);
@@ -930,7 +927,7 @@ PHANTOM_EXPORT_PHANTOM bool installed()
 
 void lang::LanguageElement::Register(phantom::lang::LanguageElement*
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
-                                           pElement
+                                     pElement
 #endif
 )
 {
@@ -941,7 +938,7 @@ void lang::LanguageElement::Register(phantom::lang::LanguageElement*
 
 void lang::LanguageElement::Unregister(phantom::lang::LanguageElement*
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
-                                             pElement
+                                       pElement
 #endif
 )
 {
@@ -1178,26 +1175,6 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
     va_end(args);
 }
 
-PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
-                                                             lang::LanguageElement* a_pScope)
-{
-    if (a_strName.find("operator ") == 0)
-    {
-        lang::Type* pType = a_strName.find_first_of('.') == String::npos
-        ? lang::Application::Get()->findCppType(a_strName.substr(9),
-                                                      a_pScope) // no dot => c++ name search
-        : lang::Application::Get()->findType(a_strName.substr(9),
-                                                   a_pScope); // dot => phantom unique name search
-        if (pType)
-        {
-            a_Buf += "operator ";
-            pType->getUniqueName(a_Buf);
-            return;
-        }
-    }
-    a_Buf += a_strName;
-}
-
 void lang::Main::setAssertFunc(MessageReportFunc a_func)
 {
     phantom::detail::g_assert_func = a_func;
@@ -1219,7 +1196,7 @@ void lang::Main::setWarningFunc(MessageReportFunc a_func)
 }
 
 lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
-                       CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
+                 CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
 

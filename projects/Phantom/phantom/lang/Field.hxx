@@ -25,7 +25,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -41,7 +40,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using Fields = typedef_< phantom::lang::Fields>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::ValueMember, ::phantom::lang::DataElement>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -67,7 +66,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void*, void*) const, virtual_|override_>("setValueMoved", &_::setValueMoved)
             .method<Field*() const, virtual_|override_>("asField", &_::asField)
             .method<DataElement*() const, virtual_|override_>("asDataElement", &_::asDataElement)
-            .method<void(Fields&) const, virtual_|override_>("fetchFields", &_::fetchFields)
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<void(Fields&) const, override_>("fetchFields", &_::fetchFields)
         
         .protected_()
             .constructor<void(Type*, StringView, size_t, uint, Modifiers, uint)>()

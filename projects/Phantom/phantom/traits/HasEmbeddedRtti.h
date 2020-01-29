@@ -8,7 +8,7 @@
 
 #include "HasField.h"
 
-#include <phantom/detail/fwd.h>
+#include <phantom/fwd.h>
 
 PHANTOM_DEFINE_HAS_FIELD_NO_BASE_MACRO_PARAM(rtti);
 

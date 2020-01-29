@@ -7,7 +7,7 @@
 #pragma once
 
 #include <phantom/alignof>
-#include <phantom/detail/fwd.h>
+#include <phantom/fwd.h>
 
 HAUNT_STOP;
 

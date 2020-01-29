@@ -2,7 +2,7 @@
 
 // haunt {
 
-#include "CppSymbolParser.h"
+#include "fwd.h"
 
 #if defined(_MSC_VER)
 #   pragma warning(push, 0)
@@ -17,34 +17,31 @@
 #include <phantom/source>
 #include <phantom/struct>
 #include <phantom/method>
+#include <phantom/typedef>
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/StringView.hxx>
+#include "utils/SmallVector.hxx"
 
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace lang {
-PHANTOM_PACKAGE("phantom.lang")
-    PHANTOM_SOURCE("CppSymbolParser")
+PHANTOM_PACKAGE("phantom")
+    PHANTOM_SOURCE("fwd")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_STRUCT(CppSymbolParser)
+        PHANTOM_STRUCT(NullMutex)
         {
-            using StringBuffer = typedef_< phantom::StringBuffer>;
-            using StringView = typedef_< phantom::StringView>;
-            using Symbols = typedef_< phantom::lang::Symbols>;
             this_()
-            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
-            .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
+            .method<void()>("lock", &_::lock)
+            .method<void()>("unlock", &_::unlock)
+            .method<bool()>("try_lock", &_::try_lock)
             ;
         }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<Variants>("Variants"); }
         #endif // PHANTOM_NOT_TEMPLATE
-    PHANTOM_END("CppSymbolParser")
-PHANTOM_END("phantom.lang")
-}
+    PHANTOM_END("fwd")
+PHANTOM_END("phantom")
 }
 
 #if defined(_MSC_VER)

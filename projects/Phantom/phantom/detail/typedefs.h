@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include "fwd.h"
-
 #include <cassert>
 #include <cstdint>
+#include <phantom/fwd.h>
 
 HAUNT_SOURCE("phantom.StringView");
 namespace phantom
@@ -200,31 +199,13 @@ HAUNT_RESUME;
 
 struct hex64
 {
-    hex64() : value(0)
-    {
-    }
-    inline explicit hex64(uint64 x) : value(x)
-    {
-    }
-    inline hex64(const hex64& x) : value(x.value)
-    {
-    }
-    explicit operator uint64() const
-    {
-        return value;
-    }
-    inline bool operator<(const hex64& other) const
-    {
-        return value < other.value;
-    }
-    inline bool operator==(const hex64& other) const
-    {
-        return value == other.value;
-    }
-    inline bool operator!=(const hex64& other) const
-    {
-        return value != other.value;
-    }
+    hex64() : value(0) {}
+    inline explicit hex64(uint64 x) : value(x) {}
+    inline hex64(const hex64& x) : value(x.value) {}
+    explicit    operator uint64() const { return value; }
+    inline bool operator<(const hex64& other) const { return value < other.value; }
+    inline bool operator==(const hex64& other) const { return value == other.value; }
+    inline bool operator!=(const hex64& other) const { return value != other.value; }
 
 protected:
     uint64 value;
@@ -247,12 +228,8 @@ struct RttiMapData;
 /// \brief  Buffer representation with memory and size.
 struct BufferData
 {
-    BufferData() : memory(0), size(0)
-    {
-    }
-    BufferData(byte* m, size_t s) : memory(m), size(s)
-    {
-    }
+    BufferData() : memory(0), size(0) {}
+    BufferData(byte* m, size_t s) : memory(m), size(s) {}
     byte*  memory;
     size_t size;
 };
@@ -266,19 +243,14 @@ typedef void (*DynamicDeleteFunc)(void*);
 
 struct vtable_info
 {
-    vtable_info() : offset(0xffffffff), member_functions(NULL), count(0xffffffff)
-    {
-    }
+    vtable_info() : offset(0xffffffff), member_functions(NULL), count(0xffffffff) {}
 
     vtable_info(size_t a_offset, void** a_member_functions, size_t a_count)
         : offset(a_offset), member_functions(a_member_functions), count(a_count)
     {
     }
 
-    bool operator<(const vtable_info& other) const
-    {
-        return offset < other.offset;
-    }
+    bool operator<(const vtable_info& other) const { return offset < other.offset; }
 
     size_t offset;
     void** member_functions;

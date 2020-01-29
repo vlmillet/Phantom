@@ -19,7 +19,7 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/signal>
+#include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
@@ -73,8 +73,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
         
         .public_()
-            .signal("packageFolderAdded", &_::packageFolderAdded)
-            .signal("packageFolderAboutToBeRemoved", &_::packageFolderAboutToBeRemoved)
+            .field("packageFolderAdded", &_::packageFolderAdded)
+            .field("packageFolderAboutToBeRemoved", &_::packageFolderAboutToBeRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

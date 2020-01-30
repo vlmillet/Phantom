@@ -94,35 +94,29 @@ struct UniqueTypeNameOf;
     template<>                                                                                                         \
     struct UniqueTypeNameOf<t>                                                                                         \
     {                                                                                                                  \
-        static const char* name()                                                                                      \
-        {                                                                                                              \
-            return #n;                                                                                                 \
-        }                                                                                                              \
-        static void name(StringBuffer& a_Buf)                                                                          \
-        {                                                                                                              \
-            a_Buf += #n;                                                                                               \
-        }                                                                                                              \
+        static const char* name() { return #n; }                                                                       \
+        static void        name(StringBuffer& a_Buf) { a_Buf += #n; }                                                  \
     };
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(void, @ void);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char, @ char);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned char, @uchar);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(signed char, @schar);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(short, @ short);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned short, @ushort);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(int, @ int);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned int, @uint);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long, @ long);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned long, @ulong);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long long, @longlong);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned long long, @ulonglong);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(float, @ float);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(double, @ double);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long double, @longdouble);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(bool, @ bool);
-_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(std::nullptr_t, @nullptr_t);
-PHANTOM_IF_WCHAR_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(wchar_t, @wchar_t));
-PHANTOM_IF_CHAR16_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char16_t, @ char16_t));
-PHANTOM_IF_CHAR32_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char32_t, @ char32_t));
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(void, void);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char, char);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned char, unsigned char);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(signed char, signed char);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(short, short);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned short, unsigned short);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(int, int);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned int, unsigned int);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long, long);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned long, unsigned long);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long long, long long);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(unsigned long long, unsigned long long);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(float, float);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(double, double);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(long double, long double);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(bool, bool);
+_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(std::nullptr_t, std.nullptr_t);
+PHANTOM_IF_WCHAR_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(wchar_t, wchar_t));
+PHANTOM_IF_CHAR16_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char16_t, char16_t));
+PHANTOM_IF_CHAR32_T(_PHNTM_SPEC_UNIQUE_TYPE_NAME_OF(char32_t, char32_t));
 
 template<typename t_Ty>
 class PrimitiveTypeT : public PrimitiveType
@@ -131,8 +125,8 @@ class PrimitiveTypeT : public PrimitiveType
 
 public:
     PrimitiveTypeT(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
-        : PrimitiveType(::phantom::lang::detail::PrimitiveTypeKindH<t_Ty>::value, a_strName, a_uiSize,
-                        a_uiAlignment, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+        : PrimitiveType(::phantom::lang::detail::PrimitiveTypeKindH<t_Ty>::value, a_strName, a_uiSize, a_uiAlignment,
+                        a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
 
@@ -140,18 +134,9 @@ public:
     {
         TypeInfosOf<t_Ty>::object().qualifiedDecoratedName(a_Buf);
     }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        TypeInfosOf<t_Ty>::object().qualifiedName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        TypeInfosOf<t_Ty>::object().decoratedName(a_Buf);
-    }
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        UniqueTypeNameOf<t_Ty>::name(a_Buf);
-    }
+    void getQualifiedName(StringBuffer& a_Buf) const override { TypeInfosOf<t_Ty>::object().qualifiedName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { TypeInfosOf<t_Ty>::object().decoratedName(a_Buf); }
+    void getUniqueName(StringBuffer& a_Buf) const override { UniqueTypeNameOf<t_Ty>::name(a_Buf); }
 
     Type* asNullptrType() const override
     {
@@ -178,7 +163,7 @@ public:
     {
         return _PHNTM_HAS_UNSIGNED
         ? (static_cast<Type*>(PHANTOM_TYPEOF(PHANTOM_TYPENAME SafeMakeSigned<t_Ty>::type)) == this)
-        : std::is_integral<t_Ty>::value;
+        : false;
     }
 
     bool isUnsignedInteger() const override

@@ -18,12 +18,11 @@
 #include <phantom/class>
 #include <phantom/method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallVector.hxx>
+#include <phantom/thread/ThreadSafeArrayView.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -35,18 +34,13 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(InstanceCache)
         {
-            using VoidPtrs = typedef_< phantom::VoidPtrs>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
         
         .protected_()
             .constructor<void(Class*)>()
         
         .public_()
-            .method<VoidPtrs const&() const>("getInstances", &_::getInstances)
-        
-        .protected_()
-            .field("m_Instances", &_::m_Instances)
-            .field("m_pClass", &_::m_pClass)
+            .method<ThreadSafeArrayView<void*, SpinMutex>() const>("getInstances", &_::getInstances)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

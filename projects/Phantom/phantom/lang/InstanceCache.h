@@ -9,16 +9,15 @@
 /* ****************** Includes ******************* */
 #include <phantom/lang/TypeOf.h>
 #include <phantom/register>
+#include <phantom/thread/SpinMutex.h>
+#include <phantom/thread/ThreadSafeArrayView.h>
 #include <phantom/utils/ArrayView.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
 
 #define PHANTOM_INSTANCE_CACHE(T, ...)                                                                                 \
-    PHANTOM_REGISTER(PostClassTypes)                                                                                   \
-    {                                                                                                                  \
-        PHANTOM_CLASSOF(T)->getOrCreateInstanceCache();                                                                \
-    }
+    PHANTOM_REGISTER(PostClassTypes) { PHANTOM_CLASSOF(T)->getOrCreateInstanceCache(); }
 
 namespace phantom
 {
@@ -39,24 +38,25 @@ protected:
 public:
     ~InstanceCache();
 
-    VoidPtrs const& getInstances() const
+    ThreadSafeArrayView<void*, SpinMutex> getInstances() const
     {
-        return m_Instances;
+        return MakeThreadSafeArrayView(m_Instances.data(), m_Instances.size(), m_Mutex);
     }
 
     template<class T>
-    ArrayView<T*> getInstancesReinterpretedAs() const
+    ThreadSafeArrayView<T*, SpinMutex> getInstancesReinterpretedAs() const
     {
-        return ArrayView<T*>((T**)m_Instances.data(), m_Instances.size());
+        return MakeThreadSafeArrayView((T**)m_Instances.data(), m_Instances.size(), m_Mutex);
     }
 
 private:
     void kindCreated(void* a_pInstance);
     void kindDestroying(void* a_pInstance);
 
-protected:
-    VoidPtrs m_Instances;
-    Class*   m_pClass;
+private:
+    VoidPtrs          m_Instances;
+    Class*            m_pClass;
+    mutable SpinMutex m_Mutex;
 };
 
 } // namespace lang

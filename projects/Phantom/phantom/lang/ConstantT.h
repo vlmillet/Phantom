@@ -53,33 +53,33 @@ public:
 
     bool isSame(Symbol* a_pObject) const override
     {
-        Constant* pOther = a_pObject->asConstant();
-        if (pOther == this)
-            return true;
-        if (pOther->asPlaceholder())
-            return false;
-        if (pOther == nullptr)
-            return false;
-        Type* pThisType = getValueType();
-        Type* pOtherType = pOther->getValueType();
-        if (pOtherType->isSame(pThisType))
+        if (Constant* pOther = a_pObject->asConstant())
         {
-            void* val = alloca(pOtherType->getSize());
-            pOther->getValue(val);
-            return pThisType->equal(&m_Value, val);
-        }
-        else if (pOtherType->asIntegralType() && pThisType->asIntegralType()) // both integers
-        {
-            size_t max = std::max PHANTOM_PREVENT_MACRO_SUBSTITUTION(pThisType->getSize(), pOtherType->getSize());
+            if (pOther == this)
+                return true;
+            if (pOther->asPlaceholder())
+                return false;
+            Type* pThisType = getValueType();
+            Type* pOtherType = pOther->getValueType();
+            if (pOtherType->isSame(pThisType))
+            {
+                void* val = alloca(pOtherType->getSize());
+                pOther->getValue(val);
+                return pThisType->equal(&m_Value, val);
+            }
+            else if (pOtherType->asIntegralType() && pThisType->asIntegralType()) // both integers
+            {
+                size_t max = std::max PHANTOM_PREVENT_MACRO_SUBSTITUTION(pThisType->getSize(), pOtherType->getSize());
 
-            void* valThis = alloca(max);
-            memset(valThis, 0, max);
-            this->getValue(valThis);
+                void* valThis = alloca(max);
+                memset(valThis, 0, max);
+                this->getValue(valThis);
 
-            void* valOther = alloca(max);
-            memset(valOther, 0, max);
-            pOther->getValue(valOther);
-            return memcmp(valThis, valOther, max) == 0;
+                void* valOther = alloca(max);
+                memset(valOther, 0, max);
+                pOther->getValue(valOther);
+                return memcmp(valThis, valOther, max) == 0;
+            }
         }
         return false;
     }

@@ -15,6 +15,56 @@ LValueReference::LValueReference(Type* a_pReferencedType) : Reference(TypeKind::
 {
 }
 
+LValueReference* LValueReference::asLValueReference() const
+{
+    return const_cast<LValueReference*>(this);
+}
+
+LValueReference* LValueReference::asClassLValueReference() const
+{
+    return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<LValueReference*>(this) : nullptr;
+}
+
+LValueReference* LValueReference::asConstClassLValueReference() const
+{
+    return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<LValueReference*>(this) : nullptr;
+}
+
+Type* LValueReference::addPointer() const
+{
+    return m_pUnderlyingType->addPointer();
+}
+
+Type* LValueReference::addLValueReference() const
+{
+    return const_cast<LValueReference*>(this);
+}
+
+Type* LValueReference::addRValueReference() const
+{
+    return const_cast<LValueReference*>(this);
+}
+
+Type* LValueReference::removeLValueReference() const
+{
+    return m_pUnderlyingType;
+}
+
+Type* LValueReference::removeAllConst() const
+{
+    return m_pUnderlyingType->removeAllConst()->makeLValueReference();
+}
+
+Type* LValueReference::removeAllQualifiers() const
+{
+    return m_pUnderlyingType->removeAllQualifiers()->makeLValueReference();
+}
+
+Type* LValueReference::replicate(Type* a_pInput) const
+{
+    return m_pUnderlyingType->replicate(a_pInput)->addLValueReference();
+}
+
 bool LValueReference::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_DeducedConstants) const
 {
     if (a_pType->asLValueReference())

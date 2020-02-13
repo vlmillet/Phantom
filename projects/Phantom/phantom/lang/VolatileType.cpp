@@ -22,9 +22,7 @@ VolatileType::VolatileType(Type* a_pType)
     addReferencedElement(a_pType);
 }
 
-VolatileType::~VolatileType()
-{
-}
+VolatileType::~VolatileType() {}
 
 bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
@@ -61,7 +59,7 @@ Type* VolatileType::addConstVolatile() const
 
 Type* VolatileType::replicate(Type* a_pInput) const
 {
-    return m_pUnderlyingType->replicate(a_pInput->removeVolatile())->addVolatile();
+    return m_pUnderlyingType->replicate(a_pInput)->addVolatile();
 }
 
 void VolatileType::getUniqueName(StringBuffer& a_Buf) const

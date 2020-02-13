@@ -22,6 +22,11 @@ ConstType::ConstType(Type* a_pType)
     addReferencedElement(a_pType);
 }
 
+Type* ConstType::replicate(Type* a_pSource) const
+{
+    return m_pUnderlyingType->replicate(a_pSource)->addConst();
+}
+
 bool ConstType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
     if (a_pType->asConstType())

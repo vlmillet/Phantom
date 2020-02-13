@@ -45,7 +45,7 @@ Type* RValueReference::removeAllQualifiers() const
 
 Type* RValueReference::replicate(Type* a_pInput) const
 {
-    return m_pUnderlyingType->replicate(a_pInput->removeReference())->addRValueReference();
+    return m_pUnderlyingType->replicate(a_pInput)->addRValueReference();
 }
 
 bool RValueReference::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_DeducedConstants) const

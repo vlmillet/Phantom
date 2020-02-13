@@ -191,6 +191,9 @@ public:
         return connect(Functor<R(Parms...)>(a_pThis, _Signal::SlotCaster<R(Parms...)>::PHANTOM_T Cast<T>(a_Func)));
     }
 
+    void disconnect(OpaqueDynDelegate&& a_ODynDelegate) { return disconnect(FunctorType(std::move(a_ODynDelegate))); }
+    void disconnect(OpaqueDynDelegate const& a_ODynDelegate) { return disconnect(FunctorType(a_ODynDelegate)); }
+
     // @brief disconnects a lambda
     template<class T, class = typename FunctorType::template EnableIfCustomArg<T>>
     void disconnect(T&& a_Functor, void* a_pLambdaDiscriminant = nullptr)

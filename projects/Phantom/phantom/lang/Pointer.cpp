@@ -17,9 +17,7 @@ Pointer::Pointer(Type* a_pPointeeType)
 {
 }
 
-Pointer::~Pointer()
-{
-}
+Pointer::~Pointer() {}
 
 void Pointer::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
@@ -164,7 +162,7 @@ Type* Pointer::getUnderlyingType() const
 
 Type* Pointer::replicate(Type* a_pSource) const
 {
-    return m_pUnderlyingType->replicate(a_pSource->removePointer())->addPointer();
+    return m_pUnderlyingType->replicate(a_pSource)->addPointer();
 }
 
 void Pointer::assignment(void** a_pArgs, void* a_pOutput)

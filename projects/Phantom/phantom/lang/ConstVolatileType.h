@@ -42,55 +42,23 @@ public:
     /// \return return the type that became 'const volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getConstVolatiledType() const
-    {
-        return m_pUnderlyingType;
-    }
+    Type* getConstVolatiledType() const { return m_pUnderlyingType; }
 
-    Type* addConst() const override
-    {
-        return const_cast<ConstVolatileType*>(this);
-    }
-    Type* addVolatile() const override
-    {
-        return const_cast<ConstVolatileType*>(this);
-    }
-    virtual Type* addConstVolatile() const
-    {
-        return const_cast<ConstVolatileType*>(this);
-    }
+    Type*         addConst() const override { return const_cast<ConstVolatileType*>(this); }
+    Type*         addVolatile() const override { return const_cast<ConstVolatileType*>(this); }
+    virtual Type* addConstVolatile() const { return const_cast<ConstVolatileType*>(this); }
 
-    Type* removeConst() const override
-    {
-        return m_pUnderlyingType->makeVolatile();
-    }
-    Type* removeAllConst() const override
-    {
-        return m_pUnderlyingType->removeAllConst()->makeVolatile();
-    }
-    Type* removeVolatile() const override
-    {
-        return m_pUnderlyingType->makeConst();
-    }
-    Type* removeConstVolatile() const override
-    {
-        return m_pUnderlyingType;
-    }
+    Type* removeConst() const override { return m_pUnderlyingType->makeVolatile(); }
+    Type* removeAllConst() const override { return m_pUnderlyingType->removeAllConst()->makeVolatile(); }
+    Type* removeVolatile() const override { return m_pUnderlyingType->makeConst(); }
+    Type* removeConstVolatile() const override { return m_pUnderlyingType; }
 
-    Type* replicate(Type* a_pSource) const override
-    {
-        return m_pUnderlyingType->replicate(a_pSource->removeConstVolatile())->addConstVolatile();
-    }
+    Type* replicate(Type* a_pSource) const override;
 
-    ConstVolatileType* asConstVolatileType() const override
-    {
-        return const_cast<ConstVolatileType*>(this);
-    }
+    ConstVolatileType*         asConstVolatileType() const override { return const_cast<ConstVolatileType*>(this); }
     virtual ConstVolatileType* asConstVolatileClass() const
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass())
-        ? const_cast<ConstVolatileType*>(this)
-        : nullptr;
+        return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<ConstVolatileType*>(this) : nullptr;
     }
 
     bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const override;
@@ -104,18 +72,9 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    ConstVolatileType* createConstVolatileType() const override
-    {
-        return nullptr;
-    }
-    ConstType* createConstType() const override
-    {
-        return nullptr;
-    }
-    VolatileType* createVolatileType() const override
-    {
-        return nullptr;
-    }
+    ConstVolatileType* createConstVolatileType() const override { return nullptr; }
+    ConstType*         createConstType() const override { return nullptr; }
+    VolatileType*      createVolatileType() const override { return nullptr; }
 };
 
 } // namespace lang

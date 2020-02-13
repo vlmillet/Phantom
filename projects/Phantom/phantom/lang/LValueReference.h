@@ -33,62 +33,25 @@ protected:
     LValueReference(Type* a_pReferencedType);
 
 public:
-    LValueReference* asLValueReference() const override
-    {
-        return const_cast<LValueReference*>(this);
-    }
-    LValueReference* asClassLValueReference() const override
-    {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass())
-        ? const_cast<LValueReference*>(this)
-        : nullptr;
-    }
-    LValueReference* asConstClassLValueReference() const override
-    {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass())
-        ? const_cast<LValueReference*>(this)
-        : nullptr;
-    }
+    LValueReference* asLValueReference() const override;
+    LValueReference* asClassLValueReference() const override;
+    LValueReference* asConstClassLValueReference() const override;
 
-    Type* addPointer() const override
-    {
-        return m_pUnderlyingType->addPointer();
-    }
+    Type* addPointer() const override;
 
-    Type* addLValueReference() const override
-    {
-        return const_cast<LValueReference*>(this);
-    }
+    Type* addLValueReference() const override;
 
-    Type* addRValueReference() const override
-    {
-        return const_cast<LValueReference*>(this);
-    }
+    Type* addRValueReference() const override;
 
-    Type* removeLValueReference() const override
-    {
-        return m_pUnderlyingType;
-    }
+    Type* removeLValueReference() const override;
 
-    Type* removeAllConst() const override
-    {
-        return m_pUnderlyingType->removeAllConst()->makeLValueReference();
-    }
+    Type* removeAllConst() const override;
 
-    Type* removeAllQualifiers() const override
-    {
-        return m_pUnderlyingType->removeAllQualifiers()->makeLValueReference();
-    }
+    Type* removeAllQualifiers() const override;
 
-    Type* replicate(Type* a_pInput) const override
-    {
-        return m_pUnderlyingType->replicate(a_pInput->removeReference())->addLValueReference();
-    }
+    Type* replicate(Type* a_pInput) const override;
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
     bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_DeducedConstants) const override;
 

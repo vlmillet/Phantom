@@ -23,9 +23,7 @@ Array::Array(Type* a_pType, size_t a_uiCount)
 {
 }
 
-Array::~Array()
-{
-}
+Array::~Array() {}
 
 void Array::copyConstruct(void* a_pDest, void const* a_pSrc) const
 {
@@ -174,7 +172,7 @@ void Array::getFlattenedAggregateFields(AggregateFields& _aggregateFields) const
 
 Type* Array::replicate(Type* a_pInput) const
 {
-    return m_pUnderlyingType->replicate(a_pInput->removeArray())->addArray(m_uiCount);
+    return m_pUnderlyingType->replicate(a_pInput)->addArray(m_uiCount);
 }
 
 } // namespace lang

@@ -21,6 +21,11 @@ ConstVolatileType::ConstVolatileType(Type* a_pType)
     addReferencedElement(a_pType);
 }
 
+Type* ConstVolatileType::replicate(Type* a_pSource) const
+{
+    return m_pUnderlyingType->replicate(a_pSource)->addConstVolatile();
+}
+
 bool ConstVolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
     if (a_pType->asConstVolatileType())

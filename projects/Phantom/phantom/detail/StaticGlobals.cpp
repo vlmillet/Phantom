@@ -10,8 +10,9 @@ namespace phantom
 {
 namespace
 {
-    bool s_destroyedOnce;
-}
+bool s_destroyedOnce;
+bool s_releaseInProgress;
+} // namespace
 static Placement<SmallMap<void*, CleanupDelegate, 256>>& _CleanupMap(bool _construct = true)
 {
     static Placement<SmallMap<void*, CleanupDelegate, 256>> s_map;
@@ -45,8 +46,14 @@ bool StaticGlobals::TryUnregisterForCleanup(void* a_pAddr)
     return false;
 }
 
+bool StaticGlobals::ReleaseInProgress()
+{
+    return s_releaseInProgress;
+}
+
 void StaticGlobals::Release()
 {
+    s_releaseInProgress = true;
     for (auto& pair : *_CleanupMap())
     {
         pair.second(pair.first);

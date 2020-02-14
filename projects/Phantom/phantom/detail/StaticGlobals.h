@@ -25,6 +25,7 @@ public:
     static void RegisterForCleanup(void* a_pAddr, CleanupDelegate a_Delegate);
     static void UnregisterForCleanup(void* a_pAddr);
     static bool TryUnregisterForCleanup(void* a_pAddr);
+    static bool ReleaseInProgress();
     static void Release();
 };
 
@@ -48,46 +49,28 @@ public:
         }
         else
         {
-            PHANTOM_ASSERT(!m_Data);
+            PHANTOM_ASSERT(!StaticGlobals::ReleaseInProgress() || !m_Data);
         }
     }
 
-    T& operator*()
-    {
-        return *m_Data;
-    }
+    T& operator*() { return *m_Data; }
 
-    T const& operator*() const
-    {
-        return *m_Data;
-    }
+    T const& operator*() const { return *m_Data; }
 
-    T* operator->()
-    {
-        return m_Data;
-    }
+    T* operator->() { return m_Data; }
 
-    T const* operator->() const
-    {
-        return m_Data;
-    }
+    T const* operator->() const { return m_Data; }
 
-    operator T const*() const
-    {
-        return m_Data;
-    }
+    operator T const*() const { return m_Data; }
 
-    operator T*()
-    {
-        return m_Data;
-    }
+    operator T*() { return m_Data; }
 
     template<class... Args>
     void construct(Args... a_Args)
     {
-		m_Data.construct(a_Args...);
-		StaticGlobals::RegisterForCleanup(
-			&m_Data, CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
+        m_Data.construct(a_Args...);
+        StaticGlobals::RegisterForCleanup(
+        &m_Data, CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
     }
 
 private:

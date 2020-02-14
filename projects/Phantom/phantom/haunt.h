@@ -72,11 +72,10 @@
         [[clang::annotate(quotedString)]] // user one (end up in phantom::lang::Symbol::getAnnotations()
 #    define HAUNT_SLOT [[clang::annotate("haunt::slot")]]
 #    define HAUNT_STRUCTURE [[clang::annotate("haunt::structure")]]
-#    define HAUNT_FILTERMASK(filter) [[clang::annotate("haunt::filtermask:" #    filter)]]
 #    define HAUNT_NOTIFY(name) [[clang::annotate("haunt::notify:" #    name)]]
 #    define HAUNT_GET(name) [[clang::annotate("haunt::get:" #    name)]]
 #    define HAUNT_SET(name) [[clang::annotate("haunt::set:" #    name)]]
-#    define HAUNT_FILTERMASK(arg) [[clang::annotate("haunt::save:" _HNT_PP_QUOTE(arg))]]
+#    define HAUNT_MASK(mask) [[clang::annotate("haunt::mask:" _HNT_PP_QUOTE(mask))]]
 #    define HAUNT_TRANSIENT [[clang::annotate("haunt::transient")]]
 #    define HAUNT_PROPERTY(type, name, ...)                                                                            \
         [[clang::annotate("haunt::property:" _HNT_PP_QUOTE(                                                            \
@@ -94,7 +93,7 @@
 #    define HAUNT_METADATA(k, v)
 #    define HAUNT_METADATAS(seq)
 #    define HAUNT_STRUCTURE
-#    define HAUNT_FILTERMASK(filter)
+#    define HAUNT_MASK(mask)
 #    define HAUNT_NOTIFY(name)
 #    define HAUNT_GET(name)
 #    define HAUNT_SET(name)

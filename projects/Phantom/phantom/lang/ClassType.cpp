@@ -57,7 +57,7 @@ ClassType::~ClassType()
 bool ClassType::matchesTemplateArguments(const LanguageElements& a_Elements) const
 {
     TemplateSpecialization* pSpec = getTemplateSpecialization();
-    return pSpec AND        pSpec->matches(a_Elements);
+    return pSpec AND pSpec->matches(a_Elements);
 }
 
 void ClassType::checkCompleteness() const
@@ -376,7 +376,7 @@ Method* ClassType::getMethod(StringView a_strName, TypesView a_Types, Modifiers 
 }
 
 phantom::lang::Method* ClassType::getMethod(Type* a_pReturnType, StringView a_strName, TypesView a_ParameterTypes,
-                                                  Modifiers a_Qualifiers /*= 0*/) const
+                                            Modifiers a_Qualifiers /*= 0*/) const
 {
     if (Method* pMethod = getMethod(a_strName, a_ParameterTypes, a_Qualifiers))
     {
@@ -403,8 +403,23 @@ StaticMethod* ClassType::getStaticMethod(StringView a_strName, TypesView a_Types
 
 StaticMethod* ClassType::getStaticMethod(StringView a_strIdentifierString) const
 {
-    Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<ClassType*>(this));
-    return (pElement AND pElement->getOwner() == this) ? pElement->asStaticMethod() : nullptr;
+    if (a_strIdentifierString.empty())
+        return nullptr;
+    if (a_strIdentifierString.find_last_of(" )") == String::npos) // not a complete signature, just the method name
+    {
+        auto& functions = getFunctions();
+        for (auto& pFunc : functions)
+        {
+            if (pFunc->getName() == a_strIdentifierString)
+                return pFunc;
+        }
+        return nullptr;
+    }
+    else
+    {
+        Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<ClassType*>(this));
+        return (pElement AND pElement->getOwner() == this) ? pElement->asStaticMethod() : nullptr;
+    }
 }
 
 Subroutine* ClassType::getSubroutine(StringView a_strIdentifierString) const
@@ -915,7 +930,7 @@ void ClassType::addSubroutine(Subroutine* a_pSubroutine)
 
 bool ClassType::isSame(LanguageElement* a_pElement) const
 {
-	return Type::isSame(a_pElement);
+    return Type::isSame(a_pElement);
 }
 
 bool ClassType::isSame(Symbol* a_pSymbol) const
@@ -935,7 +950,7 @@ bool ClassType::hasStrongDependencyOnType(Type* a_pType) const
 
 void ClassType::finalizeNative()
 {
-	PHANTOM_ASSERT_NO_IMPL();
+    PHANTOM_ASSERT_NO_IMPL();
 }
 
 void ClassType::getFields(AggregateFields& _fields) const

@@ -1,5 +1,6 @@
 #include "Signal.h"
 
+#include <phantom/thread/SpinMutex.h>
 #include <type_traits>
 
 namespace phantom
@@ -39,32 +40,25 @@ struct SignalPool
 
         return &buckets.back()->emplace_back();
     }
-    void Delete(void* _slot)
-    {
-        for (auto* bucket : buckets)
-        {
-            if (reinterpret_cast<SlotMem*>(_slot) >= bucket->begin() &&
-                reinterpret_cast<SlotMem*>(_slot) < bucket->end())
-            {
-                freeList.push_back(_slot);
-            }
-        }
-    }
+    void                                Delete(void* _slot) { freeList.push_back(_slot); }
     SignalPoolBucket                    firstBucket;
     SmallVector<SignalPoolBucket*, 256> buckets;
     SmallVector<void*, 256>             freeList;
 };
 
-thread_local StaticGlobal<SignalPool> tls_SignalPool;
+StaticGlobal<SignalPool> g_SignalPool;
+SpinMutex                g_SignalPoolMtx;
 
 PHANTOM_EXPORT_PHANTOM void* _Signal::AllocateSlot()
 {
-    return tls_SignalPool->New();
+    auto lock = g_SignalPoolMtx.autoLock();
+    return g_SignalPool->New();
 }
 
 PHANTOM_EXPORT_PHANTOM void _Signal::DeallocateSlot(void* a_pSlot)
 {
-    tls_SignalPool->Delete(a_pSlot);
+    auto lock = g_SignalPoolMtx.autoLock();
+    g_SignalPool->Delete(a_pSlot);
 }
 
 } // namespace _Signal

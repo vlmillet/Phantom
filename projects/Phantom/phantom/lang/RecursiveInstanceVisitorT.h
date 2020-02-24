@@ -202,7 +202,7 @@ public:
     Impl*       this_() { return static_cast<Impl*>(this); }
     Impl const* this_() const { return static_cast<Impl const*>(this); }
 
-    bool shouldUpdateProperty(MemberAccessT<Property> a_Input) const { return false; }
+    bool shouldUpdateValueMember(MemberAccessT<ValueMember> a_Input) const { return false; }
 
     inline bool traverseValueMembers(InstanceT<ClassType> a_Input)
     {
@@ -1107,7 +1107,28 @@ public:
         return this_()->traverseValueMember(a_Input);
     }
 
-    bool traverseValueMember(MemberAccessT<ValueMember> a_Input) { return true; };
+    bool traverseValueMember(MemberAccessT<ValueMember> a_Input)
+    {
+        if (!(this_()->walkUpVisitFromValueMember(a_Input)))
+            return false;
+        if (!_traverseValueMember(a_Input))
+            return false;
+        return this_()->walkUpEndFromValueMember(a_Input);
+    }
+
+    bool _traverseValueMember(MemberAccessT<ValueMember> a_Input)
+    {
+        Type*  pValueType = a_Input.getMemberMeta()->getValueType();
+        size_t valueTypeSz = pValueType->getSize();
+        void*  buffer = alloca(valueTypeSz);
+        pValueType->construct(buffer);
+        a_Input.getMemberMeta()->getValue(a_Input.getOwner().getAddress(), buffer);
+        bool res = traverse(InstanceT<Type>(pValueType, buffer));
+        if (res && this_()->shouldUpdateValueMember(a_Input))
+            a_Input.getMemberMeta()->setValue(a_Input.getOwner().getAddress(), buffer);
+        pValueType->destroy(buffer);
+        return res;
+    };
 
     // Field
 
@@ -1158,16 +1179,9 @@ public:
     {
         if (!(this_()->walkUpVisitFromProperty(a_Input)))
             return false;
-        Type*  pValueType = a_Input.getMemberMeta()->getValueType();
-        size_t valueTypeSz = pValueType->getSize();
-        void*  buffer = alloca(valueTypeSz);
-        pValueType->construct(buffer);
-        a_Input.getMemberMeta()->getValue(a_Input.getOwner().getAddress(), buffer);
-        bool res = traverse(InstanceT<Type>(pValueType, buffer));
-        if (res && this_()->shouldUpdateProperty(a_Input))
-            a_Input.getMemberMeta()->setValue(a_Input.getOwner().getAddress(), buffer);
-        pValueType->destroy(buffer);
-        return res && walkUpEndFromProperty(a_Input);
+        if (!_traverseValueMember(MemberAccessT<ValueMember>(a_Input.getOwner(), a_Input.getMemberMeta())))
+            return false;
+        return this_()->walkUpEndFromProperty(a_Input);
     };
 
     // BaseClass

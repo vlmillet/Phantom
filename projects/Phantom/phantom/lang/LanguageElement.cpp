@@ -20,6 +20,8 @@
 #include <phantom/traits/IntTypeBySize.h>
 #include <phantom/utils/SmallSet.h>
 /* *********************************************** */
+#pragma optimize("", off)
+
 namespace phantom
 {
 namespace lang
@@ -218,13 +220,9 @@ void LanguageElement::removeReferencedElement(LanguageElement* a_pElement)
     onReferencedElementRemoved(a_pElement);
 }
 
-void LanguageElement::onReferencedElementAdded(LanguageElement*)
-{
-}
+void LanguageElement::onReferencedElementAdded(LanguageElement*) {}
 
-void LanguageElement::onReferencedElementRemoved(LanguageElement*)
-{
-}
+void LanguageElement::onReferencedElementRemoved(LanguageElement*) {}
 
 void LanguageElement::registerReferencingElement(LanguageElement* a_pElement)
 {
@@ -298,13 +296,9 @@ bool LanguageElement::canBeUnloaded() const
     return true;
 }
 
-void LanguageElement::checkCompleteness() const
-{
-}
+void LanguageElement::checkCompleteness() const {}
 
-void LanguageElement::onElementRemoved(LanguageElement*)
-{
-}
+void LanguageElement::onElementRemoved(LanguageElement*) {}
 
 Block* LanguageElement::getEnclosingBlock() const
 {
@@ -394,8 +388,9 @@ void LanguageElement::_onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
 
 void LanguageElement::_onElementsAccess()
 {
-    if (Application::Get() AND NOT(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) AND getModule()
-        AND NOT(getModule()->testFlags(PHANTOM_R_FLAG_TERMINATED)))
+    Module* pModule;
+    if (Application::Get() && NOT(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) &&
+        (pModule = getModule()) && NOT(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
     {
         onElementsAccess();
     }
@@ -425,13 +420,9 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     }
 }
 
-void LanguageElement::onAncestorChanged(LanguageElement*)
-{
-}
+void LanguageElement::onAncestorChanged(LanguageElement*) {}
 
-void LanguageElement::onAncestorAboutToBeChanged(LanguageElement*)
-{
-}
+void LanguageElement::onAncestorAboutToBeChanged(LanguageElement*) {}
 
 LanguageElement* LanguageElement::removeExpression() const
 {
@@ -452,9 +443,7 @@ LanguageElement* LanguageElement::hatchExpression()
     return pLanguageElement;
 }
 
-void LanguageElement::onInvalidated()
-{
-}
+void LanguageElement::onInvalidated() {}
 
 Reference* LanguageElement::asConstLValueReference() const
 {
@@ -755,9 +744,7 @@ bool LanguageElement::hasNamingScopeCascade(Scope* a_pScope) const
     AND((pScope == a_pScope) OR pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
 }
 
-void LanguageElement::onElementAdded(LanguageElement*)
-{
-}
+void LanguageElement::onElementAdded(LanguageElement*) {}
 
 void LanguageElement::clear()
 {
@@ -796,9 +783,7 @@ void LanguageElement::steal(LanguageElement* a_pInput)
     }
 }
 
-void LanguageElement::getName(StringBuffer&) const
-{
-}
+void LanguageElement::getName(StringBuffer&) const {}
 
 String LanguageElement::getName() const
 {
@@ -807,9 +792,7 @@ String LanguageElement::getName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getQualifiedName(StringBuffer&) const
-{
-}
+void LanguageElement::getQualifiedName(StringBuffer&) const {}
 
 String LanguageElement::getQualifiedName() const
 {
@@ -818,9 +801,7 @@ String LanguageElement::getQualifiedName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getDecoratedName(StringBuffer&) const
-{
-}
+void LanguageElement::getDecoratedName(StringBuffer&) const {}
 
 String LanguageElement::getDecoratedName() const
 {
@@ -829,9 +810,7 @@ String LanguageElement::getDecoratedName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getQualifiedDecoratedName(StringBuffer&) const
-{
-}
+void LanguageElement::getQualifiedDecoratedName(StringBuffer&) const {}
 
 String LanguageElement::getQualifiedDecoratedName() const
 {
@@ -840,9 +819,7 @@ String LanguageElement::getQualifiedDecoratedName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getUniqueName(StringBuffer&) const
-{
-}
+void LanguageElement::getUniqueName(StringBuffer&) const {}
 
 Scope* LanguageElement::getNamingScope() const
 {

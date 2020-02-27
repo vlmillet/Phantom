@@ -47,6 +47,7 @@
 #include <phantom/utils/StringUtil.h>
 
 #pragma warning(disable : 4996)
+#pragma optimize("", off)
 /* *********************************************** */
 namespace phantom
 {
@@ -154,6 +155,8 @@ void Application::_uninstallNativeModule(Module* a_pModule)
     else
     {
         PHANTOM_DELETE(Module) a_pModule;
+        PHANTOM_ASSERT(m_pElements == nullptr ||
+                       std::find(m_pElements->begin(), m_pElements->end(), a_pModule) == m_pElements->end());
     }
 }
 
@@ -164,10 +167,9 @@ void Application::terminate()
     while (m_Modules.size() > 1)
     {
         Module* pMod = m_Modules.back();
-        if (pMod->isNative())
-            _uninstallNativeModule(pMod);
-        else
-            PHANTOM_DELETE_DYN pMod;
+        PHANTOM_ASSERT(pMod->isNative(),
+                       "every runtime/script module must have been destroyed before or during release of Main module");
+        _uninstallNativeModule(pMod);
     }
     PHANTOM_ASSERT(m_Modules.back()->getName() == "Phantom");
     LanguageElements elements = getElements();
@@ -354,40 +356,68 @@ static int Module_GetNativeRefCount(Module* a_pModule);
 
 void Application::_unloadMain()
 {
-    // PHANTOM_ASSERT_ON_MAIN_THREAD();
+    // infinite loops for starting back each time a module is removed
 
-    // release modules content
-    while (m_Modules.size())
+    // destroy runtime/script modules (they depend on natives and not the opposite, so they must be destroyed before)
+
+    while (true)
     {
-        Module* pModule = m_Modules.back();
-        if (pModule->getPlugin())
-        // if module is attached to a plugin, we unload it
+        int moduleIdx = int(m_Modules.size());
+        while (moduleIdx--)
         {
-            pModule->getPlugin()->unload();
-            if (m_Modules.size() && m_Modules.back() == pModule)
+            Module* pModule = m_Modules[moduleIdx];
+            if (!pModule->isNative())
             {
-                if (Module_GetNativeRefCount(pModule))
-                {
-                    PHANTOM_LOG(Error, "module '%.*s' dll is still loaded somewhere, probably inside zombie threads",
-                                PHANTOM_STRING_AS_PRINTF_ARG(pModule->getName()));
-                }
-                m_Modules.pop_back();
+                // destroying runtime/script modules
+                PHANTOM_DELETE(Module) pModule;
+                break;
             }
         }
-        else if (pModule == m_pMainModule)
-        {
-            m_OperationCounter++;
-            _uninstallNativeModule(m_pMainModule);
-            m_pMainModule = nullptr;
-            m_OperationCounter--;
+        if (moduleIdx == -1)
             break;
-        }
-        else if (NOT(pModule->isNative()))
-        // if the module has been manually created, we destroy it to ensure its content is cleared
-        {
-            PHANTOM_DELETE(Module) pModule;
-        }
     }
+
+    // unload plugins
+
+    while (true)
+    {
+        int moduleIdx = int(m_Modules.size());
+        while (moduleIdx--)
+        {
+            Module* pModule = m_Modules[moduleIdx];
+            if (std::find(m_StartupModules.begin(), m_StartupModules.end(), pModule) != m_StartupModules.end())
+                continue;
+
+            PHANTOM_ASSERT(pModule->getName() != "Phantom");
+
+            if (Plugin* pPlugin = pModule->getPlugin())
+            // if module is attached to a plugin, we unload it
+            {
+                String moduleName = pModule->getName();
+                pPlugin->unload();
+                if (getModule(moduleName))
+                {
+                    PHANTOM_ASSERT(getModule(moduleName) == pModule);
+                    PHANTOM_ASSERT(Module_GetNativeRefCount(pModule) != 0);
+                    PHANTOM_LOG(Warning,
+                                "a Phantom Plugin .dll is still in use while releasing Application; we manually force "
+                                "release of the reflection Module elements ; ensure your .dll is unloaded before to "
+                                "avoid undefined behavior.");
+                    PHANTOM_DELETE(Module) pModule;
+                }
+                break;
+            }
+        }
+        if (moduleIdx == -1)
+            break;
+    }
+
+    // release main module
+
+    m_OperationCounter++;
+    _uninstallNativeModule(m_pMainModule);
+    m_pMainModule = nullptr;
+    m_OperationCounter--;
 }
 
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS

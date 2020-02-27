@@ -13,8 +13,8 @@
 #include "Source.h"
 #include "SourceStream.h"
 #include "TemplateSpecialization.h"
-#include "phantom/detail/new.h"
 #include "phantom/detail/core_internal.h"
+#include "phantom/detail/new.h"
 
 #include <fstream>
 #include <phantom/utils/Path.h>
@@ -28,6 +28,8 @@ namespace phantom
 {
 namespace lang
 {
+bool g_ReleasingPhantomModule;
+
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "cleanup Module ctor arguments")
 #endif
@@ -56,39 +58,81 @@ Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
 void Module::terminate()
 {
     setFlag(PHANTOM_R_FLAG_TERMINATED);
-    if (isNative())
+
+    if (isNative() && getName() == "Phantom")
     {
+        g_ReleasingPhantomModule = true;
+        PHANTOM_ASSERT(Application::Get() && Application::Get()->getMainModule() == nullptr);
         LanguageElements allElements;
         fetchElementsDeep(allElements);
-        if (allElements.size())
+
+        if (size_t allElementCount = allElements.size())
         {
-            std::sort(allElements.begin(), allElements.end(), [](LanguageElement* l0, LanguageElement* l1) -> bool {
-                return l0->destructionPriority() < l1->destructionPriority();
-            });
-            LanguageElement* last = allElements.back();
-            allElements.pop_back();
-            for (size_t i = 0; i < allElements.size(); ++i)
+            //             std::sort(allElements.begin(), allElements.end(), [](LanguageElement* l0, LanguageElement*
+            //             l1) -> bool {
+            //                 return l0->destructionPriority() < l1->destructionPriority();
+            //             });
+
+            // first pass we skip meta meta classes
+            while (allElementCount--)
             {
-                if (allElements[i]->isNative())
-                    allElements[i]->_nativeDetachElementsFromModule();
-                PHANTOM_DELETE_DYN allElements[i];
+                if (allElements[allElementCount] == Class::MetaClass() ||
+                    allElements[allElementCount]->getMetaClass()->getMetaClass() == Class::MetaClass())
+                    continue;
+                if (allElements[allElementCount]->isNative())
+                    allElements[allElementCount]->_nativeDetachElementsFromModule();
+                PHANTOM_DELETE_DYN allElements[allElementCount];
             }
-            if (last != Class::MetaClass())
-                PHANTOM_DELETE_DYN last;
+
+            allElements.clear();
+            fetchElementsDeep(allElements);
+            allElementCount = allElements.size();
+
+            // first pass we skip meta meta classes
+            while (allElementCount--)
+            {
+                if (allElements[allElementCount] == Class::MetaClass() ||
+                    allElements[allElementCount]->getMetaClass() == Class::MetaClass())
+                    continue;
+                if (allElements[allElementCount]->isNative())
+                    allElements[allElementCount]->_nativeDetachElementsFromModule();
+                PHANTOM_DELETE_DYN allElements[allElementCount];
+            }
+
+            // second pass we skip only the "master" meta class (the meta class of Class)
+
+            allElements.clear();
+            fetchElementsDeep(allElements);
+            allElementCount = allElements.size();
+
+            while (allElementCount--)
+            {
+                if (allElements[allElementCount] == Class::MetaClass())
+                    continue;
+                if (allElements[allElementCount]->isNative())
+                    allElements[allElementCount]->_nativeDetachElementsFromModule();
+                PHANTOM_DELETE_DYN allElements[allElementCount];
+            }
+
+            // then we check we removed every body
+
             allElements.clear();
             PHANTOM_ASSERT(([this, &allElements]() -> bool {
                 fetchElementsDeep(allElements);
                 return allElements.empty();
             }()));
         }
+        g_ReleasingPhantomModule = false;
+    }
+    else if (isNative())
+    {
+        StaticGlobals::Release((void*)m_NativeHandle);
     }
     m_pPlugin = nullptr;
     Symbol::terminate();
 }
 
-Module::~Module()
-{
-}
+Module::~Module() {}
 
 bool Module::canBeUnloaded() const
 {
@@ -157,6 +201,7 @@ bool Module::hasDependencyCascade(Module* a_pModule) const
 
 void Module::onElementAdded(LanguageElement* a_pElement)
 {
+    PHANTOM_ASSERT(!g_ReleasingPhantomModule);
     if (a_pElement->asPackage())
     {
         m_Packages.push_back(static_cast<Package*>(a_pElement));

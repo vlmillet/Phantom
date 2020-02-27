@@ -22,11 +22,11 @@ using CleanupDelegate = phantom::Delegate<void(void*)>;
 class PHANTOM_EXPORT_PHANTOM StaticGlobals
 {
 public:
-    static void RegisterForCleanup(void* a_pAddr, CleanupDelegate a_Delegate);
+    static void RegisterForCleanup(void* a_pAddr, void* a_pModuleHandle, CleanupDelegate a_Delegate);
     static void UnregisterForCleanup(void* a_pAddr);
     static bool TryUnregisterForCleanup(void* a_pAddr);
-    static bool ReleaseInProgress();
-    static void Release();
+    static bool ReleaseInProgress(void* a_pModuleHandle);
+    static void Release(void* a_pModuleHandle);
 };
 
 template<class T>
@@ -49,7 +49,7 @@ public:
         }
         else
         {
-            PHANTOM_ASSERT(!StaticGlobals::ReleaseInProgress() || !m_Data);
+            PHANTOM_ASSERT(!StaticGlobals::ReleaseInProgress((void*)(PHANTOM_MODULE_HANDLE(&m_Data))) || !m_Data);
         }
     }
 
@@ -70,7 +70,8 @@ public:
     {
         m_Data.construct(a_Args...);
         StaticGlobals::RegisterForCleanup(
-        &m_Data, CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
+        &m_Data, (void*)(PHANTOM_MODULE_HANDLE(&m_Data)),
+        CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
     }
 
 private:

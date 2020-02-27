@@ -58,6 +58,15 @@ Source::Source(Package* a_pPackage, StringView a_strName, Modifiers a_Modifiers 
 
 Source::~Source()
 {
+    if (isNative())
+    {
+        if (m_pFunctionPointers)
+            PHANTOM_DELETE(FunctionPointers) m_pFunctionPointers;
+        if (m_pFunctionTypes)
+            PHANTOM_DELETE(FunctionTypes) m_pFunctionTypes;
+        if (m_pInitializerListTypes)
+            PHANTOM_DELETE(InitializerListTypes) m_pInitializerListTypes;
+    }
     while (m_Importings.size())
     {
         m_Importings.back()->removeImport(this);
@@ -74,15 +83,6 @@ Source::~Source()
 
 void Source::terminate()
 {
-    if (isNative())
-    {
-        if (m_pFunctionPointers)
-            PHANTOM_DELETE(FunctionPointers) m_pFunctionPointers;
-        if (m_pFunctionTypes)
-            PHANTOM_DELETE(FunctionTypes) m_pFunctionTypes;
-        if (m_pInitializerListTypes)
-            PHANTOM_DELETE(InitializerListTypes) m_pInitializerListTypes;
-    }
     Symbol::terminate();
 }
 

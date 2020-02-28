@@ -247,7 +247,6 @@ void DynamicCppInitializerH::StaticGlobalsRelease()
     g_pApplication->terminate();
     g_pApplication->~Application(); // special case for Application which cannot use lang because it is the
                                     // one holding the lang and releasing it on 'terminate'
-    StaticGlobals::Release(0);
 }
 
 DynamicCppInitializerH::DynamicCppInitializerH()

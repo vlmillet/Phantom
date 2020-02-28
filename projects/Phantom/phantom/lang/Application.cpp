@@ -184,6 +184,8 @@ void Application::terminate()
         PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
     }
 
+    StaticGlobals::Release(0);
+
     _uninstallNativeModule(m_Modules.back());
 
     PHANTOM_DELETE_DYN Class::MetaClass();

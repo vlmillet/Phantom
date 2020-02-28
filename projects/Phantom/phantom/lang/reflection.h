@@ -147,7 +147,11 @@ public:                                                                         
 private:
 
 #define PHANTOM_DEFINE_META_CLASS(_type_)                                                                              \
-    phantom::lang::Class* _type_::MetaClass() { return PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta(); }
+    phantom::lang::Class* _type_::MetaClass()                                                                          \
+    {                                                                                                                  \
+        static auto meta = PHANTOM_PP_CAT(_type_, _PHANTOM_).this_()._PHNTM_getMeta();                                 \
+        return meta;                                                                                                   \
+    }
 
 PHANTOM_EXPORT_PHANTOM void initializeSystem();
 PHANTOM_EXPORT_PHANTOM void releaseSystem();

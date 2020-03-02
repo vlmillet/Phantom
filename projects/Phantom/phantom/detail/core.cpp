@@ -247,7 +247,6 @@ void DynamicCppInitializerH::StaticGlobalsRelease()
     g_pApplication->terminate();
     g_pApplication->~Application(); // special case for Application which cannot use lang because it is the
                                     // one holding the lang and releasing it on 'terminate'
-    StaticGlobals::Release();
 }
 
 DynamicCppInitializerH::DynamicCppInitializerH()
@@ -448,7 +447,7 @@ void DynamicCppInitializerH::unregisterModule(size_t a_ModuleHandle)
         if (it->m_ModuleHandle == a_ModuleHandle)
         {
             m_ModuleRegistrationInfos.erase(it);
-            if (lang::Application::Get())
+            if (lang::Application::Get() && lang::Application::Get()->getMainModule())
             {
                 if (lang::Plugin::HasUnloadingInProgress())
                 {

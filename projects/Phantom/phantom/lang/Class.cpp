@@ -13,6 +13,7 @@
 #include "Field.h"
 #include "InstanceCache.h"
 #include "LValueReference.h"
+#include "MapClass.h"
 #include "Parameter.h"
 #include "Pointer.h"
 #include "RValueReference.h"
@@ -23,6 +24,7 @@
 
 #include <phantom/detail/new.h>
 #include <phantom/lang/Function.h> // phantom::lang::detail::pushModule
+#include <phantom/lang/Module.h>   // phantom::lang::detail::pushModule
 #include <phantom/lang/registration/Main.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/StringUtil.h>
@@ -77,12 +79,33 @@ void Class::terminate()
         PHANTOM_LOG(Warning, "%s : %d instance(s) of this class have not been deleted",
                     getQualifiedDecoratedName().c_str(), m_InstanceCount);
     }
-
-    if (!isNative())
+    if (m_DerivedClasses.size())
     {
-        while (m_DerivedClasses.size())
+        Module* pModule = getModule();
+        bool    moduleTerminating = pModule == nullptr || (pModule->getFlags() & PHANTOM_R_FLAG_TERMINATED) != 0;
+        while (true)
         {
-            PHANTOM_DELETE_DYN m_DerivedClasses.back();
+            int derivedClassIdx = int(m_DerivedClasses.size());
+            while (derivedClassIdx--)
+            {
+                Class* pDerivedClass = m_DerivedClasses[derivedClassIdx];
+                PHANTOM_ASSERT(
+                pDerivedClass->getModule() == getModule(),
+                "if in any other module, derived class must have been deleted and removed from this class before");
+                if (isNative())
+                {
+                    PHANTOM_ASSERT(moduleTerminating, "module must be in terminating mode for this to happen");
+                }
+                else
+                {
+                    if (!moduleTerminating)
+                    {
+                        PHANTOM_DELETE_DYN pDerivedClass;
+                    }
+                }
+            }
+            if (derivedClassIdx == -1)
+                break;
         }
     }
 
@@ -92,7 +115,7 @@ void Class::terminate()
     }
 
     ClassType::terminate();
-}
+} // namespace lang
 
 Class* Class_getCommonBaseClass(Class const* a_pThis, Class* a_pClass)
 {
@@ -1694,8 +1717,20 @@ bool Class::hasStrongDependencyOnType(Type* a_pType) const
     return false;
 }
 
+static SmallSet<MapClass*> registeredMapClasses;
+
 void Class::registerInstance(void* a_pInstance)
 {
+    if (getName() == "MapClass")
+    {
+        PHANTOM_ASSERT(registeredMapClasses.insert((MapClass*)a_pInstance).second);
+        if (((MapClass*)a_pInstance)->getQualifiedDecoratedName() ==
+            "phantom::SmallMap<phantom::lang::Placeholder *,phantom::lang::LanguageElement "
+            "*,4,4,phantom::Less<phantom::lang::Placeholder *> > ")
+        {
+            printf("");
+        }
+    }
     _registerKind(a_pInstance);
     m_InstanceCount++;
     if (phantom::detail::g_InstanceHook_func)
@@ -1704,6 +1739,16 @@ void Class::registerInstance(void* a_pInstance)
 
 void Class::unregisterInstance(void* a_pInstance)
 {
+    if (getName() == "MapClass")
+    {
+        PHANTOM_ASSERT(registeredMapClasses.erase((MapClass*)a_pInstance));
+        if (((MapClass*)a_pInstance)->getQualifiedDecoratedName() ==
+            "phantom::SmallMap<phantom::lang::Placeholder *,phantom::lang::LanguageElement "
+            "*,4,4,phantom::Less<phantom::lang::Placeholder *> > ")
+        {
+            printf("");
+        }
+    }
     PHANTOM_ASSERT(m_InstanceCount);
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceUnregistering, this, a_pInstance);

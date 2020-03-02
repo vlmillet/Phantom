@@ -14,8 +14,7 @@ namespace phantom
 {
 namespace lang
 {
-MapClass::MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-                         uint a_uiFlags)
+MapClass::MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
     : ContainerClass(TypeKind::MapClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
@@ -23,6 +22,10 @@ MapClass::MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, 
 MapClass::MapClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : ContainerClass(TypeKind::MapClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(Data))
 {
+    if (a_strName == "vector_map")
+    {
+        printf("");
+    }
 }
 
 MapClass::~MapClass()

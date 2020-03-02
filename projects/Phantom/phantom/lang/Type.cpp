@@ -18,8 +18,8 @@
 #include "Source.h"
 #include "TemplateSpecialization.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/detail/core_internal.h>
+#include <phantom/detail/new.h>
 #include <phantom/utils/Delegate.h>
 #include <phantom/utils/crc64.h>
 /* *********************************************** */
@@ -27,6 +27,8 @@ namespace phantom
 {
 namespace lang
 {
+extern bool g_ReleasingPhantomModule;
+
 Type::Type(TypeKind a_eTypeKind, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_Modifiers, a_uiFlags), m_eTypeKind(a_eTypeKind)
 {
@@ -53,21 +55,13 @@ Type::~Type()
 
 void Type::terminate()
 {
-    if (!isNative())
+    Symbol::terminate();
+    if (m_pExtendedTypes)
     {
-        auto guard = m_ExtendedTypesMutex.autoLock();
-        while (m_pExtendedTypes)
-        {
-            PHANTOM_DELETE_DYN m_pExtendedTypes->back();
-        }
-    }
-    else
-    {
+        PHANTOM_ASSERT(g_ReleasingPhantomModule);
         PHANTOM_DELETE(Types) m_pExtendedTypes;
         m_pExtendedTypes = nullptr;
     }
-    Symbol::terminate();
-    PHANTOM_ASSERT(m_pExtendedTypes == nullptr);
 }
 
 size_t Type::getSize() const
@@ -233,9 +227,7 @@ void* Type::placementNewInstance(void* a_pMemory) const
     return a_pMemory;
 }
 
-void Type::placementDeleteInstance(void*) const
-{
-}
+void Type::placementDeleteInstance(void*) const {}
 
 Scope* Type::getScope() const
 {
@@ -351,12 +343,12 @@ void Type::fetchElements(LanguageElements& out, Class* a_pClass) const
 
 void Type::copyConstruct(void* a_pDest, void const* a_pSrc) const
 {
-	memcpy(a_pDest, a_pSrc, m_uiSize);
+    memcpy(a_pDest, a_pSrc, m_uiSize);
 }
 
 void Type::moveConstruct(void* a_pDest, void* a_pSrc) const
 {
-	copyConstruct(a_pDest, a_pSrc);
+    copyConstruct(a_pDest, a_pSrc);
 }
 
 Type* Type::getCommonBaseAncestor(Type* a_pType) const
@@ -942,12 +934,12 @@ Type* Type::promote() const
 
 void Type::copyAssign(void* a_pDest, void const* a_pSrc) const
 {
-	memcpy(a_pDest, a_pSrc, m_uiSize);
+    memcpy(a_pDest, a_pSrc, m_uiSize);
 }
 
 void Type::moveAssign(void* a_pDest, void* a_pSrc) const
 {
-	copyAssign(a_pDest, a_pSrc);
+    copyAssign(a_pDest, a_pSrc);
 }
 
 } // namespace lang

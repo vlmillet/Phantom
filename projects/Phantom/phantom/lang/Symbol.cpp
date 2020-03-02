@@ -56,9 +56,7 @@ Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFla
     Register(this);
 }
 
-Symbol::~Symbol()
-{
-}
+Symbol::~Symbol() {}
 
 void Symbol::terminate()
 {

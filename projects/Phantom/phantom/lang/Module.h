@@ -42,10 +42,7 @@ public:
 
     void terminate();
 
-    Module* asModule() const override
-    {
-        return (Module*)this;
-    }
+    Module* asModule() const override { return (Module*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this module is a plugin
@@ -61,10 +58,7 @@ public:
     /// \return true if a plugin.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Plugin* getPlugin() const
-    {
-        return m_pPlugin;
-    }
+    Plugin* getPlugin() const { return m_pPlugin; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the dynamic library filename associated with this module.
@@ -91,14 +85,31 @@ public:
     byte* getMemoryStart() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets platform handle or 0x0 if your OS don't have such a value.
+    /// \brief  Gets native handle or 0 if your OS don't have such a value.
+    ///
+    /// \return The native handle (or 0 if your OS don't have such a value)..
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    size_t getHandle() const { return (size_t)m_pBaseAddress; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets base address of this module, or null if not a native or jit module.
     ///
     /// \return The platform handle (or 0x0 if your OS don't have such a value)..
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getHandle() const
+    void* getBaseAddress() const { return m_pBaseAddress; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets runtime JIT module base address.
+    ///
+    /// \return The platform handle (or 0x0 if your OS don't have such a value)..
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setBaseAddress(void* a_pBaseAddress)
     {
-        return m_NativeHandle;
+        PHANTOM_ASSERT(!isNative());
+        m_pBaseAddress = a_pBaseAddress;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,10 +118,7 @@ public:
     /// \return the package list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Packages const& getPackages() const
-    {
-        return m_Packages;
-    }
+    Packages const& getPackages() const { return m_Packages; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if this module can be unloaded.
@@ -158,10 +166,7 @@ public:
     /// \brief  Gets the dependencies of this module.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Modules const& getDependencies() const
-    {
-        return m_Dependencies;
-    }
+    Modules const& getDependencies() const { return m_Dependencies; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add a dependency to this module.
@@ -238,55 +243,28 @@ public:
     /// \return The anonymous source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getAnonymousSource() const
-    {
-        return m_pAnonymousSource;
-    }
+    Source* getAnonymousSource() const { return m_pAnonymousSource; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Returns a memory context you can use to bind memory with this Module and its life
     /// duration.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MemoryContext& getMemoryContext()
-    {
-        return m_MemoryContext;
-    }
+    MemoryContext& getMemoryContext() { return m_MemoryContext; }
 
     Type* findType(hash64 a_Hash) const;
 
     Type* findUsableType(hash64 a_Hash) const;
 
     typedef void (*FuncT)();
-    void setOnLoadFunc(FuncT func)
-    {
-        m_OnLoad = func;
-    }
-    void setOnUnloadFunc(FuncT func)
-    {
-        m_OnUnload = func;
-    }
-    FuncT getOnLoadFunc() const
-    {
-        return m_OnLoad;
-    }
-    FuncT getOnUnloadFunc() const
-    {
-        return m_OnUnload;
-    }
+    void  setOnLoadFunc(FuncT func) { m_OnLoad = func; }
+    void  setOnUnloadFunc(FuncT func) { m_OnUnload = func; }
+    FuncT getOnLoadFunc() const { return m_OnLoad; }
+    FuncT getOnUnloadFunc() const { return m_OnUnload; }
 
-    bool isMarkedOutdated() const
-    {
-        return m_bOutdated;
-    }
-    void markOutdated()
-    {
-        m_bOutdated = true;
-    }
-    void markUpToDate()
-    {
-        m_bOutdated = false;
-    }
+    bool isMarkedOutdated() const { return m_bOutdated; }
+    void markOutdated() { m_bOutdated = true; }
+    void markUpToDate() { m_bOutdated = false; }
 
 public:
     phantom::Signal<void(Package*)> packageAdded;
@@ -315,7 +293,7 @@ private:
 
 private:
     Packages                m_Packages;
-    size_t                  m_NativeHandle = 0;
+    void*                   m_pBaseAddress = nullptr;
     StringBuffer            m_LibraryFullName;
     StringBuffer            m_DeclarationCppFullName;
     Modules                 m_Dependencies;

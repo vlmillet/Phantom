@@ -36,7 +36,7 @@ bool g_ReleasingPhantomModule;
 Module::Module(size_t a_PlatformHandle, StringView a_strName, StringView a_LibraryFullName,
                StringView a_DeclarationCppFullName, uint a_uiFlags)
     : Symbol(a_strName, Modifier::None, a_uiFlags | PHANTOM_R_ALWAYS_VALID),
-      m_NativeHandle(a_PlatformHandle),
+      m_pBaseAddress((void*)a_PlatformHandle),
       m_LibraryFullName(a_LibraryFullName),
       m_DeclarationCppFullName(a_DeclarationCppFullName)
 {
@@ -126,7 +126,7 @@ void Module::terminate()
     }
     else if (isNative())
     {
-        StaticGlobals::Release((void*)m_NativeHandle);
+        StaticGlobals::Release(m_pBaseAddress);
     }
     m_pPlugin = nullptr;
     Symbol::terminate();
@@ -239,7 +239,7 @@ byte* Module::getMemoryStart() const
 {
     if (!isNative())
         return 0;
-    return reinterpret_cast<byte*>(m_NativeHandle);
+    return reinterpret_cast<byte*>(m_pBaseAddress);
 }
 
 Package* Module::getPackage(StringView a_strName) const

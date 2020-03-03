@@ -270,7 +270,7 @@ Method* Class::getSlot(StringView a_strIdentifierString) const
 
 Method* Class::getSlotCascade(StringView a_strIdentifierString) const
 {
-    Symbol*         pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
+    Symbol*             pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
     return pElement AND pElement->getOwner()->asClass() AND isA(static_cast<Class*>(pElement->getOwner()))
     ? pElement->asSlot()
     : nullptr;
@@ -1717,20 +1717,8 @@ bool Class::hasStrongDependencyOnType(Type* a_pType) const
     return false;
 }
 
-static SmallSet<MapClass*> registeredMapClasses;
-
 void Class::registerInstance(void* a_pInstance)
 {
-    if (getName() == "MapClass")
-    {
-        PHANTOM_ASSERT(registeredMapClasses.insert((MapClass*)a_pInstance).second);
-        if (((MapClass*)a_pInstance)->getQualifiedDecoratedName() ==
-            "phantom::SmallMap<phantom::lang::Placeholder *,phantom::lang::LanguageElement "
-            "*,4,4,phantom::Less<phantom::lang::Placeholder *> > ")
-        {
-            printf("");
-        }
-    }
     _registerKind(a_pInstance);
     m_InstanceCount++;
     if (phantom::detail::g_InstanceHook_func)
@@ -1739,16 +1727,6 @@ void Class::registerInstance(void* a_pInstance)
 
 void Class::unregisterInstance(void* a_pInstance)
 {
-    if (getName() == "MapClass")
-    {
-        PHANTOM_ASSERT(registeredMapClasses.erase((MapClass*)a_pInstance));
-        if (((MapClass*)a_pInstance)->getQualifiedDecoratedName() ==
-            "phantom::SmallMap<phantom::lang::Placeholder *,phantom::lang::LanguageElement "
-            "*,4,4,phantom::Less<phantom::lang::Placeholder *> > ")
-        {
-            printf("");
-        }
-    }
     PHANTOM_ASSERT(m_InstanceCount);
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceUnregistering, this, a_pInstance);

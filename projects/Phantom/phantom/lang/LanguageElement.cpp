@@ -20,8 +20,6 @@
 #include <phantom/traits/IntTypeBySize.h>
 #include <phantom/utils/SmallSet.h>
 /* *********************************************** */
-#pragma optimize("", off)
-
 namespace phantom
 {
 namespace lang

@@ -61,7 +61,7 @@ bool StaticGlobals::ReleaseInProgress(void* a_pModuleHandle)
 {
     return s_releaseInProgress == a_pModuleHandle;
 }
-#pragma optimize("", off)
+
 void StaticGlobals::Release(void* a_pModuleHandle)
 {
     PHANTOM_ASSERT(a_pModuleHandle == nullptr || !ReleaseInProgress(a_pModuleHandle));

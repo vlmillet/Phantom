@@ -47,7 +47,6 @@
 #include <phantom/utils/StringUtil.h>
 
 #pragma warning(disable : 4996)
-#pragma optimize("", off)
 /* *********************************************** */
 namespace phantom
 {

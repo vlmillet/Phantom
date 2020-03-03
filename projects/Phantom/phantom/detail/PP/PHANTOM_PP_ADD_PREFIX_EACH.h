@@ -1,7 +1,7 @@
 // license [
-// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #define PHANTOM_PP_ADD_PREFIX_EACH_NO_CAT_1(prefix, p0) prefix p0

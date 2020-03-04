@@ -19,6 +19,9 @@ PHANTOM_EXPORT_PHANTOM void* Emitter();
 
 namespace _Signal
 {
+PHANTOM_EXPORT_PHANTOM void* AllocateSlot();
+PHANTOM_EXPORT_PHANTOM void  DeallocateSlot(void*);
+
 struct Emitter;
 struct EmissionFrameStack;
 struct SlotBase
@@ -462,9 +465,6 @@ inline EmissionFrame* EmissionFrame::Top()
         return nullptr;
     return &EmissionFrameStack::Current().top();
 }
-
-PHANTOM_EXPORT_PHANTOM void* AllocateSlot();
-PHANTOM_EXPORT_PHANTOM void  DeallocateSlot(void*);
 
 } // namespace _Signal
 

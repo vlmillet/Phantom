@@ -19,15 +19,10 @@ class Flag
 
 public:
     inline Flag(int i);
-    inline operator int() const
-    {
-        return i;
-    }
+    inline operator int() const { return i; }
 };
 
-inline Flag::Flag(int ai) : i(ai)
-{
-}
+inline Flag::Flag(int ai) : i(ai) {}
 
 class IncompatibleFlag
 {
@@ -35,15 +30,10 @@ class IncompatibleFlag
 
 public:
     inline explicit IncompatibleFlag(int i);
-    inline operator int() const
-    {
-        return i;
-    }
+    inline operator int() const { return i; }
 };
 
-inline IncompatibleFlag::IncompatibleFlag(int ai) : i(ai)
-{
-}
+inline IncompatibleFlag::IncompatibleFlag(int ai) : i(ai) {}
 
 template<typename Enum>
 class Flags;
@@ -51,12 +41,8 @@ class Flags;
 template<typename Enum>
 struct FlagsBit
 {
-    FlagsBit() : m_Flags(0), m_Where((Enum)0)
-    {
-    }
-    FlagsBit(Flags<Enum>* a_Flags, Enum a_Where) : m_Flags(a_Flags), m_Where(a_Where)
-    {
-    }
+    FlagsBit() : m_Flags(0), m_Where((Enum)0) {}
+    FlagsBit(Flags<Enum>* a_Flags, Enum a_Where) : m_Flags(a_Flags), m_Where(a_Where) {}
 
     void setValue(bool a_bValue)
     {
@@ -65,10 +51,7 @@ struct FlagsBit
         else
             (*m_Flags) &= ~m_Where;
     }
-    bool getValue() const
-    {
-        return ((*m_Flags) & m_Where) == m_Where;
-    }
+    bool getValue() const { return ((*m_Flags) & m_Where) == m_Where; }
 
     HAUNT_PROPERTY(bool, value, getValue, setValue);
 
@@ -80,17 +63,10 @@ protected:
 template<typename Enum>
 struct ConstFlagsBit
 {
-    ConstFlagsBit() : m_Flags(0), m_Where((Enum)0)
-    {
-    }
-    ConstFlagsBit(const Flags<Enum>* a_Flags, Enum a_Where) : m_Flags(a_Flags), m_Where(a_Where)
-    {
-    }
+    ConstFlagsBit() : m_Flags(0), m_Where((Enum)0) {}
+    ConstFlagsBit(const Flags<Enum>* a_Flags, Enum a_Where) : m_Flags(a_Flags), m_Where(a_Where) {}
 
-    bool getValue() const
-    {
-        return ((*m_Flags) & m_Where) == m_Where;
-    }
+    bool getValue() const { return ((*m_Flags) & m_Where) == m_Where; }
 
 protected:
     const Flags<Enum>* m_Flags;
@@ -108,18 +84,12 @@ public:
     typedef FlagsBit<Enum>      Bit;
     typedef ConstFlagsBit<Enum> ConstBit;
     typedef Enum                EnumType;
-    inline Flags(const SelfType& f) : i(f.i)
-    {
-    }
-    inline Flags(Enum f) : i(f)
-    {
-    }
+    inline Flags(const SelfType& f) : i(f.i) {}
+    inline Flags(Enum f) : i(int(f)) {}
     inline Flags(_Zero = 0) : i(0) // to allow 0 init but not any int init
     {
     }
-    inline Flags(Flag f) : i(f)
-    {
-    }
+    inline Flags(Flag f) : i(f) {}
 
     inline SelfType& operator=(const SelfType& f)
     {
@@ -157,62 +127,23 @@ public:
         return *this;
     }
 
-    inline operator int() const
-    {
-        return i;
-    }
+    inline operator int() const { return i; }
 
-    inline SelfType operator|(SelfType f) const
-    {
-        return SelfType(Enum(i | f.i));
-    }
-    inline SelfType operator|(Enum f) const
-    {
-        return SelfType(Enum(i | f));
-    }
-    inline SelfType operator^(SelfType f) const
-    {
-        return SelfType(Enum(i ^ f.i));
-    }
-    inline SelfType operator^(Enum f) const
-    {
-        return SelfType(Enum(i ^ f));
-    }
-    inline SelfType operator&(int mask) const
-    {
-        return SelfType(Enum(i & mask));
-    }
-    inline SelfType operator&(unsigned int mask) const
-    {
-        return SelfType(Enum(i & mask));
-    }
-    inline SelfType operator&(Enum f) const
-    {
-        return SelfType(Enum(i & f));
-    }
-    inline SelfType operator~() const
-    {
-        return SelfType(Enum(~i));
-    }
+    inline SelfType operator|(SelfType f) const { return SelfType(Enum(i | f.i)); }
+    inline SelfType operator|(Enum f) const { return SelfType(Enum(i | int(f))); }
+    inline SelfType operator^(SelfType f) const { return SelfType(Enum(i ^ f.i)); }
+    inline SelfType operator^(Enum f) const { return SelfType(Enum(i ^ int(f))); }
+    inline SelfType operator&(int mask) const { return SelfType(Enum(i & mask)); }
+    inline SelfType operator&(unsigned int mask) const { return SelfType(Enum(i & mask)); }
+    inline SelfType operator&(Enum f) const { return SelfType(Enum(i & int(f))); }
+    inline SelfType operator~() const { return SelfType(Enum(~i)); }
 
-    inline bool operator!() const
-    {
-        return !i;
-    }
+    inline bool operator!() const { return !i; }
 
-    inline bool testFlag(Enum f) const
-    {
-        return (i & f) == f && (f != 0 || i == int(f));
-    }
+    inline bool testFlag(Enum f) const { return (i & int(f)) == int(f) && (int(f) != 0 || i == int(f)); }
 
-    Bit operator[](Enum f)
-    {
-        return Bit(this, f);
-    }
-    ConstBit operator[](Enum f) const
-    {
-        return ConstBit(this, f);
-    }
+    Bit      operator[](Enum f) { return Bit(this, f); }
+    ConstBit operator[](Enum f) const { return ConstBit(this, f); }
 };
 
 } // namespace phantom

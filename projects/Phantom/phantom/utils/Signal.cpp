@@ -55,13 +55,13 @@ struct SignalPool
 StaticGlobal<SignalPool> g_SignalPool;
 SpinMutex                g_SignalPoolMtx;
 
-PHANTOM_EXPORT_PHANTOM void* _Signal::AllocateSlot()
+void* _Signal::AllocateSlot()
 {
     auto lock = g_SignalPoolMtx.autoLock();
     return g_SignalPool->New();
 }
 
-PHANTOM_EXPORT_PHANTOM void _Signal::DeallocateSlot(void* a_pSlot)
+void _Signal::DeallocateSlot(void* a_pSlot)
 {
     auto lock = g_SignalPoolMtx.autoLock();
     g_SignalPool->Delete(a_pSlot);

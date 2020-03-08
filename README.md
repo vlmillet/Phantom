@@ -52,7 +52,7 @@ This project is under a MIT license which is one of the highest permissive distr
 		- **Lite C++ grammar and semantic with import model (CppLite)** for building C++ like code at runtime
 		- AST objects for **building your own language above native C++**  
 	- *Phantom.Jit* (soon)
-		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation)
+		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation. See my related other project : https://github.com/vlmillet/llvmjitpdb)
 
 ## HelloWorld
 

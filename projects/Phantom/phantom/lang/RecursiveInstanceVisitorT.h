@@ -1122,9 +1122,11 @@ public:
         size_t valueTypeSz = pValueType->getSize();
         void*  buffer = alloca(valueTypeSz);
         pValueType->construct(buffer);
-        a_Input.getMemberMeta()->getValue(a_Input.getOwner().getAddress(), buffer);
+        bool set = this_()->shouldUpdateValueMember(a_Input);
+        if (!set)
+            a_Input.getMemberMeta()->getValue(a_Input.getOwner().getAddress(), buffer);
         bool res = traverse(InstanceT<Type>(pValueType, buffer));
-        if (res && this_()->shouldUpdateValueMember(a_Input))
+        if (res && set)
             a_Input.getMemberMeta()->setValue(a_Input.getOwner().getAddress(), buffer);
         pValueType->destroy(buffer);
         return res;

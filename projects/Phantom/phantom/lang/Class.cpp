@@ -271,7 +271,7 @@ Method* Class::getSlot(StringView a_strIdentifierString) const
 Method* Class::getSlotCascade(StringView a_strIdentifierString) const
 {
     Symbol*             pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
-    return pElement AND pElement->getOwner()->asClass() AND isA(static_cast<Class*>(pElement->getOwner()))
+    return pElement && pElement->getOwner()->asClass() && isA(static_cast<Class*>(pElement->getOwner()))
     ? pElement->asSlot()
     : nullptr;
 }
@@ -279,10 +279,10 @@ Method* Class::getSlotCascade(StringView a_strIdentifierString) const
 void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Access /*= Access::Public*/)
 {
     PHANTOM_ASSERT(a_pBaseClass);
-    PHANTOM_ASSERT(NOT(a_pBaseClass->isSame(this)));
-    PHANTOM_ASSERT(isTemplateDependant() || a_pBaseClass->isTemplateDependant() || NOT(a_pBaseClass->isA(this)));
-    PHANTOM_ASSERT(isTemplateDependant() || a_pBaseClass->isTemplateDependant() || NOT(this->isA(a_pBaseClass)));
-    PHANTOM_ASSERT(isNative() OR NOT(a_pBaseClass->hasStrongDependencyOnType(this)), "cyclic class strong dependency");
+    PHANTOM_ASSERT(!(a_pBaseClass->isSame(this)));
+    PHANTOM_ASSERT(isTemplateDependant() || a_pBaseClass->isTemplateDependant() || !(a_pBaseClass->isA(this)));
+    PHANTOM_ASSERT(isTemplateDependant() || a_pBaseClass->isTemplateDependant() || !(this->isA(a_pBaseClass)));
+    PHANTOM_ASSERT(isNative() || !(a_pBaseClass->hasStrongDependencyOnType(this)), "cyclic class strong dependency");
     m_BaseClasses.push_back(BaseClass(a_pBaseClass, a_uiOffset, a_Access));
     a_pBaseClass->addDerivedClass(const_cast<Class*>(this));
     addReferencedElement(a_pBaseClass);
@@ -400,7 +400,7 @@ void Class::sortBaseAndRootMethods(VirtualMethodTable* a_pBaseVMT, Methods* a_Ou
             if (pMethod->isVirtual())
             {
                 ESignatureRelation eIR = pMethod->getSignatureRelationWith(pBaseMethod);
-                PHANTOM_ASSERT(eIR != e_SignatureRelation_Contravariant AND eIR != e_SignatureRelation_Forbidden);
+                PHANTOM_ASSERT(eIR != e_SignatureRelation_Contravariant && eIR != e_SignatureRelation_Forbidden);
                 if (eIR == e_SignatureRelation_None)
                 {
                     a_OutRootMethods->push_back(pMethod);
@@ -443,7 +443,7 @@ void Class::findOverriddenMethods(StringView a_strName, Signature* a_pSignature,
                 PHANTOM_ASSERT(pResult->getOwnerClass());
                 if (pResult->getOwnerClass()->getBaseClassOffsetCascade((Class*)this) ==
                     0                                      // in the same vtable
-                    AND pMethod->isOverridableBy(pResult)) // a result member function can overload the current tested
+                    && pMethod->isOverridableBy(pResult)) // a result member function can overload the current tested
                                                            // member function, which means that for the current VTable,
                                                            // we already have found an overloaded member function
                 {
@@ -451,7 +451,7 @@ void Class::findOverriddenMethods(StringView a_strName, Signature* a_pSignature,
                     break;
                 }
             }
-            if (NOT(bOverloadedAlreadyAddedForCurrentVTable))
+            if (!(bOverloadedAlreadyAddedForCurrentVTable))
             {
                 a_Result.push_back(pMethod);
             }
@@ -477,7 +477,7 @@ void Class::findOverriddenMethods(Method* a_pOverridingCandidate, Methods& a_Res
                 PHANTOM_ASSERT(pResult->getOwnerClass());
                 if (pResult->getOwnerClass()->getBaseClassOffsetCascade((Class*)this) ==
                     0                                  // in the same vtable
-                    AND pResult->canOverride(pMethod)) // a result member_function can overload the current tested
+                    && pResult->canOverride(pMethod)) // a result member_function can overload the current tested
                                                        // member_function, which means that for the current VTable, we
                                                        // already have found an overloaded member_function
                 {
@@ -485,7 +485,7 @@ void Class::findOverriddenMethods(Method* a_pOverridingCandidate, Methods& a_Res
                     break;
                 }
             }
-            if (NOT(bOverloadedAlreadyAddedForCurrentVTable))
+            if (!(bOverloadedAlreadyAddedForCurrentVTable))
             {
                 a_Result.push_back(pMethod);
             }
@@ -511,7 +511,7 @@ bool Class::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, TypesVi
         return false;
     for (auto& bc : m_BaseClasses)
     {
-        if (NOT(bc.baseClass->acceptsDerivedClassSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers, a_uiFlags,
+        if (!(bc.baseClass->acceptsDerivedClassSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers, a_uiFlags,
                                                             a_pOutConflictingMethods)))
         {
             return false;
@@ -529,7 +529,7 @@ bool Class::acceptsDerivedClassSubroutine(Type* a_pReturnType, StringView a_strN
     {
         for (auto& bc : m_BaseClasses)
         {
-            if (NOT(bc.baseClass->acceptsDerivedClassSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers,
+            if (!(bc.baseClass->acceptsDerivedClassSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers,
                                                                 a_uiFlags, &prevMethods)))
             {
                 bResult = false;
@@ -540,11 +540,11 @@ bool Class::acceptsDerivedClassSubroutine(Type* a_pReturnType, StringView a_strN
     {
         for (Method* pMethod : getMethods())
         {
-            if (NOT(pMethod->isVirtual()))
+            if (!(pMethod->isVirtual()))
                 continue;
             ESignatureRelation eOR =
             pMethod->getSignatureRelationWith(a_pReturnType, a_strName, a_Types, a_Modifiers, a_uiFlags);
-            if (eOR == e_SignatureRelation_Forbidden OR eOR ==
+            if (eOR == e_SignatureRelation_Forbidden || eOR ==
                 e_SignatureRelation_Covariant) // if base member function has covariance with child
                                                // one, it means child one has contravariant relation
                                                // => not accepted in C++
@@ -939,8 +939,8 @@ void Class::getMetaDatasIncludingBases(StringWithHash a_Hash, Variants& a_MetaDa
 
 bool Class::canBeDestroyed() const
 {
-    return ClassType::canBeDestroyed() AND m_DerivedClasses.size() ==
-    0 AND(getInstanceCount() == 0 || (this == PHANTOM_TYPEOF(Class) && getInstanceCount() == 1));
+    return ClassType::canBeDestroyed() && m_DerivedClasses.size() ==
+    0 &&(getInstanceCount() == 0 || (this == PHANTOM_TYPEOF(Class) && getInstanceCount() == 1));
 }
 
 void Class::getFields(AggregateFields& a_OutFields) const
@@ -992,10 +992,10 @@ void Class::onReferencedElementRemoved(LanguageElement* a_pElement)
 
 void Class::_onNativeElementsAccess()
 {
-    if (NOT(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (NOT(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);
@@ -1017,8 +1017,8 @@ void Class::_onNativeElementsAccessImpl()
     m_OnDemandMembersFunc = func;
     ClassType::_onNativeElementsAccessImpl();
 
-    if (!isFinal() AND isPolymorphic()
-        AND(m_BaseClasses.empty() OR m_BaseClasses[0]
+    if (!isFinal() && isPolymorphic()
+        &&(m_BaseClasses.empty() || m_BaseClasses[0]
             .offset)) // is polymorphic + no base class at offset 0 => we need our own base class
     {
         addNewVirtualMethodTable();
@@ -1036,7 +1036,7 @@ void Class::_onNativeElementsAccessImpl()
     }
     for (auto pMethod : getMethods())
     {
-        if (pMethod->isVirtual() AND m_VirtualMethodTables.empty())
+        if (pMethod->isVirtual() && m_VirtualMethodTables.empty())
             addNewVirtualMethodTable();
 
         size_t i = m_VirtualMethodTables.size();
@@ -1047,7 +1047,7 @@ void Class::_onNativeElementsAccessImpl()
             // only insert the function if it overrides an existing if the zero vtable, if already
             // inserted, we only insert the function if it overrides existing, else we insert
             bool insertOnlyIfOverrides = (i != 0) || inserted;
-            inserted = m_VirtualMethodTables[i]->insertMethod(pMethod, insertOnlyIfOverrides) OR inserted;
+            inserted = m_VirtualMethodTables[i]->insertMethod(pMethod, insertOnlyIfOverrides) || inserted;
         }
     }
 }
@@ -1071,16 +1071,16 @@ bool Class::hasMetaDataIncludingBases(StringView a_strName) const
 
 bool Class::isCopyable() const
 {
-    if (NOT(isCopyConstructible() && !hasCopyDisabled()))
+    if (!(isCopyConstructible() && !hasCopyDisabled()))
         return false;
     for (auto pField : getFields())
     {
-        if (NOT(pField->getValueType()->isCopyable()))
+        if (!(pField->getValueType()->isCopyable()))
             return false;
     }
     for (auto& bc : m_BaseClasses)
     {
-        if (NOT(bc.baseClass->isCopyable()))
+        if (!(bc.baseClass->isCopyable()))
             return false;
     }
     return true;
@@ -1213,7 +1213,7 @@ size_t Class::getVirtualMethodCount(size_t a_uiOffset) const
 void Class::addNewVirtualMethodTable()
 {
     PHANTOM_ASSERT(m_VirtualMethodTables.empty()
-                   AND((m_BaseClasses.size() == 0) OR NOT(getBaseClass(0)->isPolymorphic()) OR isNative()));
+                   &&((m_BaseClasses.size() == 0) || !(getBaseClass(0)->isPolymorphic()) || isNative()));
     VirtualMethodTable* pVMT = createVirtualMethodTable();
     pVMT->setFlag(getFlags() & PHANTOM_R_FLAG_NATIVE);
     addElement(pVMT);
@@ -1378,7 +1378,7 @@ bool Class::hasPublicMember(Symbol* a_pLanguageElement) const
             return a_pLanguageElement->isPublic();
         Access superAccess = getBaseClassAccessCascade(pClass);
         return (superAccess != Access::Undefined)
-        AND(std::max(a_pLanguageElement->getAccess(), superAccess) == Access::Public);
+        &&(std::max(a_pLanguageElement->getAccess(), superAccess) == Access::Public);
     }
     return false;
 }
@@ -1392,7 +1392,7 @@ bool Class::hasProtectedMember(Symbol* a_pSymbol) const
             return a_pSymbol->isProtected();
         Access superAccess = getBaseClassAccessCascade(pClass);
         return (superAccess != Access::Undefined)
-        AND(std::max(a_pSymbol->getAccess(), superAccess) == Access::Protected);
+        &&(std::max(a_pSymbol->getAccess(), superAccess) == Access::Protected);
     }
     return false;
 }
@@ -1405,7 +1405,7 @@ bool Class::hasPrivateMember(Symbol* a_pSymbol) const
         if (pClass == this)
             return a_pSymbol->isPrivate();
         Access superAccess = getBaseClassAccessCascade(pClass);
-        return (superAccess != Access::Undefined) AND(std::max(a_pSymbol->getAccess(), superAccess) == Access::Private);
+        return (superAccess != Access::Undefined) &&(std::max(a_pSymbol->getAccess(), superAccess) == Access::Private);
     }
     return false;
 }
@@ -1452,7 +1452,7 @@ bool Class::canHaveImplicitDefaultConstructor() const
     {
         for (auto& bc : m_BaseClasses)
         {
-            if (NOT(bc.baseClass->isDefaultConstructible()))
+            if (!(bc.baseClass->isDefaultConstructible()))
                 return false;
         }
         for (auto pField : getFields())
@@ -1461,9 +1461,9 @@ bool Class::canHaveImplicitDefaultConstructor() const
             {
                 Constructor* pCtor;
                 if (pField->getDefaultExpression() ==
-                    nullptr AND(NOT(pClassType->isDefaultConstructible())
-                                OR((pCtor = pClassType->getDefaultConstructor()) == nullptr)
-                                OR pCtor->testModifiers(Modifier::Deleted)))
+                    nullptr &&(!(pClassType->isDefaultConstructible())
+                                ||((pCtor = pClassType->getDefaultConstructor()) == nullptr)
+                                || pCtor->testModifiers(Modifier::Deleted)))
                     return false;
             }
             else if (pField->getValueType()->asReference())
@@ -1483,7 +1483,7 @@ bool Class::canHaveImplicitCopyConstructor() const
     for (auto& bc : m_BaseClasses)
     {
         auto pCtor = bc.baseClass->getCopyConstructor();
-        if (pCtor == nullptr OR pCtor->testModifiers(Modifier::Deleted))
+        if (pCtor == nullptr || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
 
@@ -1492,8 +1492,8 @@ bool Class::canHaveImplicitCopyConstructor() const
         if (ClassType* pClassType = pField->getValueType()->removeAllQualifiers()->asClassType())
         {
             Constructor* pCtor;
-            if (NOT(pClassType->isCopyConstructible()) OR((pCtor = pClassType->getCopyConstructor()) == nullptr)
-                OR pCtor->testModifiers(Modifier::Deleted))
+            if (!(pClassType->isCopyConstructible()) ||((pCtor = pClassType->getCopyConstructor()) == nullptr)
+                || pCtor->testModifiers(Modifier::Deleted))
                 return false;
         }
         else if (pField->getValueType()->asReference())
@@ -1509,19 +1509,19 @@ bool Class::canHaveImplicitCopyAssignmentOperator() const
     for (auto& bc : m_BaseClasses)
     {
         auto pCtor = bc.baseClass->getCopyAssignmentOperator();
-        if (pCtor == nullptr OR pCtor->testModifiers(Modifier::Deleted))
+        if (pCtor == nullptr || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
     for (auto pField : getFields())
     {
         Type* pType = pField->getValueType();
-        if (pType->asReference() OR pType->asConstType()) // any const or reference field cannot be copied
+        if (pType->asReference() || pType->asConstType()) // any const or reference field cannot be copied
             return false;
         if (ClassType* pClassType = pType->removeVolatile()->asClassType())
         {
             Method* pOp;
-            if (NOT(pClassType->isCopyAssignable()) OR((pOp = pClassType->getCopyAssignmentOperator()) == nullptr)
-                OR pOp->testModifiers(Modifier::Deleted))
+            if (!(pClassType->isCopyAssignable()) ||((pOp = pClassType->getCopyAssignmentOperator()) == nullptr)
+                || pOp->testModifiers(Modifier::Deleted))
                 return false;
         }
     }
@@ -1534,18 +1534,18 @@ bool Class::canHaveImplicitMoveConstructor() const
         return false;
     if (Constructor* pCtor = getCopyConstructor())
     {
-        if (NOT(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) OR pCtor->testModifiers(Modifier::Deleted))
+        if (!(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
     if (Method* pOp = getCopyAssignmentOperator())
     {
-        if (NOT(pOp->testFlags(PHANTOM_R_FLAG_IMPLICIT)) OR pOp->testModifiers(Modifier::Deleted))
+        if (!(pOp->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pOp->testModifiers(Modifier::Deleted))
             return false;
     }
     for (auto& bc : m_BaseClasses)
     {
         auto pCtor = bc.baseClass->getMoveConstructor();
-        if (pCtor == nullptr OR pCtor->testModifiers(Modifier::Deleted))
+        if (pCtor == nullptr || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
 
@@ -1554,8 +1554,8 @@ bool Class::canHaveImplicitMoveConstructor() const
         if (ClassType* pClassType = pField->getValueType()->removeAllQualifiers()->asClassType())
         {
             Constructor* pCtor;
-            if (NOT(pClassType->isMoveConstructible()) OR((pCtor = pClassType->getMoveConstructor()) == nullptr)
-                OR pCtor->testModifiers(Modifier::Deleted))
+            if (!(pClassType->isMoveConstructible()) ||((pCtor = pClassType->getMoveConstructor()) == nullptr)
+                || pCtor->testModifiers(Modifier::Deleted))
                 return false;
         }
         else if (pField->getValueType()->asReference())
@@ -1570,31 +1570,31 @@ bool Class::canHaveImplicitMoveAssignmentOperator() const
         return false;
     if (Constructor* pCtor = getCopyConstructor())
     {
-        if (NOT(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) OR pCtor->testModifiers(Modifier::Deleted))
+        if (!(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
     if (Method* pOp = getCopyAssignmentOperator())
     {
-        if (NOT(pOp->testFlags(PHANTOM_R_FLAG_IMPLICIT)) OR pOp->testModifiers(Modifier::Deleted))
+        if (!(pOp->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pOp->testModifiers(Modifier::Deleted))
             return false;
     }
     for (auto& bc : m_BaseClasses)
     {
         auto pCtor = bc.baseClass->getMoveAssignmentOperator();
-        if (pCtor == nullptr OR pCtor->testModifiers(Modifier::Deleted))
+        if (pCtor == nullptr || pCtor->testModifiers(Modifier::Deleted))
             return false;
     }
 
     for (auto pField : getFields())
     {
         Type* pType = pField->getValueType();
-        if (pType->asReference() OR pType->asConstType()) // any const or reference field cannot be moved
+        if (pType->asReference() || pType->asConstType()) // any const or reference field cannot be moved
             return false;
         if (ClassType* pClassType = pType->removeVolatile()->asClassType())
         {
             Method* pOp;
-            if (NOT(pClassType->isMoveAssignable()) OR((pOp = pClassType->getMoveAssignmentOperator()) == nullptr)
-                OR pOp->testModifiers(Modifier::Deleted))
+            if (!(pClassType->isMoveAssignable()) ||((pOp = pClassType->getMoveAssignmentOperator()) == nullptr)
+                || pOp->testModifiers(Modifier::Deleted))
                 return false;
         }
     }
@@ -1710,7 +1710,7 @@ bool Class::hasStrongDependencyOnType(Type* a_pType) const
 
     for (Class* pBaseClass : m_BaseClasses)
     {
-        if (pBaseClass == a_pType OR pBaseClass->hasStrongDependencyOnType(a_pType))
+        if (pBaseClass == a_pType || pBaseClass->hasStrongDependencyOnType(a_pType))
             return true;
     }
 
@@ -1788,12 +1788,12 @@ void Class::_unregisterKind(void* a_pInstance)
 
 bool Class::isCopyConstructible() const
 {
-    return NOT(hasCopyDisabled());
+    return !(hasCopyDisabled());
 }
 
 bool Class::isMoveConstructible() const
 {
-    return NOT(hasMoveDisabled());
+    return !(hasMoveDisabled());
 }
 
 void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
@@ -1829,23 +1829,23 @@ Class* StructBuilder::end()
     computer.alignStruct(m_pClass->getDataElements(), size, align);
     m_pClass->setSize(size);
     m_pClass->setAlignment(align);
-    if (m_pClass->getDefaultConstructor() == nullptr AND m_pClass->canHaveImplicitDefaultConstructor())
+    if (m_pClass->getDefaultConstructor() == nullptr && m_pClass->canHaveImplicitDefaultConstructor())
     {
         m_pClass->addImplicitDefaultConstructor();
     }
-    if (m_pClass->getCopyConstructor() == nullptr AND m_pClass->canHaveImplicitCopyConstructor())
+    if (m_pClass->getCopyConstructor() == nullptr && m_pClass->canHaveImplicitCopyConstructor())
     {
         m_pClass->addImplicitCopyConstructor();
     }
-    if (m_pClass->getCopyAssignmentOperator() == nullptr AND m_pClass->canHaveImplicitCopyAssignmentOperator())
+    if (m_pClass->getCopyAssignmentOperator() == nullptr && m_pClass->canHaveImplicitCopyAssignmentOperator())
     {
         m_pClass->addImplicitCopyAssignmentOperator();
     }
-    if (m_pClass->getMoveConstructor() == nullptr AND m_pClass->canHaveImplicitMoveConstructor())
+    if (m_pClass->getMoveConstructor() == nullptr && m_pClass->canHaveImplicitMoveConstructor())
     {
         m_pClass->addImplicitMoveConstructor();
     }
-    if (m_pClass->getMoveAssignmentOperator() == nullptr AND m_pClass->canHaveImplicitMoveAssignmentOperator())
+    if (m_pClass->getMoveAssignmentOperator() == nullptr && m_pClass->canHaveImplicitMoveAssignmentOperator())
     {
         m_pClass->addImplicitMoveAssignmentOperator();
     }

@@ -26,10 +26,7 @@ struct NullTerminatedBasicStringView
         if (*a_Str.end())
             notNullTerminated = a_Str;
     }
-    operator const char*()
-    {
-        return notNullTerminated.size() ? notNullTerminated.c_str() : nullTerminated.begin();
-    }
+                               operator const char*() { return notNullTerminated.size() ? notNullTerminated.c_str() : nullTerminated.begin(); }
     BasicStringView<CharT>     nullTerminated;
     SmallString<CharT, 32, 32> notNullTerminated;
 };
@@ -45,18 +42,10 @@ public:
     typedef BasicStringView<CharT>               SelfType;
     typedef NullTerminatedBasicStringView<CharT> NullTerminatedType;
 
-    BasicStringView(const CharT* a_Str) : m_pBegin(a_Str), m_pEnd(a_Str + strlen(a_Str))
-    {
-    }
-    BasicStringView(const CharT* a_First, const CharT* a_Last) : m_pBegin(a_First), m_pEnd(a_Last)
-    {
-    }
-    BasicStringView(const CharT* a_Str, size_t a_Len) : m_pBegin(a_Str), m_pEnd(a_Str + a_Len)
-    {
-    }
-    BasicStringView() : m_pBegin(nullptr), m_pEnd(nullptr)
-    {
-    }
+    BasicStringView(const CharT* a_Str) : m_pBegin(a_Str), m_pEnd(a_Str + strlen(a_Str)) {}
+    BasicStringView(const CharT* a_First, const CharT* a_Last) : m_pBegin(a_First), m_pEnd(a_Last) {}
+    BasicStringView(const CharT* a_Str, size_t a_Len) : m_pBegin(a_Str), m_pEnd(a_Str + a_Len) {}
+    BasicStringView() : m_pBegin(nullptr), m_pEnd(nullptr) {}
 
     // avoid attempt to initialize/test by error a StringView with a nullptr (when replacing
     // existing const char* with their zero initializations)
@@ -111,35 +100,14 @@ public:
         return (a_Str.size() <= size()) && memcmp(a_Str.begin(), begin(), a_Str.size()) == 0;
     }
 
-    const CharT& operator[](size_t Idx) const
-    {
-        return *(begin() + Idx);
-    }
-    const CharT* data() const
-    {
-        return m_pBegin;
-    }
-    const CharT* begin() const
-    {
-        return m_pBegin;
-    }
-    const CharT* end() const
-    {
-        return m_pEnd;
-    }
-    size_t size() const
-    {
-        return static_cast<size_t>(m_pEnd - m_pBegin);
-    }
-    bool empty() const
-    {
-        return m_pBegin == m_pEnd;
-    }
+    const CharT& operator[](size_t Idx) const { return *(begin() + Idx); }
+    const CharT* data() const { return m_pBegin; }
+    const CharT* begin() const { return m_pBegin; }
+    const CharT* end() const { return m_pEnd; }
+    size_t       size() const { return static_cast<size_t>(m_pEnd - m_pBegin); }
+    bool         empty() const { return m_pBegin == m_pEnd; }
 
-    NullTerminatedType nullTerminated() const
-    {
-        return *this;
-    }
+    NullTerminatedType nullTerminated() const { return *this; }
 
     CharT front() const
     {
@@ -152,10 +120,7 @@ public:
         return *(m_pEnd - 1);
     }
 
-    size_t find(CharT a_Ch) const
-    {
-        return find_first_of(a_Ch);
-    }
+    size_t find(CharT a_Ch) const { return find_first_of(a_Ch); }
 
     size_t find(CharT const* a_pWhat, size_t a_Off = 0) const
     {
@@ -300,7 +265,10 @@ public:
     ///   compared string, or all compared characters match but the compared string is longer.
     int compare(SelfType _other) const
     {
+#pragma push_macro("min")
+#undef min
         int const comp = strncmp(m_pBegin, _other.m_pBegin, std::min(size(), _other.size()));
+#pragma pop_macro("min")
         if (comp == 0)
         {
             if (size() == _other.size())

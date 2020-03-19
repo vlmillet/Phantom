@@ -41,8 +41,8 @@ bool ConstVolatileType::partialAccepts(Type* a_pType, size_t& a_Score, Placehold
 bool ConstVolatileType::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asConstVolatileType()
-            AND m_pUnderlyingType->isSame(static_cast<ConstVolatileType*>(a_pOther)->m_pUnderlyingType));
+    this ||(a_pOther->asConstVolatileType()
+            && m_pUnderlyingType->isSame(static_cast<ConstVolatileType*>(a_pOther)->m_pUnderlyingType));
 }
 
 void ConstVolatileType::getUniqueName(StringBuffer& a_Buf) const

@@ -38,8 +38,8 @@ bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap
 bool VolatileType::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asVolatileType()
-            AND m_pUnderlyingType->isSame(static_cast<VolatileType*>(a_pOther)->m_pUnderlyingType));
+    this ||(a_pOther->asVolatileType()
+            && m_pUnderlyingType->isSame(static_cast<VolatileType*>(a_pOther)->m_pUnderlyingType));
 }
 
 Type* VolatileType::addConst() const

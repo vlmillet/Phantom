@@ -230,12 +230,12 @@ namespace phantom {
 
     inline bool Variant::operator==(const char* other) const
     {
-        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
+        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) &&(*((String*)_buffer()) == other);
     }
 
     inline bool Variant::operator==(StringView other) const
     {
-        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) AND(*((String*)_buffer()) == other);
+        return (m_pType == (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING) &&(*((String*)_buffer()) == other);
     }
 
     inline bool Variant::operator==(const Variant& other) const 
@@ -246,9 +246,9 @@ namespace phantom {
             return m_pType == nullptr;
         if (m_pType->isSame((lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING))
         {
-            return (m_pType->isSame(other.m_pType)) AND (*((String*)_buffer()) == *((String*)other._buffer()));
+            return (m_pType->isSame(other.m_pType)) && (*((String*)_buffer()) == *((String*)other._buffer()));
         }
-        return (m_pType->isSame(other.m_pType)) AND m_pType->equal(_buffer(), other._buffer());
+        return (m_pType->isSame(other.m_pType)) && m_pType->equal(_buffer(), other._buffer());
     }
 
     inline bool Variant::operator!=(const char* other) const
@@ -284,7 +284,7 @@ namespace phantom {
 
     inline bool Variant::_as(lang::Type* a_pType, void* a_pDest) const
     {
-        if(a_pType == nullptr OR m_pType == nullptr)
+        if(a_pType == nullptr || m_pType == nullptr)
         {
             return false;
         }
@@ -301,7 +301,7 @@ namespace phantom {
 
     inline Variant Variant::as(lang::Type* a_pType) const
     {
-        if(a_pType == nullptr OR m_pType == nullptr)
+        if(a_pType == nullptr || m_pType == nullptr)
         {
             return phantom::Variant();
         }

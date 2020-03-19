@@ -39,13 +39,13 @@ public:
     }
     RValueReference* asClassRValueReference() const override
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass())
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass())
         ? const_cast<RValueReference*>(this)
         : nullptr;
     }
     RValueReference* asConstClassRValueReference() const override
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass())
+        return (m_pUnderlyingType && m_pUnderlyingType->asConstClass())
         ? const_cast<RValueReference*>(this)
         : nullptr;
     }

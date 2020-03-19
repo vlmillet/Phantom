@@ -105,22 +105,22 @@ lang::Class* Method::getOwnerClass() const
 
 bool Method::canOverride(Method* a_pMethod) const
 {
-    if (NOT(a_pMethod->isVirtual()))
+    if (!(a_pMethod->isVirtual()))
         return false;
     ESignatureRelation r = getSignatureRelationWith(a_pMethod);
-    return (r == e_SignatureRelation_Covariant) OR(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Covariant) ||(r == e_SignatureRelation_Equal);
 }
 
 bool Method::canOverride(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/) const
 {
     ESignatureRelation r = getSignatureRelationWith(a_strName, a_pSignature, a_Modifiers);
-    return (r == e_SignatureRelation_Covariant) OR(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Covariant) ||(r == e_SignatureRelation_Equal);
 }
 
 bool Method::isOverridableBy(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/) const
 {
     ESignatureRelation r = getSignatureRelationWith(a_strName, a_pSignature, a_Modifiers);
-    return (r == e_SignatureRelation_Contravariant) OR(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Contravariant) ||(r == e_SignatureRelation_Equal);
 }
 
 bool Method::isOverridableBy(Method* a_pMethod) const
@@ -198,8 +198,8 @@ bool Method::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifiers) con
              PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
                                // function (every one can call a const member function but a const
                                // cannot call a non const member function)
-    AND(((signModifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
-        OR(signModifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
+    &&(((signModifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
+        ||(signModifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
 }
 
 Type* Method::getImplicitObjectParameterType() const
@@ -233,7 +233,7 @@ void Method::onAncestorChanged(LanguageElement* a_pAncestor)
     Subroutine::onAncestorChanged(a_pAncestor);
     if (a_pAncestor == getOwner())
     {
-        if (NOT(isNative()))
+        if (!(isNative()))
         {
             if (getAccess() == Access::Undefined)
                 setAccess(static_cast<ClassType*>(a_pAncestor)->getDefaultAccess());

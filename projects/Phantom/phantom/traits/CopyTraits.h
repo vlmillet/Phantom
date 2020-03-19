@@ -104,7 +104,7 @@ template<typename t_Ty>
 struct IsCopyableH<t_Ty, false>
 {
     static const bool                value =
-    IsCopyConstructible<t_Ty>::value AND IsCopyAssignable<t_Ty>::value AND NOT(
+    IsCopyConstructible<t_Ty>::value && IsCopyAssignable<t_Ty>::value && !(
     std::is_abstract<t_Ty>::value);
 };
 

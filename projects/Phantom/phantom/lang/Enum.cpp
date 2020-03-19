@@ -80,7 +80,7 @@ Enum::~Enum()
 void Enum::addConstant(Constant* a_pConstant)
 {
     PHANTOM_ASSERT(getConstant(a_pConstant->getName()) == nullptr);
-    PHANTOM_ASSERT(a_pConstant->getValueType() == this OR m_strName == "");
+    PHANTOM_ASSERT(a_pConstant->getValueType() == this || m_strName == "");
     if (m_pUnderlyingIntType->getSize() < a_pConstant->getValueType()->getSize())
     {
         PHANTOM_ASSERT(m_strName == "");

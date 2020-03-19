@@ -52,7 +52,7 @@ Symbol::Symbol(Modifiers a_Modifiers /* = 0*/, uint a_uiFlags /*=0*/)
 Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : LanguageElement(a_uiFlags), m_strName(a_strName), m_Modifiers(a_Modifiers)
 {
-    PHANTOM_ASSERT(NOT(isProtected() AND isPrivate()), "o_private_access and o_protected_access cannot co-exist");
+    PHANTOM_ASSERT(!(isProtected() && isPrivate()), "o_private_access and o_protected_access cannot co-exist");
     Register(this);
 }
 
@@ -175,7 +175,7 @@ const MetaDatas& Symbol::getMetaDatas() const
 
 bool Symbol::hasAnnotation(StringView a_strName) const
 {
-    return (m_pAnnotations AND m_pAnnotations->find(a_strName) != m_pAnnotations->end());
+    return (m_pAnnotations && m_pAnnotations->find(a_strName) != m_pAnnotations->end());
     if (m_pAnnotations == nullptr)
         return false;
     return m_pAnnotations->find(a_strName) != m_pAnnotations->end();
@@ -190,7 +190,7 @@ bool Symbol::addAnnotation(StringView a_strName)
 
 bool Symbol::removeAnnotation(StringView a_strName)
 {
-    if (m_pAnnotations AND m_pAnnotations->erase(a_strName) == 1)
+    if (m_pAnnotations && m_pAnnotations->erase(a_strName) == 1)
     {
         if (m_pAnnotations->empty())
         {
@@ -306,7 +306,7 @@ void Symbol::setAccess(Access a_eAccess)
 void Symbol::setModifiers(Modifiers a_Modifiers)
 {
     m_Modifiers = a_Modifiers;
-    PHANTOM_ASSERT(NOT(isPublic() AND isProtected()), "o_public_access and o_protected_access cannot co-exist");
+    PHANTOM_ASSERT(!(isPublic() && isProtected()), "o_public_access and o_protected_access cannot co-exist");
 }
 
 void Symbol::addModifiers(Modifiers a_Modifiers)
@@ -330,7 +330,7 @@ bool Symbol::isSame(LanguageElement* a_pOther) const
 
 bool Symbol::isSame(Symbol* a_pOther) const
 {
-    return (this == a_pOther OR(isNative() AND getHash() == a_pOther->getHash()));
+    return (this == a_pOther ||(isNative() && getHash() == a_pOther->getHash()));
 }
 
 bool Symbol::hasElementWithName(StringView a_strName) const
@@ -340,7 +340,7 @@ bool Symbol::hasElementWithName(StringView a_strName) const
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
             Symbol* pSymbol = (*it)->asSymbol();
-            if (pSymbol AND pSymbol->getName() == a_strName)
+            if (pSymbol && pSymbol->getName() == a_strName)
                 return true;
         }
     }
@@ -381,17 +381,17 @@ void Symbol::getDoubles(Symbols& out) const
 
 bool Symbol::hasPublicMember(Symbol* a_pSymbol) const
 {
-    return hasElement(a_pSymbol) AND a_pSymbol->isPublic();
+    return hasElement(a_pSymbol) && a_pSymbol->isPublic();
 }
 
 bool Symbol::hasProtectedMember(Symbol* a_pSymbol) const
 {
-    return hasElement(a_pSymbol) AND a_pSymbol->isProtected();
+    return hasElement(a_pSymbol) && a_pSymbol->isProtected();
 }
 
 bool Symbol::hasPrivateMember(Symbol* a_pSymbol) const
 {
-    return hasElement(a_pSymbol) AND a_pSymbol->isPrivate();
+    return hasElement(a_pSymbol) && a_pSymbol->isPrivate();
 }
 
 #ifdef __clang__

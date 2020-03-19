@@ -17,7 +17,7 @@ namespace lang
 bool PlaceholderTemplate::accepts(LanguageElement* a_pLanguageElement) const
 {
     ClassType*            pClassType = a_pLanguageElement->asClassType();
-    return pClassType AND getTemplateSignature()->acceptsArguments(
+    return pClassType && getTemplateSignature()->acceptsArguments(
     pClassType->getTemplateSpecialization()->getArguments());
 }
 
@@ -27,7 +27,7 @@ bool PlaceholderTemplate::isSame(Symbol* a_pOther) const
         return true;
     Placeholder*         pPH = a_pOther->asPlaceholder();
     PlaceholderTemplate* pPHT = pPH ? pPH->asPlaceholderTemplate() : nullptr;
-    return pPHT AND      pPHT->getTemplateSignature()->isSame(getTemplateSignature());
+    return pPHT &&      pPHT->getTemplateSignature()->isSame(getTemplateSignature());
 }
 
 Placeholder* PlaceholderTemplate::clone(uint a_Flags /*= 0*/) const

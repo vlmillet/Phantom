@@ -75,10 +75,10 @@ TemplateSignature* TemplateSignature::Parse(StringView a_strTemplateParameterTyp
             bVariadic = true;
             types[i] = types[i].substr(0, pos);
         }
-        if (types[i].find("typename") != String::npos OR types[i].find("class") != String::npos)
+        if (types[i].find("typename") != String::npos || types[i].find("class") != String::npos)
         {
             StringUtil::ReplaceAll(types[i], " ", "");
-            if (types[i] == "typename" OR types[i] == "class")
+            if (types[i] == "typename" || types[i] == "class")
             {
                 parsedParams.push_back(Param{names[i], nullptr});
                 continue;
@@ -242,8 +242,8 @@ bool TemplateSignature::acceptsArguments(const LanguageElements& a_Arguments) co
         return false;
     for (size_t i = 0; i < m_TemplateParameters.size(); ++i)
     {
-        if (a_Arguments[i] == nullptr OR m_TemplateParameters[i] ==
-            nullptr OR                   NOT(m_TemplateParameters[i]->acceptsArgument(a_Arguments[i])))
+        if (a_Arguments[i] == nullptr || m_TemplateParameters[i] ==
+            nullptr ||                   !(m_TemplateParameters[i]->acceptsArgument(a_Arguments[i])))
             return false;
     }
     return true;
@@ -256,7 +256,7 @@ bool TemplateSignature::isSame(TemplateSignature* a_pOther) const
         return false;
     for (size_t i = 0; i < count; ++i)
     {
-        if (NOT(m_TemplateParameters[i]->isSame(a_pOther->m_TemplateParameters[i])))
+        if (!(m_TemplateParameters[i]->isSame(a_pOther->m_TemplateParameters[i])))
             return false;
     }
     return true;
@@ -265,12 +265,12 @@ bool TemplateSignature::isSame(TemplateSignature* a_pOther) const
 bool TemplateSignature::isSame(Symbol* a_pLanguageElement) const
 {
     TemplateSignature* pTS = a_pLanguageElement->asTemplateSignature();
-    return pTS AND     isSame(pTS);
+    return pTS &&     isSame(pTS);
 }
 
 bool TemplateSignature::isVariadic() const
 {
-    return m_TemplateParameters.size() AND m_TemplateParameters.back()->isPack();
+    return m_TemplateParameters.size() && m_TemplateParameters.back()->isPack();
 }
 
 void TemplateSignature::setVariadic(bool a_bValue)

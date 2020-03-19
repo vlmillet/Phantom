@@ -47,7 +47,7 @@ struct PHANTOM_EXPORT_PHANTOM MemoryLocation
     /// \return true if the two memory locations are isSame.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool operator==(const MemoryLocation& other) const { return m_pStart == other.m_pStart AND m_pEnd == other.m_pEnd; }
+    bool operator==(const MemoryLocation& other) const { return m_pStart == other.m_pStart && m_pEnd == other.m_pEnd; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Less-than comparison operator.

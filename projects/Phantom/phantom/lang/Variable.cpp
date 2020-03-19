@@ -57,7 +57,7 @@ Variable::Variable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifie
 
 Variable::~Variable()
 {
-    if (!isNative() AND m_pValueType)
+    if (!isNative() && m_pValueType)
     {
         m_pValueType->deleteInstance(m_pAddress);
     }
@@ -86,7 +86,7 @@ void Variable::finalize()
 
 StaticField* Variable::asStaticField() const
 {
-    return (getOwner() == nullptr OR getOwner()->asClassType()) ? (StaticField*)this : nullptr;
+    return (getOwner() == nullptr || getOwner()->asClassType()) ? (StaticField*)this : nullptr;
 }
 
 void Variable::setValueType(Type* a_pType)

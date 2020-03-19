@@ -56,7 +56,7 @@ Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
     String str = a_HierarchyWords.front();
     a_HierarchyWords.erase(a_HierarchyWords.begin());
     Namespace* childNamespace = getNamespace(str);
-    if (NOT(childNamespace))
+    if (!(childNamespace))
         return NULL;
     if (a_HierarchyWords.empty())
     {
@@ -76,7 +76,7 @@ Namespace* Namespace::findOrCreateNamespace(Strings* a_HierarchyWords)
     String str = a_HierarchyWords->front();
     a_HierarchyWords->erase(a_HierarchyWords->begin());
     Namespace* pChildNamespace = getNamespace(str);
-    if (NOT(pChildNamespace))
+    if (!(pChildNamespace))
     {
 #if defined(PHANTOM_STATIC_LIB_HANDLE)
         pChildNamespace = PHANTOM_DEFERRED_NEW(Namespace)(str);
@@ -153,7 +153,7 @@ void Namespace::removeNamespace(Namespace* a_pNamespace)
 
 Namespace* Namespace::getRootNamespace() const
 {
-    if (getOwner() == nullptr OR getOwner() == Namespace::Global())
+    if (getOwner() == nullptr || getOwner() == Namespace::Global())
         return const_cast<Namespace*>(this);
     return getParentNamespace()->getRootNamespace();
 }
@@ -289,7 +289,7 @@ void Namespace::getElementDoubles(Symbol* a_pElement, Symbols& out) const
             if (*it == a_pElement)
                 continue;
             Symbol* pSymbol = a_pElement->asSymbol();
-            if (pSymbol AND a_pElement->getDecoratedName() == pSymbol->getDecoratedName())
+            if (pSymbol && a_pElement->getDecoratedName() == pSymbol->getDecoratedName())
             {
                 PHANTOM_ASSERT(a_pElement->getModule() != pSymbol->getModule());
                 out.push_back(pSymbol);
@@ -300,7 +300,7 @@ void Namespace::getElementDoubles(Symbol* a_pElement, Symbols& out) const
 void Namespace::getQualifiedName(StringBuffer& a_Buf) const
 {
     Namespace* pNamespace = getParentNamespace();
-    if (pNamespace == nullptr OR pNamespace == Namespace::Global())
+    if (pNamespace == nullptr || pNamespace == Namespace::Global())
         return getName(a_Buf);
 
     pNamespace->getQualifiedName(a_Buf);
@@ -316,11 +316,11 @@ Namespace* Namespace::getParentNamespace() const
 
 bool Namespace::isSymbolHidden(Symbol* a_pSymbol) const
 {
-    if (a_pSymbol->getNamespace() == this OR a_pSymbol->getOwner() == this)
+    if (a_pSymbol->getNamespace() == this || a_pSymbol->getOwner() == this)
         return false;
     for (auto pRef : getReferencedElements())
     {
-        if (pRef->asSymbol() AND a_pSymbol->getName() == static_cast<Symbol*>(pRef)->getName())
+        if (pRef->asSymbol() && a_pSymbol->getName() == static_cast<Symbol*>(pRef)->getName())
             return true;
     }
     return getOwner() ? getOwner()->isSymbolHidden(a_pSymbol) : false;
@@ -338,7 +338,7 @@ void Namespace::getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) 
     for (auto p : getReferencedElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol AND pSymbol->getName() == a_Name AND NOT(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol && pSymbol->getName() == a_Name && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
             a_Symbols.push_back(pSymbol);
     }
 }

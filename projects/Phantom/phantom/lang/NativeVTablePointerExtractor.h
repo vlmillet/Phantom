@@ -468,7 +468,7 @@ namespace phantom {
             };
 
             template<typename t_Ty, bool t_is_polymorphic>
-            struct vtable_extractor_helper : public vtable_extractor_helper_default_constructible<t_Ty, ::phantom::IsDefaultConstructible<t_Ty>::value AND !std::is_abstract<t_Ty>::value>
+            struct vtable_extractor_helper : public vtable_extractor_helper_default_constructible<t_Ty, ::phantom::IsDefaultConstructible<t_Ty>::value && !std::is_abstract<t_Ty>::value>
             {
 
             };

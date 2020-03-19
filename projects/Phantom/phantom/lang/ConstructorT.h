@@ -101,8 +101,8 @@ public:
     }
 
     typedef ConstructorVTableHacksT<t_Class, t_Signature,
-                                    std::is_polymorphic<t_Class>::value AND !std::is_abstract<t_Class>::value
-                                                                        AND::phantom::IsDefaultConstructible<t_Class>::value>
+                                    std::is_polymorphic<t_Class>::value && !std::is_abstract<t_Class>::value
+                                                                        &&::phantom::IsDefaultConstructible<t_Class>::value>
     hacker;
 
     void** getNativeVTablePointer() const override

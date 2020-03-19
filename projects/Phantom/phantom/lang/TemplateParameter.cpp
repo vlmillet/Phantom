@@ -81,7 +81,7 @@ bool TemplateParameter::acceptsArgument(LanguageElement* a_pLanguageElement) con
 
 bool TemplateParameter::isSame(TemplateParameter* a_pOther) const
 {
-    return a_pOther->m_pPlaceholder AND m_pPlaceholder AND a_pOther->m_pPlaceholder->asSymbol()->isSame(
+    return a_pOther->m_pPlaceholder && m_pPlaceholder && a_pOther->m_pPlaceholder->asSymbol()->isSame(
     m_pPlaceholder->asSymbol());
 }
 

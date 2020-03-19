@@ -41,8 +41,8 @@ bool ConstType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a
 bool ConstType::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asConstType()
-            AND m_pUnderlyingType->isSame(static_cast<ConstType*>(a_pOther)->m_pUnderlyingType));
+    this ||(a_pOther->asConstType()
+            && m_pUnderlyingType->isSame(static_cast<ConstType*>(a_pOther)->m_pUnderlyingType));
 }
 
 Type* ConstType::addConst() const

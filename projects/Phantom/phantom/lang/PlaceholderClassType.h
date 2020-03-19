@@ -58,7 +58,7 @@ public:
 
     bool isSame(Symbol* a_pOther) const override
     {
-        return Type::isSame(a_pOther) OR(a_pOther->asType() AND a_pOther->asPlaceholder());
+        return Type::isSame(a_pOther) ||(a_pOther->asType() && a_pOther->asPlaceholder());
     }
 
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override

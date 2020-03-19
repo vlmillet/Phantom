@@ -126,7 +126,7 @@ void Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateS
 TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature,
                                                                     Symbol*            a_pBody)
 {
-    PHANTOM_ASSERT(a_pBody AND !isNative());
+    PHANTOM_ASSERT(a_pBody && !isNative());
     TemplateSpecialization* pSpec = PHANTOM_DEFERRED_NEW(TemplateSpecialization)(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), a_pBody, getFlags() & PHANTOM_R_FLAG_NATIVE);
     return pSpec;
@@ -136,7 +136,7 @@ TemplateSpecialization* Template::getTemplateSpecialization(TemplateSpecializati
 {
     for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
     {
-        if (pSpec->getSource() AND pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
+        if (pSpec->getSource() && pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
             continue;
         if (pSpec->isSame(a_pTemplateSpecialization))
             return pSpec;
@@ -148,7 +148,7 @@ TemplateSpecialization* Template::getTemplateSpecialization(LanguageElementsView
 {
     for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
     {
-        if (pSpec->getSource() AND pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
+        if (pSpec->getSource() && pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
             continue;
         if (pSpec->matches(a_Arguments))
             return pSpec;
@@ -188,9 +188,9 @@ TemplateSpecialization* Template::getTemplateInstantiation(LanguageElementsView 
 
 void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization)
 {
-    PHANTOM_ASSERT(a_pTemplateSpecialization AND a_pTemplateSpecialization->getTemplate() == this);
+    PHANTOM_ASSERT(a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate() == this);
     TemplateSpecialization* pEqual = getTemplateSpecialization(a_pTemplateSpecialization->getArguments());
-    PHANTOM_ASSERT(!pEqual OR pEqual->getModule() != a_pTemplateSpecialization->getModule());
+    PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule());
     if (m_pNamespace) /// template specialization belongs so same namespace as their template (even
                       /// if they can belong to different owners)
     {
@@ -250,10 +250,10 @@ bool Template::isVariadic() const
 static String Template_removeParens(const char* arg)
 {
     char c;
-    while ((c = *arg) == ' ' OR(c == '\t') OR(c == '('))
+    while ((c = *arg) == ' ' ||(c == '\t') ||(c == '('))
         arg++;
     String str = arg;
-    while ((c = str.back()) == ' ' OR(c == '\t') OR(c == ')'))
+    while ((c = str.back()) == ' ' ||(c == '\t') ||(c == ')'))
         str.pop_back();
     return str;
 }
@@ -280,7 +280,7 @@ static String Template_catSplittedTemplate(const char* arg, const char**& a_rpNe
                 break;
             }
         }
-    } while (templateLevel AND(arg = *a_rpNext++));
+    } while (templateLevel &&(arg = *a_rpNext++));
     return str;
 }
 

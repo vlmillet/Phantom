@@ -104,7 +104,7 @@ template<typename t_Ty>
 struct IsMoveableH<t_Ty, false>
 {
     static const bool                value =
-    IsMoveConstructible<t_Ty>::value AND IsMoveAssignable<t_Ty>::value AND NOT(
+    IsMoveConstructible<t_Ty>::value && IsMoveAssignable<t_Ty>::value && !(
     std::is_abstract<t_Ty>::value);
 };
 

@@ -28,12 +28,12 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
       m_pTemplateSignature(a_pSignature),
       m_pTemplated(a_pTemplated)
 {
-    // accepts only if : (template has no source) OR (template is native and we are currently
-    // registering native types ) OR source is not private (not an obsolete archive stored for
+    // accepts only if : (template has no source) || (template is native and we are currently
+    // registering native types ) || source is not private (not an obsolete archive stored for
     // revert while run-time building)
     PHANTOM_ASSERT(a_pTemplate->getSource() ==
-                   nullptr OR(a_pTemplate->isNative())
-                   OR NOT(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
+                   nullptr ||(a_pTemplate->isNative())
+                   || !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
     m_Arguments.resize(arguments.size());
     for (size_t i = 0; i < arguments.size(); ++i)
     {
@@ -59,12 +59,12 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
       m_pTemplate(a_pTemplate),
       m_pTemplateSignature(a_pSignature)
 {
-    // accepts only if : (template has no source) OR (template is native and we are currently
-    // registering native types ) OR source is not private (not an obsolete archive stored for
+    // accepts only if : (template has no source) || (template is native and we are currently
+    // registering native types ) || source is not private (not an obsolete archive stored for
     // revert while run-time building)
     PHANTOM_ASSERT(a_pTemplate->getSource() ==
-                   nullptr OR(a_pTemplate->isNative())
-                   OR NOT(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
+                   nullptr ||(a_pTemplate->isNative())
+                   || !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
     m_Arguments.resize(arguments.size());
     for (size_t i = 0; i < arguments.size(); ++i)
     {
@@ -196,7 +196,7 @@ Type* TemplateSpecialization::getArgumentAsType(StringView a_strParameterName) c
 void TemplateSpecialization::setArgument(size_t a_uiIndex, LanguageElement* a_pElement)
 {
     size_t index = a_uiIndex;
-    PHANTOM_ASSERT(!isNative() OR a_pElement,
+    PHANTOM_ASSERT(!isNative() || a_pElement,
                    "invalid template argument ; if argument is a type, check that your type has "
                    "lang declared before its use in any template signature");
     PHANTOM_ASSERT(index != ~size_t(0));
@@ -206,7 +206,7 @@ void TemplateSpecialization::setArgument(size_t a_uiIndex, LanguageElement* a_pE
     m_Arguments[index] = a_pElement;
     if (a_pElement)
     {
-        if ((a_pElement->asPlaceholder() OR NOT(a_pElement->asType()))AND a_pElement->getOwner() == nullptr)
+        if ((a_pElement->asPlaceholder() || !(a_pElement->asType()))&& a_pElement->getOwner() == nullptr)
             addElement(a_pElement);
         else
             addReferencedElement(a_pElement);
@@ -224,7 +224,7 @@ void TemplateSpecialization::setDefaultArgument(StringView a_strParameterName, L
 void TemplateSpecialization::setDefaultArgument(size_t index, LanguageElement* a_pElement)
 {
     PHANTOM_ASSERT(index < getArgumentCount());
-    PHANTOM_ASSERT(isFull() AND isNative(), "can only set default arguments for native full specializations");
+    PHANTOM_ASSERT(isFull() && isNative(), "can only set default arguments for native full specializations");
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(getDefaultArgument(index) == nullptr, "default argument already defined");
     if (m_pDefaultArguments == nullptr)
@@ -233,7 +233,7 @@ void TemplateSpecialization::setDefaultArgument(size_t index, LanguageElement* a
         m_pDefaultArguments->resize(m_pTemplate->getTemplateParameters().size(), nullptr);
     }
     (*m_pDefaultArguments)[index] = a_pElement;
-    if ((a_pElement->asPlaceholder() OR NOT(a_pElement->asType()))AND a_pElement->getOwner() == nullptr)
+    if ((a_pElement->asPlaceholder() || !(a_pElement->asType()))&& a_pElement->getOwner() == nullptr)
         addElement(a_pElement);
     else
         addReferencedElement(a_pElement);
@@ -294,12 +294,12 @@ bool TemplateSpecialization::matches(LanguageElementsView a_Arguments) const
     for (; i < count; ++i)
     {
         if (a_Arguments[i]
-            ->asType() AND        a_Arguments[i]
-            ->asPlaceholder() AND m_Arguments[i]
-            ->asPlaceholder() AND m_Arguments[i]
+            ->asType() &&        a_Arguments[i]
+            ->asPlaceholder() && m_Arguments[i]
+            ->asPlaceholder() && m_Arguments[i]
             ->asType())
             continue;
-        if (NOT(a_Arguments[i]->isSame(m_Arguments[i])))
+        if (!(a_Arguments[i]->isSame(m_Arguments[i])))
             return false;
     }
     return true;
@@ -343,7 +343,7 @@ bool TemplateSpecialization::isEmpty() const
 {
     for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it)
     {
-        if (NOT((*it)->asPlaceholder()))
+        if (!((*it)->asPlaceholder()))
             return false; // not a placeholder => partial or full specialization
     }
     return true;
@@ -351,13 +351,13 @@ bool TemplateSpecialization::isEmpty() const
 
 bool TemplateSpecialization::isPartial() const
 {
-    return m_pTemplateSignature AND m_pTemplateSignature->getTemplateParameters().size() != 0;
+    return m_pTemplateSignature && m_pTemplateSignature->getTemplateParameters().size() != 0;
 }
 
 bool TemplateSpecialization::isSpecializingParameter(TemplateParameter* a_pParameter) const
 {
     size_t i = m_pTemplate->getTemplateParameterIndex(a_pParameter);
-    return (i != ~size_t(0)) AND(m_Arguments[i] != nullptr);
+    return (i != ~size_t(0)) &&(m_Arguments[i] != nullptr);
 }
 
 bool TemplateSpecialization::isVariadic() const
@@ -391,13 +391,13 @@ bool TemplateSpecialization::isVariadic() const
 bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecialization) const
 {
     return a_pTemplateSpecialization->getTemplate() ==
-    m_pTemplate AND matches(a_pTemplateSpecialization->getArguments());
+    m_pTemplate && matches(a_pTemplateSpecialization->getArguments());
 }
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
 {
     PHANTOM_ASSERT(a_pTemplated);
-    PHANTOM_ASSERT(NOT(isNative()) OR m_pTemplated == nullptr);
+    PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");
     m_pTemplated = a_pTemplated;
     if (!isFull())
@@ -453,7 +453,7 @@ Source* TemplateSpecialization::getCodeLocationSource() const
 
 bool TemplateSpecialization::isFull() const
 {
-    return !isPartial() AND !isEmpty();
+    return !isPartial() && !isEmpty();
 }
 
 bool TemplateSpecialization::partialAccepts(const LanguageElements& a_Arguments, size_t& a_Score,
@@ -470,7 +470,7 @@ bool TemplateSpecialization::partialAccepts(const LanguageElements& a_Arguments,
     for (i = 0; i < a_Arguments.size(); ++i)
     {
         size_t subScore = 0;
-        if (NOT(m_Arguments[i]->partialAccepts(a_Arguments[i], subScore, a_Deductions)))
+        if (!(m_Arguments[i]->partialAccepts(a_Arguments[i], subScore, a_Deductions)))
             return false;
         score += subScore;
     }

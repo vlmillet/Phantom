@@ -67,22 +67,22 @@ Pointer* Pointer::asPointer() const
 
 Type* Pointer::asClassAddressType() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<Pointer*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<Pointer*>(this) : nullptr;
 }
 
 Pointer* Pointer::asClassPointer() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<Pointer*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<Pointer*>(this) : nullptr;
 }
 
 Type* Pointer::asConstClassAddressType() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<Pointer*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<Pointer*>(this) : nullptr;
 }
 
 Pointer* Pointer::asConstClassPointer() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<Pointer*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<Pointer*>(this) : nullptr;
 }
 
 bool Pointer::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const
@@ -152,7 +152,7 @@ bool Pointer::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_D
 bool Pointer::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asPointer() AND m_pUnderlyingType->isSame(static_cast<Pointer*>(a_pOther)->m_pUnderlyingType));
+    this ||(a_pOther->asPointer() && m_pUnderlyingType->isSame(static_cast<Pointer*>(a_pOther)->m_pUnderlyingType));
 }
 
 Type* Pointer::getUnderlyingType() const

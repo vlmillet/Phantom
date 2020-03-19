@@ -57,7 +57,7 @@ public:
 
     virtual bool hasCopyDisabled() const
     {
-        return HasCopyDisabled<t_Ty>::value OR((t_meta_flags & PHANTOM_R_FLAG_NO_COPY) == PHANTOM_R_FLAG_NO_COPY);
+        return HasCopyDisabled<t_Ty>::value ||((t_meta_flags & PHANTOM_R_FLAG_NO_COPY) == PHANTOM_R_FLAG_NO_COPY);
     }
 
     virtual void copy(void* a_pDest, void const* a_pSrc) const

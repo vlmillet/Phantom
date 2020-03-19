@@ -143,7 +143,7 @@ public:
     bool isSame(Symbol* a_pLanguageElement) const override
     {
         TemplateParameter* pTP = a_pLanguageElement->asTemplateParameter();
-        return pTP AND     isSame(pTP);
+        return pTP &&     isSame(pTP);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,7 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
     : ClassType(TypeKind::TemplateDependant,
-                (a_pTemplateSpecialization AND a_pTemplateSpecialization->getTemplate())
+                (a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate())
                 ? a_pTemplateSpecialization->getTemplate()->getName()
                 : "",
                 0, 0, 0, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
@@ -66,14 +66,14 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
     Placeholder*                       pPH = a_pOther->asPlaceholder();
     TemplateDependantTemplateInstance* pTDTI =
     pPH ? phantom::Object::Cast<TemplateDependantTemplateInstance>(pPH->asSymbol()) : nullptr;
-    if (pTDTI == nullptr OR NOT(pTDTI->m_pTemplate->isSame(m_pTemplate)))
+    if (pTDTI == nullptr || !(pTDTI->m_pTemplate->isSame(m_pTemplate)))
         return false;
     size_t count = m_Arguments.size();
     if (count != pTDTI->m_Arguments.size())
         return false;
     for (size_t i = 0; i < count; ++i)
     {
-        if (NOT(m_Arguments[i]->isSame(pTDTI->m_Arguments[i])))
+        if (!(m_Arguments[i]->isSame(pTDTI->m_Arguments[i])))
             return false;
     }
     return true;

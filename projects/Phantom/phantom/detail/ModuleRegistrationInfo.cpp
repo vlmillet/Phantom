@@ -200,7 +200,7 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
 }
 void ModuleRegistrationInfo::stepTypeInstallation(lang::Type* a_pType)
 {
-    if (m_bInstalled OR m_CurrentInstallationStep == TypeInstallationStep::Uninstalled)
+    if (m_bInstalled || m_CurrentInstallationStep == TypeInstallationStep::Uninstalled)
         return;
     size_t count =
     m_TypeInstallationInfos.size(); // we handle a fixed amount of installation even if new appear during the loop

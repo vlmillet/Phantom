@@ -529,7 +529,7 @@ void Application::_addModule(Module* a_pModule)
 {
     PHANTOM_ASSERT(getModule(a_pModule->getName()) == nullptr, "module with same name already loaded");
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
-    PHANTOM_ASSERT(m_Modules.size() OR a_pModule->getName() == "Phantom", "phantom must be the first loaded module");
+    PHANTOM_ASSERT(m_Modules.size() || a_pModule->getName() == "Phantom", "phantom must be the first loaded module");
 #endif
     m_Modules.push_back(a_pModule);
     if (a_pModule->isNative())
@@ -559,7 +559,7 @@ void Application::onElementRemoved(LanguageElement* a_pElement)
     }
     else if (a_pElement->asNamespace())
     {
-        PHANTOM_ASSERT(a_pElement->isInvalid() OR Namespace::Global() == a_pElement);
+        PHANTOM_ASSERT(a_pElement->isInvalid() || Namespace::Global() == a_pElement);
     }
 }
 
@@ -714,7 +714,7 @@ Module* Application::getSharedLibraryModule(StringView a_strPath) const
 
 Module* Application::nativeModuleFromStackContext(const byte* ebp, uint stackLevel, byte* epc /*= 0*/)
 {
-    PHANTOM_ASSERT(epc OR stackLevel > 0);
+    PHANTOM_ASSERT(epc || stackLevel > 0);
     while (stackLevel--)
     {
         // down the stack
@@ -734,7 +734,7 @@ Module* Application::nativeModuleFromProgramCounter(const byte* epc)
     for (auto pMod : nativeModules)
     {
         byte* pMemoryStart = pMod->getMemoryStart();
-        if (pMemoryStart AND(epc > pMemoryStart)) // current instruction pointer is after current
+        if (pMemoryStart &&(epc > pMemoryStart)) // current instruction pointer is after current
                                                   // module start => current module is candidate
         {
             if ((epc - pMemoryStart) < distanceFromModuleStart)
@@ -762,7 +762,7 @@ bool Application::setDefaultPluginPath(StringView a_strPath)
         PHANTOM_LOG(Error, "default module path is mandatory, you cannot set an empty default module path");
         return false;
     }
-    if (!hasPluginPath(a_strPath) AND !addPluginPath(a_strPath))
+    if (!hasPluginPath(a_strPath) && !addPluginPath(a_strPath))
     {
         return false;
     }
@@ -777,7 +777,7 @@ bool Application::setDefaultExportPath(StringView a_strPath)
     if (!Path::Exists(a_strPath))
     {
         std::error_code ec;
-        if (!Path::CreateDirectories(a_strPath, ec) AND ec.value())
+        if (!Path::CreateDirectories(a_strPath, ec) && ec.value())
         {
             PHANTOM_LOG(Error, "cannot create export path '%s' [system error: %s]",
                         (const char*)a_strPath.nullTerminated(), (const char*)ec.message().c_str());
@@ -809,7 +809,7 @@ bool Application::addPluginPath(StringView a_strPath)
     if (!Path::Exists(a_strPath))
     {
         std::error_code ec;
-        if (!Path::CreateDirectories(a_strPath, ec) AND ec.value())
+        if (!Path::CreateDirectories(a_strPath, ec) && ec.value())
         {
             PHANTOM_WARNING(false, "cannot create plugin path '%.*s' [system error: %.*s]",
                             PHANTOM_STRING_AS_PRINTF_ARG(a_strPath), PHANTOM_STRING_AS_PRINTF_ARG(ec.message()));
@@ -844,7 +844,7 @@ bool Application::addBinaryPath(StringView a_strPath)
     if (!Path::Exists(a_strPath))
     {
         std::error_code ec;
-        if (!Path::CreateDirectories(a_strPath, ec) AND ec.value())
+        if (!Path::CreateDirectories(a_strPath, ec) && ec.value())
         {
             PHANTOM_WARNING(false, "cannot create binary path '%.*s' [system error: %.*s]",
                             PHANTOM_STRING_AS_PRINTF_ARG(a_strPath), PHANTOM_STRING_AS_PRINTF_ARG(ec.message()));
@@ -905,7 +905,7 @@ bool Application::setDefaultSourcePath(StringView a_strPath)
     auto   it = std::find(m_SourcePaths.begin(), m_SourcePaths.end(), path);
     if (it == m_SourcePaths.end())
     {
-        if (NOT(addSourcePath(a_strPath)))
+        if (!(addSourcePath(a_strPath)))
             return false;
         String front = m_SourcePaths.front();
         m_SourcePaths.front() = m_SourcePaths.back();
@@ -925,7 +925,7 @@ bool Application::addSourcePath(StringView a_strPath)
     if (!Path::Exists(a_strPath))
     {
         std::error_code ec;
-        if (!Path::CreateDirectories(a_strPath, ec) AND ec.value())
+        if (!Path::CreateDirectories(a_strPath, ec) && ec.value())
         {
             PHANTOM_WARNING(false,
                             "cannot create source path '%.*s' [system error: %s], keep previously "
@@ -1144,7 +1144,7 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
         {
             templateSignature--;
         }
-        else if (c == ',' AND templateSignature == 0)
+        else if (c == ',' && templateSignature == 0)
         {
             Symbol* pSymbol = findSymbol(symbolString);
             if (pSymbol == nullptr)
@@ -1153,7 +1153,7 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
                 if (pExp)
                 {
                     Symbol* pUS = reinterpret_cast<LanguageElement*>(pExp)->removeExpressionAsSymbol();
-                    if (pUS AND pUS->asConstant())
+                    if (pUS && pUS->asConstant())
                     {
                         pSymbol = static_cast<Constant*>(pUS)->clone();
                     }
@@ -1176,7 +1176,7 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
         if (pExp)
         {
             Symbol* pUS = reinterpret_cast<LanguageElement*>(pExp)->removeExpressionAsSymbol();
-            if (pUS AND pUS->asConstant())
+            if (pUS && pUS->asConstant())
             {
                 pSymbol = static_cast<Constant*>(pUS)->clone();
             }
@@ -1195,7 +1195,7 @@ static void Application_clearClonedConstants(const Symbols& a_Symbols)
     for (auto it = a_Symbols.begin(); it != a_Symbols.end(); ++it)
     {
         Symbol* pSym = *it;
-        if (pSym AND pSym->asConstant() AND pSym->getOwner() == nullptr)
+        if (pSym && pSym->asConstant() && pSym->getOwner() == nullptr)
             PHANTOM_DELETE_DYN pSym;
     }
 }
@@ -1203,7 +1203,7 @@ static void Application_clearClonedConstants(const Symbols& a_Symbols)
 Symbol* Application::_findSymbol(const Strings& words, const Types* a_pFunctionSignature, Modifiers a_RefQualifiers,
                                  LanguageElement* a_pScope /*= nullptr*/) const
 {
-    if (words.size() == 1 AND words.front().front() == '@')
+    if (words.size() == 1 && words.front().front() == '@')
     {
         for (auto it = m_BuiltInTypes.begin(); it != m_BuiltInTypes.end(); ++it)
         {
@@ -1270,10 +1270,10 @@ Symbol* Application::_findSymbol(const Strings& words, const Types* a_pFunctionS
             else
             {
                 Subroutine* pSubroutine;
-                if (name.size() && name.front() == '$' AND(pSubroutine = pScope->asSubroutine())) // parameter
+                if (name.size() && name.front() == '$' &&(pSubroutine = pScope->asSubroutine())) // parameter
                 {
                     int i2 = -1;
-                    if (sscanf(name.c_str() + 1, "%d", &i2) != 1 OR i2 < 0 OR i2 >= pSubroutine->getParameters().size())
+                    if (sscanf(name.c_str() + 1, "%d", &i2) != 1 || i2 < 0 || i2 >= pSubroutine->getParameters().size())
                     {
                         return nullptr;
                     }

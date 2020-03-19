@@ -58,7 +58,7 @@ public:
     ConstVolatileType*         asConstVolatileType() const override { return const_cast<ConstVolatileType*>(this); }
     virtual ConstVolatileType* asConstVolatileClass() const
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<ConstVolatileType*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<ConstVolatileType*>(this) : nullptr;
     }
 
     bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const override;

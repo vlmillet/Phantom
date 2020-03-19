@@ -149,7 +149,7 @@ void Signature::parse(StringView a_strSignature, LanguageElement* a_pContextScop
         char c = a_strSignature[i];
         if (c == '(')
         {
-            PHANTOM_ASSERT(NOT(returnType.empty()), "no return type specified in the signature String");
+            PHANTOM_ASSERT(!(returnType.empty()), "no return type specified in the signature String");
             Type* pReturnType = m_pReturnType;
             if (pReturnType == nullptr)
             {
@@ -164,7 +164,7 @@ void Signature::parse(StringView a_strSignature, LanguageElement* a_pContextScop
         }
         else
         {
-            if (prevChar == '>' AND c == '>') /// avoid shift right / end of template ambiguity
+            if (prevChar == '>' && c == '>') /// avoid shift right / end of template ambiguity
                 returnType += ' ';
             returnType += c;
         }
@@ -195,7 +195,7 @@ void Signature::addParameter(Parameter* a_pParameter)
                            "parameter must have a default argument because the previous parameter had one");
         }
     }
-    PHANTOM_ASSERT(NOT(isVariadic()), "cannot add parameters after a variadic parameter pack");
+    PHANTOM_ASSERT(!(isVariadic()), "cannot add parameters after a variadic parameter pack");
     PHANTOM_ASSERT(a_pParameter);
     addElement(a_pParameter);
     m_Parameters.push_back(a_pParameter);
@@ -204,7 +204,7 @@ void Signature::addParameter(Parameter* a_pParameter)
 void Signature::setReturnType(Type* a_pType)
 {
     PHANTOM_ASSERT(
-    a_pType AND(a_pType->isTemplateDependant() OR(a_pType == PHANTOM_TYPEOF(void)) OR a_pType->isMoveConstructible()));
+    a_pType &&(a_pType->isTemplateDependant() ||(a_pType == PHANTOM_TYPEOF(void)) || a_pType->isMoveConstructible()));
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
     addReferencedElement(a_pType);
@@ -257,7 +257,7 @@ bool Signature::separateParameters(StringView a_strText, Strings& a_OutParameter
     for (; i < length; ++i)
     {
         char c = a_strText[i];
-        if (c == ',' AND template_level == 0)
+        if (c == ',' && template_level == 0)
         {
             a_OutParameters.push_back(parameter);
             parameter.clear();
@@ -276,7 +276,7 @@ bool Signature::separateParameters(StringView a_strText, Strings& a_OutParameter
             parameter += c;
         }
     }
-    if (template_level == 0 AND NOT(parameter.empty()))
+    if (template_level == 0 && !(parameter.empty()))
     {
         a_OutParameters.push_back(parameter);
         return true;
@@ -303,7 +303,7 @@ bool Signature::parseParameterTypeList(StringView a_strText, LanguageElement* a_
         return false;
 
     Strings parameters;
-    if (NOT(separateParameters(words.front(), parameters)))
+    if (!(separateParameters(words.front(), parameters)))
         return false;
     for (auto it = parameters.begin(); it != parameters.end(); ++it)
     {
@@ -342,7 +342,7 @@ bool Signature::isSame(Signature* a_pOther) const
     Types types;
     for (size_t i = 0; i < m_Parameters.size(); ++i)
     {
-        if (NOT(m_Parameters[i]->getValueType()->isSame(a_pOther->m_Parameters[i]->getValueType())))
+        if (!(m_Parameters[i]->getValueType()->isSame(a_pOther->m_Parameters[i]->getValueType())))
             return false;
     }
     return m_pReturnType->isSame(a_pOther->m_pReturnType);
@@ -460,7 +460,7 @@ Signature* Signature::clone() const
 
 bool Signature::isSame(Symbol* a_pOther) const
 {
-    if (NOT(a_pOther->asSignature()))
+    if (!(a_pOther->asSignature()))
         return false;
     return isSame(static_cast<Signature*>(a_pOther));
 }
@@ -509,13 +509,13 @@ size_t Signature::getRequiredArgumentCount() const
 
 bool Signature::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers) const
 {
-    if (a_ParameterTypes.size() != getParameterCount() OR(getModifiers() != a_Modifiers))
+    if (a_ParameterTypes.size() != getParameterCount() ||(getModifiers() != a_Modifiers))
     {
         return false;
     }
     for (size_t i = 0; i < m_Parameters.size(); ++i)
     {
-        if (a_ParameterTypes[i] != nullptr AND NOT(m_Parameters[i]->getValueType()->isSame(a_ParameterTypes[i])))
+        if (a_ParameterTypes[i] != nullptr && !(m_Parameters[i]->getValueType()->isSame(a_ParameterTypes[i])))
             return false;
     }
     return true;

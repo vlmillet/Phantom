@@ -60,7 +60,7 @@ void Plugin::deleteOnDisk()
     String path = m_strFilePath;
     PHANTOM_ASSERT(m_RefCount == 0);
     std::error_code ec;
-    PHANTOM_VERIFY(Path::RemoveAll(path, ec) AND ec.value() != 0);
+    PHANTOM_VERIFY(Path::RemoveAll(path, ec) && ec.value() != 0);
 }
 
 bool Plugin::HasUnloadingInProgress()
@@ -144,8 +144,8 @@ PHANTOM_OPERATING_SYSTEM_WINDOWS // ============================================
         DWORD dw = GetLastError();
         PHANTOM_LOG(Error, "Cannot load module : %s", m_strName.c_str());
         LPVOID lpMsgBuf;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&lpMsgBuf, 0, NULL);
 
         String clampedMessage = (char*)lpMsgBuf;
         clampedMessage = clampedMessage.substr(0, clampedMessage.find_first_of("\r\n"));
@@ -228,7 +228,7 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
         case SCE_KERNEL_ERROR_ESDKVERSION:
             // 0x80020063
             msg = "Version of the SDK used to build the specified dynamic library is newer "
-                    "than the system software version";
+                  "than the system software version";
             break;
 
         default:
@@ -266,8 +266,8 @@ PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX // ========================================
     }
     else
     {
-		PHANTOM_LOG(Error, "Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
-		PHANTOM_LOG(Error, "System DLL loading failed : %s", dlerror());
+        PHANTOM_LOG(Error, "Cannot load module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_strName));
+        PHANTOM_LOG(Error, "System DLL loading failed : %s", dlerror());
         return false;
     }
 #else
@@ -338,7 +338,7 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
         case SCE_KERNEL_ERROR_EBUSY:
             // 0x80020010
             msg = "Specified dynamic library is referenced by a thread other than the thread "
-                    "that called this function";
+                  "that called this function";
             break;
 
         default:
@@ -358,8 +358,8 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
     }
     else
     {
-		PHANTOM_LOG(Error, "Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
-		PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", dlerror());
+        PHANTOM_LOG(Error, "Cannot unload module : %.*s", PHANTOM_STRING_AS_PRINTF_ARG(m_pModule->getName()));
+        PHANTOM_LOG(Error, "System dynamic library unloading failed : %s", dlerror());
         return false;
     }
 #else
@@ -372,9 +372,9 @@ PHANTOM_OPERATING_SYSTEM_ORBIS // ==============================================
 
 bool Plugin::_loadFile()
 {
-    FILE* file = fopen(m_strFilePath.c_str(), "r");
-    char          linebuf[256];
-    Strings       lines;
+    FILE*   file = fopen(m_strFilePath.c_str(), "r");
+    char    linebuf[256];
+    Strings lines;
     if (!file)
     {
         PHANTOM_LOG(Error, "failed to read plugin file");
@@ -384,30 +384,30 @@ bool Plugin::_loadFile()
     char* end = fgets(linebuf, 256, file);
     end += strlen(end);
     if (!end)
-	{
-		PHANTOM_LOG(Error, "failed to parse plugin file");
-		fclose(file);
-		return false;
+    {
+        PHANTOM_LOG(Error, "failed to parse plugin file");
+        fclose(file);
+        return false;
     }
     while (*--end == '\n' || *end == '\r')
         *end = 0;
     if (strcmp(linebuf, "[Plugin]") != 0)
     {
         PHANTOM_LOG(Error, "failed to parse plugin file");
-		fclose(file);
-		return false;
+        fclose(file);
+        return false;
     }
     while (feof(file) == 0 && (end = fgets(linebuf, 256, file)))
-	{
-		end += strlen(end);
-		if (!end)
-		{
-			PHANTOM_LOG(Error, "failed to parse plugin file");
-			fclose(file);
-			return false;
-		}
-		while (*--end == '\n' || *end == '\r')
-			*end = 0;
+    {
+        end += strlen(end);
+        if (!end)
+        {
+            PHANTOM_LOG(Error, "failed to parse plugin file");
+            fclose(file);
+            return false;
+        }
+        while (*--end == '\n' || *end == '\r')
+            *end = 0;
         String line(linebuf);
         if (StringUtil::RemoveExtraBlanks(line).empty())
             continue;
@@ -416,8 +416,8 @@ bool Plugin::_loadFile()
         if (parts.size() != 2)
         {
             PHANTOM_LOG(Error, "failed to parse plugin file");
-			fclose(file);
-			return false;
+            fclose(file);
+            return false;
         }
         StringView key = StringUtil::RemoveExtraBlanks(parts[0]);
         StringView value = StringUtil::RemoveExtraBlanks(parts[1]);
@@ -433,8 +433,8 @@ bool Plugin::_loadFile()
                         PHANTOM_STRING_AS_PRINTF_ARG(value));
         }
     }
-	fclose(file);
-	return true;
+    fclose(file);
+    return true;
 }
 
 bool Plugin::_refCountNative()
@@ -495,7 +495,7 @@ bool Plugin::_load()
     g_LoadingPlugins.push_back(this);
     LoadingPluginsGuard guard__(&g_LoadingPlugins);
 
-    PHANTOM_ASSERT(m_RefCount == 0 OR m_pModule);
+    PHANTOM_ASSERT(m_RefCount == 0 || m_pModule);
 
     /// If module already loaded  we just increment ref counts
     if (m_RefCount > 0)
@@ -599,7 +599,7 @@ bool Plugin::_unload()
 {
     Function* pUnloadingExtensionFunction = nullptr;
 
-    PHANTOM_ASSERT(m_RefCount > 0 AND m_pModule);
+    PHANTOM_ASSERT(m_RefCount > 0 && m_pModule);
     m_RefCount--;
     if (m_RefCount > 0)
     {

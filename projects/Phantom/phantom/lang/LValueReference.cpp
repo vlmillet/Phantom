@@ -22,12 +22,12 @@ LValueReference* LValueReference::asLValueReference() const
 
 LValueReference* LValueReference::asClassLValueReference() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<LValueReference*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<LValueReference*>(this) : nullptr;
 }
 
 LValueReference* LValueReference::asConstClassLValueReference() const
 {
-    return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<LValueReference*>(this) : nullptr;
+    return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<LValueReference*>(this) : nullptr;
 }
 
 Type* LValueReference::addPointer() const
@@ -80,8 +80,8 @@ bool LValueReference::partialAccepts(Type* a_pType, size_t& a_Score, Placeholder
 bool LValueReference::isSame(Symbol* a_pOther) const
 {
     return a_pOther ==
-    this OR(a_pOther->asLValueReference()
-            AND m_pUnderlyingType->isSame(static_cast<LValueReference*>(a_pOther)->m_pUnderlyingType));
+    this ||(a_pOther->asLValueReference()
+            && m_pUnderlyingType->isSame(static_cast<LValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 
 void LValueReference::getUniqueName(StringBuffer& a_Buf) const

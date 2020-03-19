@@ -22,7 +22,7 @@ bool InitializerListType::matches(TypesView a_Types) const
         return false;
     for (size_t i = 0; i < m_Types.size(); ++i)
     {
-        if (NOT(m_Types[i]->isSame(a_Types[i])))
+        if (!(m_Types[i]->isSame(a_Types[i])))
             return false;
     }
     return true;

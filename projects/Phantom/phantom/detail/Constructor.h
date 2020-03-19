@@ -129,7 +129,7 @@ struct Constructor<t_Ty, ConstructorOverloadTag::Default>
                                   ? detail::ConstructorSelectorId::NoDefault
                                   : detail::ConstructorSelectorId::Abstract // abstract
                                                                 : std::is_class<t_Ty>::value
-                                  ? NOT(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
+                                  ? !(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
                                   ? detail::ConstructorSelectorId::NoDefault // no default constructor
                                   : detail::ConstructorSelectorId::Default
                                   : detail::ConstructorSelectorId::Fundamental>

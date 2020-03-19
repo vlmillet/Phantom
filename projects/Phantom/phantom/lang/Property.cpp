@@ -20,7 +20,7 @@ namespace lang
 {
 static Type* Property_ValueTypeFromParamType(Type* a_pParamType)
 {
-    PHANTOM_ASSERT(a_pParamType->asReference() == nullptr OR a_pParamType->removeReference()->asConstType());
+    PHANTOM_ASSERT(a_pParamType->asReference() == nullptr || a_pParamType->removeReference()->asConstType());
     return a_pParamType->removeReference()->removeQualifiers();
 }
 
@@ -125,29 +125,29 @@ void Property::onAncestorChanged(LanguageElement* a_pOwner)
     ValueMember::onAncestorChanged(a_pOwner);
     if (getOwner() == a_pOwner)
     {
-        if (m_pGet AND m_pGet->getOwner() == nullptr)
+        if (m_pGet && m_pGet->getOwner() == nullptr)
         {
             static_cast<ClassType*>(getOwner())->addMethod(m_pGet);
         }
         else
         {
-            PHANTOM_ASSERT(m_pGet == nullptr OR getOwner() == m_pGet->getOwner());
+            PHANTOM_ASSERT(m_pGet == nullptr || getOwner() == m_pGet->getOwner());
         }
-        if (m_pSet AND m_pSet->getOwner() == nullptr)
+        if (m_pSet && m_pSet->getOwner() == nullptr)
         {
             static_cast<ClassType*>(getOwner())->addMethod(m_pSet);
         }
         else
         {
-            PHANTOM_ASSERT(m_pSet == nullptr OR getOwner() == m_pSet->getOwner());
+            PHANTOM_ASSERT(m_pSet == nullptr || getOwner() == m_pSet->getOwner());
         }
-        if (m_pSignal AND m_pSignal->getOwner() == nullptr)
+        if (m_pSignal && m_pSignal->getOwner() == nullptr)
         {
             static_cast<ClassType*>(getOwner())->addMethod(m_pSignal);
         }
         else
         {
-            PHANTOM_ASSERT(m_pSignal == nullptr OR getOwner() == m_pSignal->getOwner());
+            PHANTOM_ASSERT(m_pSignal == nullptr || getOwner() == m_pSignal->getOwner());
         }
     }
 }

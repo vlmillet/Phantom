@@ -308,7 +308,7 @@ inline bool Path::empty() const
 
 inline bool Path::isRoot() const
 {
-    return parts.size() == 1 AND isAbsolute();
+    return parts.size() == 1 && isAbsolute();
 }
 
 inline StringView Path::filename() const

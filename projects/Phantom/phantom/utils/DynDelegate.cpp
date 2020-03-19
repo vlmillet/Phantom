@@ -64,7 +64,7 @@ bool OpaqueDynDelegate::_CheckSignature(lang::Type* a_pRetType, lang::TypesView 
     {
         lang::Type* pArgT = a_Types[i];
         lang::Type* pParamT = pSign->getParameterType(i);
-        if (!pArgT->isSame(pSign->getParameterType(i)) AND((pArgT->asPointer() == nullptr) OR(
+        if (!pArgT->isSame(pSign->getParameterType(i)) &&((pArgT->asPointer() == nullptr) ||(
             pParamT != PHANTOM_TYPEOF(void*) && pArgT != PHANTOM_TYPEOF(void*)))) // X* -> void* || void* -> X*
             return false;
     }

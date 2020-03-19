@@ -27,7 +27,7 @@ struct PHANTOM_EXPORT_PHANTOM CodePosition
 
     bool operator==(const CodePosition& other) const
     {
-        return line == other.line AND column == other.column;
+        return line == other.line && column == other.column;
     }
 
     bool operator!=(const CodePosition& other) const
@@ -37,12 +37,12 @@ struct PHANTOM_EXPORT_PHANTOM CodePosition
 
     bool operator<(const CodePosition& other) const
     {
-        return ((line < other.line) OR((line == other.line) AND column < other.column));
+        return ((line < other.line) ||((line == other.line) && column < other.column));
     }
 
     bool operator>(const CodePosition& other) const
     {
-        return ((line > other.line) OR((line == other.line) AND column > other.column));
+        return ((line > other.line) ||((line == other.line) && column > other.column));
     }
 
     bool isValid() const
@@ -64,7 +64,7 @@ struct PHANTOM_EXPORT_PHANTOM CodeLocation
 
     bool operator==(const CodeLocation& other) const
     {
-        return position == other.position AND source == other.source;
+        return position == other.position && source == other.source;
     }
 
     bool operator!=(const CodeLocation& other) const
@@ -74,12 +74,12 @@ struct PHANTOM_EXPORT_PHANTOM CodeLocation
 
     bool operator<(const CodeLocation& other) const
     {
-        return ((source < other.source) OR((source == other.source) AND position < other.position));
+        return ((source < other.source) ||((source == other.source) && position < other.position));
     }
 
     bool operator>(const CodeLocation& other) const
     {
-        return ((source > other.source) OR((source == other.source) AND position > other.position));
+        return ((source > other.source) ||((source == other.source) && position > other.position));
     }
 
     bool isValid() const
@@ -105,7 +105,7 @@ struct PHANTOM_EXPORT_PHANTOM CodeRange
 
     bool operator<(const CodeRange& other) const
     {
-        return begin < other.begin OR(begin == other.begin AND end < other.end);
+        return begin < other.begin ||(begin == other.begin && end < other.end);
     }
 
     bool operator>(const CodeRange& other) const
@@ -115,14 +115,14 @@ struct PHANTOM_EXPORT_PHANTOM CodeRange
 
     bool containsCodePosition(const CodePosition& pos) const
     {
-        return (pos.line >= begin.line AND pos.line <= end.line)
-        AND(((pos.line != begin.line) OR(pos.column >= begin.column))
-            AND((pos.line != end.line) OR(pos.column <= end.column)));
+        return (pos.line >= begin.line && pos.line <= end.line)
+        &&(((pos.line != begin.line) ||(pos.column >= begin.column))
+            &&((pos.line != end.line) ||(pos.column <= end.column)));
     }
 
     bool containsLine(uint16 a_Line) const
     {
-        return a_Line >= begin.line AND a_Line <= end.line;
+        return a_Line >= begin.line && a_Line <= end.line;
     }
 
     CodeRange combine(const CodeRange& other) const

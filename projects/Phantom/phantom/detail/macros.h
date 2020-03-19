@@ -14,11 +14,6 @@ HAUNT_STOP;
 
 #define PHANTOM_PREVENT_MACRO_SUBSTITUTION
 
-// Logical helpers
-#define OR ||
-#define AND &&
-#define NOT(...) (!(__VA_ARGS__))
-
 #define PHANTOM_TEMPLATE_TYPENAME template
 #define PHANTOM_TYPENAME typename
 
@@ -520,9 +515,9 @@ HAUNT_STOP;
 
 // COMPILER SPECIFIC C FUNCTIONS
 
-#define PHANTOM_CHAR_IS_BLANK(c) (((c) == ' ') OR((c) == '\t') OR((c) == '\n') OR((c) == '\r'))
+#define PHANTOM_CHAR_IS_BLANK(c) (((c) == ' ') || ((c) == '\t') || ((c) == '\n') || ((c) == '\r'))
 #define PHANTOM_CHAR_IS_CPP_IDENTIFIER(c)                                                                              \
-    ((((c) >= '0') AND((c) <= '9')) OR((((c) | 0x20) >= 'a') AND(((c) | 0x20) <= 'z')) OR(c) == '_')
+    ((((c) >= '0') && ((c) <= '9')) || ((((c) | 0x20) >= 'a') && (((c) | 0x20) <= 'z')) || (c) == '_')
 
 // TEMPLATE HELPER
 
@@ -533,8 +528,7 @@ HAUNT_STOP;
 
 #define PHANTOM_ALLOCA(_size_) alloca(_size_)
 #define PHANTOM_MALLOC(_size_) phantom::allocate(_size_, 1)
-#define PHANTOM_MALLOC_ALIGNED(_size_, _align_)                                                                        \
-    phantom::allocate(_size_, _align_)
+#define PHANTOM_MALLOC_ALIGNED(_size_, _align_) phantom::allocate(_size_, _align_)
 #define PHANTOM_REALLOC(_ptr_, _size_) phantom::reallocate(_ptr_, _size_, 1)
 #define PHANTOM_FREE(_ptr_) phantom::deallocate(_ptr_)
 #define PHANTOM_FREE_ALIGNED PHANTOM_FREE
@@ -542,7 +536,7 @@ HAUNT_STOP;
 /*************************************************************************************************
  * ASSERTION & OTHER DEBUG MESSAGES
  *************************************************************************************************/
-#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG OR PHANTOM_COMPILER == PHANTOM_COMPILER_GCC
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG || PHANTOM_COMPILER == PHANTOM_COMPILER_GCC
 #    define PHANTOM_DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))
 #elif PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define PHANTOM_DEPRECATE(foo, msg) __declspec(deprecated(msg)) foo
@@ -685,7 +679,7 @@ struct converter<0> : public false_type
         }                                                                                                              \
     } while (0)
 
-#define PHANTOM_ASSERT_NOT(exp) PHANTOM_ASSERT(NOT(exp))
+#define PHANTOM_ASSERT_NOT(exp) PHANTOM_ASSERT(!(exp))
 #define PHANTOM_ASSERT_NO_IMPL() PHANTOM_ASSERT(false, "Not Implemented")
 #define PHANTOM_UNREACHABLE() PHANTOM_ASSERT(false, "Unreachable code")
 #define PHANTOM_ASSERT_FORBIDDEN_CALL() PHANTOM_ASSERT(false, "Call to this function forbidden")

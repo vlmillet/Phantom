@@ -172,7 +172,7 @@ Instructions const& Subroutine::getInstructions() const
 Instruction* Subroutine::findInstructionAtCodePosition(const CodePosition&) const
 {
     //     if(m_pInstructions == nullptr) return nullptr;
-    //     if(NOT(containsCodePosition(position))) return nullptr;
+    //     if(!(containsCodePosition(position))) return nullptr;
     //     for(auto it = m_pInstructions->begin(); it != m_pInstructions->end(); ++it)
     //     {
     //         Instruction* pInstruction = *it;
@@ -235,7 +235,7 @@ void Subroutine::onReferencedElementRemoved(LanguageElement* a_pElement)
 
 bool Subroutine::matches(StringView a_strName, TypesView a_FunctionSignature, Modifiers a_Modifiers) const
 {
-    return m_strName == a_strName AND matches(a_FunctionSignature, a_Modifiers);
+    return m_strName == a_strName && matches(a_FunctionSignature, a_Modifiers);
 }
 
 bool Subroutine::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers) const
@@ -268,13 +268,13 @@ void Subroutine::call(void** a_pArgs) const
 
 void Subroutine::call(void** a_pArgs, void* a_pReturnAddress) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_pReturnAddress != nullptr);
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_pReturnAddress != nullptr);
     apply(a_pArgs, m_pSignature->getParameterCount() + (asMethod() != nullptr), a_pReturnAddress);
 }
 
 void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_Context.resultPointer());
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     size_t argCount =
     m_pSignature->getParameterCount() + (asMethod() != nullptr); // TODO : optimize by storing this value
     a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount);
@@ -287,7 +287,7 @@ void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs, size_t a_uiCo
 
 void Subroutine::placementCall(ExecutionContext& a_Context, void** a_pArgs) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_Context.resultPointer());
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     size_t argCount =
     m_pSignature->getParameterCount() + (asMethod() != nullptr); // TODO : optimize by storing this value
     PHANTOM_VERIFY(a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount));
@@ -300,7 +300,7 @@ void Subroutine::placementCall(void** a_pArgs, void* a_pReturnAddress) const
 
 void Subroutine::placementCallVarArg(ExecutionContext& a_Context, void** a_pArgs, Types const& a_VarArgTypes) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_Context.resultPointer());
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     PHANTOM_ASSERT(m_pSignature->isVariadic());
     size_t argCount = m_pSignature->getParameterCount() + (asMethod() != nullptr) +
     a_VarArgTypes.size(); // TODO : optimize by storing this value
@@ -310,7 +310,7 @@ void Subroutine::placementCallVarArg(ExecutionContext& a_Context, void** a_pArgs
 void Subroutine::placementCallVarArg(void** a_pArgs, Types const& a_VarArgTypes, void* a_pReturnAddress) const
 {
     PHANTOM_ASSERT(m_pSignature->isVariadic());
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_pReturnAddress != nullptr);
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_pReturnAddress != nullptr);
     placementApply(a_pArgs, m_pSignature->getParameterCount() + (asMethod() != nullptr) + a_VarArgTypes.size(),
                    a_pReturnAddress);
 }
@@ -325,14 +325,14 @@ void Subroutine::callVarArg(void** a_pArgs, Types const& a_VarArgTypes) const
 void Subroutine::callVarArg(void** a_pArgs, Types const& a_VarArgTypes, void* a_pReturnAddress) const
 {
     PHANTOM_ASSERT(m_pSignature->isVariadic());
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_pReturnAddress != nullptr);
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_pReturnAddress != nullptr);
     apply(a_pArgs, m_pSignature->getParameterCount() + (asMethod() != nullptr) + a_VarArgTypes.size(),
           a_pReturnAddress);
 }
 
 void Subroutine::callVarArg(ExecutionContext& a_Context, void** a_pArgs, Types const& a_VarArgTypes) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) OR a_Context.resultPointer());
+    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     PHANTOM_ASSERT(m_pSignature->isVariadic());
     size_t argCount = m_pSignature->getParameterCount() + (asMethod() != nullptr) +
     a_VarArgTypes.size(); // TODO : optimize by storing this value
@@ -388,7 +388,7 @@ ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Si
 {
     if (a_strName !=
         m_strName // not same name
-        AND(m_strName.front() != '~' OR a_strName.front() != '~'))
+        &&(m_strName.front() != '~' || a_strName.front() != '~'))
         return e_SignatureRelation_None;
     if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (m_Modifiers & PHANTOM_R_METHOD_QUAL_MASK))
         return e_SignatureRelation_None;
@@ -400,7 +400,7 @@ ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Si
     uint i = 0;
     for (; i < getSignature()->getParameterCount(); ++i)
     {
-        if (NOT(getSignature()->getParameterType(i)->isSame(a_pSignature->getParameterType(i))))
+        if (!(getSignature()->getParameterType(i)->isSame(a_pSignature->getParameterType(i))))
         {
             return e_SignatureRelation_None;
         }
@@ -421,9 +421,9 @@ ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Si
 
     // Only (const) class pointer/reference types can postulate to covariance and contravariance
     // We filter them by using address type implicit conversion
-    if ((thisReturnType->asPointer() AND otherReturnType->asPointer())OR(
-        thisReturnType->asLValueReference() AND otherReturnType->asLValueReference())
-        OR(thisReturnType->asRValueReference() AND otherReturnType->asRValueReference()))
+    if ((thisReturnType->asPointer() && otherReturnType->asPointer())||(
+        thisReturnType->asLValueReference() && otherReturnType->asLValueReference())
+        ||(thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
     {
         // Covariance and Contravariance test
         if (thisReturnType->getUnderlyingType()->isA(otherReturnType->getUnderlyingType()))
@@ -457,7 +457,7 @@ ESignatureRelation Subroutine::getSignatureRelationWith(Type* a_pReturnType, Str
     uint i = 0;
     for (; i < getSignature()->getParameterCount(); ++i)
     {
-        if (NOT(getSignature()->getParameterType(i)->removeQualifiers()->isSame(a_Types[i]->removeQualifiers())))
+        if (!(getSignature()->getParameterType(i)->removeQualifiers()->isSame(a_Types[i]->removeQualifiers())))
         {
             return e_SignatureRelation_None;
         }
@@ -478,9 +478,9 @@ ESignatureRelation Subroutine::getSignatureRelationWith(Type* a_pReturnType, Str
 
     // Only (const) class pointer/reference types can postulate to covariance and contravariance
     // We filter them by using address type implicit conversion
-    if ((thisReturnType->asPointer() AND otherReturnType->asPointer())OR(
-        thisReturnType->asLValueReference() AND otherReturnType->asLValueReference())
-        OR(thisReturnType->asRValueReference() AND otherReturnType->asRValueReference()))
+    if ((thisReturnType->asPointer() && otherReturnType->asPointer())||(
+        thisReturnType->asLValueReference() && otherReturnType->asLValueReference())
+        ||(thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
     {
         // Covariance and Contravariance test
         if (thisReturnType->getUnderlyingType()->isA(otherReturnType->getUnderlyingType()))
@@ -519,7 +519,7 @@ void Subroutine::getUniqueName(StringBuffer& a_Buf) const
             } while (StringUtil::IsBlank(baseName[8]));
 
             char c = baseName[8];
-            if (NOT((c >= 'a' AND c <= 'z') OR(c >= 'A' AND c <= 'Z') OR(c >= '0' AND c <= '9') OR c == '_'))
+            if (!((c >= 'a' && c <= 'z') ||(c >= 'A' && c <= 'Z') ||(c >= '0' && c <= '9') || c == '_'))
             {
                 // classical operator + - / * ! ? ...
                 // => remain intact

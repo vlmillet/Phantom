@@ -20,7 +20,7 @@ TemplateDependantArray::TemplateDependantArray(Type* a_pType, Expression* a_pSiz
     removeFlags(PHANTOM_R_FLAG_NATIVE);
     addFlags(PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS);
     PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(a_pSize)
-                   ->isTemplateDependant() OR reinterpret_cast<LanguageElement*>(a_pSize)
+                   ->isTemplateDependant() || reinterpret_cast<LanguageElement*>(a_pSize)
                    ->isCompileTime());
 }
 
@@ -57,7 +57,7 @@ bool TemplateDependantArray::isSame(Symbol* a_pOther) const
     TemplateDependantArray* pTDAT = pPH ? phantom::Object::Cast<TemplateDependantArray>(pPH->asSymbol()) : nullptr;
     if (pTDAT == nullptr)
         return false;
-    return pTDAT AND reinterpret_cast<LanguageElement*>(pTDAT->m_pItemCountExpression)
+    return pTDAT && reinterpret_cast<LanguageElement*>(pTDAT->m_pItemCountExpression)
     ->isSame(reinterpret_cast<LanguageElement*>(m_pItemCountExpression));
 }
 

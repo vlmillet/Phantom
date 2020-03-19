@@ -395,7 +395,7 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
     PHANTOM_ASSERT(lang::detail::currentModule());
 
     if (a_pTypeInstallInfo->type->getOwner() ==
-        nullptr AND NOT(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM)))
+        nullptr && !(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM)))
     {
         /// not a template instance and not a nested type => we add it to the current source
         /// or the current module anonymous source if no current source is defined
@@ -411,7 +411,7 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
     for (auto pTii : info->m_TypeInstallationInfos)
     {
-        if (a_pTypeInstallInfo->installFunc == pTii->installFunc OR pTii->type == a_pTypeInstallInfo->type)
+        if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
         {
             PHANTOM_ASSERT(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM),
                            "ensure your %.*s.hxx is not included at multiple places without "
@@ -426,7 +426,7 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
     {
         for (auto pTii : info->m_TypeInstallationInfos)
         {
-            if (a_pTypeInstallInfo->installFunc == pTii->installFunc OR pTii->type == a_pTypeInstallInfo->type)
+            if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
             {
                 alreadyRegistered = true;
                 break;
@@ -434,7 +434,7 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
         }
     }
 #endif
-    if (NOT(alreadyRegistered))
+    if (!(alreadyRegistered))
     {
         info->addTypeInstallationInfos(a_pTypeInstallInfo);
     }
@@ -580,8 +580,8 @@ void DynamicCppInitializerH::installModules()
         lang::Application::Get()->_registerBuiltInTypes();
 
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
-    PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() OR lang::Application::Get()->getMainModule() ==
-                   nullptr OR                              modulesToInstallCount == 1);
+    PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() || lang::Application::Get()->getMainModule() ==
+                   nullptr ||                              modulesToInstallCount == 1);
 
     // no module to install
     if (modulesToInstallCount == 0)

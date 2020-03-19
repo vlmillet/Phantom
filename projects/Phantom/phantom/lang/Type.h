@@ -1044,7 +1044,7 @@ public:
 
     inline bool isPromotedArithmeticType() const
     {
-        return asFloatingPointType() OR isPromotedIntegralType();
+        return asFloatingPointType() || isPromotedIntegralType();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1055,7 +1055,7 @@ public:
 
     inline bool isPromotedIntegralType() const
     {
-        return asIntegralType() AND promote() == const_cast<Type*>(this);
+        return asIntegralType() && promote() == const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

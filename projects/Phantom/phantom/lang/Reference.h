@@ -51,19 +51,19 @@ public:
     }
     Type* asClassAddressType() const override
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<Reference*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<Reference*>(this) : nullptr;
     }
     virtual Reference* asClassReference() const
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<Reference*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<Reference*>(this) : nullptr;
     }
     Type* asConstClassAddressType() const override
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<Reference*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<Reference*>(this) : nullptr;
     }
     virtual Reference* asConstClassReference() const
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asConstClass()) ? const_cast<Reference*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<Reference*>(this) : nullptr;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

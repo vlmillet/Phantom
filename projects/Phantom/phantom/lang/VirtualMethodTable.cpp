@@ -56,7 +56,7 @@ PHANTOM_DTOR VirtualMethodTable::~VirtualMethodTable()
     if (m_pBaseTable)
         m_pBaseTable->m_DerivedTables.erase(
         std::find(m_pBaseTable->m_DerivedTables.begin(), m_pBaseTable->m_DerivedTables.end(), this));
-    if (NOT(sharesMethods()))
+    if (!(sharesMethods()))
         PHANTOM_DELETE(Methods) m_pMethods;
     if (m_ppClosures)
         PHANTOM_FREE(m_ppClosures);
@@ -75,7 +75,7 @@ size_t VirtualMethodTable::getIndexOf(Method* a_pMethod) const
 
 VirtualMethodTable* VirtualMethodTable::derive(size_t a_uiSize /*= 0*/) const
 {
-    if (a_uiSize == 0 OR a_uiSize == m_pMethods->size())
+    if (a_uiSize == 0 || a_uiSize == m_pMethods->size())
     {
         return PHANTOM_DEFERRED_NEW_EX(VirtualMethodTable)(const_cast<VirtualMethodTable*>(this));
     }
@@ -135,9 +135,9 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
     }
 
     // We did not find any overrides
-    if (NOT(a_bOnlyIfOverrides) AND getOffset() ==
+    if (!(a_bOnlyIfOverrides) && getOffset() ==
         0                           // and it's the main vtable
-        AND a_pMethod->isVirtual()) // and the member function is virtual
+        && a_pMethod->isVirtual()) // and the member function is virtual
     {
         // => insert it
         if (a_pMethod->isNative() && !getOwnerClass()->isFinal())

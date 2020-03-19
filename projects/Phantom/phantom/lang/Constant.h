@@ -51,7 +51,7 @@ public:
     virtual bool isIntegral() const { return getValueType()->asIntegralType() != nullptr; }
     virtual bool isZero() const = 0;
 
-    inline bool isIntegralZero() const { return isIntegral() AND isZero(); }
+    inline bool isIntegralZero() const { return isIntegral() && isZero(); }
 
     virtual void toString(StringBuffer& a_Buf) const = 0;
 

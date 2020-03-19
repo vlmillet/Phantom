@@ -57,7 +57,7 @@ ClassType::~ClassType()
 bool ClassType::matchesTemplateArguments(const LanguageElements& a_Elements) const
 {
     TemplateSpecialization* pSpec = getTemplateSpecialization();
-    return pSpec AND pSpec->matches(a_Elements);
+    return pSpec && pSpec->matches(a_Elements);
 }
 
 void ClassType::checkCompleteness() const
@@ -82,9 +82,9 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
     if (Field* pField = a_pElement->asField())
     {
         PHANTOM_ASSERT_DEBUG(getValueMember(pField->getName()) == nullptr);
-        PHANTOM_ASSERT(isNative() OR m_uiSize == 0,
+        PHANTOM_ASSERT(isNative() || m_uiSize == 0,
                        "type sized, cannot add fields anymore or the memory consistency would be messed up");
-        PHANTOM_ASSERT((asPOD() == nullptr OR(pField->getValueType()->asPOD() != nullptr)),
+        PHANTOM_ASSERT((asPOD() == nullptr ||(pField->getValueType()->asPOD() != nullptr)),
                        "POD structs can only store pod types");
         if (pField->getMemberAnonymousSection() == nullptr) // does not belong to an anonymous struct/union
             m_DataElements.push_back(pField);
@@ -93,21 +93,21 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
         m_ValueMembers.push_back(nullptr);
         m_ValueMembers.m_data->pop_back();
         m_ValueMembers.insert(m_ValueMembers.m_data->begin() + (m_Fields.m_data->size() - 1), pField);
-        PHANTOM_ASSERT(NOT(pField->getValueType()->removeQualifiers()->removeArray()->hasStrongDependencyOnType(this)),
+        PHANTOM_ASSERT(!(pField->getValueType()->removeQualifiers()->removeArray()->hasStrongDependencyOnType(this)),
                        "cyclic class strong dependency");
     }
     else if (Property* pProperty = a_pElement->asProperty())
     {
         PHANTOM_ASSERT_DEBUG(getValueMember(pProperty->getName()) == nullptr);
-        PHANTOM_ASSERT(isNative() OR pProperty->getSignal() == nullptr OR m_uiSize == 0,
+        PHANTOM_ASSERT(isNative() || pProperty->getSignal() == nullptr || m_uiSize == 0,
                        "type sized, cannot add property with signal anymore or the memory "
                        "consistency would be messed up");
         PHANTOM_ASSERT(isNative()
-                       OR pProperty->getGet() == nullptr OR NOT(pProperty->getGet()->isVirtual()) OR m_uiSize == 0,
+                       || pProperty->getGet() == nullptr || !(pProperty->getGet()->isVirtual()) || m_uiSize == 0,
                        "type sized, cannot add property with virtual method or the memory "
                        "consistency would be messed up");
         PHANTOM_ASSERT(isNative()
-                       OR pProperty->getSet() == nullptr OR NOT(pProperty->getSet()->isVirtual()) OR m_uiSize == 0,
+                       || pProperty->getSet() == nullptr || !(pProperty->getSet()->isVirtual()) || m_uiSize == 0,
                        "type sized, cannot add property with virtual method or the memory "
                        "consistency would be messed up");
         m_Properties.push_back(pProperty);
@@ -119,10 +119,10 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
     }
     else if (Method* pMethod = a_pElement->asMethod())
     {
-        PHANTOM_ASSERT(isNative() OR m_uiSize == 0 OR NOT(pMethod->isVirtual()),
+        PHANTOM_ASSERT(isNative() || m_uiSize == 0 || !(pMethod->isVirtual()),
                        "type sized, cannot add virtual member functions anymore or the memory "
                        "consistency would be messed up");
-        PHANTOM_ASSERT(isNative() OR Scope::acceptsSubroutine(pMethod));
+        PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(pMethod));
         m_Methods.push_back(pMethod);
     }
     else if (ValueMember* pValueMember = a_pElement->asValueMember())
@@ -132,7 +132,7 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
     }
     else if (MemberAnonymousSection* pMemberAnonymousSection = a_pElement->asMemberAnonymousSection())
     {
-        PHANTOM_ASSERT(isNative() OR m_uiSize == 0,
+        PHANTOM_ASSERT(isNative() || m_uiSize == 0,
                        "type sized, cannot add anonymous types anymore or the memory consistency "
                        "would be messed up");
         m_MemberAnonymousSections.push_back(pMemberAnonymousSection);
@@ -219,7 +219,7 @@ void ClassType::getAllFields(Fields& a_Out) const
 Constructor* ClassType::getConstructor(StringView a_strParameterString) const
 {
     Symbol* pElement = Application::Get()->findCppSymbol(a_strParameterString, const_cast<ClassType*>(this));
-    return (pElement AND pElement->getOwner() == this) ? pElement->asConstructor() : nullptr;
+    return (pElement && pElement->getOwner() == this) ? pElement->asConstructor() : nullptr;
 }
 
 Constructor* ClassType::getConstructor(size_t a_uiIndex) const
@@ -234,7 +234,7 @@ Constructor* ClassType::getConstructor(Type* a_pType) const
     for (; it != end; ++it)
     {
         Constructor* pConstructor = static_cast<Constructor*>((*it));
-        if (pConstructor->getParameters().size() == 1 AND pConstructor->getParameterType(0) == a_pType)
+        if (pConstructor->getParameters().size() == 1 && pConstructor->getParameterType(0) == a_pType)
         {
             return pConstructor;
         }
@@ -247,7 +247,7 @@ Method* ClassType::getConversionFunction(Type* a_pType) const
     for (auto it = m_Methods->begin(); it != m_Methods->end(); ++it)
     {
         Method* pMF = *it;
-        if (pMF->getName().size() > 8 AND pMF->getName()[8] == ' ' AND pMF->getName().find("operator") == 0)
+        if (pMF->getName().size() > 8 && pMF->getName()[8] == ' ' && pMF->getName().find("operator") == 0)
         {
             PHANTOM_ASSERT(pMF->getParameters().size() == 0);
             if (pMF->getReturnType() == a_pType)
@@ -263,9 +263,9 @@ Method* ClassType::getCopyAssignmentOperator() const
     for (auto it = m_Methods->begin(); it != m_Methods->end(); ++it)
     {
         Method* pMF = *it;
-        if (pMF->getParameters().size() == 1 AND pMF->getName() == "operator=")
+        if (pMF->getParameters().size() == 1 && pMF->getName() == "operator=")
         {
-            if (pMF->getParameterType(0) == this OR pMF->getParameterType(0) == (pConstLValueRefType))
+            if (pMF->getParameterType(0) == this || pMF->getParameterType(0) == (pConstLValueRefType))
                 return pMF;
         }
     }
@@ -278,7 +278,7 @@ Method* ClassType::getMoveAssignmentOperator() const
     for (auto it = m_Methods->begin(); it != m_Methods->end(); ++it)
     {
         Method* pMF = *it;
-        if (pMF->getParameters().size() == 1 AND pMF->getName() == "operator=")
+        if (pMF->getParameters().size() == 1 && pMF->getName() == "operator=")
         {
             if (pMF->getParameterType(0) == (pRValueRefType))
                 return pMF;
@@ -293,7 +293,7 @@ void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/)
     for (auto it = m_Constructors->begin(); it != m_Constructors->end(); ++it)
     {
         Constructor* pCtor = *it;
-        if (pCtor->getParameters().size() == 1 AND(NOT(a_bImplicits) OR NOT(pCtor->testModifiers(PHANTOM_R_EXPLICIT))))
+        if (pCtor->getParameters().size() == 1 &&(!(a_bImplicits) || !(pCtor->testModifiers(PHANTOM_R_EXPLICIT))))
         {
             types.push_back(pCtor->getParameterType(0)->removeConstLValueReference());
         }
@@ -301,7 +301,7 @@ void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/)
     for (auto it = types.begin(); it != types.end();)
     {
         Method* pMF = getConversionFunction(*it);
-        if (pMF AND(NOT(a_bImplicits) OR NOT(pMF->testModifiers(PHANTOM_R_EXPLICIT))))
+        if (pMF &&(!(a_bImplicits) || !(pMF->testModifiers(PHANTOM_R_EXPLICIT))))
         {
             ++it;
         }
@@ -350,7 +350,7 @@ Method* ClassType::getMethod(StringView a_strIdentifierString) const
     else
     {
         Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<ClassType*>(this));
-        return (pElement AND pElement->getOwner() == this) ? pElement->asMethod() : nullptr;
+        return (pElement && pElement->getOwner() == this) ? pElement->asMethod() : nullptr;
     }
 }
 
@@ -418,14 +418,14 @@ StaticMethod* ClassType::getStaticMethod(StringView a_strIdentifierString) const
     else
     {
         Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<ClassType*>(this));
-        return (pElement AND pElement->getOwner() == this) ? pElement->asStaticMethod() : nullptr;
+        return (pElement && pElement->getOwner() == this) ? pElement->asStaticMethod() : nullptr;
     }
 }
 
 Subroutine* ClassType::getSubroutine(StringView a_strIdentifierString) const
 {
     Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<ClassType*>(this));
-    return (pElement AND pElement->getOwner() == this) ? pElement->asSubroutine() : nullptr;
+    return (pElement && pElement->getOwner() == this) ? pElement->asSubroutine() : nullptr;
 }
 
 Subroutine* ClassType::getSubroutine(StringView a_strName, TypesView a_Types, Modifiers a_Modifiers) const
@@ -455,7 +455,7 @@ void ClassType::getQualifiedName(StringBuffer& a_Buf) const
     if(m_pNamespace != nullptr)
     {
         m_pNamespace->getHierarchicalNameNoRoot(&str);
-        if(NOT(str.empty()))
+        if(!(str.empty()))
             str+=PHANTOM_CC('.');
     }
     str += getName().substr(0, getName().find_first_of(PHANTOM_CC('<'))) ;
@@ -643,7 +643,7 @@ void ClassType::findPublicValueMembersPointingValueType(Type* a_pType, ValueMemb
     {
         ValueMember* pValueMember = static_cast<ValueMember*>((*it));
         Pointer*     pPointerType = pValueMember->getValueType()->asPointer();
-        if (pPointerType AND pValueMember->isPublic() AND a_pType->isA(pPointerType->getPointeeType()))
+        if (pPointerType && pValueMember->isPublic() && a_pType->isA(pPointerType->getPointeeType()))
         {
             out.push_back(pValueMember);
         }
@@ -823,10 +823,10 @@ void ClassType::_onNativeElementsAccessImpl()
 
 void ClassType::_onNativeElementsAccess()
 {
-    if (NOT(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (NOT(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);
@@ -849,7 +849,7 @@ Destructor* ClassType::getDestructor() const
 
 bool ClassType::isDefaultInstanciable() const
 {
-    return (getTemplateSpecialization() == nullptr OR getTemplateSpecialization()->isFull());
+    return (getTemplateSpecialization() == nullptr || getTemplateSpecialization()->isFull());
 }
 
 size_t ClassType::getFieldIndex(Field* a_pField) const
@@ -883,7 +883,7 @@ Field* ClassType::getFieldAtOffset(size_t a_uiOffset) const
 {
     for (auto pDM : *m_Fields)
     {
-        if ((a_uiOffset >= pDM->getOffset()) AND(a_uiOffset < (pDM->getOffset() + pDM->getValueType()->getSize())))
+        if ((a_uiOffset >= pDM->getOffset()) &&(a_uiOffset < (pDM->getOffset() + pDM->getValueType()->getSize())))
             return pDM;
     }
     return nullptr;
@@ -898,15 +898,15 @@ bool ClassType::isListInitializable() const
 {
     for (auto pCtor : *m_Constructors)
     {
-        if ((NOT(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) OR pCtor->testModifiers(PHANTOM_R_EXPLICIT)
-             OR pCtor->testFlags(PHANTOM_R_FLAG_INHERITED))AND NOT(pCtor->testModifiers(Modifier::Deleted)))
+        if ((!(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pCtor->testModifiers(PHANTOM_R_EXPLICIT)
+             || pCtor->testFlags(PHANTOM_R_FLAG_INHERITED))&& !(pCtor->testModifiers(Modifier::Deleted)))
         {
             return false;
         }
     }
     for (auto pDM : getFields())
     {
-        if (pDM->isPrivate() OR pDM->isProtected())
+        if (pDM->isPrivate() || pDM->isProtected())
         {
             return false;
         }
@@ -916,7 +916,7 @@ bool ClassType::isListInitializable() const
 
 void ClassType::setDefaultAccess(Access a_eAccess)
 {
-    PHANTOM_ASSERT(a_eAccess == Access::Public OR a_eAccess == Access::Protected OR a_eAccess == Access::Private);
+    PHANTOM_ASSERT(a_eAccess == Access::Public || a_eAccess == Access::Protected || a_eAccess == Access::Private);
     m_DefaultAccess = a_eAccess;
 }
 
@@ -1184,7 +1184,7 @@ bool ClassType::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, Typ
         }
     }
     return Scope::acceptsSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers, a_uiFlags,
-                                    a_pOutConflictingSubroutines) AND bResult;
+                                    a_pOutConflictingSubroutines) && bResult;
 }
 
 Constructor* ClassType::getCopyConstructor() const
@@ -1209,7 +1209,7 @@ Constructor* ClassType::getMoveConstructor() const
 
 bool ClassType::isDefaultConstructible() const
 {
-    return ((getFlags() & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) AND getDefaultConstructor() != nullptr;
+    return ((getFlags() & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && getDefaultConstructor() != nullptr;
 }
 
 bool ClassType::canHaveImplicitDefaultConstructor() const
@@ -1219,7 +1219,7 @@ bool ClassType::canHaveImplicitDefaultConstructor() const
     {
         for (auto pDM : *m_Fields)
         {
-            if (pDM->getValueType()->asReference() OR NOT(pDM->getValueType()->isDefaultConstructible()))
+            if (pDM->getValueType()->asReference() || !(pDM->getValueType()->isDefaultConstructible()))
                 return false;
         }
         return true;
@@ -1231,7 +1231,7 @@ bool ClassType::canHaveImplicitCopyConstructor() const
 {
     for (auto pDM : *m_Fields)
     {
-        if (pDM->getValueType()->asReference() OR NOT(pDM->getValueType()->isCopyable()))
+        if (pDM->getValueType()->asReference() || !(pDM->getValueType()->isCopyable()))
             return false;
     }
     return true;
@@ -1241,7 +1241,7 @@ bool ClassType::canHaveImplicitCopyAssignmentOperator() const
 {
     for (Field* pDM : *m_Fields)
     {
-        if (pDM->getValueType()->asReference() OR NOT(pDM->getValueType()->isCopyAssignable()))
+        if (pDM->getValueType()->asReference() || !(pDM->getValueType()->isCopyAssignable()))
             return false;
     }
     return true;
@@ -1271,7 +1271,7 @@ bool ClassType::canHaveImplicitMoveConstructor() const
     }
     for (Field* pDM : *m_Fields)
     {
-        if (pDM->getValueType()->asReference() OR NOT(pDM->getValueType()->isMoveable()))
+        if (pDM->getValueType()->asReference() || !(pDM->getValueType()->isMoveable()))
             return false;
     }
     return true;
@@ -1301,7 +1301,7 @@ bool ClassType::canHaveImplicitMoveAssignmentOperator() const
     }
     for (Field* pDM : *m_Fields)
     {
-        if (pDM->getValueType()->asReference() OR NOT(pDM->getValueType()->isMoveAssignable()))
+        if (pDM->getValueType()->asReference() || !(pDM->getValueType()->isMoveAssignable()))
             return false;
     }
     return true;
@@ -1310,7 +1310,7 @@ bool ClassType::canHaveImplicitMoveAssignmentOperator() const
 bool ClassType::isCopyable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getCopyConstructor() != nullptr AND getCopyAssignmentOperator() != nullptr;
+    return getCopyConstructor() != nullptr && getCopyAssignmentOperator() != nullptr;
 }
 
 bool ClassType::isCopyAssignable() const
@@ -1328,7 +1328,7 @@ bool ClassType::isCopyConstructible() const
 bool ClassType::isMoveable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getMoveConstructor() != nullptr AND getMoveAssignmentOperator() != nullptr;
+    return getMoveConstructor() != nullptr && getMoveAssignmentOperator() != nullptr;
 }
 
 bool ClassType::isMoveAssignable() const

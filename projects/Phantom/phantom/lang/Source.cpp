@@ -42,7 +42,7 @@ namespace lang
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this)
 {
-    // PHANTOM_ASSERT(a_strName.empty() OR ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
+    // PHANTOM_ASSERT(a_strName.empty() || ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
     // name must contain only letters, numbers or underscore");
 }
 
@@ -51,7 +51,7 @@ Source::Source(Package* a_pPackage, StringView a_strName, Modifiers a_Modifiers 
              (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
       Scope(this)
 {
-    // PHANTOM_ASSERT(a_strName.empty() OR ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
+    // PHANTOM_ASSERT(a_strName.empty() || ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
     // name must contain only letters, numbers or underscore");
     a_pPackage->addSource(this);
 }
@@ -91,7 +91,7 @@ bool Source::canBeUnloaded() const
     SmallSet<Module*> referencingModules;
     fetchReferencingModulesDeep(referencingModules);
     return referencingModules.empty()
-    OR((referencingModules.size() == 1) AND((*referencingModules.begin()) == getModule()));
+    ||((referencingModules.size() == 1) &&((*referencingModules.begin()) == getModule()));
 }
 
 Package* Source::getPackage() const
@@ -106,8 +106,8 @@ void Source::getQualifiedName(StringBuffer&) const
 
 void Source::addScopeElement(Symbol* a_pSymbol)
 {
-    if (NOT(testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)) // not an archive
-        AND a_pSymbol->getNamespace() == nullptr)
+    if (!(testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)) // not an archive
+        && a_pSymbol->getNamespace() == nullptr)
     {
         getPackage()->getCounterpartNamespace()->addScopeElement(a_pSymbol);
     }
@@ -269,7 +269,7 @@ void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, Sm
     for (auto p : a_pSymbol->getElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol AND NOT(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
             if (pSymbol->getName().empty())
             {
@@ -294,9 +294,9 @@ MethodPointer* Source::methodPointerType(ClassType* a_pObjectType, Type* a_pRetu
     for (auto pMFMP : m_MethodPointers)
     {
         if (pMFMP->getObjectType()
-            ->isSame(a_pObjectType) AND pMFMP->getFunctionType()
+            ->isSame(a_pObjectType) && pMFMP->getFunctionType()
             ->getReturnType()
-            ->isSame(a_pReturnType) AND pMFMP->getFunctionType()
+            ->isSame(a_pReturnType) && pMFMP->getFunctionType()
             ->matches(a_ParameterTypes, a_RefQualifiers, a_uiFlags))
         {
             return pMFMP;
@@ -314,7 +314,7 @@ FieldPointer* Source::fieldPointerType(ClassType* a_pObjectType, Type* a_pValueT
 {
     for (auto pDMP : m_FieldPointers)
     {
-        if (pDMP->getObjectType()->isSame(a_pObjectType) AND pDMP->getValueType()->isSame(a_pValueType))
+        if (pDMP->getObjectType()->isSame(a_pObjectType) && pDMP->getValueType()->isSame(a_pValueType))
         {
             return pDMP;
         }
@@ -329,7 +329,7 @@ void Source::setSourceStream(SourceStream* a_pStream)
 {
     if (m_pSourceStream == a_pStream)
         return;
-    PHANTOM_ASSERT(a_pStream == nullptr OR !a_pStream->m_pSource);
+    PHANTOM_ASSERT(a_pStream == nullptr || !a_pStream->m_pSource);
     if (m_pSourceStream)
         m_pSourceStream->m_pSource = nullptr;
     m_pSourceStream = a_pStream;
@@ -344,7 +344,7 @@ FunctionType* Source::functionType(Type* a_pReturnType, TypesView a_ParameterTyp
     {
         for (auto it = m_pFunctionTypes->begin(); it != m_pFunctionTypes->end(); ++it)
         {
-            if ((*it)->getReturnType()->isSame(a_pReturnType) AND(*it)->matches(a_ParameterTypes, a_Modifiers))
+            if ((*it)->getReturnType()->isSame(a_pReturnType) &&(*it)->matches(a_ParameterTypes, a_Modifiers))
             {
                 return *it;
             }
@@ -376,7 +376,7 @@ FunctionPointer* Source::functionPointerType(FunctionType* a_pFunctionType, ABI 
     {
         for (auto it = m_pFunctionPointers->begin(); it != m_pFunctionPointers->end(); ++it)
         {
-            if ((*it)->getABI() == a_eABI AND(*it)->getFunctionType()->isSame(a_pFunctionType))
+            if ((*it)->getABI() == a_eABI &&(*it)->getFunctionType()->isSame(a_pFunctionType))
             {
                 return *it;
             }
@@ -420,7 +420,7 @@ InitializerListType* Source::initializerListType(TypesView a_Types)
 bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
 {
     PHANTOM_ASSERT(a_pSource != this);
-    if (NOT(canImport(a_pSource, a_bPublic ? Access::Public : Access::Private,
+    if (!(canImport(a_pSource, a_bPublic ? Access::Public : Access::Private,
                       Modifiers(a_bStatic ? Modifier::Static : 0))))
     {
         return false;
@@ -495,7 +495,7 @@ void Source::removeImport(Source* a_pSource)
 bool Source::addImport(StringView a_strName, bool a_bStatic, bool a_bPublic)
 {
     Source* pSource = Application::Get()->getSource(a_strName);
-    if (pSource == nullptr OR pSource == this)
+    if (pSource == nullptr || pSource == this)
     {
         PHANTOM_LOG(Error, "cannot import source '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
         return false;
@@ -585,7 +585,7 @@ bool Source::_hasImported(Source* a_pSource, SmallSet<const Source*>& treated) c
         {
             if (import.source == a_pSource)
                 return true;
-            if (import.isPublic AND import.source->_hasImported(a_pSource, treated))
+            if (import.isPublic && import.source->_hasImported(a_pSource, treated))
                 return true;
         }
     }
@@ -638,7 +638,7 @@ bool Source::_hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated
         return true;
     for (auto pDep : m_Dependencies)
     {
-        if (treated.insert(pDep).second AND pDep->_hasDependencyCascade(a_pSource, treated))
+        if (treated.insert(pDep).second && pDep->_hasDependencyCascade(a_pSource, treated))
             return true;
     }
     return false;
@@ -647,8 +647,8 @@ bool Source::_hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated
 void Source::addDependency(Source* a_pSource)
 {
     PHANTOM_ASSERT(a_pSource != this);
-    PHANTOM_ASSERT(NOT(hasDependency(a_pSource)));
-    PHANTOM_ASSERT(NOT(a_pSource->hasDependencyCascade(this)), "illegal recursive source dependency");
+    PHANTOM_ASSERT(!(hasDependency(a_pSource)));
+    PHANTOM_ASSERT(!(a_pSource->hasDependencyCascade(this)), "illegal recursive source dependency");
     m_Dependencies.push_back(a_pSource);
     a_pSource->m_Dependings.push_back(this);
 }

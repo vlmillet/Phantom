@@ -55,7 +55,7 @@ public:
     ConstType* asConstType() const override { return const_cast<ConstType*>(this); }
     ConstType* asConstClass() const override
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass()) ? const_cast<ConstType*>(this) : nullptr;
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<ConstType*>(this) : nullptr;
     }
 
     bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const override;

@@ -244,15 +244,15 @@ struct DtorProviderH<t_Ty, false>
 template<typename t_Ty>
 struct DefaultCtorProvider
     : public detail::DefaultCtorProviderH<t_Ty,
-                                          std::is_class<t_Ty>::value AND !std::is_abstract<t_Ty>::value
-                                                                     AND::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value>
+                                          std::is_class<t_Ty>::value && !std::is_abstract<t_Ty>::value
+                                                                     &&::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value>
 {
 };
 
 template<typename t_Ty>
 struct DefaultCopyCtorProvider
     : public detail::DefaultCopyCtorProviderH<t_Ty,
-                                              !phantom::IsStructure<t_Ty>::value AND std::is_class<t_Ty>::value AND
+                                              !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value &&
                                                                                      IsCopyConstructibleAndNotDisabled<t_Ty>::value>
 {
 };
@@ -261,14 +261,14 @@ template<typename t_Ty>
 struct DefaultCopyAssignOpProvider
     : public detail::DefaultCopyAssignOpProviderH<
       t_Ty,
-      !phantom::IsStructure<t_Ty>::value AND std::is_class<t_Ty>::value AND HasCopyAssignmentOperator<t_Ty>::value>
+      !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasCopyAssignmentOperator<t_Ty>::value>
 {
 };
 
 template<typename t_Ty>
 struct DefaultMoveCtorProvider
     : public detail::DefaultMoveCtorProviderH<t_Ty,
-                                              !phantom::IsStructure<t_Ty>::value AND std::is_class<t_Ty>::value AND
+                                              !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value &&
                                                                                      IsMoveConstructibleAndNotDisabled<t_Ty>::value>
 {
 };
@@ -277,7 +277,7 @@ template<typename t_Ty>
 struct DefaultMoveAssignOpProvider
     : public detail::DefaultMoveAssignOpProviderH<
       t_Ty,
-      !phantom::IsStructure<t_Ty>::value AND std::is_class<t_Ty>::value AND HasMoveAssignmentOperator<t_Ty>::value>
+      !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasMoveAssignmentOperator<t_Ty>::value>
 {
 };
 
@@ -364,13 +364,13 @@ public:
     }
     bool isDefaultConstructible() const override
     {
-        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value AND(
+        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&(
         (this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0);
     }
     virtual bool isDefaultInstanciable() const override
     {
-        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value AND(
-        (this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) AND !std::is_abstract<t_Ty>::value;
+        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&(
+        (this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && !std::is_abstract<t_Ty>::value;
     }
     bool hasCopyDisabled() const override
     {

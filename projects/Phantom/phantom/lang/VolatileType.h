@@ -60,7 +60,7 @@ public:
     }
     virtual VolatileType* asVolatileClass() const
     {
-        return (m_pUnderlyingType AND m_pUnderlyingType->asClass())
+        return (m_pUnderlyingType && m_pUnderlyingType->asClass())
         ? const_cast<VolatileType*>(this)
         : nullptr;
     }

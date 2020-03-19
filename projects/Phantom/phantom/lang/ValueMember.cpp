@@ -20,7 +20,7 @@ ValueMember::ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilt
       m_uiFilterMask(a_uiFilterMask * ((m_Modifiers & PHANTOM_R_TRANSIENT) == 0))
 {
     PHANTOM_ASSERT(m_pValueType);
-    PHANTOM_ASSERT(m_pValueType->isNative() OR m_pValueType->getOwner());
+    PHANTOM_ASSERT(m_pValueType->isNative() || m_pValueType->getOwner());
     addReferencedElement(m_pValueType);
 }
 

@@ -325,7 +325,7 @@ void Scope::scopedElementAdded(LanguageElement* a_pElement)
 {
     if (Type* pType = a_pElement->asType())
     {
-        if (NOT(a_pElement->asExtendedType()))
+        if (!(a_pElement->asExtendedType()))
         {
             m_Types->push_back(pType);
         }
@@ -469,9 +469,9 @@ void Scope::findFunctions(Functions& a_Functions, StringView a_Name /*= ""*/,
 {
     for (auto f : *m_Functions)
     {
-        if ((a_Name.empty() OR f->getName() == a_Name)
-            AND(a_pReturnType == nullptr OR f->getReturnType() == a_pReturnType)
-            AND(a_pParameterTypes == nullptr OR f->getSignature()->matches(*a_pParameterTypes)))
+        if ((a_Name.empty() || f->getName() == a_Name)
+            &&(a_pReturnType == nullptr || f->getReturnType() == a_pReturnType)
+            &&(a_pParameterTypes == nullptr || f->getSignature()->matches(*a_pParameterTypes)))
         {
             a_Functions.push_back(f);
         }
@@ -535,7 +535,7 @@ Subroutine* Scope::getSubroutine(Type* a_pReturnType, StringView a_strName, Type
                                  Modifiers a_Modifiers /*= 0*/) const
 {
     Subroutine* pSubroutine = getSubroutine(a_strName, a_ParameterTypes, a_Modifiers);
-    if (pSubroutine AND pSubroutine->getReturnType() AND pSubroutine->getReturnType()->isSame(a_pReturnType))
+    if (pSubroutine && pSubroutine->getReturnType() && pSubroutine->getReturnType()->isSame(a_pReturnType))
         return pSubroutine;
     return nullptr;
 }
@@ -617,7 +617,7 @@ void Scope::fetchTypesCascade(Types& a_Types) const
     {
         TemplateSpecialization* pSpec = m_TemplateSpecializations[i];
         Symbol*                 pBody = pSpec->getTemplated();
-        if (pBody AND pBody->asClassType())
+        if (pBody && pBody->asClassType())
         {
             a_Types.push_back(static_cast<ClassType*>(pBody));
             static_cast<ClassType*>(pBody)->fetchTypesCascade(a_Types);
@@ -797,9 +797,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
 {
     TemplateSpecialization* pTemplateSpecialization;
 
-    if (NOT(m_pThisElement->isNative())
-        AND(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
-        AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+    if (!(m_pThisElement->isNative())
+        &&(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
+        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false);
         return nullptr;
@@ -815,9 +815,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
                                                          const LanguageElements& a_Arguments)
 {
     TemplateSpecialization* pTemplateSpecialization;
-    if (NOT(m_pThisElement->isNative())
-        AND(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
-        AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+    if (!(m_pThisElement->isNative())
+        &&(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
+        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
@@ -834,9 +834,9 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
                                 const PlaceholderMap&   a_PartialSpecializationParameterDeductions)
 {
     TemplateSpecialization* pTemplateSpecialization;
-    if (NOT(m_pThisElement->isNative()) AND(
+    if (!(m_pThisElement->isNative()) &&(
         pTemplateSpecialization = a_pInstantiationSpecialization->getTemplate()->getTemplateSpecialization(a_Arguments))
-        AND pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;

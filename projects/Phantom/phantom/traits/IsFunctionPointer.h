@@ -15,7 +15,7 @@ namespace phantom
 template<typename t_Ty>
 struct IsFunctionPointer
 {
-    static const bool value = std::is_pointer<t_Ty>::value AND !IsDataPointer<t_Ty>::value;
+    static const bool value = std::is_pointer<t_Ty>::value && !IsDataPointer<t_Ty>::value;
 };
 } // namespace phantom
 

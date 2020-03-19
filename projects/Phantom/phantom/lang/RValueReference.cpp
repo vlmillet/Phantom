@@ -62,7 +62,7 @@ bool RValueReference::partialAccepts(Type* a_pType, size_t& a_Score, Placeholder
 
 bool RValueReference::isSame(Symbol* a_pOther) const
 {
-    return (a_pOther == this) OR(a_pOther->asRValueReference() AND m_pUnderlyingType->isSame(
+    return (a_pOther == this) ||(a_pOther->asRValueReference() && m_pUnderlyingType->isSame(
     static_cast<RValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 

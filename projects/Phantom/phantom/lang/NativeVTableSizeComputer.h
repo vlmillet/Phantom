@@ -100,7 +100,7 @@ struct VTableSizeOfDefaultConstructibleH<t_Ty, false>
 template<typename t_Ty, bool t_is_polymorphic>
 struct VTableSizeOfH
     : public VTableSizeOfDefaultConstructibleH<
-      t_Ty, ::phantom::IsDefaultConstructible<t_Ty>::value AND !std::is_abstract<t_Ty>::value>
+      t_Ty, ::phantom::IsDefaultConstructible<t_Ty>::value && !std::is_abstract<t_Ty>::value>
 {
 };
 

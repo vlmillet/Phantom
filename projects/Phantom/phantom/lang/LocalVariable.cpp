@@ -21,7 +21,7 @@ LocalVariable::LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pValueType(a_pValueType)
 {
     PHANTOM_ASSERT(m_pValueType);
-    if (m_pValueType->getOwner() == nullptr && NOT(m_pValueType->isNative()))
+    if (m_pValueType->getOwner() == nullptr && !(m_pValueType->isNative()))
         addElement(m_pValueType);
     else
         addReferencedElement(m_pValueType);
@@ -59,7 +59,7 @@ void LocalVariable::onReferencedElementRemoved(LanguageElement* a_pElement)
 void LocalVariable::setValueType(Type* a_pType)
 {
     // TODO : check this assert
-    // PHANTOM_ASSERT(getBlock() == nullptr OR
+    // PHANTOM_ASSERT(getBlock() == nullptr ||
     // getBlock()->getLocalVariable(getBlock()->getLocalVariableCount() - 1) == this, "cannot change
     // value type of a local variable if any was added in the block after");
     PHANTOM_ASSERT(!isNative());
@@ -100,7 +100,7 @@ void LocalVariable::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 bool LocalVariable::isThis() const
 {
     Method*            pMethod = getSubroutine()->asMethod();
-    return pMethod AND pMethod->getThis() == this;
+    return pMethod && pMethod->getThis() == this;
 }
 
 } // namespace lang

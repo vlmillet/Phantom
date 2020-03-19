@@ -304,7 +304,7 @@ protected: // native constructor
 protected:
     bool canBeDestroyed() const override
     {
-        return m_TemplateSpecializations.empty() AND Symbol::canBeDestroyed();
+        return m_TemplateSpecializations.empty() && Symbol::canBeDestroyed();
     }
     void onAncestorChanged(LanguageElement* a_pOwner) override;
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;

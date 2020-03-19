@@ -45,10 +45,10 @@ makePair(t_First&& a_First, t_Second&& a_Second)
 } // namespace phantom
 
 PHANTOM_DISABLE_TRAIT_IF_T(IsCopyAssignable, (class, class), (K, V), Pair,
-                           !IsCopyAssignable<K>::value OR !IsCopyAssignable<V>::value);
+                           !IsCopyAssignable<K>::value || !IsCopyAssignable<V>::value);
 PHANTOM_DISABLE_TRAIT_IF_T(IsMoveAssignable, (class, class), (K, V), Pair,
-                           !IsMoveAssignable<K>::value OR !IsMoveAssignable<V>::value);
+                           !IsMoveAssignable<K>::value || !IsMoveAssignable<V>::value);
 PHANTOM_DISABLE_TRAIT_IF_T(IsCopyConstructible, (class, class), (K, V), Pair,
-                           !IsCopyConstructible<K>::value OR !IsCopyConstructible<V>::value);
+                           !IsCopyConstructible<K>::value || !IsCopyConstructible<V>::value);
 PHANTOM_DISABLE_TRAIT_IF_T(IsMoveConstructible, (class, class), (K, V), Pair,
-                           !IsMoveConstructible<K>::value OR !IsMoveConstructible<V>::value);
+                           !IsMoveConstructible<K>::value || !IsMoveConstructible<V>::value);

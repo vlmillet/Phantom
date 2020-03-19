@@ -97,7 +97,7 @@ void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pConte
         char c = a_strFunctionType[i];
         if (c == '(')
         {
-            PHANTOM_ASSERT(NOT(returnType.empty()), "no return type specified in the signature String");
+            PHANTOM_ASSERT(!(returnType.empty()), "no return type specified in the signature String");
             Type* pReturnType = m_pReturnType;
             if (pReturnType == nullptr)
             {
@@ -116,7 +116,7 @@ void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pConte
         }
         else
         {
-            if (prevChar == '>' AND c == '>') /// avoid shift right / end of template ambiguity
+            if (prevChar == '>' && c == '>') /// avoid shift right / end of template ambiguity
                 returnType += ' ';
             returnType += c;
         }
@@ -138,7 +138,7 @@ void FunctionType::addParameterType(Type* a_pType)
 
 void FunctionType::setReturnType(Type* a_pType)
 {
-    if (NOT(a_pType AND(a_pType == PHANTOM_TYPEOF(void) OR a_pType->isCopyable())))
+    if (!(a_pType &&(a_pType == PHANTOM_TYPEOF(void) || a_pType->isCopyable())))
         setInvalid();
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
@@ -188,7 +188,7 @@ bool FunctionType::separateParameters(StringView a_strText, Strings& a_OutParame
     for (; i < length; ++i)
     {
         char c = a_strText[i];
-        if (c == ',' AND template_level == 0)
+        if (c == ',' && template_level == 0)
         {
             a_OutParameters.push_back(parameter);
             parameter.clear();
@@ -207,7 +207,7 @@ bool FunctionType::separateParameters(StringView a_strText, Strings& a_OutParame
             parameter += c;
         }
     }
-    if (template_level == 0 AND NOT(parameter.empty()))
+    if (template_level == 0 && !(parameter.empty()))
     {
         a_OutParameters.push_back(parameter);
         return true;
@@ -232,7 +232,7 @@ bool FunctionType::parseParameterTypeList(StringView a_strText, Types&, Language
         return false;
 
     Strings parameters;
-    if (NOT(separateParameters(words.front(), parameters)))
+    if (!(separateParameters(words.front(), parameters)))
         return false;
 
     for (auto it = parameters.begin(); it != parameters.end(); ++it)
@@ -263,7 +263,7 @@ bool FunctionType::isSame(FunctionType* a_pOther) const
     Types types;
     for (size_t i = 0; i < m_ParameterTypes.size(); ++i)
     {
-        if (NOT(m_ParameterTypes[i]->isSame(a_pOther->m_ParameterTypes[i])))
+        if (!(m_ParameterTypes[i]->isSame(a_pOther->m_ParameterTypes[i])))
             return false;
     }
     return m_pReturnType->isSame(a_pOther->m_pReturnType);
@@ -395,7 +395,7 @@ void FunctionType::getUniqueName(StringBuffer& a_Buf) const
 
 bool FunctionType::isSame(Symbol* a_pOther) const
 {
-    if (NOT(a_pOther->asFunctionType()))
+    if (!(a_pOther->asFunctionType()))
         return false;
     return isSame(static_cast<FunctionType*>(a_pOther));
 }
@@ -407,7 +407,7 @@ TypesView FunctionType::getParameterTypes() const
 
 bool FunctionType::hasEllipsis() const
 {
-    return m_ParameterTypes.size() AND m_ParameterTypes.back()->asEllipsis();
+    return m_ParameterTypes.size() && m_ParameterTypes.back()->asEllipsis();
 }
 
 Type* FunctionType::addPointer() const
@@ -417,13 +417,13 @@ Type* FunctionType::addPointer() const
 
 bool FunctionType::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers, uint) const
 {
-    if (a_ParameterTypes.size() != getParameterTypeCount() OR NOT(testModifiers(a_Modifiers)))
+    if (a_ParameterTypes.size() != getParameterTypeCount() || !(testModifiers(a_Modifiers)))
     {
         return false;
     }
     for (size_t i = 0; i < m_ParameterTypes.size(); ++i)
     {
-        if (NOT(m_ParameterTypes[i]->isSame(a_ParameterTypes[i])))
+        if (!(m_ParameterTypes[i]->isSame(a_ParameterTypes[i])))
             return false;
     }
     return true;

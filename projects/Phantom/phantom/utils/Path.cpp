@@ -35,7 +35,7 @@ Path::Path(StringView a_Path, const char a_Separator)
     if (a_Path.empty())
         return;
     int i = 0;
-    while ((a_Path[i] == ' ' OR a_Path[i] == '\t') && i < a_Path.size())
+    while ((a_Path[i] == ' ' || a_Path[i] == '\t') && i < a_Path.size())
         ++i;
     if (i == a_Path.size())
         return;
@@ -58,7 +58,7 @@ Path::Path(StringView a_Path)
         return;
 #if PHANTOM_OPERATING_SYSTEM_FAMILY == PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX
     int i = 0;
-    while ((a_Path[i] == ' ' OR a_Path[i] == '\t') && i < pathSize)
+    while ((a_Path[i] == ' ' || a_Path[i] == '\t') && i < pathSize)
         ++i;
     if (i == pathSize)
         return;
@@ -77,7 +77,7 @@ Path& Path::operator=(const StringView a_Path)
         return *this;
 #if PHANTOM_OPERATING_SYSTEM_FAMILY == PHANTOM_OPERATING_SYSTEM_FAMILY_UNIX
     int i = 0;
-    while ((a_Path[i] == ' ' OR a_Path[i] == '\t') && i < a_Path.size())
+    while ((a_Path[i] == ' ' || a_Path[i] == '\t') && i < a_Path.size())
         ++i;
     if (i == a_Path.size())
         return *this;
@@ -170,7 +170,7 @@ String Path::customString(StringView a_Separator) const
 
 size_t Path::find(const Path& subpath) const
 {
-    if (subpath.empty() OR empty())
+    if (subpath.empty() || empty())
         return false;
     size_t foundIndex = npos;
     size_t subindex = 0;
@@ -204,7 +204,7 @@ size_t Path::find(const Path& subpath) const
 
 size_t Path::rfind(const Path& subpath) const
 {
-    if (subpath.empty() OR empty())
+    if (subpath.empty() || empty())
         return false;
     size_t    foundIndex = npos;
     size_t    subindex = 0;
@@ -240,10 +240,10 @@ size_t Path::rfind(const Path& subpath) const
 
 bool Path::isWindowsAbsolute() const
 {
-    if (parts.size() AND parts[0].size() == 2)
+    if (parts.size() && parts[0].size() == 2)
     {
         char drive = parts[0][0];
-        if ((drive >= 'A' AND drive <= 'Z') OR(drive >= 'a' AND drive <= 'z'))
+        if ((drive >= 'A' && drive <= 'Z') ||(drive >= 'a' && drive <= 'z'))
         {
             if (parts[0][1] == ':')
                 return true;
@@ -254,21 +254,21 @@ bool Path::isWindowsAbsolute() const
 
 bool Path::isUnixAbsolute() const
 {
-    return parts.size() AND parts[0].empty();
+    return parts.size() && parts[0].empty();
 }
 
 bool Path::isGenericAbsolute() const
 {
-    return isUnixAbsolute() OR isWindowsAbsolute();
+    return isUnixAbsolute() || isWindowsAbsolute();
 }
 
 bool Path::isAbsolute() const
 {
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-    if (parts.size() AND parts[0].size() == 2)
+    if (parts.size() && parts[0].size() == 2)
     {
         char drive = parts[0][0];
-        if ((drive >= 'A' AND drive <= 'Z') OR(drive >= 'a' AND drive <= 'z'))
+        if ((drive >= 'A' && drive <= 'Z') ||(drive >= 'a' && drive <= 'z'))
         {
             if (parts[0][1] == ':')
                 return true;
@@ -276,7 +276,7 @@ bool Path::isAbsolute() const
     }
     return false;
 #else
-    return parts.size() AND parts[0].empty();
+    return parts.size() && parts[0].empty();
 #endif
 }
 
@@ -400,7 +400,7 @@ Path Path::canonical() const
     {
         if (c.parts[i] == "..")
         {
-            if (c_stack.size() AND c_stack.back()) // prev
+            if (c_stack.size() && c_stack.back()) // prev
             {
                 c.parts.erase(c.parts.begin() + i--);
                 c.parts.erase(c.parts.begin() + i--);
@@ -413,7 +413,7 @@ Path Path::canonical() const
         }
         else if (c.parts[i] == ".")
         {
-            if (c_stack.empty() OR c_stack.back()) // prev
+            if (c_stack.empty() || c_stack.back()) // prev
             {
                 c.parts.erase(c.parts.begin() + i--);
             }
@@ -456,7 +456,7 @@ Path Path::_relative(const Path& to) const
         {
             if (i < parts.size())
             {
-                if (diffFound OR parts[i] != to.parts[i])
+                if (diffFound || parts[i] != to.parts[i])
                 {
                     diffFound = true;
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -481,7 +481,7 @@ Path Path::_relative(const Path& to) const
         {
             if (i < to.parts.size())
             {
-                if (diffFound OR(parts[i] != to.parts[i]))
+                if (diffFound ||(parts[i] != to.parts[i]))
                 {
                     diffFound = true;
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -506,7 +506,7 @@ Path Path::_relative(const Path& to) const
 bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::error_code& ec,
                                 bool recursive /*= false*/)
 {
-    if (!p.exists() OR !p.isDirectory())
+    if (!p.exists() || !p.isDirectory())
         return false;
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
     WIN32_FIND_DATAA findFileData;
@@ -519,14 +519,14 @@ bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::e
             ? Type::regular
             : Type::directory;
             if (type ==
-                Type::directory AND(strcmp(findFileData.cFileName, ".") == 0 OR strcmp(findFileData.cFileName, "..") ==
+                Type::directory &&(strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") ==
                                     0))
                 continue;
             DirectoryEntry de(p.childPath(findFileData.cFileName), type);
             entries.push_back(de);
-            if (type == Type::directory AND recursive)
+            if (type == Type::directory && recursive)
             {
-                if (NOT(ListDirectoryEntries(de.path(), entries, ec, true)))
+                if (!(ListDirectoryEntries(de.path(), entries, ec, true)))
                 {
                     entries.clear();
                     return false;
@@ -551,12 +551,12 @@ bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::e
             Type type = (ep->d_type == DT_DIR)
             ? Type::directory
             : (ep->d_type == DT_REG) ? Type::regular : (ep->d_type == DT_LNK) ? Type::symlink : Type::unknown;
-            if (type == Type::directory AND(strcmp(ep->d_name, ".") == 0 OR strcmp(ep->d_name, "..") == 0))
+            if (type == Type::directory &&(strcmp(ep->d_name, ".") == 0 || strcmp(ep->d_name, "..") == 0))
                 continue;
             entries.push_back(DirectoryEntry(p.childPath(ep->d_name), type));
-            if (type == Type::directory AND recursive)
+            if (type == Type::directory && recursive)
             {
-                if (NOT(ListDirectoryEntries(entries.back().path(), entries, ec, true)))
+                if (!(ListDirectoryEntries(entries.back().path(), entries, ec, true)))
                 {
                     entries.clear();
                     return false;
@@ -688,7 +688,7 @@ bool Path::ResizeFile(const Path& p, size_t size, std::error_code& ec)
     HANDLE h(CreateFileA(p.platformString().c_str(), GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
     LARGE_INTEGER sz;
     sz.QuadPart = size;
-    result = (h != INVALID_HANDLE_VALUE) AND::SetFilePointerEx(h, sz, 0, FILE_BEGIN) AND::SetEndOfFile(h);
+    result = (h != INVALID_HANDLE_VALUE) &&::SetFilePointerEx(h, sz, 0, FILE_BEGIN) &&::SetEndOfFile(h);
     CloseHandle(h);
     if (!result)
     {
@@ -742,9 +742,9 @@ bool Path::RemoveAll(const Path& p, std::error_code& ec)
         bool             result = ListDirectoryEntries(p, entries, ec);
         for (auto it = entries.begin(); it != entries.end(); ++it)
         {
-            result = RemoveAll(it->path(), ec) AND result;
+            result = RemoveAll(it->path(), ec) && result;
         }
-        return Remove(p, ec) AND result;
+        return Remove(p, ec) && result;
     }
     return Remove(p, ec);
 }
@@ -771,7 +771,7 @@ bool Path::CreateDirectories(const Path& p, std::error_code& ec)
         strpath += *it;
         BOOL result = CreateDirectoryA(strpath.c_str(), NULL);
         int  error = 0;
-        if ((result == FALSE) AND(((error = GetLastError()) != ERROR_ALREADY_EXISTS) OR NOT(IsDirectory(strpath))))
+        if ((result == FALSE) &&(((error = GetLastError()) != ERROR_ALREADY_EXISTS) || !(IsDirectory(strpath))))
         {
             ec.assign(error, std::system_category());
             return false;
@@ -794,7 +794,7 @@ bool Path::CreateDirectories(const Path& p, std::error_code& ec)
             strpath += '/';
         strpath += *it;
         int result = mkdir(strpath.c_str(), ACCESSPERMS);
-        if (result == 0 OR(errno == EEXIST AND IsDirectory(strpath)))
+        if (result == 0 ||(errno == EEXIST && IsDirectory(strpath)))
             continue;
         ec.assign(errno, std::system_category());
         return false;

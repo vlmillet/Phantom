@@ -66,7 +66,7 @@ void Type::terminate()
 
 size_t Type::getSize() const
 {
-    PHANTOM_ASSERT(isVoid() OR isTemplateDependant() OR m_uiSize, "accessing size on incomplete type");
+    PHANTOM_ASSERT(isVoid() || isTemplateDependant() || m_uiSize, "accessing size on incomplete type");
     return m_uiSize;
 }
 
@@ -114,12 +114,12 @@ size_t Type::getAlignment() const
 
 bool Type::isDefaultInstanciable() const
 {
-    return NOT(isAbstract()) AND isDefaultConstructible();
+    return !(isAbstract()) && isDefaultConstructible();
 }
 
 bool Type::isA(Type* a_pType) const
 {
-    return isSame(a_pType) OR a_pType->isTemplateDependant();
+    return isSame(a_pType) || a_pType->isTemplateDependant();
 }
 
 bool Type::isAuto() const
@@ -327,7 +327,7 @@ size_t Type::AlignmentComputer::push(size_t a_uiSize, size_t a_uiAlignment)
 
 size_t Type::AlignmentComputer::align()
 {
-    if (m_Result == 0 OR m_MaxAlignment == 0)
+    if (m_Result == 0 || m_MaxAlignment == 0)
         return 0;
     size_t modulo = m_Result % m_MaxAlignment;
     if (modulo)
@@ -636,10 +636,10 @@ void Type::onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
     if (!isNative())
     {
         if (a_pOwner ==
-            getModule() AND(getTypeKind() == TypeKind::Class OR getTypeKind() == TypeKind::Union OR getTypeKind() ==
-                            TypeKind::Structure OR getTypeKind() == TypeKind::Enum)
-            AND((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) AND !isTemplateDependant()
-            AND NOT(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+            getModule() &&(getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union || getTypeKind() ==
+                            TypeKind::Structure || getTypeKind() == TypeKind::Enum)
+            &&((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant()
+            && !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
             static_cast<Module*>(a_pOwner)->_unregisterType(m_Hash, this);
         }
@@ -652,10 +652,10 @@ void Type::onAncestorChanged(LanguageElement* a_pOwner)
     if (!isNative())
     {
         if (a_pOwner ==
-            getModule() AND(getTypeKind() == TypeKind::Class OR getTypeKind() == TypeKind::Union OR getTypeKind() ==
-                            TypeKind::Structure OR getTypeKind() == TypeKind::Enum)
-            AND((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) AND !isTemplateDependant()
-            AND NOT(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+            getModule() &&(getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union || getTypeKind() ==
+                            TypeKind::Structure || getTypeKind() == TypeKind::Enum)
+            &&((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant()
+            && !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
             auto nscope = getNamingScope();
             PHANTOM_ASSERT(nscope, "naming scope (namespace or class type) must be defined before inserting to module");
@@ -856,7 +856,7 @@ Type* Type::addCustom(int) const
 Type* Type::removeConstLValueReference() const
 {
     Type* pNoRef = removeLValueReference();
-    if (pNoRef != this AND pNoRef->asConstType())
+    if (pNoRef != this && pNoRef->asConstType())
         return pNoRef->removeConst();
     return const_cast<Type*>(this);
 }

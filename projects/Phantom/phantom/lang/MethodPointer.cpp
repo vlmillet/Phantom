@@ -146,8 +146,8 @@ bool MethodPointer::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifie
     ((m_Modifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
                                                           // function (every one can call a const member function but a
                                                           // const cannot call a non const member function)
-    AND(((m_Modifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
-        OR(m_Modifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
+    &&(((m_Modifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
+        ||(m_Modifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
 }
 
 Type* MethodPointer::getImplicitObjectParameterType() const

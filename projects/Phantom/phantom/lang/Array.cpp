@@ -115,8 +115,8 @@ bool Array::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Ded
 bool Array::isSame(Symbol* a_pOther) const
 {
     return (a_pOther == this)
-    OR(a_pOther->asArray() AND m_pUnderlyingType->isSame(static_cast<Array*>(a_pOther)->m_pUnderlyingType)
-       AND                     m_uiCount == static_cast<Array*>(a_pOther)->m_uiCount);
+    ||(a_pOther->asArray() && m_pUnderlyingType->isSame(static_cast<Array*>(a_pOther)->m_pUnderlyingType)
+       &&                     m_uiCount == static_cast<Array*>(a_pOther)->m_uiCount);
 }
 
 void Array::getUniqueName(StringBuffer& a_Buf) const

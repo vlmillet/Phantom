@@ -39,7 +39,7 @@ LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/)
 LanguageElement::~LanguageElement()
 {
     PHANTOM_ASSERT(!rtti.instance);
-    PHANTOM_ASSERT(isNative() OR m_pElements == nullptr);
+    PHANTOM_ASSERT(isNative() || m_pElements == nullptr);
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
 }
 
@@ -85,7 +85,7 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     {
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
-            if (a_pClass == nullptr OR(*it)->as(a_pClass))
+            if (a_pClass == nullptr ||(*it)->as(a_pClass))
             {
                 out.push_back(*it);
             }
@@ -126,8 +126,8 @@ void LanguageElement::addElement(LanguageElement* a_pElement)
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(a_pElement != this, "element added to itself");
     PHANTOM_ASSERT(a_pElement->m_pOwner == nullptr, "element already added to this or another element");
-    PHANTOM_ASSERT(a_pElement->isNative() == isNative() OR(a_pElement->asNamespace() && asNamespace()) OR a_pElement ==
-                   Namespace::Global() OR this == Application::Get(),
+    PHANTOM_ASSERT(a_pElement->isNative() == isNative() ||(a_pElement->asNamespace() && asNamespace()) || a_pElement ==
+                   Namespace::Global() || this == Application::Get(),
                    "adding non-native element to native one (and vice-versa) is forbidden");
     if (m_pElements == nullptr)
     {
@@ -140,7 +140,7 @@ void LanguageElement::addElement(LanguageElement* a_pElement)
     {
         setIncomplete();
     }
-    if (a_pElement->isTemplateDependant() AND asEvaluable())
+    if (a_pElement->isTemplateDependant() && asEvaluable())
     {
         setTemplateDependant();
     }
@@ -177,7 +177,7 @@ void LanguageElement::addReferencedElement(LanguageElement* a_pElement)
     }
     if (a_pElement->isIncomplete())
         setIncomplete();
-    if (a_pElement->isTemplateDependant() AND asEvaluable())
+    if (a_pElement->isTemplateDependant() && asEvaluable())
     {
         setTemplateDependant();
     }
@@ -200,7 +200,7 @@ void LanguageElement::addUniquelyReferencedElement(LanguageElement* a_pElement)
     onReferencedElementAdded(a_pElement);
     if (a_pElement->isIncomplete())
         setIncomplete();
-    if (a_pElement->isTemplateDependant() AND asEvaluable())
+    if (a_pElement->isTemplateDependant() && asEvaluable())
     {
         setTemplateDependant();
     }
@@ -261,7 +261,7 @@ bool LanguageElement::canBeDestroyed() const
     {
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
-            if (NOT((*it)->canBeDestroyed()))
+            if (!((*it)->canBeDestroyed()))
             {
                 return false;
             }
@@ -272,7 +272,7 @@ bool LanguageElement::canBeDestroyed() const
 
 bool LanguageElement::canBeUnloaded() const
 {
-    if (NOT(canBeDestroyed()))
+    if (!(canBeDestroyed()))
         return false;
 
     Module* pModule = getModule();
@@ -283,7 +283,7 @@ bool LanguageElement::canBeUnloaded() const
         {
             for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
             {
-                if (NOT((*it)->getModule() != pModule))
+                if (!((*it)->getModule() != pModule))
                 {
                     return false; /// An element referencing this one belongs to a different module
                                   /// => cannot unload
@@ -387,8 +387,8 @@ void LanguageElement::_onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
 void LanguageElement::_onElementsAccess()
 {
     Module* pModule;
-    if (Application::Get() && NOT(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) &&
-        (pModule = getModule()) && NOT(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
+    if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) &&
+        (pModule = getModule()) && !(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
     {
         onElementsAccess();
     }
@@ -446,7 +446,7 @@ void LanguageElement::onInvalidated() {}
 Reference* LanguageElement::asConstLValueReference() const
 {
     Reference* pReference = asLValueReference();
-    return (pReference AND pReference->getReferencedType()->asConstType()) ? pReference : nullptr;
+    return (pReference && pReference->getReferencedType()->asConstType()) ? pReference : nullptr;
 }
 
 bool LanguageElement::partialAccepts(LanguageElement* a_pLanguageElement, size_t& a_Score, PlaceholderMap&) const
@@ -623,7 +623,7 @@ void LanguageElement::dumpElementListCascade(std::basic_ostream<char>& out) cons
 
 bool LanguageElement::hasFriendCascade(Symbol* a_pElement) const
 {
-    return hasFriend(a_pElement) OR(m_pOwner AND m_pOwner->hasFriendCascade(a_pElement));
+    return hasFriend(a_pElement) ||(m_pOwner && m_pOwner->hasFriendCascade(a_pElement));
 }
 
 void LanguageElement::addSymbol(Symbol* a_pElement)
@@ -644,7 +644,7 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
                     continue;
                 Symbol* pSymbol = pElm->asSymbol();
                 (void)pSymbol;
-                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr OR pSymbol->computeHash() != a_pElement->computeHash(),
+                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->computeHash() != a_pElement->computeHash(),
                                      "equal element already added : be careful not having "
                                      "duplicate member declarations in your class, or check not "
                                      "registering not two type with same name in the same source");
@@ -656,7 +656,7 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
 bool LanguageElement::isTemplateElement() const
 {
     TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
-    return pSpec            AND(NOT(pSpec->isFull()) OR pSpec->isTemplateElement());
+    return pSpec            &&(!(pSpec->isFull()) || pSpec->isTemplateElement());
 }
 
 LanguageElements LanguageElement::sm_Elements; // TODO remove
@@ -709,7 +709,7 @@ Symbol* LanguageElement::getUniqueElement(StringView name, Modifiers modifiers /
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
             Symbol* pSymbol = (*it)->asSymbol();
-            if (pSymbol AND pSymbol->getName() == name AND pSymbol->testModifiers(modifiers))
+            if (pSymbol && pSymbol->getName() == name && pSymbol->testModifiers(modifiers))
             {
                 if (pElement)
                     return nullptr;
@@ -739,7 +739,7 @@ bool LanguageElement::hasNamingScopeCascade(Scope* a_pScope) const
 {
     Scope* pScope = getNamingScope();
     return (pScope != nullptr)
-    AND((pScope == a_pScope) OR pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
+    &&((pScope == a_pScope) || pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
 }
 
 void LanguageElement::onElementAdded(LanguageElement*) {}
@@ -839,7 +839,7 @@ bool LanguageElement::isSymbolHidden(Symbol* a_pSymbol) const
         return false;
     for (auto p : getElements())
     {
-        if (p->asSymbol() AND a_pSymbol->getName() == static_cast<Symbol*>(p)->getName())
+        if (p->asSymbol() && a_pSymbol->getName() == static_cast<Symbol*>(p)->getName())
             return true;
     }
     return m_pOwner ? m_pOwner->isSymbolHidden(a_pSymbol) : false;
@@ -850,7 +850,7 @@ void LanguageElement::getSymbolsWithName(StringView a_strName, Symbols& a_OutSym
     for (auto p : getElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol AND pSymbol->getName() == a_strName AND NOT(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol && pSymbol->getName() == a_strName && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
             a_OutSymbols.push_back(pSymbol);
     }
 }
@@ -869,7 +869,7 @@ bool LanguageElement::hasSymbol(StringView a_strName) const
     for (auto p : getElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol AND pSymbol->getName() == a_strName)
+        if (pSymbol && pSymbol->getName() == a_strName)
             return true;
     }
     return false;
@@ -897,7 +897,7 @@ void LanguageElement::setCodeRange(const CodeRange& a_CodeRange)
     if (m_CodeRange == a_CodeRange)
         return;
     m_CodeRange = a_CodeRange;
-    //             if (m_pOwner && NOT(asSource()))
+    //             if (m_pOwner && !(asSource()))
     //             {
     //                 m_pOwner->setCodeRange(m_pOwner->m_CodeRange | a_CodeRange);
     //             }
@@ -910,7 +910,7 @@ Source* LanguageElement::getCodeLocationSource() const
 
 LanguageElement* LanguageElement::getElementAtCodePosition(const CodePosition& a_CodePosition) const
 {
-    if (NOT(m_CodeRange.containsCodePosition(a_CodePosition)))
+    if (!(m_CodeRange.containsCodePosition(a_CodePosition)))
         return nullptr;
     for (auto pElement : getElements())
     {
@@ -923,7 +923,7 @@ LanguageElement* LanguageElement::getElementAtCodePosition(const CodePosition& a
 
 LanguageElement* LanguageElement::getElementAtLine(uint16 a_Line) const
 {
-    if (NOT(m_CodeRange.containsLine(a_Line)))
+    if (!(m_CodeRange.containsLine(a_Line)))
         return nullptr;
     for (auto pElement : getElements())
     {
@@ -940,7 +940,7 @@ void LanguageElement::fetchSymbols(Symbols& a_Symbols, SymbolFilter a_Filter,
     for (auto pElem : getElements())
     {
         Symbol* pSymbol1 = pElem->asSymbol();
-        if (pSymbol1 AND(pSymbol1 = a_Filter(pSymbol1, asSymbol() ? asSymbol()->getName().empty() : false)))
+        if (pSymbol1 &&(pSymbol1 = a_Filter(pSymbol1, asSymbol() ? asSymbol()->getName().empty() : false)))
         {
             a_Symbols.push_back(pSymbol1);
             if (pSymbol1->getName().empty())
@@ -972,12 +972,12 @@ Symbol* LanguageElement::PublicFilter(Symbol* a_pSymbol, bool)
 
 Symbol* LanguageElement::PublicIfUnamedSubSymbolFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol)
 {
-    return (!a_bUnamedSubSymbol OR a_pSymbol->isPublic()) ? a_pSymbol : nullptr;
+    return (!a_bUnamedSubSymbol || a_pSymbol->isPublic()) ? a_pSymbol : nullptr;
 }
 
 void LanguageElement::setIncomplete()
 {
-    if (testFlags(PHANTOM_R_INCOMPLETE) OR testFlags(PHANTOM_R_ALWAYS_VALID))
+    if (testFlags(PHANTOM_R_INCOMPLETE) || testFlags(PHANTOM_R_ALWAYS_VALID))
         return;
     /// When an element becomes invalid, the following becomes invalid too :
     /// - the elements who have reference to it
@@ -1010,7 +1010,7 @@ phantom::lang::Source* LanguageElement::getSource() const
 
 void LanguageElement::setInvalid()
 {
-    if (isInvalid() OR isAlwaysValid())
+    if (isInvalid() || isAlwaysValid())
         return;
     PHANTOM_ASSERT(!isNative());
     m_uiFlags |= PHANTOM_R_FLAG_INVALID;

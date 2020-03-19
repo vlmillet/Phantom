@@ -40,7 +40,7 @@ bool Package::IsValidName(StringView a_strName)
             prevChar = c;
             continue;
         }
-        if (NOT((((c) >= '0') AND((c) <= '9')) OR(((c | 0x20) >= 'a') AND((c | 0x20) <= 'z')) OR(c) == '_'))
+        if (!((((c) >= '0') &&((c) <= '9')) ||(((c | 0x20) >= 'a') &&((c | 0x20) <= 'z')) ||(c) == '_'))
             return false;
         prevChar = c;
     }
@@ -91,7 +91,7 @@ bool Package::canBeUnloaded() const
 {
     for (auto it = m_Sources.begin(); it != m_Sources.end(); ++it)
     {
-        if (NOT((*it)->canBeUnloaded()))
+        if (!((*it)->canBeUnloaded()))
             return false;
     }
     return true;

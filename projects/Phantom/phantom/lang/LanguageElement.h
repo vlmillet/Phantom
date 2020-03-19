@@ -259,7 +259,7 @@ public:
 
     bool hasOwnerCascade(LanguageElement* a_pElement) const
     {
-        return (m_pOwner == a_pElement) OR(m_pOwner AND m_pOwner->hasOwnerCascade(a_pElement));
+        return (m_pOwner == a_pElement) ||(m_pOwner && m_pOwner->hasOwnerCascade(a_pElement));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ public:
 
     bool hasElementCascade(LanguageElement* a_pElement) const
     {
-        return hasElement(a_pElement) OR(m_pOwner AND m_pOwner->hasElementCascade(a_pElement));
+        return hasElement(a_pElement) ||(m_pOwner && m_pOwner->hasElementCascade(a_pElement));
     }
 
     virtual bool isCompileTime() const { return false; }

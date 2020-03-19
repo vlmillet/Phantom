@@ -51,7 +51,7 @@ bool PlaceholderType::isSame(Symbol* a_pOther) const
     TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
     TemplateSpecialization* pOtherSpec = a_pOther->getEnclosingTemplateSpecialization();
     return (a_pOther->getName() ==
-            getName() AND a_pOther->asPlaceholder() AND pSpec AND pOtherSpec AND pSpec->isSame(pOtherSpec));
+            getName() && a_pOther->asPlaceholder() && pSpec && pOtherSpec && pSpec->isSame(pOtherSpec));
 }
 
 phantom::lang::Placeholder* PlaceholderType::clone(uint) const

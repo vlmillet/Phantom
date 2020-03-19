@@ -19,8 +19,8 @@ namespace phantom
 namespace lang
 {
 #define _PHNTM_HAS_LONG                                                                                                \
-    (std::is_same<t_Ty, long>::value OR std::is_same<t_Ty, double>::value OR std::is_same<t_Ty, int>::value OR         \
-     std::is_same<t_Ty, unsigned int>::value OR std::is_same<t_Ty, unsigned long>::value)
+    (std::is_same<t_Ty, long>::value || std::is_same<t_Ty, double>::value || std::is_same<t_Ty, int>::value ||         \
+     std::is_same<t_Ty, unsigned int>::value || std::is_same<t_Ty, unsigned long>::value)
 
 template<typename t_Ty>
 struct SafeMakeLong
@@ -54,7 +54,7 @@ struct SafeMakeLong<unsigned long>
 };
 
 #define _PHNTM_HAS_UNSIGNED                                                                                            \
-    ((std::is_integral<t_Ty>::value OR std::is_enum<t_Ty>::value)AND !std::is_same<t_Ty, bool>::value)
+    ((std::is_integral<t_Ty>::value || std::is_enum<t_Ty>::value) && !std::is_same<t_Ty, bool>::value)
 
 template<typename t_Ty, bool is_valid>
 struct SafeMakeUnsignedH : std::make_unsigned<t_Ty>

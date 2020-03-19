@@ -75,7 +75,7 @@ public:
         PHANTOM_ASSERT_DEBUG(lang::Package::IsValidName(a_strSource),
                              "invalid source name, only [a-z0-9_] characters (lower case) separated with "
                              "'.' are allowed");
-        PHANTOM_ASSERT_DEBUG(m_package.size() OR(a_strSource.find_first_of('.') != StringView::npos),
+        PHANTOM_ASSERT_DEBUG(m_package.size() ||(a_strSource.find_first_of('.') != StringView::npos),
                              "missing package name in source qualified name (or enclose your "
                              "PHANTOM_R_SOURCE/PHANTOM_R_END scope in a PHANTOM_R_PACKAGE/PHANTOM_R_END scope)");
     }

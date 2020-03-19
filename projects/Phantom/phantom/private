@@ -1,2 +1,1 @@
-#define PHANTOM_FORWARD_REGISTRATIONS template<class> struct _PHNTM_Registrer
-#define PHANTOM_ALLOW_PRIVATES template<class> friend struct _PHNTM_Registrer
+#include <phantom/lang/registration/Privates.h>

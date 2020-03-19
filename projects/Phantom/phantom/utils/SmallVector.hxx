@@ -10,6 +10,8 @@ PHANTOM_META_TYPE_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocIn
 
 // haunt {
 
+// clang-format off
+
 #include "SmallVector.h"
 
 #if defined(_MSC_VER)
@@ -186,4 +188,7 @@ PHANTOM_END("phantom.utils")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "crc64.h"
 
 #if defined(_MSC_VER)
@@ -36,4 +38,7 @@ PHANTOM_END("phantom.utils")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

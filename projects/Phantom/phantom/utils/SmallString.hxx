@@ -10,6 +10,8 @@ PHANTOM_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallStr
 
 // haunt {
 
+// clang-format off
+
 #include "SmallString.h"
 
 #if defined(_MSC_VER)
@@ -177,4 +179,7 @@ PHANTOM_END("phantom.utils")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "Constant.h"
 
 #if defined(_MSC_VER)
@@ -93,4 +95,8 @@ namespace phantom {
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+
+

@@ -10,6 +10,8 @@ PHANTOM_META_TYPE_T((typename, typename, size_t, size_t, typename), (K, V, S, D,
 
 // haunt {
 
+// clang-format off
+
 #include "SmallMap.h"
 
 #if defined(_MSC_VER)
@@ -86,4 +88,7 @@ PHANTOM_END("phantom.utils")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "PlaceholderTemplate.h"
 
 #if defined(_MSC_VER)
@@ -69,4 +71,7 @@ PHANTOM_END("phantom.lang")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

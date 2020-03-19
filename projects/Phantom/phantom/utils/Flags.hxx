@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "Flags.h"
 
 #if defined(_MSC_VER)
@@ -127,4 +129,7 @@ PHANTOM_END("phantom.utils")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

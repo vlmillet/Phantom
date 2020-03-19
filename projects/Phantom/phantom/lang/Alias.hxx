@@ -1,6 +1,8 @@
 #pragma once
 // haunt {
 
+// clang-format off
+
 #include "Alias.h"
 
 #if defined(_MSC_VER)
@@ -78,4 +80,7 @@ PHANTOM_END("phantom.lang")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "SpinMutex.h"
 
 #if defined(_MSC_VER)
@@ -49,4 +51,7 @@ PHANTOM_END("phantom.thread")
 #   pragma clang diagnostic pop
 #endif
 
+// clang-format on
+
 // haunt }
+

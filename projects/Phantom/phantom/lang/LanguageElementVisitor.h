@@ -83,7 +83,6 @@ public:
     virtual void visit(PlaceholderTemplate* a_pInput, VisitorData a_Data);
     virtual void visit(PlaceholderType* a_pInput, VisitorData a_Data);
     virtual void visit(PointerType* a_pInput, VisitorData a_Data);
-    virtual void visit(ExtendedType* a_pInput, VisitorData a_Data);
     virtual void visit(PrimitiveType* a_pInput, VisitorData a_Data);
     virtual void visit(Property* a_pInput, VisitorData a_Data);
     virtual void visit(Reference* a_pInput, VisitorData a_Data);

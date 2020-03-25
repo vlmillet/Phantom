@@ -48,13 +48,8 @@ public:
     /// \return The pointed type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getPointeeType() const
-    {
-        return m_pUnderlyingType;
-    }
+    Type* getPointeeType() const { return m_pUnderlyingType; }
 
-    Type*    asAddressType() const override;
-    Pointer* asPointer() const override;
     Type*    asClassAddressType() const override;
     Pointer* asClassPointer() const override;
     Type*    asConstClassAddressType() const override;
@@ -70,16 +65,6 @@ public:
 
     uint getDataPointerLevel() const override;
 
-    Type* removePointer() const override;
-
-    Type* removePointerOrArray() const override;
-
-    Type* removeAddress() const override;
-
-    Type* removeAllConst() const override;
-
-    Type* removeAllQualifiers() const override;
-
     bool isCopyable() const override;
 
     bool isEquivalent(Type* a_pType) const override;
@@ -87,8 +72,6 @@ public:
     bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_DeducedConstants) const override;
 
     bool isSame(Symbol* a_pOther) const override;
-
-    Type* getUnderlyingType() const override;
 
     Type* replicate(Type* a_pSource) const override;
 

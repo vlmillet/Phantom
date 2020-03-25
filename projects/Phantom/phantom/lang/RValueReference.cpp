@@ -18,31 +18,6 @@ RValueReference::RValueReference(Type* a_pReferencedType)
 {
 }
 
-Type* RValueReference::addLValueReference() const
-{
-    return m_pUnderlyingType->makeLValueReference();
-}
-
-Type* RValueReference::addRValueReference() const
-{
-    return const_cast<RValueReference*>(this);
-}
-
-Type* RValueReference::addPointer() const
-{
-    return m_pUnderlyingType->addPointer();
-}
-
-Type* RValueReference::removeAllConst() const
-{
-    return m_pUnderlyingType->removeAllConst()->makeRValueReference();
-}
-
-Type* RValueReference::removeAllQualifiers() const
-{
-    return m_pUnderlyingType->removeAllQualifiers()->makeRValueReference();
-}
-
 Type* RValueReference::replicate(Type* a_pInput) const
 {
     return m_pUnderlyingType->replicate(a_pInput)->addRValueReference();
@@ -62,8 +37,9 @@ bool RValueReference::partialAccepts(Type* a_pType, size_t& a_Score, Placeholder
 
 bool RValueReference::isSame(Symbol* a_pOther) const
 {
-    return (a_pOther == this) ||(a_pOther->asRValueReference() && m_pUnderlyingType->isSame(
-    static_cast<RValueReference*>(a_pOther)->m_pUnderlyingType));
+    return (a_pOther == this) ||
+    (a_pOther->asRValueReference() &&
+     m_pUnderlyingType->isSame(static_cast<RValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 
 void RValueReference::getUniqueName(StringBuffer& a_Buf) const

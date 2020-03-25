@@ -11,40 +11,10 @@ namespace phantom
 {
 namespace lang
 {
-QualifiedType::QualifiedType(Type* a_pType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize,
+QualifiedType::QualifiedType(TypeKind a_eTypeKind, Type* a_pType, StringView a_strName, size_t a_uiSize,
                              size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
-    : ExtendedType(a_pType, a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+    : Type(a_eTypeKind, a_pType, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
-}
-
-phantom::lang::Type* QualifiedType::removeAllVolatile() const
-{
-    return m_pUnderlyingType->removeAllVolatile();
-}
-
-phantom::lang::Type* QualifiedType::removeAllQualifiers() const
-{
-    return m_pUnderlyingType->removeAllQualifiers();
-}
-
-phantom::lang::Type* QualifiedType::removeQualifiers() const
-{
-    return m_pUnderlyingType->removeQualifiers();
-}
-
-phantom::lang::Type* QualifiedType::removePointerOrArray() const
-{
-    return m_pUnderlyingType->removePointerOrArray();
-}
-
-phantom::lang::Type* QualifiedType::removeAddress() const
-{
-    return m_pUnderlyingType->removeAddress();
-}
-
-phantom::lang::Type* QualifiedType::removeArray() const
-{
-    return m_pUnderlyingType->removeArray();
 }
 
 void* QualifiedType::cast(Type* a_pTargetType, void* a_pSrc) const
@@ -125,11 +95,6 @@ void QualifiedType::moveConstruct(void* a_pDest, void* a_pSrc) const
 bool QualifiedType::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const
 {
     return m_pUnderlyingType->convert(a_pDstType, a_pDst, a_pSrc);
-}
-
-phantom::lang::Type* QualifiedType::removeEverything() const
-{
-    return m_pUnderlyingType->removeEverything();
 }
 
 void QualifiedType::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr */) const

@@ -16,7 +16,7 @@ namespace phantom
 namespace lang
 {
 VolatileType::VolatileType(Type* a_pType)
-    : QualifiedType(a_pType, a_pType->getTypeKind(), "volatile", 0, 0, a_pType->getModifiers() | PHANTOM_R_VOLATILE,
+    : QualifiedType(TypeKind::Unknown, a_pType, "volatile", 0, 0, PHANTOM_R_VOLATILE,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
     addReferencedElement(a_pType);
@@ -37,24 +37,8 @@ bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap
 
 bool VolatileType::isSame(Symbol* a_pOther) const
 {
-    return a_pOther ==
-    this ||(a_pOther->asVolatileType()
-            && m_pUnderlyingType->isSame(static_cast<VolatileType*>(a_pOther)->m_pUnderlyingType));
-}
-
-Type* VolatileType::addConst() const
-{
-    return m_pUnderlyingType->makeConstVolatile();
-}
-
-Type* VolatileType::addVolatile() const
-{
-    return const_cast<VolatileType*>(this);
-}
-
-Type* VolatileType::addConstVolatile() const
-{
-    return m_pUnderlyingType->makeConstVolatile();
+    return a_pOther == this ||
+    (a_pOther->asVolatileType() && m_pUnderlyingType->isSame(static_cast<VolatileType*>(a_pOther)->m_pUnderlyingType));
 }
 
 Type* VolatileType::replicate(Type* a_pInput) const

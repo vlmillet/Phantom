@@ -20,8 +20,13 @@ PlaceholderClassType::PlaceholderClassType(PlaceholderType* a_pPlaceholderType)
 }
 
 PlaceholderClassType::PlaceholderClassType(StringView a_Name, Modifiers a_Modifiers, uint a_Flags)
-    : ClassType(TypeKind::TemplateDependant, a_Name, 0, 0, a_Modifiers, a_Flags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT)
+    : ClassType(TypeKind::ClassType, a_Name, 0, 0, a_Modifiers, a_Flags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT)
 {
+}
+
+Class* PlaceholderClassType::toClass() const
+{
+    return ((PlaceholderType*)getOwner())->toClass();
 }
 
 Placeholder* PlaceholderClassType::clone(uint a_Flags) const

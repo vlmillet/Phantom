@@ -84,7 +84,7 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
         PHANTOM_ASSERT_DEBUG(getValueMember(pField->getName()) == nullptr);
         PHANTOM_ASSERT(isNative() || m_uiSize == 0,
                        "type sized, cannot add fields anymore or the memory consistency would be messed up");
-        PHANTOM_ASSERT((asPOD() == nullptr ||(pField->getValueType()->asPOD() != nullptr)),
+        PHANTOM_ASSERT((asPOD() == nullptr || (pField->getValueType()->asPOD() != nullptr)),
                        "POD structs can only store pod types");
         if (pField->getMemberAnonymousSection() == nullptr) // does not belong to an anonymous struct/union
             m_DataElements.push_back(pField);
@@ -102,12 +102,12 @@ void ClassType::onElementAdded(LanguageElement* a_pElement)
         PHANTOM_ASSERT(isNative() || pProperty->getSignal() == nullptr || m_uiSize == 0,
                        "type sized, cannot add property with signal anymore or the memory "
                        "consistency would be messed up");
-        PHANTOM_ASSERT(isNative()
-                       || pProperty->getGet() == nullptr || !(pProperty->getGet()->isVirtual()) || m_uiSize == 0,
+        PHANTOM_ASSERT(isNative() || pProperty->getGet() == nullptr || !(pProperty->getGet()->isVirtual()) ||
+                       m_uiSize == 0,
                        "type sized, cannot add property with virtual method or the memory "
                        "consistency would be messed up");
-        PHANTOM_ASSERT(isNative()
-                       || pProperty->getSet() == nullptr || !(pProperty->getSet()->isVirtual()) || m_uiSize == 0,
+        PHANTOM_ASSERT(isNative() || pProperty->getSet() == nullptr || !(pProperty->getSet()->isVirtual()) ||
+                       m_uiSize == 0,
                        "type sized, cannot add property with virtual method or the memory "
                        "consistency would be messed up");
         m_Properties.push_back(pProperty);
@@ -293,7 +293,7 @@ void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/)
     for (auto it = m_Constructors->begin(); it != m_Constructors->end(); ++it)
     {
         Constructor* pCtor = *it;
-        if (pCtor->getParameters().size() == 1 &&(!(a_bImplicits) || !(pCtor->testModifiers(PHANTOM_R_EXPLICIT))))
+        if (pCtor->getParameters().size() == 1 && (!(a_bImplicits) || !(pCtor->testModifiers(PHANTOM_R_EXPLICIT))))
         {
             types.push_back(pCtor->getParameterType(0)->removeConstLValueReference());
         }
@@ -301,7 +301,7 @@ void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/)
     for (auto it = types.begin(); it != types.end();)
     {
         Method* pMF = getConversionFunction(*it);
-        if (pMF &&(!(a_bImplicits) || !(pMF->testModifiers(PHANTOM_R_EXPLICIT))))
+        if (pMF && (!(a_bImplicits) || !(pMF->testModifiers(PHANTOM_R_EXPLICIT))))
         {
             ++it;
         }
@@ -883,7 +883,7 @@ Field* ClassType::getFieldAtOffset(size_t a_uiOffset) const
 {
     for (auto pDM : *m_Fields)
     {
-        if ((a_uiOffset >= pDM->getOffset()) &&(a_uiOffset < (pDM->getOffset() + pDM->getValueType()->getSize())))
+        if ((a_uiOffset >= pDM->getOffset()) && (a_uiOffset < (pDM->getOffset() + pDM->getValueType()->getSize())))
             return pDM;
     }
     return nullptr;
@@ -898,8 +898,9 @@ bool ClassType::isListInitializable() const
 {
     for (auto pCtor : *m_Constructors)
     {
-        if ((!(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pCtor->testModifiers(PHANTOM_R_EXPLICIT)
-             || pCtor->testFlags(PHANTOM_R_FLAG_INHERITED))&& !(pCtor->testModifiers(Modifier::Deleted)))
+        if ((!(pCtor->testFlags(PHANTOM_R_FLAG_IMPLICIT)) || pCtor->testModifiers(PHANTOM_R_EXPLICIT) ||
+             pCtor->testFlags(PHANTOM_R_FLAG_INHERITED)) &&
+            !(pCtor->testModifiers(Modifier::Deleted)))
         {
             return false;
         }
@@ -1184,7 +1185,8 @@ bool ClassType::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, Typ
         }
     }
     return Scope::acceptsSubroutine(a_pReturnType, a_strName, a_Types, a_Modifiers, a_uiFlags,
-                                    a_pOutConflictingSubroutines) && bResult;
+                                    a_pOutConflictingSubroutines) &&
+    bResult;
 }
 
 Constructor* ClassType::getCopyConstructor() const
@@ -1310,37 +1312,53 @@ bool ClassType::canHaveImplicitMoveAssignmentOperator() const
 bool ClassType::isCopyable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getCopyConstructor() != nullptr && getCopyAssignmentOperator() != nullptr;
+    return isCopyAssignable() && isCopyConstructible();
 }
 
 bool ClassType::isCopyAssignable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getCopyAssignmentOperator() != nullptr;
+    if (auto pOp = getCopyAssignmentOperator())
+    {
+        return !pOp->testModifiers(Modifier::Deleted);
+    }
+    return false;
 }
 
 bool ClassType::isCopyConstructible() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getCopyConstructor() != nullptr;
+    if (auto pOp = getCopyConstructor())
+    {
+        return !pOp->testModifiers(Modifier::Deleted);
+    }
+    return false;
 }
 
 bool ClassType::isMoveable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getMoveConstructor() != nullptr && getMoveAssignmentOperator() != nullptr;
+    return isMoveAssignable() && isMoveConstructible();
 }
 
 bool ClassType::isMoveAssignable() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getMoveAssignmentOperator() != nullptr;
+    if (auto pOp = getMoveAssignmentOperator())
+    {
+        return !pOp->testModifiers(Modifier::Deleted);
+    }
+    return false;
 }
 
 bool ClassType::isMoveConstructible() const
 {
     PHANTOM_ASSERT(m_pExtraData);
-    return getMoveConstructor() != nullptr;
+    if (auto pOp = getMoveConstructor())
+    {
+        return !pOp->testModifiers(Modifier::Deleted);
+    }
+    return false;
 }
 
 bool ClassType::isTemplateInstance() const

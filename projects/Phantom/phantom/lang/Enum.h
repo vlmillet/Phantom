@@ -77,19 +77,13 @@ public:
     /// \brief  Is a C++11 scoped enumeration ?
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isScoped() const
-    {
-        return m_scoped;
-    }
+    bool isScoped() const { return m_scoped; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Set as a C++11 scoped enumeration
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setScoped()
-    {
-        m_scoped = true;
-    }
+    void setScoped() { m_scoped = true; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a constant at given position index.
@@ -99,10 +93,7 @@ public:
     /// \return The constant at given position index.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Constant* getConstant(size_t i) const
-    {
-        return m_Constants[i];
-    }
+    inline Constant* getConstant(size_t i) const { return m_Constants[i]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the constants matching the given pointed value.
@@ -122,10 +113,7 @@ public:
     /// \param a_Constants The constants matching the pointed value.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Constants const& getConstants() const
-    {
-        return m_Constants;
-    }
+    Constants const& getConstants() const { return m_Constants; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the first constant matching the given pointed value.
@@ -176,10 +164,7 @@ public:
     /// \return The constant count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline size_t getConstantCount() const
-    {
-        return m_Constants.size();
-    }
+    inline size_t getConstantCount() const { return m_Constants.size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a constant from its name.
@@ -231,47 +216,19 @@ public:
 
     void removeConstant(Constant* a_pConstant);
 
-    Enum* asEnum() const override
-    {
-        return const_cast<Enum*>(this);
-    }
-    PrimitiveType* asIntegralType() const override
-    {
-        return const_cast<Enum*>(this);
-    }
+    PrimitiveType* asIntegralType() const override { return const_cast<Enum*>(this); }
 
     void valueFromString(StringView a_strIn, void* a_pDest) const override;
     void valueToString(StringBuffer& a_Buf, const void* a_pSrc) const override;
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
-    void* allocate(size_t n) const override
-    {
-        return m_pUnderlyingIntType->allocate(n);
-    }
-    void* allocate() const override
-    {
-        return m_pUnderlyingIntType->allocate();
-    }
-    void deallocate(void* a_pInstance, size_t n) const override
-    {
-        m_pUnderlyingIntType->deallocate(a_pInstance, n);
-    }
-    void deallocate(void* a_pInstance) const override
-    {
-        m_pUnderlyingIntType->deallocate(a_pInstance);
-    }
-    void construct(void* a_pInstance) const override
-    {
-        m_pUnderlyingIntType->construct(a_pInstance);
-    }
-    void destroy(void* a_pInstance) const override
-    {
-        m_pUnderlyingIntType->destroy(a_pInstance);
-    }
+    void* allocate(size_t n) const override { return getUnderlyingIntType()->allocate(n); }
+    void* allocate() const override { return getUnderlyingIntType()->allocate(); }
+    void  deallocate(void* a_pInstance, size_t n) const override { getUnderlyingIntType()->deallocate(a_pInstance, n); }
+    void  deallocate(void* a_pInstance) const override { getUnderlyingIntType()->deallocate(a_pInstance); }
+    void  construct(void* a_pInstance) const override { getUnderlyingIntType()->construct(a_pInstance); }
+    void  destroy(void* a_pInstance) const override { getUnderlyingIntType()->destroy(a_pInstance); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Searches for the constants matching the given value.
@@ -288,33 +245,16 @@ public:
     /// \return The underlying int type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PrimitiveType* getUnderlyingIntType() const
-    {
-        return m_pUnderlyingIntType;
-    }
+    PrimitiveType* getUnderlyingIntType() const { return static_cast<PrimitiveType*>(getUnderlyingType()); }
 
     bool convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const override;
-
-    Type* getUnderlyingType() const override
-    {
-        return m_pUnderlyingIntType;
-    }
 
     Constant* createConstant(void* a_pSrc, StringView a_strName = "",
                              PrimitiveType* a_pPrimitiveType = nullptr) const override;
 
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        return Type::getUniqueName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return Type::getQualifiedName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return Type::getDecoratedName(a_Buf);
-    }
+    void getUniqueName(StringBuffer& a_Buf) const override { return Type::getUniqueName(a_Buf); }
+    void getQualifiedName(StringBuffer& a_Buf) const override { return Type::getQualifiedName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { return Type::getDecoratedName(a_Buf); }
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
     {
         return Type::getQualifiedDecoratedName(a_Buf);
@@ -332,9 +272,8 @@ protected:
     void onAncestorChanged(LanguageElement* a_pOwner) override;
 
 private:
-    Constants      m_Constants;
-    PrimitiveType* m_pUnderlyingIntType;
-    bool           m_scoped = false;
+    Constants m_Constants;
+    bool      m_scoped = false;
 };
 
 } // namespace lang

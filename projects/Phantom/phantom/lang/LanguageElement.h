@@ -37,8 +37,7 @@ class Ellipsis
 #define PHANTOM_REGISTER_FOR_VISIT(Visitor_)                                                                           \
 public:                                                                                                                \
     friend class Visitor_;                                                                                             \
-    virtual void visit(phantom::lang::LanguageElementVisitor* a_pVisitor,                                        \
-                       phantom::lang::VisitorData             a_Data) override                                               \
+    virtual void visit(phantom::lang::LanguageElementVisitor* a_pVisitor, phantom::lang::VisitorData a_Data) override  \
     {                                                                                                                  \
         static_cast<Visitor_*>(a_pVisitor)->visit(this, a_Data);                                                       \
     }                                                                                                                  \
@@ -134,6 +133,11 @@ public:
     virtual RValueReference*          asClassRValueReference() const { return nullptr; }
     virtual Type*                     asClassAddressType() const { return nullptr; }
     virtual ClassType*                asClassType() const { return nullptr; }
+    virtual VectorClass*              asVectorClass() const { return nullptr; }
+    virtual MapClass*                 asMapClass() const { return nullptr; }
+    virtual SetClass*                 asSetClass() const { return nullptr; }
+    virtual StringClass*              asStringClass() const { return nullptr; }
+    virtual ArrayClass*               asArrayClass() const { return nullptr; }
     virtual Constant*                 asConstant() const { return nullptr; }
     virtual ConstType*                asConstClass() const { return nullptr; }
     virtual Pointer*                  asConstClassPointer() const { return nullptr; }
@@ -181,7 +185,6 @@ public:
     virtual Placeholder*              asPlaceholder() const { return nullptr; }
     virtual Type*                     asPOD() const { return nullptr; }
     virtual PointerType*              asPointerType() const { return nullptr; }
-    virtual ExtendedType*             asExtendedType() const { return nullptr; }
     virtual PrimitiveType*            asPrimitiveType() const { return nullptr; }
     virtual Property*                 asProperty() const { return nullptr; }
     virtual Reference*                asReference() const { return nullptr; }
@@ -259,7 +262,7 @@ public:
 
     bool hasOwnerCascade(LanguageElement* a_pElement) const
     {
-        return (m_pOwner == a_pElement) ||(m_pOwner && m_pOwner->hasOwnerCascade(a_pElement));
+        return (m_pOwner == a_pElement) || (m_pOwner && m_pOwner->hasOwnerCascade(a_pElement));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +276,7 @@ public:
 
     bool hasElementCascade(LanguageElement* a_pElement) const
     {
-        return hasElement(a_pElement) ||(m_pOwner && m_pOwner->hasElementCascade(a_pElement));
+        return hasElement(a_pElement) || (m_pOwner && m_pOwner->hasElementCascade(a_pElement));
     }
 
     virtual bool isCompileTime() const { return false; }

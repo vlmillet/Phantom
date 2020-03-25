@@ -30,10 +30,7 @@ struct ScopedConstruction
     {
     }
 
-    operator void*() const
-    {
-        return m_pMemory;
-    }
+    operator void*() const { return m_pMemory; }
 
 private:
     ScopeExit m_ScopeExit;
@@ -69,10 +66,7 @@ public:
     {
         return a_pType->removeReference()->removeQualifiers()->asPointer() != nullptr;
     }
-    static bool NoFilter(Type*)
-    {
-        return true;
-    }
+    static bool NoFilter(Type*) { return true; }
 
     /// \brief  Represents a relation between two types.
     enum class TypeRelation
@@ -90,9 +84,7 @@ public:
     class PHANTOM_EXPORT_PHANTOM AlignmentComputer
     {
     public:
-        AlignmentComputer(size_t a_MaxAlignment = 0) : m_MaxAlignment(a_MaxAlignment)
-        {
-        }
+        AlignmentComputer(size_t a_MaxAlignment = 0) : m_MaxAlignment(a_MaxAlignment) {}
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// \brief  Align a group of data elements constituting a memory structure
@@ -151,10 +143,7 @@ public:
         /// \return The maximum alignment seen among pushed types.
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        PHANTOM_FORCEINLINE size_t maxAlignment() const
-        {
-            return m_MaxAlignment;
-        }
+        PHANTOM_FORCEINLINE size_t maxAlignment() const { return m_MaxAlignment; }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// \brief  Sets the maximum alignement.
@@ -162,10 +151,7 @@ public:
         /// \param  a_MaxAlignment   The maximum alignment.
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        PHANTOM_FORCEINLINE void setMaxAlignement(size_t a_MaxAlignment)
-        {
-            m_MaxAlignment = a_MaxAlignment;
-        }
+        PHANTOM_FORCEINLINE void setMaxAlignement(size_t a_MaxAlignment) { m_MaxAlignment = a_MaxAlignment; }
 
         void reset()
         {
@@ -182,18 +168,27 @@ public:
 
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs a type with given type id and optional modifiers.
+    /// \brief  Constructs a type with given underlying type, type kind and optional modifiers.
     ///
-    /// \param  a_eTypeKind   The type id.
+    /// \param  a_pUnderlyingType   The underlying type (referenced, pointee, consted ..).
+    /// \param  a_eTypeKind   The type kind.
+    /// \param  a_Modifiers (optional) The type modifiers.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Constructs a type with given type kind and optional modifiers.
+    ///
+    /// \param  a_eTypeKind   The type kind.
     /// \param  a_Modifiers (optional) The type modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Type(TypeKind a_eTypeKind, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs a type with given type id, name and optional modifiers.
+    /// \brief  Constructs a type with given type kind, name and optional modifiers.
     ///
-    /// \param  a_eTypeKind   The type id.
+    /// \param  a_eTypeKind   The type kind.
     /// \param  a_strName   The type name.
     /// \param  a_Modifiers (optional) The type modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,10 +196,10 @@ protected:
     Type(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs a native type with given type id, name, size, alignment and optional
+    /// \brief  Constructs a native type with given type kind, name, size, alignment and optional
     /// modifiers. .
     ///
-    /// \param  a_eTypeKind       The type id.
+    /// \param  a_eTypeKind       The type kind.
     /// \param  a_strName       The type name.
     /// \param  a_uiSize        The type size.
     /// \param  a_uiAlignment   The type alignment.
@@ -213,6 +208,12 @@ protected:
 
     Type(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
          uint a_uiFlags);
+
+    Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+         Modifiers a_Modifiers, uint a_uiFlags);
+
+    Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, Modifiers a_Modifiers = 0,
+         uint a_uiFlags = 0);
 
 public:
     ~Type() override;
@@ -225,10 +226,7 @@ public:
     /// \return The type identifier.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PHANTOM_FORCEINLINE TypeKind getTypeKind() const
-    {
-        return m_eTypeKind;
-    }
+    PHANTOM_FORCEINLINE TypeKind getTypeKind() const { return m_eTypeKind; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the type size.
@@ -244,10 +242,7 @@ public:
     /// \brief  Is 'void' type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline bool isVoid() const
-    {
-        return m_eTypeKind == TypeKind::Void;
-    }
+    inline bool isVoid() const { return m_eTypeKind == TypeKind::Void; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets this type as it was a flattened aggregate.
@@ -274,7 +269,7 @@ public:
     void setAlignment(size_t a_uiAlignment)
     {
         PHANTOM_ASSERT(m_uiAlignment == 0);
-        m_uiAlignment = a_uiAlignment;
+        m_uiAlignment = uint16_t(a_uiAlignment);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,10 +278,7 @@ public:
     /// \return true if singleton, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isSingleton() const
-    {
-        return ((m_Modifiers & PHANTOM_R_SINGLETON) == PHANTOM_R_SINGLETON);
-    }
+    bool isSingleton() const { return ((m_Modifiers & PHANTOM_R_SINGLETON) == PHANTOM_R_SINGLETON); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this type is default constructible.
@@ -294,10 +286,7 @@ public:
     /// \return true if default constructible, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool isDefaultConstructible() const
-    {
-        return true;
-    }
+    virtual bool isDefaultConstructible() const { return true; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this type can be instantiated via default construction (non-abstract +
@@ -345,27 +334,109 @@ public:
 
     bool hasAuto() const;
 
-    Type* toType() const override
+    Type* toType() const override { return const_cast<Type*>(this); }
+
+    Type* asType() const override final { return const_cast<Type*>(this); }
+
+    inline Type* asAddressType() const override final
     {
-        return const_cast<Type*>(this);
-    }
-    Type* asType() const override
-    {
-        return const_cast<Type*>(this);
-    }
-    virtual LanguageElement* asTemplateElement() const
-    {
-        return const_cast<Type*>(this);
-    }
-    virtual LanguageElement* asLanguageElement() const
-    {
-        return const_cast<Type*>(this);
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::LValueReference ||
+                m_eTypeKind == TypeKind::RValueReference || m_eTypeKind == TypeKind::NullPtr)
+        ? (Type*)this
+        : nullptr;
     }
 
-    virtual bool isPolymorphic() const
+    inline bool isValuePointerKind() const
     {
-        return false;
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::NullPtr);
     }
+
+    inline uint8_t getAddressLevel()
+    {
+        if (isQualified())
+            return m_pUnderlyingType->getAddressLevel();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Pointer:
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return m_pUnderlyingType->getAddressLevel() + 1;
+        case TypeKind::NullPtr:
+            return 0xff;
+        }
+        return 0;
+    }
+
+    inline ClassType* asClassType() const override final
+    {
+        return (m_eTypeKind >= FirstClassTypeKind && m_eTypeKind <= LastClassTypeKind) ? (ClassType*)this : nullptr;
+    }
+    inline Array* asArray() const override final { return (m_eTypeKind == TypeKind::Array) ? (Array*)this : nullptr; }
+    inline Enum*  asEnum() const override final { return (m_eTypeKind == TypeKind::Enum) ? (Enum*)this : nullptr; }
+    inline LValueReference* asLValueReference() const override final
+    {
+        return (m_eTypeKind == TypeKind::LValueReference) ? (LValueReference*)this : nullptr;
+    }
+    inline RValueReference* asRValueReference() const override final
+    {
+        return (m_eTypeKind == TypeKind::RValueReference) ? (RValueReference*)this : nullptr;
+    }
+    inline Reference* asReference() const override final
+    {
+        return (m_eTypeKind == TypeKind::LValueReference || m_eTypeKind == TypeKind::RValueReference) ? (Reference*)this
+                                                                                                      : nullptr;
+    }
+    inline Pointer* asPointer() const override final
+    {
+        return (m_eTypeKind == TypeKind::Pointer) ? (Pointer*)this : nullptr;
+    }
+    inline ConstType* asConstType() const override final
+    {
+        return isConst() ? isVolatile() ? (ConstType*)m_pUnderlyingType->removeVolatile() : (ConstType*)this : nullptr;
+    }
+    inline VolatileType* asVolatileType() const override final
+    {
+        return isVolatile() ? isConst() ? (VolatileType*)m_pUnderlyingType->removeConst() : (VolatileType*)this
+                            : nullptr;
+    }
+    inline ConstVolatileType* asConstVolatileType() const override final
+    {
+        return isConstVolatile() ? (ConstVolatileType*)this : nullptr;
+    }
+    inline PointerType* asPointerType() const override final
+    {
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::FunctionPointer) ? (PointerType*)this
+                                                                                              : nullptr;
+    }
+    inline Class* asClass() const override final
+    {
+        return (m_eTypeKind >= FirstClassKind && m_eTypeKind <= LastClassKind) ? (Class*)this : nullptr;
+    }
+    inline VectorClass* asVectorClass() const override final
+    {
+        return (m_eTypeKind == TypeKind::VectorClass) ? (VectorClass*)this : nullptr;
+    }
+    inline MapClass* asMapClass() const override final
+    {
+        return (m_eTypeKind == TypeKind::MapClass) ? (MapClass*)this : nullptr;
+    }
+    inline SetClass* asSetClass() const override final
+    {
+        return (m_eTypeKind == TypeKind::SetClass) ? (SetClass*)this : nullptr;
+    }
+    inline StringClass* asStringClass() const override final
+    {
+        return (m_eTypeKind == TypeKind::StringClass) ? (StringClass*)this : nullptr;
+    }
+    inline ArrayClass* asArrayClass() const override final
+    {
+        return (m_eTypeKind == TypeKind::ArrayClass) ? (ArrayClass*)this : nullptr;
+    }
+
+    virtual LanguageElement* asTemplateElement() const { return const_cast<Type*>(this); }
+    virtual LanguageElement* asLanguageElement() const { return const_cast<Type*>(this); }
+
+    virtual bool isPolymorphic() const { return false; }
 
     virtual bool hasStrongDependencyOnType(Type* a_pType) const;
 
@@ -376,10 +447,7 @@ public:
     /// \return null if no underlying type, else the underlying type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* getUnderlyingType() const
-    {
-        return nullptr;
-    }
+    Type* getUnderlyingType() const { return m_pUnderlyingType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds 'const' to this type.
@@ -387,7 +455,22 @@ public:
     /// \return this type if already 'const', else the corresponding const type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addConst() const;
+    Type* addConst() const
+    {
+        if (isConst())
+            return const_cast<Type*>(this);
+        if (isVolatile())
+            return (Type*)m_pUnderlyingType->addConstVolatile();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->addConst()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return const_cast<Type*>(this);
+        }
+        return (Type*)makeConst();
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds 'volatile' to this type.
@@ -395,7 +478,22 @@ public:
     /// \return this type if already 'volatile', else the corresponding volatile type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addVolatile() const;
+    Type* addVolatile() const
+    {
+        if (isVolatile())
+            return const_cast<Type*>(this);
+        if (isConst())
+            return (Type*)m_pUnderlyingType->addConstVolatile();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->addVolatile()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return const_cast<Type*>(this);
+        }
+        return (Type*)makeVolatile();
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds 'const &' to this type.
@@ -419,7 +517,22 @@ public:
     /// \return this type if already 'const volatile', else the corresponding 'const volatile' type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* addConstVolatile() const;
+    Type* addConstVolatile() const
+    {
+        if (isVolatile())
+            return addConst();
+        if (isConst())
+            return addVolatile();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->addConstVolatile()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return const_cast<Type*>(this);
+        }
+        return (Type*)makeConstVolatile();
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds '[N]' extent to this type.
@@ -429,7 +542,7 @@ public:
     /// \return this type if already '[N]' extent, else the corresponding '[N]' extent type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addArray(size_t a_uiCount) const;
+    Type* addArray(size_t a_uiCount) const { return (Type*)makeArray(a_uiCount); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds '&' to this type.
@@ -437,7 +550,19 @@ public:
     /// \return this type if already '&', else the corresponding '&' type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addLValueReference() const;
+    inline Type* addLValueReference() const
+    {
+        switch (m_eTypeKind)
+        {
+        case TypeKind::LValueReference:
+            return const_cast<Type*>(this);
+        case TypeKind::RValueReference:
+            return (Type*)m_pUnderlyingType->makeLValueReference();
+
+        default:
+            return (Type*)makeLValueReference();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds '&&' to this type.
@@ -445,7 +570,18 @@ public:
     /// \return this type if already '&&', else the corresponding '&&' type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addRValueReference() const;
+    inline Type* addRValueReference() const
+    {
+        switch (m_eTypeKind)
+        {
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return const_cast<Type*>(this);
+
+        default:
+            return (Type*)makeRValueReference();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds '*' to this type.
@@ -453,7 +589,19 @@ public:
     /// \return this type if already '*', else the corresponding '*' type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* addPointer() const;
+    inline Type* addPointer() const
+    {
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+        case TypeKind::LValueReference:
+        case TypeKind::RValueReference:
+            return m_pUnderlyingType->addPointer();
+
+        default:
+            return (Type*)makePointer();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a custom extension to this type.
@@ -472,9 +620,10 @@ public:
     /// \return this type if not 'const', else the corresponding type without 'const'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeConst() const
+    inline Type* removeConst() const
     {
-        return const_cast<Type*>(this);
+        return isConst() ? isVolatile() ? (Type*)m_pUnderlyingType->makeVolatile() : m_pUnderlyingType
+                         : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -483,9 +632,10 @@ public:
     /// \return this type if not 'volatile', else the corresponding type without 'volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeVolatile() const
+    inline Type* removeVolatile() const
     {
-        return const_cast<Type*>(this);
+        return isVolatile() ? isConst() ? (Type*)m_pUnderlyingType->makeConst() : m_pUnderlyingType
+                            : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -495,10 +645,7 @@ public:
     /// volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeConstVolatile() const
-    {
-        return const_cast<Type*>(this);
-    }
+    inline Type* removeConstVolatile() const { return isConstVolatile() ? m_pUnderlyingType : const_cast<Type*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes 'const' or/and 'volatile' from this type.
@@ -506,9 +653,9 @@ public:
     /// \return this type if not 'const' or/and 'volatile', else the corresponding type without
     /// 'const' or/and 'volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual Type* removeQualifiers() const
+    inline Type* removeQualifiers() const
     {
-        return const_cast<Type*>(this);
+        return isQualified() ? m_pUnderlyingType->removeQualifiers() : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -518,10 +665,7 @@ public:
     /// &' or 'const &&'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* removeConstReference() const
-    {
-        return removeReference()->removeConst();
-    }
+    inline Type* removeConstReference() const { return removeReference()->removeConst(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes 'const &' from this type.
@@ -538,9 +682,12 @@ public:
     /// '[X]' extent.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removePointerOrArray() const
+    inline Type* removePointerOrArray() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return m_pUnderlyingType->removePointerOrArray();
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::Array) ? m_pUnderlyingType
+                                                                                    : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,9 +697,14 @@ public:
     /// or '&&'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeAddress() const
+    inline Type* removeAddress() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return m_pUnderlyingType->removeAddress();
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::LValueReference ||
+                m_eTypeKind == TypeKind::RValueReference)
+        ? m_pUnderlyingType
+        : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -561,10 +713,31 @@ public:
     /// \return this type if not '[X]' extent, else the corresponding type without '[X]' extent.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeArray() const
+    inline Type* removeArray() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return m_pUnderlyingType->removeArray();
+        return (m_eTypeKind == TypeKind::Array) ? m_pUnderlyingType : const_cast<Type*>(this);
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Alias to removeArray().
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    inline Type* removeExtent() const { return removeArray(); }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Removes all '[X]' extent from this type.
+    ///
+    /// \return this type if not '[X]' extent, else the corresponding type without '[X]' extents.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    inline Type* removeArrays() const
+    {
+        return (m_eTypeKind == TypeKind::Array) ? m_pUnderlyingType->removeArray() : const_cast<Type*>(this);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Alias to removeArrays().
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    inline Type* removeAllExtents() const { return removeArrays(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes '&' or '&&' from this type.
@@ -572,21 +745,13 @@ public:
     /// \return this type if not '&' or '&&', else the corresponding type without '&' or '&&'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeReference() const
+    Type* removeReference() const
     {
-        return const_cast<Type*>(this);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes everything which extend the original type (qualifiers, pointers, references,
-    /// arrays...).
-    ///
-    /// \return this type if not '&' or '&&', else the corresponding type without '&' or '&&'.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual Type* removeEverything() const
-    {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return const_cast<Type*>(this); // a reference will never be qualified, we can directly return this type.
+        return (m_eTypeKind == TypeKind::LValueReference || m_eTypeKind == TypeKind::RValueReference)
+        ? m_pUnderlyingType
+        : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -595,9 +760,11 @@ public:
     /// \return this type if not '&', else the corresponding type without '&'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeLValueReference() const
+    inline Type* removeLValueReference() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return const_cast<Type*>(this); // a reference will never be qualified, we can directly return this type.
+        return (m_eTypeKind == TypeKind::LValueReference) ? m_pUnderlyingType : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -606,9 +773,11 @@ public:
     /// \return this type if not '&&', else the corresponding type without '&&'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeRValueReference() const
+    inline Type* removeRValueReference() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return const_cast<Type*>(this); // a reference will never be qualified, we can directly return this type.
+        return (m_eTypeKind == TypeKind::RValueReference) ? m_pUnderlyingType : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -617,9 +786,25 @@ public:
     /// \return this type if not '*', else the corresponding type without '*'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removePointer() const
+    inline Type* removePointer() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return const_cast<Type*>(this); // a reference will never be qualified, we can directly return this type.
+        return (m_eTypeKind == TypeKind::Pointer) ? m_pUnderlyingType : const_cast<Type*>(this);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Removes '*' from this type.
+    ///
+    /// \return this type if not '*', else the corresponding type without '*'.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    inline Type* removePointerType() const
+    {
+        if (isQualified())
+            return const_cast<Type*>(this); // a reference will never be qualified, we can directly return this type.
+        return (m_eTypeKind == TypeKind::Pointer || m_eTypeKind == TypeKind::FunctionPointer) ? m_pUnderlyingType
+                                                                                              : const_cast<Type*>(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -629,9 +814,28 @@ public:
     /// type without any 'const'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeAllConst() const
+    inline Type* removeAllConst() const
     {
-        return const_cast<Type*>(this);
+        if (isConst())
+        {
+            if (isVolatile())
+                return ((Type*)m_pUnderlyingType->makeVolatile())->removeAllConst();
+            else
+                return m_pUnderlyingType->removeAllConst();
+        }
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->removeAllConst()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::Pointer:
+            return (Type*)m_pUnderlyingType->removeAllConst()->makePointer();
+        case TypeKind::LValueReference:
+            return (Type*)m_pUnderlyingType->removeAllConst()->makeLValueReference();
+        case TypeKind::RValueReference:
+            return (Type*)m_pUnderlyingType->removeAllConst()->makeRValueReference();
+        default:
+            return const_cast<Type*>(this);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -641,9 +845,28 @@ public:
     /// corresponding type without any 'volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeAllVolatile() const
+    inline Type* removeAllVolatile() const
     {
-        return const_cast<Type*>(this);
+        if (isVolatile())
+        {
+            if (isConst())
+                return ((Type*)m_pUnderlyingType->makeConst())->removeAllVolatile();
+            else
+                return m_pUnderlyingType->removeAllVolatile();
+        }
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->removeAllVolatile()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::Pointer:
+            return (Type*)m_pUnderlyingType->removeAllVolatile()->makePointer();
+        case TypeKind::LValueReference:
+            return (Type*)m_pUnderlyingType->removeAllVolatile()->makeLValueReference();
+        case TypeKind::RValueReference:
+            return (Type*)m_pUnderlyingType->removeAllVolatile()->makeRValueReference();
+        default:
+            return const_cast<Type*>(this);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -652,10 +875,7 @@ public:
     /// \return this type if not 'const volatile' and none underlying type is 'const volatile', else
     /// the corresponding type without any 'const volatile'.
 
-    virtual Type* removeAllConstVolatile() const
-    {
-        return const_cast<Type*>(this);
-    }
+    inline Type* removeAllConstVolatile() const { return removeAllQualifiers(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Removes 'const' or 'volatile' from this type and every underlying type recursively.
@@ -664,9 +884,49 @@ public:
     /// 'volatile', else the corresponding type without any 'const' or 'volatile'.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeAllQualifiers() const
+    Type* removeAllQualifiers() const
     {
-        return const_cast<Type*>(this);
+        if (isQualified())
+            return m_pUnderlyingType->removeAllQualifiers();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->removeAllQualifiers()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
+        case TypeKind::Pointer:
+            return (Type*)m_pUnderlyingType->removeAllQualifiers()->makePointer();
+        case TypeKind::LValueReference:
+            return (Type*)m_pUnderlyingType->removeAllQualifiers()->makeLValueReference();
+        case TypeKind::RValueReference:
+            return (Type*)m_pUnderlyingType->removeAllQualifiers()->makeRValueReference();
+        default:
+            return const_cast<Type*>(this);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Removes everything which extend the original type (qualifiers, pointers, references,
+    /// arrays...).
+    ///
+    /// \return this type if not '&' or '&&', else the corresponding type without '&' or '&&'.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    inline Type* removeEverything() const
+    {
+        if (isQualified())
+            return m_pUnderlyingType->removeEverything();
+        switch (m_eTypeKind)
+        {
+        case TypeKind::Array:
+            return (Type*)m_pUnderlyingType->removeEverything();
+        case TypeKind::Pointer:
+            return (Type*)m_pUnderlyingType->removeEverything();
+        case TypeKind::LValueReference:
+            return (Type*)m_pUnderlyingType->removeEverything();
+        case TypeKind::RValueReference:
+            return (Type*)m_pUnderlyingType->removeAllQualifiers();
+        default:
+            return const_cast<Type*>(this);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -678,10 +938,7 @@ public:
     /// the custom extension.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* removeCustom(int) const
-    {
-        return const_cast<Type*>(this);
-    }
+    virtual Type* removeCustom(int) const { return const_cast<Type*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Replicates the 'const' '&' and &&' pattern of given model type to this type.
@@ -692,14 +949,11 @@ public:
     /// \return The replicated type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Type* replicate(Type* a_pInput) const
-    {
-        return a_pInput;
-    }
+    virtual Type* replicate(Type* a_pInput) const { return a_pInput; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Performs basic fundamental conversions (no user defined conversion applied, use
-    /// phantom.lang to do so).
+    /// Phantom.Code to do so).
     ///
     /// \param a_pSrcType   The cast st=rc type.
     /// \param a_pSrc          The source pointer (must be of the current type).
@@ -731,10 +985,7 @@ public:
     /// \return null if it fails, else the adjusted pointer issued from the cast.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void* cast(Type* a_pTargetType, void* a_pSrc) const
-    {
-        return a_pTargetType == this ? a_pSrc : nullptr;
-    }
+    virtual void* cast(Type* a_pTargetType, void* a_pSrc) const { return a_pTargetType == this ? a_pSrc : nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Performs generic pointer cast.
@@ -759,10 +1010,7 @@ public:
     /// \return null if it fails, else the adjusted pointer issued from the cast.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void* upcast(Type* a_pTargetType, void* a_pSrc) const
-    {
-        return a_pTargetType == this ? a_pSrc : nullptr;
-    }
+    virtual void* upcast(Type* a_pTargetType, void* a_pSrc) const { return a_pTargetType == this ? a_pSrc : nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Performs pointer downcast.
@@ -773,10 +1021,7 @@ public:
     /// \return null if it fails, else the adjusted pointer issued from the cast.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void* downcast(Type* a_pTargetType, void* a_pSrc) const
-    {
-        return a_pTargetType == this ? a_pSrc : nullptr;
-    }
+    virtual void* downcast(Type* a_pTargetType, void* a_pSrc) const { return a_pTargetType == this ? a_pSrc : nullptr; }
 
     /// Allocation
 
@@ -822,10 +1067,7 @@ public:
     /// \param a_pMemory   The memory address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void construct(void* a_pMemory) const
-    {
-        memset(a_pMemory, 0, m_uiSize);
-    }
+    virtual void construct(void* a_pMemory) const { memset(a_pMemory, 0, m_uiSize); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an instance of this type at given memory address and destroy at end of
@@ -839,10 +1081,7 @@ public:
         construct(a_pMemory);
         return makeScopedConstruction(makeScopeExit([=]() { destroy(a_pMemory); }), a_pMemory);
     }
-    auto localConstruct(void* a_pMemory) const
-    {
-        return scopedConstruct(a_pMemory);
-    }
+    auto localConstruct(void* a_pMemory) const { return scopedConstruct(a_pMemory); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Destroys the given a_pInstance.
@@ -850,9 +1089,7 @@ public:
     /// \param a_pInstance The instance to destroy.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void destroy(void*) const
-    {
-    }
+    virtual void destroy(void*) const {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Hashed an instance of this Type.
@@ -951,10 +1188,7 @@ public:
     /// \brief  Copy values (for class : alias to copy assignment semantic).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void copy(void* a_pDest, void const* a_pSrc)
-    {
-        copyAssign(a_pDest, a_pSrc);
-    }
+    void copy(void* a_pDest, void const* a_pSrc) { copyAssign(a_pDest, a_pSrc); }
 
     virtual bool isCopyable() const;
     virtual bool isCopyConstructible() const;
@@ -1042,10 +1276,7 @@ public:
     /// \return true if promoted arithmetic type, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline bool isPromotedArithmeticType() const
-    {
-        return asFloatingPointType() || isPromotedIntegralType();
-    }
+    inline bool isPromotedArithmeticType() const { return asFloatingPointType() || isPromotedIntegralType(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this type is promoted integral type according to the C++ standard (13.6.2).
@@ -1053,10 +1284,7 @@ public:
     /// \return true if promoted integral type, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline bool isPromotedIntegralType() const
-    {
-        return asIntegralType() && promote() == const_cast<Type*>(this);
-    }
+    inline bool isPromotedIntegralType() const { return asIntegralType() && promote() == const_cast<Type*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the data pointer level of this type (0 if not a pointer, 1 if '*', 2 if '**',
@@ -1065,10 +1293,7 @@ public:
     /// \return The data pointer level.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual uint getDataPointerLevel() const
-    {
-        return 0;
-    }
+    virtual uint getDataPointerLevel() const { return 0; }
 
     Scope* getScope() const;
 
@@ -1090,10 +1315,7 @@ public:
     /// \return The extended type count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getExtendedTypeCount() const
-    {
-        return m_pExtendedTypes == NULL ? 0 : m_pExtendedTypes->size();
-    }
+    size_t getExtendedTypeCount() const { return m_pExtendedTypes == NULL ? 0 : m_pExtendedTypes->size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the extended type (reference types, pointer types, array types...) at given
@@ -1197,7 +1419,7 @@ public:
     /// type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Pointer* makePointer() const;
+    Type* makePointer() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets or create the l-value reference type of this type.
@@ -1279,15 +1501,15 @@ public:
     virtual bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const;
 
 protected:
-    void                       onElementRemoved(LanguageElement* a_pElement) override;
-    virtual Pointer*           createPointer() const;
-    virtual LValueReference*   createLValueReference() const;
-    virtual RValueReference*   createRValueReference() const;
-    virtual Array*             createArray(size_t a_uiCount) const;
-    virtual ConstType*         createConstType() const;
-    virtual VolatileType*      createVolatileType() const;
-    virtual ConstVolatileType* createConstVolatileType() const;
-    void                       removeExtendedType(Type* a_pType);
+    void               onElementRemoved(LanguageElement* a_pElement) override;
+    Type*              createPointer() const;
+    LValueReference*   createLValueReference() const;
+    RValueReference*   createRValueReference() const;
+    Array*             createArray(size_t a_uiCount) const;
+    ConstType*         createConstType() const;
+    VolatileType*      createVolatileType() const;
+    ConstVolatileType* createConstVolatileType() const;
+    void               removeExtendedType(Type* a_pType);
 
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
     void onAncestorChanged(LanguageElement* a_pOwner) override;
@@ -1305,10 +1527,11 @@ public:
 #endif
 
 protected:
-    TypeKind                   m_eTypeKind;
+    Type*                      m_pUnderlyingType{};
     mutable Types*             m_pExtendedTypes{};
-    size_t                     m_uiSize{};
-    size_t                     m_uiAlignment{};
+    uint32_t                   m_uiSize{};
+    uint16_t                   m_uiAlignment{};
+    TypeKind                   m_eTypeKind = TypeKind::Unknown;
     mutable RecursiveSpinMutex m_ExtendedTypesMutex;
 };
 

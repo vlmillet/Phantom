@@ -85,7 +85,7 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     {
         for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
         {
-            if (a_pClass == nullptr ||(*it)->as(a_pClass))
+            if (a_pClass == nullptr || (*it)->as(a_pClass))
             {
                 out.push_back(*it);
             }
@@ -126,8 +126,8 @@ void LanguageElement::addElement(LanguageElement* a_pElement)
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(a_pElement != this, "element added to itself");
     PHANTOM_ASSERT(a_pElement->m_pOwner == nullptr, "element already added to this or another element");
-    PHANTOM_ASSERT(a_pElement->isNative() == isNative() ||(a_pElement->asNamespace() && asNamespace()) || a_pElement ==
-                   Namespace::Global() || this == Application::Get(),
+    PHANTOM_ASSERT(a_pElement->isNative() == isNative() || (a_pElement->asNamespace() && asNamespace()) ||
+                   a_pElement == Namespace::Global() || this == Application::Get(),
                    "adding non-native element to native one (and vice-versa) is forbidden");
     if (m_pElements == nullptr)
     {
@@ -175,10 +175,13 @@ void LanguageElement::addReferencedElement(LanguageElement* a_pElement)
         a_pElement->registerReferencingElement(this);
         onReferencedElementAdded(a_pElement);
     }
-    if (a_pElement->isIncomplete())
-        setIncomplete();
-    if (a_pElement->isTemplateDependant() && asEvaluable())
+    if (a_pElement->isTemplateDependant())
     {
+#if defined(LanguageElement_FindWhyIPut_asEvaluable_as_a_supplement_test_here_hashtag_forgotten_bugs)
+        static SmallSet<Class*> tdclasses;
+        if (a_pElement->rtti.metaClass && tdclasses.insert(a_pElement->rtti.metaClass).second)
+            printf("TD : %.*s\n", PHANTOM_STRING_AS_PRINTF_ARG(a_pElement->rtti.metaClass->getName()));
+#endif
         setTemplateDependant();
     }
 }
@@ -387,8 +390,8 @@ void LanguageElement::_onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
 void LanguageElement::_onElementsAccess()
 {
     Module* pModule;
-    if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) &&
-        (pModule = getModule()) && !(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
+    if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule()) &&
+        !(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
     {
         onElementsAccess();
     }
@@ -623,7 +626,7 @@ void LanguageElement::dumpElementListCascade(std::basic_ostream<char>& out) cons
 
 bool LanguageElement::hasFriendCascade(Symbol* a_pElement) const
 {
-    return hasFriend(a_pElement) ||(m_pOwner && m_pOwner->hasFriendCascade(a_pElement));
+    return hasFriend(a_pElement) || (m_pOwner && m_pOwner->hasFriendCascade(a_pElement));
 }
 
 void LanguageElement::addSymbol(Symbol* a_pElement)
@@ -656,7 +659,7 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
 bool LanguageElement::isTemplateElement() const
 {
     TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
-    return pSpec            &&(!(pSpec->isFull()) || pSpec->isTemplateElement());
+    return pSpec && (!(pSpec->isFull()) || pSpec->isTemplateElement());
 }
 
 LanguageElements LanguageElement::sm_Elements; // TODO remove
@@ -738,8 +741,8 @@ size_t LanguageElement::getElementIndex(LanguageElement* a_pElement) const
 bool LanguageElement::hasNamingScopeCascade(Scope* a_pScope) const
 {
     Scope* pScope = getNamingScope();
-    return (pScope != nullptr)
-    &&((pScope == a_pScope) || pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
+    return (pScope != nullptr) &&
+    ((pScope == a_pScope) || pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
 }
 
 void LanguageElement::onElementAdded(LanguageElement*) {}
@@ -940,7 +943,7 @@ void LanguageElement::fetchSymbols(Symbols& a_Symbols, SymbolFilter a_Filter,
     for (auto pElem : getElements())
     {
         Symbol* pSymbol1 = pElem->asSymbol();
-        if (pSymbol1 &&(pSymbol1 = a_Filter(pSymbol1, asSymbol() ? asSymbol()->getName().empty() : false)))
+        if (pSymbol1 && (pSymbol1 = a_Filter(pSymbol1, asSymbol() ? asSymbol()->getName().empty() : false)))
         {
             a_Symbols.push_back(pSymbol1);
             if (pSymbol1->getName().empty())

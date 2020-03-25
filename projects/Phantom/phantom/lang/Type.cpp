@@ -23,6 +23,7 @@
 #include <phantom/utils/Delegate.h>
 #include <phantom/utils/crc64.h>
 /* *********************************************** */
+
 namespace phantom
 {
 namespace lang
@@ -38,6 +39,16 @@ Type::Type(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*=
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_eTypeKind(a_eTypeKind)
 {
 }
+Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : Symbol(a_Modifiers, a_uiFlags), m_pUnderlyingType(a_pUnderlyingType), m_eTypeKind(a_eTypeKind)
+{
+}
+Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
+           uint a_uiFlags /*= 0*/)
+    : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pUnderlyingType(a_pUnderlyingType), m_eTypeKind(a_eTypeKind)
+{
+    addReferencedElement(m_pUnderlyingType);
+}
 
 Type::Type(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
            Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -46,6 +57,17 @@ Type::Type(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a
       m_uiSize(a_uiSize),
       m_uiAlignment(a_uiAlignment)
 {
+}
+
+Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+           Modifiers a_Modifiers, uint a_uiFlags)
+    : Symbol(a_strName, a_Modifiers, a_uiFlags),
+      m_pUnderlyingType(a_pUnderlyingType),
+      m_eTypeKind(a_eTypeKind),
+      m_uiSize(a_uiSize),
+      m_uiAlignment(a_uiAlignment)
+{
+    addReferencedElement(m_pUnderlyingType);
 }
 
 Type::~Type()
@@ -150,24 +172,55 @@ void Type::removeFromScope()
     getScope()->removeType(this);
 }
 
-Pointer* Type::createPointer() const
+Type* Type::createPointer() const
 {
-    return PHANTOM_DEFERRED_NEW(Pointer)(const_cast<Type*>(this));
+    switch (m_eTypeKind)
+    {
+    case TypeKind::Function:
+        return (Type*)getSource()->functionPointerType((FunctionType*)this, ABI::CDecl);
+
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(Pointer)(const_cast<Type*>(this));
+    }
 }
 
 Array* Type::createArray(size_t a_uiCount) const
 {
-    return PHANTOM_DEFERRED_NEW(Array)(const_cast<Type*>(this), a_uiCount);
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(Array)(const_cast<Type*>(this), a_uiCount);
+    }
 }
 
 LValueReference* Type::createLValueReference() const
 {
-    return PHANTOM_DEFERRED_NEW(LValueReference)(const_cast<Type*>(this));
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(LValueReference)(const_cast<Type*>(this));
+    }
 }
 
 RValueReference* Type::createRValueReference() const
 {
-    return PHANTOM_DEFERRED_NEW(RValueReference)(const_cast<Type*>(this));
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(RValueReference)(const_cast<Type*>(this));
+    }
 }
 
 bool Type::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const
@@ -457,21 +510,20 @@ ConstVolatileType* Type::getConstVolatileType() const
     return nullptr;
 }
 
-Pointer* Type::makePointer() const
+Type* Type::makePointer() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        if (m_pExtendedTypes == nullptr)
-            m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
-    Pointer* pType = getPointer();
+    auto  guard = m_ExtendedTypesMutex.autoLock();
+    Type* pType = getPointer();
     if (pType == nullptr)
     {
         pType = createPointer();
         if (!pType)
             return nullptr;
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -480,11 +532,7 @@ Pointer* Type::makePointer() const
 
 LValueReference* Type::makeLValueReference() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto             guard = m_ExtendedTypesMutex.autoLock();
     LValueReference* pType = getLValueReference();
     if (pType == nullptr)
     {
@@ -492,6 +540,10 @@ LValueReference* Type::makeLValueReference() const
         if (!pType)
             return nullptr;
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -500,11 +552,7 @@ LValueReference* Type::makeLValueReference() const
 
 RValueReference* Type::makeRValueReference() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto             guard = m_ExtendedTypesMutex.autoLock();
     RValueReference* pType = getRValueReference();
     if (pType == nullptr)
     {
@@ -512,6 +560,10 @@ RValueReference* Type::makeRValueReference() const
         if (!pType)
             return nullptr;
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -520,11 +572,7 @@ RValueReference* Type::makeRValueReference() const
 
 Array* Type::makeArray(size_t a_uiCount) const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto   guard = m_ExtendedTypesMutex.autoLock();
     Array* pType = getArray(a_uiCount);
     if (pType == nullptr)
     {
@@ -537,6 +585,10 @@ Array* Type::makeArray(size_t a_uiCount) const
             pType->setAlignment(m_uiAlignment);
         }
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -545,11 +597,7 @@ Array* Type::makeArray(size_t a_uiCount) const
 
 ConstType* Type::makeConst() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto       guard = m_ExtendedTypesMutex.autoLock();
     ConstType* pType = getConstType();
     if (pType == nullptr)
     {
@@ -562,6 +610,10 @@ ConstType* Type::makeConst() const
             pType->setAlignment(m_uiAlignment);
         }
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -570,11 +622,7 @@ ConstType* Type::makeConst() const
 
 VolatileType* Type::makeVolatile() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto          guard = m_ExtendedTypesMutex.autoLock();
     VolatileType* pType = getVolatileType();
     if (pType == nullptr)
     {
@@ -587,6 +635,10 @@ VolatileType* Type::makeVolatile() const
             pType->setAlignment(m_uiAlignment);
         }
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -595,11 +647,7 @@ VolatileType* Type::makeVolatile() const
 
 ConstVolatileType* Type::makeConstVolatile() const
 {
-    auto guard = m_ExtendedTypesMutex.autoLock();
-    if (m_pExtendedTypes == nullptr)
-    {
-        m_pExtendedTypes = PHANTOM_NEW(Types);
-    }
+    auto               guard = m_ExtendedTypesMutex.autoLock();
     ConstVolatileType* pType = getConstVolatileType();
     if (pType == nullptr)
     {
@@ -612,6 +660,10 @@ ConstVolatileType* Type::makeConstVolatile() const
             pType->setAlignment(m_uiAlignment);
         }
         pType->addFlags(PHANTOM_R_FLAG_IMPLICIT);
+        if (m_pExtendedTypes == nullptr)
+        {
+            m_pExtendedTypes = PHANTOM_NEW(Types);
+        }
         m_pExtendedTypes->push_back(pType);
         const_cast<Type*>(this)->addElement(pType);
     }
@@ -635,11 +687,11 @@ void Type::onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
     Symbol::onAncestorAboutToBeChanged(a_pOwner);
     if (!isNative())
     {
-        if (a_pOwner ==
-            getModule() &&(getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union || getTypeKind() ==
-                            TypeKind::Structure || getTypeKind() == TypeKind::Enum)
-            &&((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant()
-            && !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (a_pOwner == getModule() &&
+            (getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
+            ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+            !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
             static_cast<Module*>(a_pOwner)->_unregisterType(m_Hash, this);
         }
@@ -651,11 +703,11 @@ void Type::onAncestorChanged(LanguageElement* a_pOwner)
     Symbol::onAncestorChanged(a_pOwner);
     if (!isNative())
     {
-        if (a_pOwner ==
-            getModule() &&(getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union || getTypeKind() ==
-                            TypeKind::Structure || getTypeKind() == TypeKind::Enum)
-            &&((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant()
-            && !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (a_pOwner == getModule() &&
+            (getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
+            ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+            !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
             auto nscope = getNamingScope();
             PHANTOM_ASSERT(nscope, "naming scope (namespace or class type) must be defined before inserting to module");
@@ -666,17 +718,44 @@ void Type::onAncestorChanged(LanguageElement* a_pOwner)
 
 ConstType* Type::createConstType() const
 {
-    return PHANTOM_DEFERRED_NEW(ConstType)(const_cast<Type*>(this));
+    if (isQualified())
+        return nullptr;
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(ConstType)(const_cast<Type*>(this));
+    }
 }
 
 VolatileType* Type::createVolatileType() const
 {
-    return PHANTOM_DEFERRED_NEW(VolatileType)(const_cast<Type*>(this));
+    if (isQualified())
+        return nullptr;
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(VolatileType)(const_cast<Type*>(this));
+    }
 }
 
 ConstVolatileType* Type::createConstVolatileType() const
 {
-    return PHANTOM_DEFERRED_NEW(ConstVolatileType)(const_cast<Type*>(this));
+    if (isQualified())
+        return nullptr;
+    switch (m_eTypeKind)
+    {
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return nullptr;
+    default:
+        return PHANTOM_DEFERRED_NEW(ConstVolatileType)(const_cast<Type*>(this));
+    }
 }
 
 void Type::valueToString(StringBuffer&, const void*) const
@@ -803,16 +882,6 @@ bool Type::hasStrongDependencyOnType(Type*) const
     return false;
 }
 
-Type* Type::addConst() const
-{
-    return makeConst();
-}
-
-Type* Type::addVolatile() const
-{
-    return makeVolatile();
-}
-
 Type* Type::addConstLValueReference() const
 {
     return addConst()->addLValueReference();
@@ -821,31 +890,6 @@ Type* Type::addConstLValueReference() const
 Type* Type::addConstRValueReference() const
 {
     return addConst()->addRValueReference();
-}
-
-Type* Type::addConstVolatile() const
-{
-    return makeConstVolatile();
-}
-
-Type* Type::addArray(size_t a_uiCount) const
-{
-    return makeArray(a_uiCount);
-}
-
-Type* Type::addLValueReference() const
-{
-    return makeLValueReference();
-}
-
-Type* Type::addRValueReference() const
-{
-    return makeRValueReference();
-}
-
-Type* Type::addPointer() const
-{
-    return makePointer();
 }
 
 Type* Type::addCustom(int) const

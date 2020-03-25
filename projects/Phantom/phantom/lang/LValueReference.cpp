@@ -15,11 +15,6 @@ LValueReference::LValueReference(Type* a_pReferencedType) : Reference(TypeKind::
 {
 }
 
-LValueReference* LValueReference::asLValueReference() const
-{
-    return const_cast<LValueReference*>(this);
-}
-
 LValueReference* LValueReference::asClassLValueReference() const
 {
     return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<LValueReference*>(this) : nullptr;
@@ -28,36 +23,6 @@ LValueReference* LValueReference::asClassLValueReference() const
 LValueReference* LValueReference::asConstClassLValueReference() const
 {
     return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<LValueReference*>(this) : nullptr;
-}
-
-Type* LValueReference::addPointer() const
-{
-    return m_pUnderlyingType->addPointer();
-}
-
-Type* LValueReference::addLValueReference() const
-{
-    return const_cast<LValueReference*>(this);
-}
-
-Type* LValueReference::addRValueReference() const
-{
-    return const_cast<LValueReference*>(this);
-}
-
-Type* LValueReference::removeLValueReference() const
-{
-    return m_pUnderlyingType;
-}
-
-Type* LValueReference::removeAllConst() const
-{
-    return m_pUnderlyingType->removeAllConst()->makeLValueReference();
-}
-
-Type* LValueReference::removeAllQualifiers() const
-{
-    return m_pUnderlyingType->removeAllQualifiers()->makeLValueReference();
 }
 
 Type* LValueReference::replicate(Type* a_pInput) const
@@ -79,9 +44,9 @@ bool LValueReference::partialAccepts(Type* a_pType, size_t& a_Score, Placeholder
 
 bool LValueReference::isSame(Symbol* a_pOther) const
 {
-    return a_pOther ==
-    this ||(a_pOther->asLValueReference()
-            && m_pUnderlyingType->isSame(static_cast<LValueReference*>(a_pOther)->m_pUnderlyingType));
+    return a_pOther == this ||
+    (a_pOther->asLValueReference() &&
+     m_pUnderlyingType->isSame(static_cast<LValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 
 void LValueReference::getUniqueName(StringBuffer& a_Buf) const

@@ -22,6 +22,8 @@ ValueMember::ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilt
     PHANTOM_ASSERT(m_pValueType);
     PHANTOM_ASSERT(m_pValueType->isNative() || m_pValueType->getOwner());
     addReferencedElement(m_pValueType);
+    if (m_pValueType->isTemplateDependant())
+        addFlags(PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
 }
 
 void* ValueMember::getAddress(void const*) const

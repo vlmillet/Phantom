@@ -27,9 +27,7 @@ class PHANTOM_EXPORT_PHANTOM SymbolExtension : public LanguageElement
 
 protected:
     SymbolExtension() = default;
-    SymbolExtension(uint a_uiFlags) : LanguageElement(a_uiFlags)
-    {
-    }
+    SymbolExtension(uint a_uiFlags) : LanguageElement(a_uiFlags) {}
 
 public:
     Symbol* getSymbol() const;
@@ -71,20 +69,11 @@ public:
     int destructionPriority() const override;
 
 public:
-    Symbol* asSymbol() const override
-    {
-        return (Symbol*)this;
-    }
+    Symbol* asSymbol() const override { return (Symbol*)this; }
 
-    Type* toType() const override
-    {
-        return nullptr;
-    }
+    Type* toType() const override { return nullptr; }
 
-    virtual Namespace* toNamespace() const
-    {
-        return nullptr;
-    }
+    virtual Namespace* toNamespace() const { return nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the access of this symbol inside its scope.
@@ -101,10 +90,7 @@ public:
     /// \return  The access (Access::Undefined, Access::Public, Access::Protected, Access::Private).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Access getAccess() const
-    {
-        return m_eAccess;
-    }
+    Access getAccess() const { return m_eAccess; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the modifiers of this symbol.
@@ -136,10 +122,7 @@ public:
     /// \return The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PHANTOM_FORCEINLINE Modifiers getModifiers() const
-    {
-        return m_Modifiers;
-    }
+    PHANTOM_FORCEINLINE Modifiers getModifiers() const { return m_Modifiers; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Tests if given modifiers match this symbol's modifiers.
@@ -160,10 +143,7 @@ public:
     /// \return The name.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PHANTOM_FORCEINLINE StringView getName() const
-    {
-        return m_strName;
-    }
+    PHANTOM_FORCEINLINE StringView getName() const { return m_strName; }
 
     void setName(StringView a_strName);
 
@@ -171,51 +151,27 @@ public:
 
     bool hasElementWithName(StringView a_strName) const;
 
-    virtual bool isPOD() const
-    {
-        return false;
-    }
+    virtual bool isPOD() const { return false; }
 
-    PHANTOM_FORCEINLINE bool isStatic() const
-    {
-        return ((m_Modifiers & PHANTOM_R_STATIC) == PHANTOM_R_STATIC);
-    }
-    PHANTOM_FORCEINLINE bool isProtected() const
-    {
-        return m_eAccess == Access::Protected;
-    }
-    PHANTOM_FORCEINLINE bool isPrivate() const
-    {
-        return m_eAccess == Access::Private;
-    }
-    PHANTOM_FORCEINLINE bool isPublic() const
-    {
-        return m_eAccess == Access::Public;
-    }
-    PHANTOM_FORCEINLINE bool isAbstract() const
-    {
-        return ((m_Modifiers & PHANTOM_R_ABSTRACT) == PHANTOM_R_ABSTRACT);
-    }
-    PHANTOM_FORCEINLINE bool isFinal() const
-    {
-        return ((m_Modifiers & PHANTOM_R_FINAL) == PHANTOM_R_FINAL);
-    }
+    PHANTOM_FORCEINLINE bool isStatic() const { return ((m_Modifiers & PHANTOM_R_STATIC) == PHANTOM_R_STATIC); }
+    PHANTOM_FORCEINLINE bool isProtected() const { return m_eAccess == Access::Protected; }
+    PHANTOM_FORCEINLINE bool isPrivate() const { return m_eAccess == Access::Private; }
+    PHANTOM_FORCEINLINE bool isPublic() const { return m_eAccess == Access::Public; }
+    PHANTOM_FORCEINLINE bool isAbstract() const { return ((m_Modifiers & PHANTOM_R_ABSTRACT) == PHANTOM_R_ABSTRACT); }
+    PHANTOM_FORCEINLINE bool isFinal() const { return ((m_Modifiers & PHANTOM_R_FINAL) == PHANTOM_R_FINAL); }
     PHANTOM_FORCEINLINE bool isPureVirtual() const
     {
         return ((m_Modifiers & PHANTOM_R_PURE_VIRTUAL) == PHANTOM_R_PURE_VIRTUAL);
     }
-    PHANTOM_FORCEINLINE bool isVirtual() const
+    PHANTOM_FORCEINLINE bool isVirtual() const { return ((m_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL); }
+    PHANTOM_FORCEINLINE bool isConst() const { return ((m_Modifiers & PHANTOM_R_CONST) != 0); }
+    PHANTOM_FORCEINLINE bool isVolatile() const { return ((m_Modifiers & PHANTOM_R_VOLATILE) != 0); }
+    PHANTOM_FORCEINLINE bool isConstVolatile() const
     {
-        return ((m_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL);
+        return ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == (PHANTOM_R_CONST | PHANTOM_R_VOLATILE));
     }
-    PHANTOM_FORCEINLINE bool isConst() const
-    {
-        return ((m_Modifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST);
-    }
-    PHANTOM_FORCEINLINE bool isMutable() const
-    {
-        return ((m_Modifiers & PHANTOM_R_MUTABLE) == PHANTOM_R_MUTABLE);
-    }
+    PHANTOM_FORCEINLINE bool isQualified() const { return (m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) != 0; }
+    PHANTOM_FORCEINLINE bool isMutable() const { return ((m_Modifiers & PHANTOM_R_MUTABLE) == PHANTOM_R_MUTABLE); }
     PHANTOM_FORCEINLINE bool isImportable() const
     {
         return ((m_Modifiers & PHANTOM_R_FLAG_IMPORTABLE) == PHANTOM_R_FLAG_IMPORTABLE);

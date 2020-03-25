@@ -124,9 +124,7 @@ void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pConte
     }
 }
 
-FunctionType::~FunctionType()
-{
-}
+FunctionType::~FunctionType() {}
 
 void FunctionType::addParameterType(Type* a_pType)
 {
@@ -138,7 +136,7 @@ void FunctionType::addParameterType(Type* a_pType)
 
 void FunctionType::setReturnType(Type* a_pType)
 {
-    if (!(a_pType &&(a_pType == PHANTOM_TYPEOF(void) || a_pType->isCopyable())))
+    if (!(a_pType && (a_pType == PHANTOM_TYPEOF(void) || a_pType->isCopyable())))
         setInvalid();
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
@@ -408,11 +406,6 @@ TypesView FunctionType::getParameterTypes() const
 bool FunctionType::hasEllipsis() const
 {
     return m_ParameterTypes.size() && m_ParameterTypes.back()->asEllipsis();
-}
-
-Type* FunctionType::addPointer() const
-{
-    return getSource()->functionPointerType((FunctionType*)this, ABI::CDecl);
 }
 
 bool FunctionType::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers, uint) const

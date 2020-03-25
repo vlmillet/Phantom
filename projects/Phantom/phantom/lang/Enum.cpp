@@ -27,72 +27,52 @@ String GenerateAnonymousName()
 
 } // namespace
 
-Enum::Enum()
-    : PrimitiveType(TypeKind::Enum, GenerateAnonymousName(), sizeof(int), PHANTOM_ALIGNOF(int)), m_pUnderlyingIntType(IntType())
-{
-}
+Enum::Enum() : PrimitiveType(TypeKind::Enum, IntType(), GenerateAnonymousName(), sizeof(int), PHANTOM_ALIGNOF(int)) {}
 
 Enum::Enum(PrimitiveType* a_pIntType)
-    : PrimitiveType(TypeKind::Enum, GenerateAnonymousName(), a_pIntType->getSize(), a_pIntType->getAlignment()),
-      m_pUnderlyingIntType(a_pIntType)
+    : PrimitiveType(TypeKind::Enum, a_pIntType, GenerateAnonymousName(), a_pIntType->getSize(),
+                    a_pIntType->getAlignment())
 {
 }
 
 Enum::Enum(StringView a_strName, PrimitiveType* a_pIntType)
-    : PrimitiveType(TypeKind::Enum, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
-                    a_pIntType->getSize(), a_pIntType->getAlignment()),
-      m_pUnderlyingIntType(a_pIntType)
+    : PrimitiveType(TypeKind::Enum, a_pIntType, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
+                    a_pIntType->getSize(), a_pIntType->getAlignment())
 {
 }
 
 Enum::Enum(StringView a_strName)
-    : PrimitiveType(TypeKind::Enum, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()), sizeof(int),
-        PHANTOM_ALIGNOF(int)),
-      m_pUnderlyingIntType(IntType())
+    : PrimitiveType(TypeKind::Enum, IntType(), a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
+                    sizeof(int), PHANTOM_ALIGNOF(int))
 {
 }
 
 // for native
 Enum::Enum(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/,
            uint a_uiFlags /*= 0*/)
-    : PrimitiveType(TypeKind::Enum, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()), a_uiSize,
-                    a_uiAlignment, a_Modifiers, a_uiFlags),
-      m_pUnderlyingIntType(IntType())
+    : PrimitiveType(TypeKind::Enum, IntType(), a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
+                    a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
-    if (m_pUnderlyingIntType == nullptr)
-    {
-        switch (a_uiSize)
-        {
-        case 8:
-            m_pUnderlyingIntType = (PrimitiveType*)PHANTOM_TYPEOF(long long);
-            break;
-        default:
-            m_pUnderlyingIntType = (PrimitiveType*)PHANTOM_TYPEOF(int);
-        }
-    }
-    addReferencedElement(m_pUnderlyingIntType);
 }
 
-Enum::~Enum()
-{
-}
+Enum::~Enum() {}
 
 void Enum::addConstant(Constant* a_pConstant)
 {
     PHANTOM_ASSERT(getConstant(a_pConstant->getName()) == nullptr);
     PHANTOM_ASSERT(a_pConstant->getValueType() == this || m_strName == "");
-    if (m_pUnderlyingIntType->getSize() < a_pConstant->getValueType()->getSize())
+    if (m_pUnderlyingType->getSize() < a_pConstant->getValueType()->getSize())
     {
         PHANTOM_ASSERT(m_strName == "");
-        removeReferencedElement(m_pUnderlyingIntType);
+        removeReferencedElement(m_pUnderlyingType);
         PHANTOM_ASSERT(getSize() == sizeof(int));
         PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == sizeof(long long));
-        m_pUnderlyingIntType = (PrimitiveType*)PHANTOM_TYPEOF(long long);
+        m_pUnderlyingType = (PrimitiveType*)PHANTOM_TYPEOF(long long);
         m_uiSize = sizeof(long long);
         m_uiAlignment = PHANTOM_ALIGNOF(long long);
-        addReferencedElement(m_pUnderlyingIntType);
+        addReferencedElement(m_pUnderlyingType);
     }
-    PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == m_pUnderlyingIntType->getSize());
+    PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == getUnderlyingIntType()->getSize());
     addElement(a_pConstant);
     m_Constants.push_back(a_pConstant);
 }
@@ -117,7 +97,7 @@ void Enum::addConstant(StringView a_strCode)
         while (valuestr.back() == ' ')
             valuestr.pop_back();
         ulonglong value = lexical_cast<ulonglong>(valuestr);
-        addConstant(m_pUnderlyingIntType->createConstant(&value, name, this));
+        addConstant(getUnderlyingIntType()->createConstant(&value, name, this));
     }
     else
     {
@@ -127,7 +107,7 @@ void Enum::addConstant(StringView a_strCode)
         ulonglong value = 0;
         m_Constants.back()->getValue(&value);
         value++;
-        addConstant(m_pUnderlyingIntType->createConstant(&value, name, this));
+        addConstant(getUnderlyingIntType()->createConstant(&value, name, this));
     }
 }
 
@@ -223,7 +203,7 @@ void Enum::valueToString(StringBuffer& a_Buf, const void* a_pSrc) const
     size_t count = getConstantCount();
     for (; i < count; ++i)
     {
-        size_t                constantValue = 0;
+        size_t          constantValue = 0;
         lang::Constant* pConstant = getConstant(i);
         pConstant->getValue(&constantValue);
         if (constantValue == *((size_t*)a_pSrc))
@@ -270,7 +250,7 @@ PrimitiveType* Enum::IntType()
 Constant* Enum::createConstant(void* a_pSrc, StringView a_strName /*= "" */,
                                PrimitiveType* a_pPrimitiveType /*= nullptr*/) const
 {
-    return m_pUnderlyingIntType->createConstant(a_pSrc, a_strName, a_pPrimitiveType ? a_pPrimitiveType : (Enum*)this);
+    return getUnderlyingIntType()->createConstant(a_pSrc, a_strName, a_pPrimitiveType ? a_pPrimitiveType : (Enum*)this);
 }
 
 } // namespace lang

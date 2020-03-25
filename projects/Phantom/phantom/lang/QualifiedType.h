@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/ExtendedType.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -17,7 +17,7 @@ namespace lang
 {
 /// \brief  Base for const/volatile qualified type
 
-class PHANTOM_EXPORT_PHANTOM QualifiedType : public ExtendedType
+class PHANTOM_EXPORT_PHANTOM QualifiedType : public Type
 {
     PHANTOM_DECL_TYPE;
 
@@ -27,17 +27,10 @@ class PHANTOM_EXPORT_PHANTOM QualifiedType : public ExtendedType
     friend class phantom::lang::Type;
 
 protected:
-    QualifiedType(Type* a_pType, TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+    QualifiedType(TypeKind a_eTypeKind, Type* a_pType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
                   Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
-    Type* removeAllVolatile() const override;
-    Type* removeAllQualifiers() const override;
-    Type* removeQualifiers() const override;
-    Type* removePointerOrArray() const override;
-    Type* removeAddress() const override;
-    Type* removeArray() const override;
-
     void* cast(Type* a_pTargetType, void* a_pSrc) const override;
     void* upcast(Type* a_pTargetType, void* a_pSrc) const override;
     void* downcast(Type* a_pTargetType, void* a_pSrc) const override;
@@ -60,8 +53,7 @@ public:
     void moveConstruct(void* a_pDest, void* a_pSrc) const override;
     bool convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const override;
 
-    Type* removeEverything() const override;
-    void  fetchElements(LanguageElements& out, Class* a_pClass = nullptr) const override;
+    void fetchElements(LanguageElements& out, Class* a_pClass = nullptr) const override;
 
     // Traits
     bool hasCopyDisabled() const override;

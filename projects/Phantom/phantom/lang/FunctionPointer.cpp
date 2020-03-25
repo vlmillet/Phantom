@@ -16,15 +16,13 @@ namespace lang
 {
 FunctionPointer::FunctionPointer(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers /*= 0*/,
                                  uint a_uiFlags /*= 0*/)
-    : PointerType(a_pFunctionType, "", sizeof(void (*)()), std::alignment_of<void (*)()>::value, a_Modifiers,
-                  a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
+    : PointerType(TypeKind::FunctionPointer, a_pFunctionType, "", sizeof(void (*)()),
+                  std::alignment_of<void (*)()>::value, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_eABI(a_eABI)
 {
 }
 
-FunctionPointer::~FunctionPointer()
-{
-}
+FunctionPointer::~FunctionPointer() {}
 
 void FunctionPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
 {

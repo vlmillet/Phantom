@@ -330,7 +330,7 @@ bool Symbol::isSame(LanguageElement* a_pOther) const
 
 bool Symbol::isSame(Symbol* a_pOther) const
 {
-    return (this == a_pOther ||(isNative() && getHash() == a_pOther->getHash()));
+    return (this == a_pOther || (isNative() && getHash() == a_pOther->getHash()));
 }
 
 bool Symbol::hasElementWithName(StringView a_strName) const
@@ -499,7 +499,7 @@ void Symbol::getQualifiedName(StringBuffer& a_Buf) const
         return;
     }
     size_t prev = a_Buf.size();
-    pNS->getQualifiedName(a_Buf);
+    pNS->getQualifiedDecoratedName(a_Buf);
     bool ownerEmpty = (a_Buf.size() - prev) == 0;
     if (!ownerEmpty) // no owner name
     {

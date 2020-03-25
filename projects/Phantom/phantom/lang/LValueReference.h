@@ -33,21 +33,8 @@ protected:
     LValueReference(Type* a_pReferencedType);
 
 public:
-    LValueReference* asLValueReference() const override;
     LValueReference* asClassLValueReference() const override;
     LValueReference* asConstClassLValueReference() const override;
-
-    Type* addPointer() const override;
-
-    Type* addLValueReference() const override;
-
-    Type* addRValueReference() const override;
-
-    Type* removeLValueReference() const override;
-
-    Type* removeAllConst() const override;
-
-    Type* removeAllQualifiers() const override;
 
     Type* replicate(Type* a_pInput) const override;
 

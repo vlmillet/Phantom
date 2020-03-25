@@ -25,40 +25,21 @@ class PHANTOM_EXPORT_PHANTOM TemplateDependantType : public Type
 
 public:
     TemplateDependantType()
-        : Type(TypeKind::TemplateDependant, "", 0, 0, 0,
-               PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
+        : Type(TypeKind::Unknown, "", 0, 0, 0, PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
           m_pElement(nullptr)
     {
     }
     TemplateDependantType(TemplateDependantElement* a_pElement);
 
-    bool isA(Type*) const override
-    {
-        return true;
-    }
+    bool isA(Type*) const override { return true; }
 
-    virtual TemplateDependantType* asTemplateDependantType() const
-    {
-        return (TemplateDependantType*)this;
-    }
+    virtual TemplateDependantType* asTemplateDependantType() const { return (TemplateDependantType*)this; }
 
-    TemplateDependantElement* getTemplateDependantElement() const
-    {
-        return m_pElement;
-    }
+    TemplateDependantElement* getTemplateDependantElement() const { return m_pElement; }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
 
 private:
     TemplateDependantElement* m_pElement;

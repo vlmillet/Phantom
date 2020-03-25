@@ -19,7 +19,7 @@ namespace lang
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpecialization* a_pTemplateSpecialization,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : ClassType(TypeKind::TemplateDependant,
+    : ClassType(TypeKind::ClassType,
                 (a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate())
                 ? a_pTemplateSpecialization->getTemplate()->getName()
                 : "",
@@ -44,7 +44,7 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(Template*               a_pTemplate,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : ClassType(TypeKind::TemplateDependant, a_pTemplate->getName(), 0, 0, 0,
+    : ClassType(TypeKind::ClassType, a_pTemplate->getName(), 0, 0, 0,
                 PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS | a_uiFlags),
       m_pTemplate(a_pTemplate),
       m_Arguments(a_Arguments)

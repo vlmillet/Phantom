@@ -22,7 +22,6 @@
 #include "ContainerClass.h"
 #include "Destructor.h"
 #include "Enum.h"
-#include "ExtendedType.h"
 #include "Field.h"
 #include "FieldPointer.h"
 #include "Function.h"
@@ -109,7 +108,7 @@ void LanguageElementVisitor::visit(Application* a_pInput, VisitorData a_Data)
 }
 void LanguageElementVisitor::visit(Array* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ExtendedType*>(a_pInput), a_Data);
+    visit(static_cast<Type*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(Class* a_pInput, VisitorData a_Data)
 {
@@ -149,7 +148,7 @@ void LanguageElementVisitor::visit(FieldPointer* a_pInput, VisitorData a_Data)
 }
 void LanguageElementVisitor::visit(Pointer* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ExtendedType*>(a_pInput), a_Data);
+    visit(static_cast<Type*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(Destructor* a_pInput, VisitorData a_Data)
 {
@@ -166,7 +165,7 @@ void LanguageElementVisitor::visit(Function* a_pInput, VisitorData a_Data)
 }
 void LanguageElementVisitor::visit(FunctionPointer* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ExtendedType*>(a_pInput), a_Data);
+    visit(static_cast<PointerType*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(FunctionType* a_pInput, VisitorData a_Data)
 {
@@ -254,13 +253,9 @@ void LanguageElementVisitor::visit(PlaceholderType* a_pInput, VisitorData a_Data
 {
     visit(static_cast<Type*>(a_pInput), a_Data);
 }
-void LanguageElementVisitor::visit(ExtendedType* a_pInput, VisitorData a_Data)
-{
-    visit(static_cast<Type*>(a_pInput), a_Data);
-}
 void LanguageElementVisitor::visit(PointerType* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ExtendedType*>(a_pInput), a_Data);
+    visit(static_cast<Type*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(PrimitiveType* a_pInput, VisitorData a_Data)
 {
@@ -272,7 +267,7 @@ void LanguageElementVisitor::visit(Property* a_pInput, VisitorData a_Data)
 }
 void LanguageElementVisitor::visit(Reference* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ExtendedType*>(a_pInput), a_Data);
+    visit(static_cast<Type*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(RValueReference* a_pInput, VisitorData a_Data)
 {

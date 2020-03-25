@@ -88,6 +88,7 @@ class MapClass;
 class SetClass;
 class VectorClass;
 class StringClass;
+class ArrayClass;
 class Ellipsis;
 class PointerType;
 class MemberPointer;
@@ -98,7 +99,6 @@ class ConstVolatileType;
 class Reference;
 class LValueReference;
 class RValueReference;
-class ExtendedType;
 class Pointer;
 class Array;
 

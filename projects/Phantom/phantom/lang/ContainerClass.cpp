@@ -62,13 +62,13 @@ void ContainerClass::clear(void* a_pContainer) const
 void ContainerClass::begin(void* a_pContainer, void* a_pOutIt) const
 {
     _initBegin();
-    m_Data->m_pFunc_begin->invoke((void*)a_pContainer, (void**)nullptr, &a_pOutIt);
+    m_Data->m_pFunc_begin->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::begin(void const* a_pContainer, void* a_pOutIt) const
 {
     _initBeginC();
-    m_Data->m_pFunc_beginc->invoke((void*)a_pContainer, (void**)nullptr, &a_pOutIt);
+    m_Data->m_pFunc_beginc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::end(void* a_pContainer, void* a_pOutIt) const
@@ -77,7 +77,7 @@ void ContainerClass::end(void* a_pContainer, void* a_pOutIt) const
     {
         PHANTOM_VERIFY(m_Data->m_pFunc_end = getMethod("end()"));
     }
-    m_Data->m_pFunc_end->invoke((void*)a_pContainer, (void**)nullptr, &a_pOutIt);
+    m_Data->m_pFunc_end->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::end(void const* a_pContainer, void* a_pOutIt) const
@@ -86,7 +86,7 @@ void ContainerClass::end(void const* a_pContainer, void* a_pOutIt) const
     {
         PHANTOM_VERIFY(m_Data->m_pFunc_endc = getMethod("end() const"));
     }
-    m_Data->m_pFunc_endc->invoke((void*)a_pContainer, (void**)nullptr, &a_pOutIt);
+    m_Data->m_pFunc_endc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 Property* ContainerClass::getSizeProperty() const

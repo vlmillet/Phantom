@@ -35,17 +35,11 @@ public:
     /// \return return the types of the initializers expressions.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TypesView getTypes() const
-    {
-        return m_Types;
-    }
+    TypesView getTypes() const { return m_Types; }
 
     bool matches(TypesView a_Types) const;
 
-    InitializerListType* asInitializerListType() const override
-    {
-        return const_cast<InitializerListType*>(this);
-    }
+    InitializerListType* asInitializerListType() const override { return const_cast<InitializerListType*>(this); }
 
     void getUniqueName(StringBuffer& a_Buf) const override;
     void getQualifiedName(StringBuffer& a_Buf) const override;
@@ -53,27 +47,7 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    void     onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    Pointer* createPointer() const override
-    {
-        return nullptr;
-    }
-    LValueReference* createLValueReference() const override
-    {
-        return nullptr;
-    }
-    RValueReference* createRValueReference() const override
-    {
-        return nullptr;
-    }
-    ConstVolatileType* createConstVolatileType() const override
-    {
-        return nullptr;
-    }
-    VolatileType* createVolatileType() const override
-    {
-        return nullptr;
-    }
+    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     Types m_Types;

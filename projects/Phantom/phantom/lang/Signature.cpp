@@ -173,9 +173,7 @@ void Signature::parse(StringView a_strSignature, LanguageElement* a_pContextScop
     PHANTOM_ASSERT(false, "invalid signature formating, missing '(types...)'");
 }
 
-Signature::~Signature()
-{
-}
+Signature::~Signature() {}
 
 Parameter* Signature::addParameter(Type* a_pType, StringView a_strName)
 {
@@ -203,8 +201,9 @@ void Signature::addParameter(Parameter* a_pParameter)
 
 void Signature::setReturnType(Type* a_pType)
 {
-    PHANTOM_ASSERT(
-    a_pType &&(a_pType->isTemplateDependant() ||(a_pType == PHANTOM_TYPEOF(void)) || a_pType->isMoveConstructible()));
+    PHANTOM_ASSERT(a_pType &&
+                   (a_pType->isTemplateDependant() || (a_pType == PHANTOM_TYPEOF(void)) || a_pType->asReference() ||
+                    a_pType->isMoveConstructible()));
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
     addReferencedElement(a_pType);
@@ -509,7 +508,7 @@ size_t Signature::getRequiredArgumentCount() const
 
 bool Signature::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers) const
 {
-    if (a_ParameterTypes.size() != getParameterCount() ||(getModifiers() != a_Modifiers))
+    if (a_ParameterTypes.size() != getParameterCount() || (getModifiers() != a_Modifiers))
     {
         return false;
     }

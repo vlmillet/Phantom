@@ -13,13 +13,11 @@ namespace phantom
 namespace lang
 {
 Array::Array(Type* a_pType, size_t a_uiCount)
-    : ExtendedType(a_pType, TypeKind::Array,
-                   String("[") + (a_uiCount ? phantom::lexical_cast<String>(a_uiCount) : "") + ']', 0, 0,
-                   a_pType->getModifiers(), a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
+    : Type(TypeKind::Array, a_pType, String("[") + (a_uiCount ? phantom::lexical_cast<String>(a_uiCount) : "") + ']', 0,
+           0, 0, a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
 
       Aggregate(this),
       m_uiCount(a_uiCount) /// m_uiCount == 0 => unknown bound array
-
 {
 }
 
@@ -114,9 +112,9 @@ bool Array::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Ded
 
 bool Array::isSame(Symbol* a_pOther) const
 {
-    return (a_pOther == this)
-    ||(a_pOther->asArray() && m_pUnderlyingType->isSame(static_cast<Array*>(a_pOther)->m_pUnderlyingType)
-       &&                     m_uiCount == static_cast<Array*>(a_pOther)->m_uiCount);
+    return (a_pOther == this) ||
+    (a_pOther->asArray() && m_pUnderlyingType->isSame(static_cast<Array*>(a_pOther)->m_pUnderlyingType) &&
+     m_uiCount == static_cast<Array*>(a_pOther)->m_uiCount);
 }
 
 void Array::getUniqueName(StringBuffer& a_Buf) const

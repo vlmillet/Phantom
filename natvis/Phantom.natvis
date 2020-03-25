@@ -191,16 +191,28 @@
         <DisplayString IncludeView="template" Condition="m_uiFlags &amp; 0x01000000">{*m_pOwner,view(sign)}</DisplayString>
         <DisplayString>{m_strName, sb}{*this,view(template)}</DisplayString>
     </Type>
-    <Type Name="phantom::lang::ExtendedType">
+    <Type Name="phantom::lang::Pointer">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
     </Type>
+    <Type Name="phantom::lang::LValueReference">
+      <DisplayString IncludeView="is_template"></DisplayString>
+      <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+    </Type>
+    <Type Name="phantom::lang::RValueReference">
+      <DisplayString IncludeView="is_template"></DisplayString>
+      <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+    </Type>
+  <Type Name="phantom::lang::Array">
+    <DisplayString IncludeView="is_template"></DisplayString>
+    <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+  </Type>
     <Type Name="phantom::lang::QualifiedType">
         <DisplayString IncludeView="is_template"></DisplayString>
         <DisplayString>{*m_pUnderlyingType} {m_strName,sb}</DisplayString>
     </Type>
     <Type Name="phantom::lang::Expression">
-        <DisplayString>Eval As : {*m_pValueType} ({*_PHNTM_Rtti.metaClass})</DisplayString>
+        <DisplayString>Eval As : {*m_pValueType} ({*rtti.metaClass})</DisplayString>
     </Type>
 
 </AutoVisualizer>

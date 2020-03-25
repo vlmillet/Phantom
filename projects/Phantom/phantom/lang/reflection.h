@@ -210,7 +210,7 @@ class conversions;
 /// @endcond
 
 /// \brief  Represent the different category of types to identify them quickly.
-enum class TypeKind
+enum class TypeKind : uint8_t
 {
     Void,
     Bool,
@@ -267,6 +267,7 @@ enum class TypeKind
     LValueReference,
     RValueReference,
     Array,
+    ClassType,
     Structure,
     Union,
     Class,
@@ -274,8 +275,8 @@ enum class TypeKind
     SetClass,
     MapClass,
     StringClass,
-    Placeholder,
-    TemplateDependant,
+    ArrayClass,
+    InitializerList,
     Function,
     Unknown,
     Custom0,
@@ -289,6 +290,12 @@ enum class TypeKind
     Custom8,
     Custom9,
 };
+
+const TypeKind FirstClassKind = TypeKind::Class;
+const TypeKind LastClassKind = TypeKind::ArrayClass;
+
+const TypeKind FirstClassTypeKind = TypeKind::ClassType;
+const TypeKind LastClassTypeKind = TypeKind::ArrayClass;
 
 /// \brief  Operator types.
 enum class OperatorKind

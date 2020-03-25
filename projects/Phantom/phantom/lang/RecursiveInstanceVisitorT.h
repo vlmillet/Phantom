@@ -529,38 +529,13 @@ public:
         return true;
     } bool traverseFundamental(char32_t* a_Input) { return true; });
 
-    // ExtendedType
-
-    bool visitExtendedType(InstanceT<ExtendedType> a_Input) { return true; }
-    bool endExtendedType(InstanceT<ExtendedType> a_Input) { return true; }
-    bool walkUpVisitFromExtendedType(InstanceT<ExtendedType> a_Input)
-    {
-        if (!(this_()->walkUpVisitFromType(a_Input)))
-            return false;
-        return this_()->visitExtendedType(a_Input);
-    }
-    bool walkUpEndFromExtendedType(InstanceT<ExtendedType> a_Input)
-    {
-        if (!(this_()->endExtendedType(a_Input)))
-            return false;
-        return this_()->walkUpEndFromType(a_Input);
-    }
-    bool traverse(InstanceT<ExtendedType> a_Input) { return this_()->traverseExtendedType(a_Input); }
-    bool traverseExtendedType(InstanceT<ExtendedType> a_Input)
-    {
-        if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
-            return false;
-        ;
-        return this_()->walkUpEndFromExtendedType(a_Input);
-    };
-
     // QualifiedType
 
     bool visitQualifiedType(InstanceT<QualifiedType> a_Input) { return true; }
     bool endQualifiedType(InstanceT<QualifiedType> a_Input) { return true; }
     bool walkUpVisitFromQualifiedType(InstanceT<QualifiedType> a_Input)
     {
-        if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
+        if (!(this_()->walkUpVisitFromType(a_Input)))
             return false;
         return this_()->visitQualifiedType(a_Input);
     }
@@ -568,7 +543,7 @@ public:
     {
         if (!(this_()->endQualifiedType(a_Input)))
             return false;
-        return this_()->walkUpEndFromExtendedType(a_Input);
+        return this_()->walkUpEndFromType(a_Input);
     }
     bool traverse(InstanceT<QualifiedType> a_Input) { return this_()->traverseQualifiedType(a_Input); }
     bool traverseQualifiedType(InstanceT<QualifiedType> a_Input)
@@ -664,7 +639,7 @@ public:
     bool endPointerType(InstanceT<PointerType> a_Input) { return true; }
     bool walkUpVisitFromPointerType(InstanceT<PointerType> a_Input)
     {
-        if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
+        if (!(this_()->walkUpVisitFromType(a_Input)))
             return false;
         return this_()->visitPointerType(a_Input);
     }
@@ -672,7 +647,7 @@ public:
     {
         if (!(this_()->endPointerType(a_Input)))
             return false;
-        return this_()->walkUpEndFromExtendedType(a_Input);
+        return this_()->walkUpEndFromType(a_Input);
     }
     bool traverse(InstanceT<PointerType> a_Input) { return this_()->traversePointerType(a_Input); }
     bool traversePointerType(InstanceT<PointerType> a_Input)
@@ -846,7 +821,7 @@ public:
     bool endReference(InstanceT<Reference> a_Input) { return true; }
     bool walkUpVisitFromReference(InstanceT<Reference> a_Input)
     {
-        if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
+        if (!(this_()->walkUpVisitFromType(a_Input)))
             return false;
         return this_()->visitReference(a_Input);
     }
@@ -854,7 +829,7 @@ public:
     {
         if (!(this_()->endReference(a_Input)))
             return false;
-        return this_()->walkUpEndFromExtendedType(a_Input);
+        return this_()->walkUpEndFromType(a_Input);
     }
     bool traverse(InstanceT<Reference> a_Input) { return this_()->traverseReference(a_Input); }
     bool traverseReference(InstanceT<Reference> a_Input)
@@ -971,7 +946,7 @@ public:
     bool endArray(InstanceT<Array> a_Input) { return true; }
     bool walkUpVisitFromArray(InstanceT<Array> a_Input)
     {
-        if (!(this_()->walkUpVisitFromExtendedType(a_Input)))
+        if (!(this_()->walkUpVisitFromType(a_Input)))
             return false;
         return this_()->visitArray(a_Input);
     }
@@ -979,7 +954,7 @@ public:
     {
         if (!(this_()->endArray(a_Input)))
             return false;
-        return this_()->walkUpEndFromExtendedType(a_Input);
+        return this_()->walkUpEndFromType(a_Input);
     }
     bool traverse(InstanceT<Array> a_Input) { return this_()->traverseArray(a_Input); }
     bool traverseArray(InstanceT<Array> a_Input)

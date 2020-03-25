@@ -10,7 +10,8 @@ namespace phantom
 {
 namespace lang
 {
-InitializerListType::InitializerListType(TypesView a_Types) : Type(TypeKind::Unknown, "", 0, 0, 0, 0), m_Types(a_Types)
+InitializerListType::InitializerListType(TypesView a_Types)
+    : Type(TypeKind::InitializerList, "", 0, 0, 0, 0), m_Types(a_Types)
 {
     for (auto pType : m_Types)
         addReferencedElement(pType);

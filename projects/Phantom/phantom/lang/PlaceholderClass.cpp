@@ -24,7 +24,7 @@ PlaceholderClass::PlaceholderClass(StringView a_Name, Modifiers a_Modifiers, uin
 {
 }
 
-phantom::lang::Placeholder* PlaceholderClass::clone(uint a_Flags) const
+Placeholder* PlaceholderClass::clone(uint a_Flags) const
 {
     return PHANTOM_NEW(PlaceholderClass)(getName(), getModifiers(), a_Flags);
 }

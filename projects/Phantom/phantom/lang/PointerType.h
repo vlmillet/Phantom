@@ -5,10 +5,9 @@
 // ]
 
 #pragma once
-// #pragma message("Including "__FILE__)
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/ExtendedType.h>
+#include <phantom/lang/Type.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -19,7 +18,7 @@ namespace lang
 {
 /// \brief  Base class for pointer/address type representations (Data pointer types, function
 /// pointer types, etc...).
-class PHANTOM_EXPORT_PHANTOM PointerType : public ExtendedType
+class PHANTOM_EXPORT_PHANTOM PointerType : public Type
 {
     PHANTOM_DECL_TYPE;
 
@@ -29,25 +28,16 @@ public:
     friend class Type;
 
 protected:
-    PointerType(Type* a_pPointeeType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
+    PointerType(TypeKind _typeKind, Type* a_pPointeeType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
                 Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
-        : ExtendedType(a_pPointeeType, TypeKind::Pointer, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+        : Type(_typeKind, a_pPointeeType, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
     {
     }
 
 public:
-    PHANTOM_DTOR ~PointerType() override
-    {
-    }
+    PHANTOM_DTOR ~PointerType() override {}
 
-    Type* asPOD() const override
-    {
-        return (PointerType*)this;
-    }
-    PointerType* asPointerType() const override
-    {
-        return (PointerType*)this;
-    }
+    Type* asPOD() const override { return (PointerType*)this; }
 
     // 13.6.15
     // ----------------------

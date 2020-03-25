@@ -24,51 +24,22 @@ class PHANTOM_EXPORT_PHANTOM PrimitiveType : public Type
     PHANTOM_DECLARE_META_CLASS(PrimitiveType);
 
 public:
-    PHANTOM_DTOR ~PrimitiveType() override
-    {
-    }
+    PHANTOM_DTOR ~PrimitiveType() override {}
 
-    PrimitiveType* asPrimitiveType() const override
-    {
-        return const_cast<PrimitiveType*>(this);
-    }
-    Type* asPOD() const override
-    {
-        return const_cast<PrimitiveType*>(this);
-    }
+    PrimitiveType* asPrimitiveType() const override { return const_cast<PrimitiveType*>(this); }
+    Type*          asPOD() const override { return const_cast<PrimitiveType*>(this); }
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
-    bool isSignedInteger() const override
-    {
-        return signedType() == const_cast<PrimitiveType*>(this);
-    }
+    bool isSignedInteger() const override { return signedType() == const_cast<PrimitiveType*>(this); }
 
-    bool isUnsignedInteger() const override
-    {
-        return unsignedType() == const_cast<PrimitiveType*>(this);
-    }
+    bool isUnsignedInteger() const override { return unsignedType() == const_cast<PrimitiveType*>(this); }
 
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        return Symbol::getName(a_Buf);
-    }
+    void getUniqueName(StringBuffer& a_Buf) const override { return Symbol::getName(a_Buf); }
 
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return Symbol::getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return Symbol::getName(a_Buf);
-    }
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return Symbol::getName(a_Buf);
-    }
+    void getQualifiedName(StringBuffer& a_Buf) const override { return Symbol::getName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { return Symbol::getName(a_Buf); }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return Symbol::getName(a_Buf); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Creates a constant object of this type.
@@ -88,6 +59,8 @@ protected:
     /// \internal
     PrimitiveType(TypeKind a_eTypeKind);
     /// \internal
+    PrimitiveType(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, size_t a_uiSize,
+                  size_t a_uiAlignment, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     PrimitiveType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
                   Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 };

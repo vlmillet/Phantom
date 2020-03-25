@@ -12,7 +12,7 @@ namespace phantom
 namespace lang
 {
 Pointer::Pointer(Type* a_pPointeeType)
-    : PointerType(a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, a_pPointeeType->getModifiers(),
+    : PointerType(TypeKind::Pointer, a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, 0,
                   PHANTOM_R_FLAG_IMPLICIT | a_pPointeeType->getFlags())
 {
 }
@@ -38,11 +38,6 @@ uint Pointer::getDataPointerLevel() const
     return m_pUnderlyingType->getDataPointerLevel() + 1;
 }
 
-Type* Pointer::removePointer() const
-{
-    return m_pUnderlyingType;
-}
-
 void Pointer::valueToString(StringBuffer& a_Buf, const void* src) const
 {
     char buf[32];
@@ -53,16 +48,6 @@ void Pointer::valueToString(StringBuffer& a_Buf, const void* src) const
 void Pointer::valueFromString(StringView a_str, void* dest) const
 {
     *reinterpret_cast<void**>(dest) = ::phantom::lexical_cast<void*>(a_str);
-}
-
-Type* Pointer::asAddressType() const
-{
-    return const_cast<Pointer*>(this);
-}
-
-Pointer* Pointer::asPointer() const
-{
-    return const_cast<Pointer*>(this);
 }
 
 Type* Pointer::asClassAddressType() const
@@ -93,26 +78,6 @@ bool Pointer::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const
         return true;
     }
     return false;
-}
-
-Type* Pointer::removePointerOrArray() const
-{
-    return m_pUnderlyingType;
-}
-
-Type* Pointer::removeAddress() const
-{
-    return m_pUnderlyingType;
-}
-
-Type* Pointer::removeAllConst() const
-{
-    return m_pUnderlyingType->removeAllConst()->makePointer();
-}
-
-Type* Pointer::removeAllQualifiers() const
-{
-    return m_pUnderlyingType->removeAllQualifiers()->makePointer();
 }
 
 bool Pointer::isCopyable() const
@@ -151,13 +116,8 @@ bool Pointer::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_D
 
 bool Pointer::isSame(Symbol* a_pOther) const
 {
-    return a_pOther ==
-    this ||(a_pOther->asPointer() && m_pUnderlyingType->isSame(static_cast<Pointer*>(a_pOther)->m_pUnderlyingType));
-}
-
-Type* Pointer::getUnderlyingType() const
-{
-    return m_pUnderlyingType;
+    return a_pOther == this ||
+    (a_pOther->asPointer() && m_pUnderlyingType->isSame(static_cast<Pointer*>(a_pOther)->m_pUnderlyingType));
 }
 
 Type* Pointer::replicate(Type* a_pSource) const

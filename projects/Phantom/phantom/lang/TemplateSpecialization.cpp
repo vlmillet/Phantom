@@ -31,9 +31,8 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     // accepts only if : (template has no source) || (template is native and we are currently
     // registering native types ) || source is not private (not an obsolete archive stored for
     // revert while run-time building)
-    PHANTOM_ASSERT(a_pTemplate->getSource() ==
-                   nullptr ||(a_pTemplate->isNative())
-                   || !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
+    PHANTOM_ASSERT(a_pTemplate->getSource() == nullptr || (a_pTemplate->isNative()) ||
+                   !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
     m_Arguments.resize(arguments.size());
     for (size_t i = 0; i < arguments.size(); ++i)
     {
@@ -62,9 +61,8 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     // accepts only if : (template has no source) || (template is native and we are currently
     // registering native types ) || source is not private (not an obsolete archive stored for
     // revert while run-time building)
-    PHANTOM_ASSERT(a_pTemplate->getSource() ==
-                   nullptr ||(a_pTemplate->isNative())
-                   || !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
+    PHANTOM_ASSERT(a_pTemplate->getSource() == nullptr || (a_pTemplate->isNative()) ||
+                   !(a_pTemplate->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)));
     m_Arguments.resize(arguments.size());
     for (size_t i = 0; i < arguments.size(); ++i)
     {
@@ -78,7 +76,7 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
 }
 
 TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization,
-                                               const LanguageElements& arguments,
+                                               const LanguageElements& a_Arguments,
                                                const PlaceholderMap&   a_PlaceholderSubstitutions)
     : Symbol(a_pInstantiationSpecialization->getTemplate()->getName(), 0,
              PHANTOM_R_FLAG_IMPLICIT | PHANTOM_R_FLAG_PRIVATE_VIS) // instantiations are considered implicit
@@ -109,10 +107,10 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
         }
     }
 #endif
-    m_Arguments.resize(arguments.size());
-    for (size_t i = 0; i < arguments.size(); ++i)
+    m_Arguments.resize(a_Arguments.size());
+    for (size_t i = 0; i < a_Arguments.size(); ++i)
     {
-        setArgument(i, arguments[i]);
+        setArgument(i, a_Arguments[i]);
     }
     addReferencedElement(m_pInstantiationSpecialization);
     PHANTOM_ASSERT(m_pTemplate);
@@ -196,21 +194,16 @@ Type* TemplateSpecialization::getArgumentAsType(StringView a_strParameterName) c
 void TemplateSpecialization::setArgument(size_t a_uiIndex, LanguageElement* a_pElement)
 {
     size_t index = a_uiIndex;
-    PHANTOM_ASSERT(!isNative() || a_pElement,
+    PHANTOM_ASSERT(a_pElement,
                    "invalid template argument ; if argument is a type, check that your type has "
                    "lang declared before its use in any template signature");
     PHANTOM_ASSERT(index != ~size_t(0));
     PHANTOM_ASSERT(m_Arguments[index] == nullptr);
-    if (a_pElement == nullptr)
-        setInvalid();
     m_Arguments[index] = a_pElement;
-    if (a_pElement)
-    {
-        if ((a_pElement->asPlaceholder() || !(a_pElement->asType()))&& a_pElement->getOwner() == nullptr)
-            addElement(a_pElement);
-        else
-            addReferencedElement(a_pElement);
-    }
+    if ((a_pElement->asPlaceholder() || !(a_pElement->asType())) && a_pElement->getOwner() == nullptr)
+        addElement(a_pElement);
+    else
+        addReferencedElement(a_pElement);
 }
 
 void TemplateSpecialization::setDefaultArgument(StringView a_strParameterName, LanguageElement* a_pElement)
@@ -233,7 +226,7 @@ void TemplateSpecialization::setDefaultArgument(size_t index, LanguageElement* a
         m_pDefaultArguments->resize(m_pTemplate->getTemplateParameters().size(), nullptr);
     }
     (*m_pDefaultArguments)[index] = a_pElement;
-    if ((a_pElement->asPlaceholder() || !(a_pElement->asType()))&& a_pElement->getOwner() == nullptr)
+    if ((a_pElement->asPlaceholder() || !(a_pElement->asType())) && a_pElement->getOwner() == nullptr)
         addElement(a_pElement);
     else
         addReferencedElement(a_pElement);
@@ -262,13 +255,9 @@ phantom::lang::TemplateParameters const& TemplateSpecialization::getTemplatePara
     return m_pTemplateSignature->getTemplateParameters();
 }
 
-void TemplateSpecialization::_updateName()
-{
-}
+void TemplateSpecialization::_updateName() {}
 
-void TemplateSpecialization::onReferencedElementAdded(LanguageElement*)
-{
-}
+void TemplateSpecialization::onReferencedElementAdded(LanguageElement*) {}
 
 void TemplateSpecialization::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
@@ -285,21 +274,45 @@ void TemplateSpecialization::onReferencedElementRemoved(LanguageElement* a_pElem
     }
 }
 
+#if 0
+template<class T0, class T1, class T2>
+struct Tpl
+{
+};
+template<class T0, class T1, class T2>
+struct Tpl<T0, T1, T2> // ERROR : == template decl
+{
+};
+template<class T0, class T1, class T2>
+struct Tpl<T1, T2, T0> // OK : same names but order changed
+{
+};
+template<class TA, class TB, class TC>
+struct Tpl<TB, TC, TA> // ERROR : not same names but order haven't changed
+{
+};
+#endif
+
 bool TemplateSpecialization::matches(LanguageElementsView a_Arguments) const
 {
     size_t count = a_Arguments.size();
     if (count != m_Arguments.size())
         return false;
-    size_t i = 0;
-    for (; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
-        if (a_Arguments[i]
-            ->asType() &&        a_Arguments[i]
-            ->asPlaceholder() && m_Arguments[i]
-            ->asPlaceholder() && m_Arguments[i]
-            ->asType())
-            continue;
-        if (!(a_Arguments[i]->isSame(m_Arguments[i])))
+        Type* pThisType = m_Arguments[i]->asType();
+        Type* pOtherType{};
+        if (pThisType && pThisType->asPlaceholder() && (pOtherType = a_Arguments[i]->asType()) &&
+            pOtherType->asPlaceholder())
+        {
+            PHANTOM_ASSERT(pThisType->getOwner() && pThisType->getOwner()->asTemplateParameter());
+            PHANTOM_ASSERT(pOtherType->getOwner() && pOtherType->getOwner()->asTemplateParameter());
+            TemplateParameter* pThisParam = static_cast<TemplateParameter*>(pThisType->getOwner());
+            TemplateParameter* pOtherParam = static_cast<TemplateParameter*>(pOtherType->getOwner());
+            if (pThisParam->getIndex() != pOtherParam->getIndex())
+                return false;
+        }
+        else if (!(a_Arguments[i]->isSame(m_Arguments[i])))
             return false;
     }
     return true;
@@ -357,7 +370,7 @@ bool TemplateSpecialization::isPartial() const
 bool TemplateSpecialization::isSpecializingParameter(TemplateParameter* a_pParameter) const
 {
     size_t i = m_pTemplate->getTemplateParameterIndex(a_pParameter);
-    return (i != ~size_t(0)) &&(m_Arguments[i] != nullptr);
+    return (i != ~size_t(0)) && (m_Arguments[i] != nullptr);
 }
 
 bool TemplateSpecialization::isVariadic() const
@@ -390,8 +403,8 @@ bool TemplateSpecialization::isVariadic() const
 
 bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecialization) const
 {
-    return a_pTemplateSpecialization->getTemplate() ==
-    m_pTemplate && matches(a_pTemplateSpecialization->getArguments());
+    return a_pTemplateSpecialization->getTemplate() == m_pTemplate &&
+    matches(a_pTemplateSpecialization->getArguments());
 }
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)

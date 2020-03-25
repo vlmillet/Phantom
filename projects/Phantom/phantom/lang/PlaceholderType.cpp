@@ -18,13 +18,13 @@ namespace phantom
 namespace lang
 {
 PlaceholderType::PlaceholderType(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Type(TypeKind::Placeholder, a_strName, 0, 0, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT),
+    : Type(TypeKind::Unknown, a_strName, 0, 0, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT),
       m_pAsClass(nullptr),
       m_pAsClassType(nullptr)
 {
 }
 
-Class* PlaceholderType::asClass() const
+Class* PlaceholderType::toClass() const
 {
     if (m_pAsClass == nullptr)
     {
@@ -34,7 +34,7 @@ Class* PlaceholderType::asClass() const
     return m_pAsClass;
 }
 
-ClassType* PlaceholderType::asClassType() const
+ClassType* PlaceholderType::toClassType() const
 {
     if (m_pAsClassType == nullptr)
     {
@@ -50,11 +50,11 @@ bool PlaceholderType::isSame(Symbol* a_pOther) const
         return true;
     TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
     TemplateSpecialization* pOtherSpec = a_pOther->getEnclosingTemplateSpecialization();
-    return (a_pOther->getName() ==
-            getName() && a_pOther->asPlaceholder() && pSpec && pOtherSpec && pSpec->isSame(pOtherSpec));
+    return (a_pOther->getName() == getName() && a_pOther->asPlaceholder() && pSpec && pOtherSpec &&
+            pSpec->isSame(pOtherSpec));
 }
 
-phantom::lang::Placeholder* PlaceholderType::clone(uint) const
+Placeholder* PlaceholderType::clone(uint) const
 {
     return PHANTOM_NEW(PlaceholderType)(getName(), getModifiers(), 0);
 }

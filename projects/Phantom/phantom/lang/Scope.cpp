@@ -20,8 +20,8 @@
 #include "TemplateSpecialization.h"
 #include "Variable.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/detail/core_internal.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -325,7 +325,7 @@ void Scope::scopedElementAdded(LanguageElement* a_pElement)
 {
     if (Type* pType = a_pElement->asType())
     {
-        if (!(a_pElement->asExtendedType()))
+        if (a_pElement->asClassType() || a_pElement->asEnum())
         {
             m_Types->push_back(pType);
         }
@@ -469,9 +469,9 @@ void Scope::findFunctions(Functions& a_Functions, StringView a_Name /*= ""*/,
 {
     for (auto f : *m_Functions)
     {
-        if ((a_Name.empty() || f->getName() == a_Name)
-            &&(a_pReturnType == nullptr || f->getReturnType() == a_pReturnType)
-            &&(a_pParameterTypes == nullptr || f->getSignature()->matches(*a_pParameterTypes)))
+        if ((a_Name.empty() || f->getName() == a_Name) &&
+            (a_pReturnType == nullptr || f->getReturnType() == a_pReturnType) &&
+            (a_pParameterTypes == nullptr || f->getSignature()->matches(*a_pParameterTypes)))
         {
             a_Functions.push_back(f);
         }
@@ -797,9 +797,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
 {
     TemplateSpecialization* pTemplateSpecialization;
 
-    if (!(m_pThisElement->isNative())
-        &&(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
-        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+    if (!(m_pThisElement->isNative()) &&
+        (pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments)) &&
+        pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false);
         return nullptr;
@@ -815,9 +815,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
                                                          const LanguageElements& a_Arguments)
 {
     TemplateSpecialization* pTemplateSpecialization;
-    if (!(m_pThisElement->isNative())
-        &&(pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments))
-        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+    if (!(m_pThisElement->isNative()) &&
+        (pTemplateSpecialization = a_pTemplate->getTemplateSpecialization(a_Arguments)) &&
+        pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
@@ -834,9 +834,10 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
                                 const PlaceholderMap&   a_PartialSpecializationParameterDeductions)
 {
     TemplateSpecialization* pTemplateSpecialization;
-    if (!(m_pThisElement->isNative()) &&(
-        pTemplateSpecialization = a_pInstantiationSpecialization->getTemplate()->getTemplateSpecialization(a_Arguments))
-        && pTemplateSpecialization->getModule() == m_pThisElement->getModule())
+    if (!(m_pThisElement->isNative()) &&
+        (pTemplateSpecialization =
+         a_pInstantiationSpecialization->getTemplate()->getTemplateSpecialization(a_Arguments)) &&
+        pTemplateSpecialization->getModule() == m_pThisElement->getModule())
     {
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;

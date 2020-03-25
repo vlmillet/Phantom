@@ -14,7 +14,7 @@ namespace phantom
 namespace lang
 {
 TemplateDependantType::TemplateDependantType(TemplateDependantElement* a_pElement)
-    : Type(TypeKind::TemplateDependant, a_pElement->getName(), 0, 0, a_pElement->getModifiers(),
+    : Type(TypeKind::Unknown, a_pElement->getName(), 0, 0, a_pElement->getModifiers(),
            PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pElement(a_pElement)
 {

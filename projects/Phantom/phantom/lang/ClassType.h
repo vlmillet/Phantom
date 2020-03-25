@@ -47,9 +47,7 @@ public:
     struct ExtraData
     {
         virtual void PHANTOM_CUSTOM_VIRTUAL_DELETE();
-        ExtraData() : m_uiDataTypeCount(0)
-        {
-        }
+        ExtraData() : m_uiDataTypeCount(0) {}
         Type::AlignmentComputer m_AlignmentComputer;
         size_t                  m_uiDataTypeCount;
         uint                    m_BuildState = 0;
@@ -94,6 +92,9 @@ protected:
 public:
     PHANTOM_DTOR ~ClassType() override;
 
+    using Type::asClass;
+    using Type::asClassType;
+
     bool isCopyable() const override;
 
     bool isCopyAssignable() const override;
@@ -110,19 +111,7 @@ public:
 
     bool isDefaultConstructible() const override;
 
-    ClassType* asClassType() const override
-    {
-        return const_cast<ClassType*>(this);
-    }
-    Class* asClass() const override
-    {
-        return nullptr;
-    }
-
-    Scope* asScope() const override
-    {
-        return const_cast<ClassType*>(this);
-    }
+    Scope* asScope() const override final { return const_cast<ClassType*>(this); }
 
     virtual bool isListInitializable() const;
 
@@ -140,10 +129,7 @@ public:
     /// \return The default access.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Access getDefaultAccess() const
-    {
-        return m_DefaultAccess;
-    }
+    Access getDefaultAccess() const { return m_DefaultAccess; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a constructor.
@@ -231,10 +217,7 @@ public:
     /// \param [in,out] a_pField   The static Data member.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addField(StaticField* a_pField)
-    {
-        addStaticField(a_pField);
-    }
+    virtual void addField(StaticField* a_pField) { addStaticField(a_pField); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a Data member.
@@ -308,10 +291,7 @@ public:
     /// \param [in,out] a_pMethod   The member function.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void addMethod(StaticMethod* a_pMethod)
-    {
-        addStaticMethod(a_pMethod);
-    }
+    void addMethod(StaticMethod* a_pMethod) { addStaticMethod(a_pMethod); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a static member function.
@@ -519,10 +499,7 @@ public:
     /// \return the value members list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const ValueMembers& getValueMembers() const
-    {
-        return *m_ValueMembers;
-    }
+    const ValueMembers& getValueMembers() const { return *m_ValueMembers; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the Data member at given index.
@@ -550,10 +527,7 @@ public:
     /// \return the Data member list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Fields& getFields() const
-    {
-        return *m_Fields;
-    }
+    const Fields& getFields() const { return *m_Fields; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the Data member list (including the one in anonymous sections).
@@ -664,10 +638,7 @@ public:
     /// \return the field list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Properties& getProperties() const
-    {
-        return *m_Properties;
-    }
+    const Properties& getProperties() const { return *m_Properties; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the subroutine matching the given signature name.
@@ -768,10 +739,7 @@ public:
     /// \return the method list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Methods& getMethods() const
-    {
-        return *m_Methods;
-    }
+    const Methods& getMethods() const { return *m_Methods; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the static method matching the given signature name.
@@ -861,10 +829,7 @@ public:
     /// \return The member anonymous sections.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MemberAnonymousSections const& getMemberAnonymousSections() const
-    {
-        return *m_MemberAnonymousSections;
-    }
+    MemberAnonymousSections const& getMemberAnonymousSections() const { return *m_MemberAnonymousSections; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Accepts subroutine.
@@ -988,10 +953,7 @@ public:
     using Type::fetchElements;
     void fetchElements(LanguageElements& out, Class* a_pClass = nullptr) const override;
 
-    ExtraData* getExtraData() const
-    {
-        return m_pExtraData;
-    }
+    ExtraData* getExtraData() const { return m_pExtraData; }
 
     Template* getTemplate() const;
 
@@ -1022,14 +984,8 @@ protected:
     void onElementAdded(LanguageElement* a_pElement) override;
     void onElementRemoved(LanguageElement* a_pElement) override;
 
-    void addScopeElement(Symbol* a_pElement) override
-    {
-        addElement(a_pElement);
-    }
-    void removeScopeElement(Symbol* a_pElement) override
-    {
-        removeElement(a_pElement);
-    }
+    void addScopeElement(Symbol* a_pElement) override { addElement(a_pElement); }
+    void removeScopeElement(Symbol* a_pElement) override { removeElement(a_pElement); }
     void onElementsAccess() override;
 
 protected:

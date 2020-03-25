@@ -137,10 +137,7 @@ public:
 public:
     PHANTOM_DTOR ~FunctionType() override;
 
-    FunctionType* asFunctionType() const override
-    {
-        return (FunctionType*)this;
-    }
+    FunctionType* asFunctionType() const override { return (FunctionType*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this function type is candidate for Return Value Optimization.
@@ -217,10 +214,7 @@ public:
     /// \return The parameter at given index position.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getParameterType(size_t i) const
-    {
-        return m_ParameterTypes[i];
-    }
+    Type* getParameterType(size_t i) const { return m_ParameterTypes[i]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a PHANTOM_NEW(parameter) type.
@@ -278,10 +272,7 @@ public:
     /// \return An iterator pointing to the first parameter of this function type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Types::const_iterator beginParameterTypes() const
-    {
-        return m_ParameterTypes.begin();
-    }
+    Types::const_iterator beginParameterTypes() const { return m_ParameterTypes.begin(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets an iterator pointing to the end of parameters of this function type.
@@ -289,12 +280,7 @@ public:
     /// \return An iterator pointing to the end of parameters of this function type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Types::const_iterator endParameterTypes() const
-    {
-        return m_ParameterTypes.end();
-    }
-
-    Type* addPointer() const override;
+    Types::const_iterator endParameterTypes() const { return m_ParameterTypes.end(); }
 
 private:
     bool separateParameters(StringView a_strText, Strings& a_OutParameters);

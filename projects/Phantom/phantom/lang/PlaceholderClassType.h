@@ -29,59 +29,29 @@ public:
     {
         return a_pLanguageElement->asClassType() != nullptr;
     }
-    Symbol* asSymbol() const override
-    {
-        return (PlaceholderClassType*)this;
-    }
-    Placeholder* asPlaceholder() const override
-    {
-        return (PlaceholderClassType*)this;
-    }
-    virtual PlaceholderClassType* asPlaceholderClassType() const
-    {
-        return (PlaceholderClassType*)this;
-    }
+    Symbol*                       asSymbol() const override { return (PlaceholderClassType*)this; }
+    Placeholder*                  asPlaceholder() const override { return (PlaceholderClassType*)this; }
+    virtual PlaceholderClassType* asPlaceholderClassType() const { return (PlaceholderClassType*)this; }
 
-    bool isA(Type*) const override
-    {
-        return true;
-    }
-    virtual bool isA(Class*) const
-    {
-        return true;
-    }
+    bool         isA(Type*) const override { return true; }
+    virtual bool isA(Class*) const { return true; }
 
-    Class* asClass() const override
-    {
-        return getOwner()->asClass();
-    }
+    Class* toClass() const;
 
     bool isSame(Symbol* a_pOther) const override
     {
-        return Type::isSame(a_pOther) ||(a_pOther->asType() && a_pOther->asPlaceholder());
+        return Type::isSame(a_pOther) || (a_pOther->asType() && a_pOther->asPlaceholder());
     }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
     void getUniqueName(StringBuffer& a_Buf) const override
     {
         a_Buf += "@ph ";
         getName(a_Buf);
     }
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
     Placeholder* clone(uint a_Flags = 0) const override;
 };

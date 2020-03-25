@@ -329,8 +329,6 @@ public:
 
     StaticField* getStaticFieldCascade(StringView a_strName) const;
 
-    Class* asClass() const override { return const_cast<Class*>(this); }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief Gets the size of the virtual method table at a_uindex.
     ///

@@ -16,7 +16,7 @@ namespace phantom
 namespace lang
 {
 ConstType::ConstType(Type* a_pType)
-    : QualifiedType(a_pType, a_pType->getTypeKind(), "const", 0, 0, a_pType->getModifiers() | PHANTOM_R_CONST,
+    : QualifiedType(TypeKind::Unknown, a_pType, "const", 0, 0, PHANTOM_R_CONST,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
     addReferencedElement(a_pType);
@@ -40,24 +40,8 @@ bool ConstType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a
 
 bool ConstType::isSame(Symbol* a_pOther) const
 {
-    return a_pOther ==
-    this ||(a_pOther->asConstType()
-            && m_pUnderlyingType->isSame(static_cast<ConstType*>(a_pOther)->m_pUnderlyingType));
-}
-
-Type* ConstType::addConst() const
-{
-    return const_cast<ConstType*>(this);
-}
-
-Type* ConstType::addVolatile() const
-{
-    return m_pUnderlyingType->makeConstVolatile();
-}
-
-Type* ConstType::addConstVolatile() const
-{
-    return m_pUnderlyingType->makeConstVolatile();
+    return a_pOther == this ||
+    (a_pOther->asConstType() && m_pUnderlyingType->isSame(static_cast<ConstType*>(a_pOther)->m_pUnderlyingType));
 }
 
 void ConstType::getUniqueName(StringBuffer& a_Buf) const

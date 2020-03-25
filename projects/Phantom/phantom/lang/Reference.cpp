@@ -12,14 +12,12 @@ namespace phantom
 namespace lang
 {
 Reference::Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName)
-    : ExtendedType(a_pReferencedType, a_eTypeKind, a_strName, sizeof(void*), std::alignment_of<void*>::value,
-                   a_pReferencedType->getModifiers(), a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
+    : Type(a_eTypeKind, a_pReferencedType, a_strName, sizeof(void*), std::alignment_of<void*>::value, 0,
+           a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
 }
 
-Reference::~Reference()
-{
-}
+Reference::~Reference() {}
 
 void Reference::onReferencedElementRemoved(LanguageElement* a_pElement)
 {

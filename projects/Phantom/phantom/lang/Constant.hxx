@@ -98,5 +98,3 @@ namespace phantom {
 // clang-format on
 
 // haunt }
-
-

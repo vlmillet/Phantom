@@ -110,6 +110,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isPureVirtual", &_::isPureVirtual)
             .method<bool() const>("isVirtual", &_::isVirtual)
             .method<bool() const>("isConst", &_::isConst)
+            .method<bool() const>("isVolatile", &_::isVolatile)
+            .method<bool() const>("isConstVolatile", &_::isConstVolatile)
+            .method<bool() const>("isQualified", &_::isQualified)
             .method<bool() const>("isMutable", &_::isMutable)
             .method<bool() const>("isImportable", &_::isImportable)
             .method<bool() const>("isTransient", &_::isTransient)
@@ -194,4 +197,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

@@ -26,7 +26,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -129,4 +128,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

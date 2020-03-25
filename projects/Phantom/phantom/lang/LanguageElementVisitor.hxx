@@ -90,7 +90,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(PlaceholderTemplate*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(PlaceholderType*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(PointerType*, VisitorData), virtual_>("visit", &_::visit)
-            .method<void(ExtendedType*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(PrimitiveType*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(Property*, VisitorData), virtual_>("visit", &_::visit)
             .method<void(Reference*, VisitorData), virtual_>("visit", &_::visit)
@@ -176,4 +175,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

@@ -41,7 +41,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::lang::ExtendedType>()
+            .inherits<::phantom::lang::Type>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -51,11 +51,10 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
         
         .protected_()
-            .constructor<void(Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
         
         .public_()
             .method<Type*() const, virtual_|override_>("asPOD", &_::asPOD)
-            .method<PointerType*() const, virtual_|override_>("asPointerType", &_::asPointerType)
             .method<void(void**, void*)>("less", &_::less)
             .method<void(void**, void*)>("greater", &_::greater)
             .method<void(void**, void*)>("lessEqual", &_::lessEqual)
@@ -83,4 +82,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

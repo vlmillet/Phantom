@@ -63,6 +63,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .constructor<void(TypeKind)>()
+            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
             .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
             ;
         }
@@ -81,4 +82,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

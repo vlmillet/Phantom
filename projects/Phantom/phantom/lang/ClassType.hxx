@@ -91,6 +91,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()
         
         .public_()
+            .using_("Type::asClass")
+            .using_("Type::asClassType")
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isCopyAssignable", &_::isCopyAssignable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
@@ -99,9 +101,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)
             .method<bool() const, virtual_|override_>("isDefaultInstanciable", &_::isDefaultInstanciable)
             .method<bool() const, virtual_|override_>("isDefaultConstructible", &_::isDefaultConstructible)
-            .method<ClassType*() const, virtual_|override_>("asClassType", &_::asClassType)
-            .method<Class*() const, virtual_|override_>("asClass", &_::asClass)
-            .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
+            .method<Scope*() const, virtual_|final_|override_>("asScope", &_::asScope)
             .method<bool() const, virtual_>("isListInitializable", &_::isListInitializable)
             .method<void(Access)>("setDefaultAccess", &_::setDefaultAccess)
             .method<Access() const>("getDefaultAccess", &_::getDefaultAccess)
@@ -244,4 +244,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

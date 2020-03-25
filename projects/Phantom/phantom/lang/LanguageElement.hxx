@@ -97,6 +97,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<RValueReference*() const, virtual_>("asClassRValueReference", &_::asClassRValueReference)
             .method<Type*() const, virtual_>("asClassAddressType", &_::asClassAddressType)
             .method<ClassType*() const, virtual_>("asClassType", &_::asClassType)
+            .method<VectorClass*() const, virtual_>("asVectorClass", &_::asVectorClass)
+            .method<MapClass*() const, virtual_>("asMapClass", &_::asMapClass)
+            .method<SetClass*() const, virtual_>("asSetClass", &_::asSetClass)
+            .method<StringClass*() const, virtual_>("asStringClass", &_::asStringClass)
+            /// missing symbol(s) reflection (phantom::lang::ArrayClass) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<ArrayClass*() const, virtual_>("asArrayClass", &_::asArrayClass)
             .method<Constant*() const, virtual_>("asConstant", &_::asConstant)
             .method<ConstType*() const, virtual_>("asConstClass", &_::asConstClass)
             .method<Pointer*() const, virtual_>("asConstClassPointer", &_::asConstClassPointer)
@@ -146,7 +152,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Placeholder*() const, virtual_>("asPlaceholder", &_::asPlaceholder)
             .method<Type*() const, virtual_>("asPOD", &_::asPOD)
             .method<PointerType*() const, virtual_>("asPointerType", &_::asPointerType)
-            .method<ExtendedType*() const, virtual_>("asExtendedType", &_::asExtendedType)
             .method<PrimitiveType*() const, virtual_>("asPrimitiveType", &_::asPrimitiveType)
             .method<Property*() const, virtual_>("asProperty", &_::asProperty)
             .method<Reference*() const, virtual_>("asReference", &_::asReference)
@@ -332,5 +337,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-
-

@@ -55,8 +55,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(LanguageElement*) const, virtual_|override_>("accepts", &_::accepts)
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Placeholder*() const, virtual_|override_>("asPlaceholder", &_::asPlaceholder)
-            .method<Class*() const, virtual_|override_>("asClass", &_::asClass)
-            .method<ClassType*() const, virtual_|override_>("asClassType", &_::asClassType)
+            .method<Class*() const>("toClass", &_::toClass)
+            .method<ClassType*() const>("toClassType", &_::toClassType)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<PlaceholderType*() const, virtual_|override_>("asPlaceholderType", &_::asPlaceholderType)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
@@ -87,4 +87,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

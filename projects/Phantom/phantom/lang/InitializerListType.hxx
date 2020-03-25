@@ -59,11 +59,6 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<Pointer*() const, virtual_|override_>("createPointer", &_::createPointer)
-            .method<LValueReference*() const, virtual_|override_>("createLValueReference", &_::createLValueReference)
-            .method<RValueReference*() const, virtual_|override_>("createRValueReference", &_::createRValueReference)
-            .method<ConstVolatileType*() const, virtual_|override_>("createConstVolatileType", &_::createConstVolatileType)
-            .method<VolatileType*() const, virtual_|override_>("createVolatileType", &_::createVolatileType)
         
         .protected_()
             .field("m_Types", &_::m_Types)
@@ -84,4 +79,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

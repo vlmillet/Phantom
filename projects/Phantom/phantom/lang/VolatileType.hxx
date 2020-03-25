@@ -50,13 +50,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .constructor<void(Type*)>()
             .method<Type*() const>("getVolatiledType", &_::getVolatiledType)
-            .method<Type*() const, virtual_|override_>("addConst", &_::addConst)
-            .method<Type*() const, virtual_|override_>("addVolatile", &_::addVolatile)
-            .method<Type*() const, virtual_>("addConstVolatile", &_::addConstVolatile)
-            .method<Type*() const, virtual_|override_>("removeConstVolatile", &_::removeConstVolatile)
-            .method<Type*() const, virtual_|override_>("removeVolatile", &_::removeVolatile)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
-            .method<VolatileType*() const, virtual_|override_>("asVolatileType", &_::asVolatileType)
             .method<VolatileType*() const, virtual_>("asVolatileClass", &_::asVolatileClass)
             .method<void*(Type*, void*) const, virtual_|override_>("cast", &_::cast)
             .method<void*(Type*, void*) const, virtual_|override_>("upcast", &_::upcast)
@@ -67,11 +61,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-        
-        .protected_()
-            .method<ConstVolatileType*() const, virtual_|override_>("createConstVolatileType", &_::createConstVolatileType)
-            .method<ConstType*() const, virtual_|override_>("createConstType", &_::createConstType)
-            .method<VolatileType*() const, virtual_|override_>("createVolatileType", &_::createVolatileType)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
@@ -89,5 +78,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-
-

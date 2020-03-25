@@ -50,29 +50,17 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .method<Type*() const>("getConstedType", &_::getConstedType)
-            .method<Type*() const, virtual_|override_>("addConst", &_::addConst)
-            .method<Type*() const, virtual_|override_>("addVolatile", &_::addVolatile)
-            .method<Type*() const, virtual_>("addConstVolatile", &_::addConstVolatile)
-            .method<Type*() const, virtual_|override_>("removeConstVolatile", &_::removeConstVolatile)
-            .method<Type*() const, virtual_|override_>("removeConst", &_::removeConst)
-            .method<Type*() const, virtual_|override_>("removeAllConst", &_::removeAllConst)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
-            .method<ConstType*() const, virtual_|override_>("asConstType", &_::asConstType)
             .method<ConstType*() const, virtual_|override_>("asConstClass", &_::asConstClass)
             .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<bool(Type*) const, virtual_>("isConstConvertibleTo", &_::isConstConvertibleTo)
-            .method<Type*() const, virtual_|override_>("getUnderlyingType", &_::getUnderlyingType)
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<Type*() const, virtual_|override_>("removeEverything", &_::removeEverything)
-        
-        .protected_()
-            .method<ConstVolatileType*() const, virtual_|override_>("createConstVolatileType", &_::createConstVolatileType)
-            .method<ConstType*() const, virtual_|override_>("createConstType", &_::createConstType)
-            .method<VolatileType*() const, virtual_|override_>("createVolatileType", &_::createVolatileType)
+            .method<bool() const, virtual_|override_>("isMoveAssignable", &_::isMoveAssignable)
+            .method<bool() const, virtual_|override_>("isCopyAssignable", &_::isCopyAssignable)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
@@ -90,5 +78,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-
-

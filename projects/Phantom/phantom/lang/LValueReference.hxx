@@ -53,15 +53,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Type*)>()
         
         .public_()
-            .method<LValueReference*() const, virtual_|override_>("asLValueReference", &_::asLValueReference)
             .method<LValueReference*() const, virtual_|override_>("asClassLValueReference", &_::asClassLValueReference)
             .method<LValueReference*() const, virtual_|override_>("asConstClassLValueReference", &_::asConstClassLValueReference)
-            .method<Type*() const, virtual_|override_>("addPointer", &_::addPointer)
-            .method<Type*() const, virtual_|override_>("addLValueReference", &_::addLValueReference)
-            .method<Type*() const, virtual_|override_>("addRValueReference", &_::addRValueReference)
-            .method<Type*() const, virtual_|override_>("removeLValueReference", &_::removeLValueReference)
-            .method<Type*() const, virtual_|override_>("removeAllConst", &_::removeAllConst)
-            .method<Type*() const, virtual_|override_>("removeAllQualifiers", &_::removeAllQualifiers)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
@@ -87,4 +80,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

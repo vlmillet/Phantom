@@ -194,12 +194,6 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(InstanceT<FundamentalTypeT<char32_t> >)>("traverseFundamentalType", &_::traverseFundamentalType)
             .PHANTOM_T method<bool(char32_t*)>("traverseFundamental", &_::traverseFundamental)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("visitExtendedType", &_::visitExtendedType)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("endExtendedType", &_::endExtendedType)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("walkUpVisitFromExtendedType", &_::walkUpVisitFromExtendedType)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("walkUpEndFromExtendedType", &_::walkUpEndFromExtendedType)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("traverse", &_::traverse)
-            .PHANTOM_T method<bool(InstanceT<ExtendedType>)>("traverseExtendedType", &_::traverseExtendedType)
             .PHANTOM_T method<bool(InstanceT<QualifiedType>)>("visitQualifiedType", &_::visitQualifiedType)
             .PHANTOM_T method<bool(InstanceT<QualifiedType>)>("endQualifiedType", &_::endQualifiedType)
             .PHANTOM_T method<bool(InstanceT<QualifiedType>)>("walkUpVisitFromQualifiedType", &_::walkUpVisitFromQualifiedType)
@@ -394,5 +388,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-
-

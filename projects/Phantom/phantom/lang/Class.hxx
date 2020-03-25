@@ -131,7 +131,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<StaticMethod*(StringView, TypesView) const>("getStaticMethodCascade", &_::getStaticMethodCascade)
             .method<StaticMethod*(StringView) const>("getStaticMethodCascade", &_::getStaticMethodCascade)
             .method<StaticField*(StringView) const>("getStaticFieldCascade", &_::getStaticFieldCascade)
-            .method<Class*() const, virtual_|override_>("asClass", &_::asClass)
             .method<size_t(size_t) const>("getVirtualMethodTableSize", &_::getVirtualMethodTableSize)
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_|override_>("acceptsSubroutine", &_::acceptsSubroutine)["NULL"]
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_>("acceptsDerivedClassSubroutine", &_::acceptsDerivedClassSubroutine)
@@ -272,4 +271,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

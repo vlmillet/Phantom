@@ -53,15 +53,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Type*)>()
         
         .public_()
-            .method<RValueReference*() const, virtual_|override_>("asRValueReference", &_::asRValueReference)
             .method<RValueReference*() const, virtual_|override_>("asClassRValueReference", &_::asClassRValueReference)
             .method<RValueReference*() const, virtual_|override_>("asConstClassRValueReference", &_::asConstClassRValueReference)
-            .method<Type*() const, virtual_|override_>("addLValueReference", &_::addLValueReference)
-            .method<Type*() const, virtual_|override_>("addRValueReference", &_::addRValueReference)
-            .method<Type*() const, virtual_|override_>("addPointer", &_::addPointer)
-            .method<Type*() const, virtual_|override_>("removeRValueReference", &_::removeRValueReference)
-            .method<Type*() const, virtual_|override_>("removeAllConst", &_::removeAllConst)
-            .method<Type*() const, virtual_|override_>("removeAllQualifiers", &_::removeAllQualifiers)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
@@ -87,5 +80,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-
-

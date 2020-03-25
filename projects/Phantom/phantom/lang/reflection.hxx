@@ -22,6 +22,7 @@
 #include <phantom/enum_class>
 #include <phantom/static_field>
 #include <phantom/function>
+#include <phantom/variable>
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
@@ -159,6 +160,7 @@ PHANTOM_PACKAGE("phantom.lang")
             {"LValueReference",TypeKind::LValueReference},
             {"RValueReference",TypeKind::RValueReference},
             {"Array",TypeKind::Array},
+            {"ClassType",TypeKind::ClassType},
             {"Structure",TypeKind::Structure},
             {"Union",TypeKind::Union},
             {"Class",TypeKind::Class},
@@ -166,8 +168,8 @@ PHANTOM_PACKAGE("phantom.lang")
             {"SetClass",TypeKind::SetClass},
             {"MapClass",TypeKind::MapClass},
             {"StringClass",TypeKind::StringClass},
-            {"Placeholder",TypeKind::Placeholder},
-            {"TemplateDependant",TypeKind::TemplateDependant},
+            {"ArrayClass",TypeKind::ArrayClass},
+            {"InitializerList",TypeKind::InitializerList},
             {"Function",TypeKind::Function},
             {"Unknown",TypeKind::Unknown},
             {"Custom0",TypeKind::Custom0},
@@ -181,6 +183,10 @@ PHANTOM_PACKAGE("phantom.lang")
             {"Custom8",TypeKind::Custom8},
             {"Custom9",TypeKind::Custom9}});
         }
+        PHANTOM_REGISTER(Variables) { this_().variable("FirstClassKind", &FirstClassKind); }
+        PHANTOM_REGISTER(Variables) { this_().variable("LastClassKind", &LastClassKind); }
+        PHANTOM_REGISTER(Variables) { this_().variable("FirstClassTypeKind", &FirstClassTypeKind); }
+        PHANTOM_REGISTER(Variables) { this_().variable("LastClassTypeKind", &LastClassTypeKind); }
         PHANTOM_REGISTER(Enums) { this_().enum_<OperatorKind>().values({
             {"Binary",OperatorKind::Binary},
             {"UnaryPrefixed",OperatorKind::UnaryPrefixed},
@@ -238,4 +244,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

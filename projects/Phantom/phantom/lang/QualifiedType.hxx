@@ -43,7 +43,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::lang::ExtendedType>()
+            .inherits<::phantom::lang::Type>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -51,15 +51,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .protected_()
-            .constructor<void(Type*, TypeKind, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
         
         .public_()
-            .method<Type*() const, virtual_|override_>("removeAllVolatile", &_::removeAllVolatile)
-            .method<Type*() const, virtual_|override_>("removeAllQualifiers", &_::removeAllQualifiers)
-            .method<Type*() const, virtual_|override_>("removeQualifiers", &_::removeQualifiers)
-            .method<Type*() const, virtual_|override_>("removePointerOrArray", &_::removePointerOrArray)
-            .method<Type*() const, virtual_|override_>("removeAddress", &_::removeAddress)
-            .method<Type*() const, virtual_|override_>("removeArray", &_::removeArray)
             .method<void*(Type*, void*) const, virtual_|override_>("cast", &_::cast)
             .method<void*(Type*, void*) const, virtual_|override_>("upcast", &_::upcast)
             .method<void*(Type*, void*) const, virtual_|override_>("downcast", &_::downcast)
@@ -76,7 +70,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void*, void const*) const, virtual_|override_>("copyConstruct", &_::copyConstruct)
             .method<void(void*, void*) const, virtual_|override_>("moveConstruct", &_::moveConstruct)
             .method<bool(Type*, void*, void const*) const, virtual_|override_>("convert", &_::convert)
-            .method<Type*() const, virtual_|override_>("removeEverything", &_::removeEverything)
             .method<void(LanguageElements&, Class*) const, virtual_|override_>("fetchElements", &_::fetchElements)["nullptr"]
             .method<bool() const, virtual_|override_>("hasCopyDisabled", &_::hasCopyDisabled)
             .method<bool() const, virtual_|override_>("hasMoveDisabled", &_::hasMoveDisabled)
@@ -115,4 +108,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

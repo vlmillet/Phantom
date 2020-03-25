@@ -98,7 +98,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("hasEllipsis", &_::hasEllipsis)
             .method<Types::const_iterator() const>("beginParameterTypes", &_::beginParameterTypes)
             .method<Types::const_iterator() const>("endParameterTypes", &_::endParameterTypes)
-            .method<Type*() const, virtual_|override_>("addPointer", &_::addPointer)
         
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
@@ -124,4 +123,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

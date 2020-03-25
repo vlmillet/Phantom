@@ -77,7 +77,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringView, ::phantom::ArrayView<Pair<StringView, int> >)>("addConstants", &_::addConstants)
             .method<void(StringView)>("addConstant", &_::addConstant)
             .method<void(Constant*)>("removeConstant", &_::removeConstant)
-            .method<Enum*() const, virtual_|override_>("asEnum", &_::asEnum)
             .method<PrimitiveType*() const, virtual_|override_>("asIntegralType", &_::asIntegralType)
             .method<void(StringView, void*) const, virtual_|override_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToString", &_::valueToString)
@@ -91,7 +90,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void*, Constants&) const>("findConstantsWithValue", &_::findConstantsWithValue)
             .method<PrimitiveType*() const>("getUnderlyingIntType", &_::getUnderlyingIntType)
             .method<bool(Type*, void*, void const*) const, virtual_|override_>("convert", &_::convert)
-            .method<Type*() const, virtual_|override_>("getUnderlyingType", &_::getUnderlyingType)
             .method<Constant*(void*, StringView, PrimitiveType*) const, virtual_|override_>("createConstant", &_::createConstant)["\"\""]["nullptr"]
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
@@ -123,4 +121,3 @@ PHANTOM_END("phantom.lang")
 // clang-format on
 
 // haunt }
-

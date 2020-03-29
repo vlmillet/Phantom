@@ -3,7 +3,7 @@
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   
   <!-- VC 2013 -->
-  <Type Name="phantom::SmallVector&lt;*,*,*&gt;">
+  <Type Name="phantom::SmallVector&lt;*,*&gt;">
       <DisplayString>{{ size={m_size} }}</DisplayString>
       <Expand>
           <Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
@@ -23,7 +23,7 @@
       </Expand>
   </Type>
     
-  <Type Name="phantom::SmallMap&lt;*,*,*,*,*&gt;">
+  <Type Name="phantom::SmallMap&lt;*,*,*,*&gt;">
     <DisplayString>{{ size={m_storage.m_size} }}</DisplayString>
     <Expand>
       <Item Name="[capacity]" ExcludeView="simple">m_storage.m_capacity</Item>
@@ -34,7 +34,7 @@
     </Expand>
   </Type>
 
-  <Type Name="phantom::SmallSet&lt;*,*,*,*&gt;">
+  <Type Name="phantom::SmallSet&lt;*,*,*&gt;">
     <DisplayString>{{ size={m_storage.m_size} }}</DisplayString>
     <Expand>
       <Item Name="[capacity]" ExcludeView="simple">m_storage.m_capacity</Item>
@@ -45,7 +45,7 @@
     </Expand>
   </Type>
   
-  <Type Name="phantom::SmallString&lt;*,*,*&gt;">
+  <Type Name="phantom::SmallString&lt;*,*&gt;">
     <DisplayString>{m_Chars.m_data,s}</DisplayString>
     <Expand>
       <Item Name="length">m_Chars.m_size-1</Item>
@@ -117,7 +117,8 @@
     </Type>
     <Type Name="phantom::lang::Subroutine">
         <DisplayString IncludeView="is_template"></DisplayString>
-        <DisplayString>{*m_pSignature, view(retType)nd} {m_strName,sb} ({*m_pSignature,view(parm0)})</DisplayString>
+        <DisplayString Condition="m_pOwner == nullptr">{*m_pSignature, view(retType)nd} {m_strName,sb} ({*m_pSignature,view(parm0)})</DisplayString>
+        <DisplayString Condition="m_pOwner != nullptr">{*m_pSignature, view(retType)nd} {m_strName,sb} ({*m_pSignature,view(parm0)}) in [{*m_pOwner}]</DisplayString>
         <Expand>
             <Item Name="Signature">
                 *m_pSignature

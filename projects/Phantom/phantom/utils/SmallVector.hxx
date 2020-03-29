@@ -5,8 +5,7 @@
 #include <phantom/lang/VectorClassT.h>
 #include <phantom/meta_type>
 
-PHANTOM_META_TYPE_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), phantom::SmallVector,
-                      phantom::lang::VectorClassT);
+PHANTOM_META_TYPE_T((class, size_t), (T, StaticAllocSize), phantom::SmallVector, phantom::lang::VectorClassT);
 
 // haunt {
 
@@ -43,7 +42,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
-        PHANTOM_CLASS_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), SmallVector)
+        PHANTOM_CLASS_T((class, size_t), (T, StaticAllocSize), SmallVector)
         {
             using ArrayViewType = typedef_<PHANTOM_TYPENAME _::ArrayViewType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
@@ -130,7 +129,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsCopyAssignable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t, size_t), (T, S, D), (), IsCopyAssignable)
+        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsCopyAssignable)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsCopyAssignable<T>::value)>>()
@@ -144,7 +143,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsMoveAssignable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t, size_t), (T, S, D), (), IsMoveAssignable)
+        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsMoveAssignable)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsMoveAssignable<T>::value)>>()
@@ -158,7 +157,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsCopyConstructible) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t, size_t), (T, S, D), (), IsCopyConstructible)
+        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsCopyConstructible)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsCopyConstructible<T>::value)>>()
@@ -172,7 +171,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsMoveConstructible) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t, size_t), (T, S, D), (), IsMoveConstructible)
+        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsMoveConstructible)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsMoveConstructible<T>::value)>>()

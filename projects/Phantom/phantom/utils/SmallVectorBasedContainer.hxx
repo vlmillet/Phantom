@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<bool(const t_Ty&, const t_Ty&) const>("operator()", &_::operator())
             ;
         }
-        PHANTOM_CLASS_T((class, size_t, size_t), (T, S, D), SmallVectorBasedContainer)
+        PHANTOM_CLASS_T((class, size_t), (T, S), SmallVectorBasedContainer)
         {
             using const_iterator = typedef_<PHANTOM_TYPENAME _::const_iterator>;
             using iterator = typedef_<PHANTOM_TYPENAME _::iterator>;

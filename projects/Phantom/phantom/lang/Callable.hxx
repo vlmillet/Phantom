@@ -41,7 +41,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void*, void**) const, pure_virtual>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, pure_virtual>("invoke", &_::invoke)
             .method<uint64_t() const, pure_virtual>("getUniqueID", &_::getUniqueID)
-            .method<void(void**, SmallVector<Variant, 10, 10>&) const, pure_virtual>("saveArgs", &_::saveArgs)
+            .method<void(void**, SmallVector<Variant, 10>&) const, pure_virtual>("saveArgs", &_::saveArgs)
             .method<void(), virtual_>("onDisconnect", &_::onDisconnect)
             ;
         }

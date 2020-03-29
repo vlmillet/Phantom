@@ -204,7 +204,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(ExecutionContext&, void**, size_t) const>("call", &_::call)
             .method<void()>("sortInstructions", &_::sortInstructions)
             .method<void()>("clearInstructions", &_::clearInstructions)
-            .method<void(void**, SmallVector<Variant, 10, 10>&) const, virtual_|override_>("saveArgs", &_::saveArgs)
+            .method<void(void**, SmallVector<Variant, 10>&) const, virtual_|override_>("saveArgs", &_::saveArgs)
         
         .protected_()
             .constructor<void()>()

@@ -5,8 +5,7 @@
 #include <phantom/lang/MapClassT.h>
 #include <phantom/meta_type>
 
-PHANTOM_META_TYPE_T((typename, typename, size_t, size_t, typename), (K, V, S, D, P), phantom::SmallMap,
-                      phantom::lang::MapClassT);
+PHANTOM_META_TYPE_T((typename, typename, size_t, typename), (K, V, S, P), phantom::SmallMap, phantom::lang::MapClassT);
 
 // haunt {
 
@@ -42,7 +41,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallMap")
 
-        PHANTOM_CLASS_T((class, class, size_t, size_t, class), (K, V, S, D, Pred), SmallMap)
+        PHANTOM_CLASS_T((class, class, size_t, class), (K, V, S, Pred), SmallMap)
         {
             using BaseType = typedef_<PHANTOM_TYPENAME _::BaseType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
@@ -52,7 +51,7 @@ PHANTOM_PACKAGE("phantom.utils")
             using mapped_type = typedef_<PHANTOM_TYPENAME _::mapped_type>;
             using value_type = typedef_<PHANTOM_TYPENAME _::value_type>;
             this_()
-            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<Pair<const K, V>, S, D>>()
+            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<Pair<const K, V>, S>>()
         .public_()
             .PHANTOM_T typedef_<SelfType>("SelfType")
             .PHANTOM_T typedef_<BaseType>("BaseType")

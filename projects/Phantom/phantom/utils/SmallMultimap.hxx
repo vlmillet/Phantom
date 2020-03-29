@@ -34,7 +34,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallMultimap")
 
-        PHANTOM_CLASS_T((class, class, size_t, size_t, class), (K, V, S, D, Pred), SmallMultimap)
+        PHANTOM_CLASS_T((class, class, size_t, class), (K, V, S, Pred), SmallMultimap)
         {
             using BaseType = typedef_<PHANTOM_TYPENAME _::BaseType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
@@ -42,7 +42,7 @@ PHANTOM_PACKAGE("phantom.utils")
             using iterator = typedef_<PHANTOM_TYPENAME _::iterator>;
             using value_type = typedef_<PHANTOM_TYPENAME _::value_type>;
             this_()
-            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<Pair<const K, V>, S, D>>()
+            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<Pair<const K, V>, S>>()
         .public_()
             .PHANTOM_T typedef_<SelfType>("SelfType")
             .PHANTOM_T typedef_<BaseType>("BaseType")

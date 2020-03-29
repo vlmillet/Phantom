@@ -106,7 +106,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(::phantom::lang::Function *)>()
             .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()
             .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, StringView)>()
-            .PHANTOM_T constructor<void(OpaqueDynDelegate), explicit_>()
+            .PHANTOM_T constructor<void(OpaqueDynDelegate)>()
             .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())
             ;
         }

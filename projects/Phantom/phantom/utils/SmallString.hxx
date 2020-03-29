@@ -2,11 +2,10 @@
 
 #include "SmallString.h"
 
-#include <phantom/meta_type>
 #include <phantom/lang/StringClassT.h>
+#include <phantom/meta_type>
 
-PHANTOM_META_TYPE_T((typename, size_t, size_t), (_Elem, S, D), phantom::SmallString, phantom::lang::StringClassT);
-
+PHANTOM_META_TYPE_T((typename, size_t), (_Elem, S), phantom::SmallString, phantom::lang::StringClassT);
 
 // haunt {
 
@@ -44,7 +43,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallString")
 
-        PHANTOM_CLASS_T((class, size_t, size_t), (T, StaticAllocSize, DynamicAllocInc), SmallString)
+        PHANTOM_CLASS_T((class, size_t), (T, StaticAllocSize), SmallString)
         {
             using CharT = typedef_<PHANTOM_TYPENAME _::CharT>;
             using ContainerType = typedef_<PHANTOM_TYPENAME _::ContainerType>;

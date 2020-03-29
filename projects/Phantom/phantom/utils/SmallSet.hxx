@@ -5,8 +5,7 @@
 #include <phantom/lang/SetClassT.h>
 #include <phantom/meta_type>
 
-PHANTOM_META_TYPE_T((typename, size_t, size_t, typename), (V, S, D, P), phantom::SmallSet,
-                      phantom::lang::SetClassT);
+PHANTOM_META_TYPE_T((typename, size_t, typename), (V, S, P), phantom::SmallSet, phantom::lang::SetClassT);
 
 // haunt {
 
@@ -42,7 +41,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallSet")
 
-        PHANTOM_CLASS_T((class, size_t, size_t, class), (T, S, D, Pred), SmallSet)
+        PHANTOM_CLASS_T((class, size_t, class), (T, S, Pred), SmallSet)
         {
             using BaseType = typedef_<PHANTOM_TYPENAME _::BaseType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
@@ -50,7 +49,7 @@ PHANTOM_PACKAGE("phantom.utils")
             using iterator = typedef_<PHANTOM_TYPENAME _::iterator>;
             using value_type = typedef_<PHANTOM_TYPENAME _::value_type>;
             this_()
-            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<T, S, D>>()
+            .PHANTOM_T inherits<::phantom::SmallVectorBasedContainer<T, S>>()
         .public_()
             .PHANTOM_T typedef_<SelfType>("SelfType")
             .PHANTOM_T typedef_<BaseType>("BaseType")

@@ -90,8 +90,8 @@ bool Source::canBeUnloaded() const
 {
     SmallSet<Module*> referencingModules;
     fetchReferencingModulesDeep(referencingModules);
-    return referencingModules.empty()
-    ||((referencingModules.size() == 1) &&((*referencingModules.begin()) == getModule()));
+    return referencingModules.empty() ||
+    ((referencingModules.size() == 1) && ((*referencingModules.begin()) == getModule()));
 }
 
 Package* Source::getPackage() const
@@ -269,7 +269,8 @@ void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, Sm
     for (auto p : a_pSymbol->getElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol // is a symbol && is publicly imported
+            && (pSymbol->getFlags() & (PHANTOM_R_FLAG_PROTECTED_VIS | PHANTOM_R_FLAG_PRIVATE_VIS)) == 0)
         {
             if (pSymbol->getName().empty())
             {
@@ -293,11 +294,9 @@ MethodPointer* Source::methodPointerType(ClassType* a_pObjectType, Type* a_pRetu
 {
     for (auto pMFMP : m_MethodPointers)
     {
-        if (pMFMP->getObjectType()
-            ->isSame(a_pObjectType) && pMFMP->getFunctionType()
-            ->getReturnType()
-            ->isSame(a_pReturnType) && pMFMP->getFunctionType()
-            ->matches(a_ParameterTypes, a_RefQualifiers, a_uiFlags))
+        if (pMFMP->getObjectType()->isSame(a_pObjectType) &&
+            pMFMP->getFunctionType()->getReturnType()->isSame(a_pReturnType) &&
+            pMFMP->getFunctionType()->matches(a_ParameterTypes, a_RefQualifiers, a_uiFlags))
         {
             return pMFMP;
         }
@@ -344,7 +343,7 @@ FunctionType* Source::functionType(Type* a_pReturnType, TypesView a_ParameterTyp
     {
         for (auto it = m_pFunctionTypes->begin(); it != m_pFunctionTypes->end(); ++it)
         {
-            if ((*it)->getReturnType()->isSame(a_pReturnType) &&(*it)->matches(a_ParameterTypes, a_Modifiers))
+            if ((*it)->getReturnType()->isSame(a_pReturnType) && (*it)->matches(a_ParameterTypes, a_Modifiers))
             {
                 return *it;
             }
@@ -376,7 +375,7 @@ FunctionPointer* Source::functionPointerType(FunctionType* a_pFunctionType, ABI 
     {
         for (auto it = m_pFunctionPointers->begin(); it != m_pFunctionPointers->end(); ++it)
         {
-            if ((*it)->getABI() == a_eABI &&(*it)->getFunctionType()->isSame(a_pFunctionType))
+            if ((*it)->getABI() == a_eABI && (*it)->getFunctionType()->isSame(a_pFunctionType))
             {
                 return *it;
             }
@@ -421,7 +420,7 @@ bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
 {
     PHANTOM_ASSERT(a_pSource != this);
     if (!(canImport(a_pSource, a_bPublic ? Access::Public : Access::Private,
-                      Modifiers(a_bStatic ? Modifier::Static : 0))))
+                    Modifiers(a_bStatic ? Modifier::Static : 0))))
     {
         return false;
     }
@@ -442,9 +441,9 @@ bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
                 pAlias = getAlias((*it)->getName());
                 if (pAlias == nullptr)
                 {
-                    pAlias = PHANTOM_NEW(Alias)((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                                (a_bPublic ? PHANTOM_R_FLAG_PUBLIC_VIS : PHANTOM_R_FLAG_PROTECTED_VIS) |
-                                                PHANTOM_R_FLAG_IMPLICIT);
+                    pAlias =
+                    PHANTOM_NEW(Alias)((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
+                                       (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT);
                     addAlias(pAlias);
                 }
             }
@@ -468,8 +467,7 @@ bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
     else
     {
         addAlias(pAlias = PHANTOM_NEW(Alias)(a_pSource, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                             (a_bPublic ? PHANTOM_R_FLAG_PUBLIC_VIS : PHANTOM_R_FLAG_PROTECTED_VIS) |
-                                             PHANTOM_R_FLAG_IMPLICIT));
+                                             (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT));
     }
     i.alias = pAlias;
     m_Imports.push_back(i);
@@ -518,13 +516,11 @@ bool Source::canImport(Source* a_pSource, Access, Modifiers a_Modifiers /*= 0*/,
     for (auto it0 = symbols0.begin(); it0 != symbols0.end(); ++it0)
     {
         Symbol* pSymbol0 = *it0;
-        if (pSymbol0->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
-            continue;
+        PHANTOM_ASSERT((pSymbol0->getFlags() & (PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS)) == 0);
         for (auto it1 = symbols1.begin(); it1 != symbols1.end(); ++it1)
         {
             Symbol* pSymbol1 = *it1;
-            if (pSymbol1->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
-                continue;
+            PHANTOM_ASSERT((pSymbol1->getFlags() & (PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS)) == 0);
             if (pSymbol0 != pSymbol1)
             {
                 if (pSymbol1->getName() == pSymbol0->getName())

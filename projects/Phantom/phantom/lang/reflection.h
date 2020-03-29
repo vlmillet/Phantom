@@ -29,10 +29,10 @@ enum class Access
     Protected,
     Private
 };
-using Accesses = SmallVector<Access, 10, 10>;
+using Accesses = SmallVector<Access, 10>;
 
 typedef void (*SymbolExtender)(Symbol*);
-using SymbolExtenders = SmallVector<SymbolExtender, 4, 4>;
+using SymbolExtenders = SmallVector<SymbolExtender, 4>;
 
 #define PHANTOM_R_VIRTUAL ::phantom::lang::Modifier::Virtual
 #define PHANTOM_R_ABSTRACT ::phantom::lang::Modifier::Abstract

@@ -16,12 +16,12 @@
 
 namespace phantom
 {
-template<class T, size_t S, size_t D, class Pred>
-class SmallSet : public SmallVectorBasedContainer<T, S, D>
+template<class T, size_t S, class Pred>
+class SmallSet : public SmallVectorBasedContainer<T, S>
 {
 public:
-    typedef SmallSet<T, S, D, Pred>            SelfType;
-    typedef SmallVectorBasedContainer<T, S, D> BaseType;
+    typedef SmallSet<T, S, Pred>            SelfType;
+    typedef SmallVectorBasedContainer<T, S> BaseType;
     typedef PHANTOM_TYPENAME BaseType::value_type value_type;
     typedef PHANTOM_TYPENAME BaseType::iterator iterator;
     typedef PHANTOM_TYPENAME BaseType::const_iterator const_iterator;

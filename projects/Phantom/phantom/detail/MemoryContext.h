@@ -22,6 +22,6 @@ public:
     void unregisterMemory(void* a_pPtr);
 
 private:
-    SmallSet<void*, 256, 256> m_Allocations;
+    SmallSet<void*, 256> m_Allocations;
 };
 } // namespace phantom

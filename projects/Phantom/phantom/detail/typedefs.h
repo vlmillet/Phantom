@@ -14,7 +14,7 @@ HAUNT_SOURCE("phantom.StringView");
 namespace phantom
 {
 using StringView = BasicStringView<char>;
-using StringViews = SmallVector<StringView, 10, 10>;
+using StringViews = SmallVector<StringView, 10>;
 } // namespace phantom
 HAUNT_END("phantom.StringView");
 
@@ -33,15 +33,15 @@ namespace phantom
 #if !defined(PHANTOM_STRINGS_EXPAND_SIZE)
 #    define PHANTOM_STRINGS_EXPAND_SIZE 16
 #endif
-using String = SmallString<char, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE>;
-using Strings = SmallVector<String, PHANTOM_STRINGS_STATIC_SIZE, PHANTOM_STRINGS_EXPAND_SIZE>;
+using String = SmallString<char, PHANTOM_STRING_STATIC_SIZE>;
+using Strings = SmallVector<String, PHANTOM_STRINGS_STATIC_SIZE>;
 } // namespace phantom
 HAUNT_END("phantom.String");
 
 HAUNT_SOURCE("phantom.StringBuffer");
 namespace phantom
 {
-using StringBuffer = SmallString<char, 128, 128>;
+using StringBuffer = SmallString<char, 128>;
 }
 HAUNT_END("phantom.StringBuffer");
 
@@ -49,8 +49,8 @@ HAUNT_SOURCE("phantom.Core")
 
 namespace phantom
 {
-using VoidPtrs = SmallVector<void*, 20, 20>;
-using ConstVoidPtrs = SmallVector<const void*, 20, 20>;
+using VoidPtrs = SmallVector<void*, 20>;
+using ConstVoidPtrs = SmallVector<const void*, 20>;
 } // namespace phantom
 
 #if defined(_LIBCPP_VERSION)

@@ -588,11 +588,14 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     _PHNTM_REG_STATIC_ASSERT(!std::is_reference<ReturnTypeNoConstRef>::value,                                          \
                              "property: types cannot be T& references, only T const& or T");
 
-#define _PHNTM_PROPERTY_STATIC_CHECKS_PARAMS                                                                           \
-    _PHNTM_PROPERTY_STATIC_CHECKS_RET                                                                                  \
+#define _PHNTM_PROPERTY_STATIC_CHECKS_PARAM                                                                            \
     using ParamTypeNoConstRef = PHANTOM_TYPENAME RemoveConstReference<ParamType>::type;                                \
     _PHNTM_REG_STATIC_ASSERT(!std::is_reference<ParamTypeNoConstRef>::value,                                           \
-                             "property: types cannot be T& references, only T const& or T");                           \
+                             "property: types cannot be T& references, only T const& or T");
+
+#define _PHNTM_PROPERTY_STATIC_CHECKS_PARAMS                                                                           \
+    _PHNTM_PROPERTY_STATIC_CHECKS_RET                                                                                  \
+    _PHNTM_PROPERTY_STATIC_CHECKS_PARAM                                                                                \
     _PHNTM_REG_STATIC_ASSERT((std::is_same<ParamTypeNoConstRef, ReturnTypeNoConstRef>::value),                         \
                              "property: set parameter type and get return type must be equal modulo 'const&'");
 
@@ -722,6 +725,38 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                           uint       a_FilterMask = 0) // 0 because a property without setter is hardly serializable ...
     {
         return property<0, RemoveForwardT<ReturnType>>(a_Name, a_Get, a_FilterMask);
+    }
+
+    template<int Modifiers, class ParamType>
+    MostDerived& property(StringView a_Name, void (T::*a_Set)(ParamType),
+                          uint       a_FilterMask = 0) // 0 because a property without setter is hardly serializable ...
+    {
+        using SetType = decltype(a_Set);
+        _PHNTM_PROPERTY_STATIC_CHECKS_PARAM;
+        _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<_Prop<T, ParamType>>::value),
+                                 "missing #include <phantom/property>");
+        this->_addProperty(
+        m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Set)}, a_FilterMask, [](MemberBuilder const& a_Member) {
+            auto pProp = PHANTOM_META_NEW(_Prop<T, ParamType>)(PHANTOM_TYPEOF(ParamType), a_Member.name, nullptr,
+                                                               PHANTOM_REG_MEMBER_GETBACK_ARG(0, SetType), nullptr,
+                                                               a_Member.filter, lang::Modifiers(Modifiers));
+            a_Member.classType()->addProperty(a_Member.apply(pProp));
+        });
+        return static_cast<MostDerived&>(*this);
+    }
+
+    template<class ParamType>
+    MostDerived& property(StringView a_Name, void (T::*a_Set)(ParamType),
+                          uint       a_FilterMask = 0) // 0 because a property without getter is hardly serializable ...
+    {
+        return property<0, ParamType>(a_Name, a_Set, a_FilterMask);
+    }
+
+    template<class ParamType, class = std::enable_if_t<IsForward<ParamType>::value>>
+    MostDerived& property(StringView a_Name, void (T::*a_Set)(RemoveForwardT<ParamType>),
+                          uint       a_FilterMask = 0) // 0 because a property without setter is hardly serializable ...
+    {
+        return property<0, RemoveForwardT<ParamType>>(a_Name, a_Set, a_FilterMask);
     }
 
     template<class FriendClass>

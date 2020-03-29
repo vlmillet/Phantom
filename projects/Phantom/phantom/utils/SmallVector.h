@@ -47,20 +47,19 @@ struct SmallVectorH<T, false>
 HAUNT_RESUME;
 } // namespace detail
 
-template<class T, size_t StaticAllocSize, size_t DynamicAllocInc>
+template<class T, size_t StaticAllocSize>
 class SmallVector
 {
-    PHANTOM_STATIC_ASSERT(DynamicAllocInc, "increment size must be non-zero");
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
     PHANTOM_STATIC_ASSERT(StaticAllocSize < 65535, "safety check : base capacity must be inferior to 65535");
 #endif
 
     typedef phantom::detail::SmallVectorH<T, std::is_fundamental<T>::value> Helper;
-    template<class, size_t, size_t>
+    template<class, size_t>
     friend class SmallVector;
 
 public:
-    typedef SmallVector<T, StaticAllocSize, DynamicAllocInc> SelfType;
+    typedef SmallVector<T, StaticAllocSize> SelfType;
 
     // typedefs for stl vector compliance
     typedef size_t                                size_type;
@@ -109,8 +108,7 @@ public:
 
     SmallVector(const_iterator _it, const_iterator _end)
     {
-        size_t capacity = std::distance(_it, _end);
-        reserve(capacity);
+        reserve(_end - _it);
         auto d = m_data;
         for (; _it != _end; ++_it)
         {
@@ -260,8 +258,8 @@ public:
         return *this;
     }
 
-    template<size_t S, size_t D>
-    SelfType& operator=(const SmallVector<T, S, D>& other)
+    template<size_t S>
+    SelfType& operator=(const SmallVector<T, S>& other)
     {
         reserve(other.m_capacity);
         auto d = m_data;
@@ -275,7 +273,7 @@ public:
         return *this;
     }
 
-    // TODO : implement operator=(SmallVector<T, S, D>&& temp)
+    // TODO : implement operator=(SmallVector<T, S>&& temp)
 
     value_type*       data() { return m_data; }
     value_type const* data() const { return m_data; }
@@ -332,39 +330,10 @@ public:
         Helper::destroy(&back());
         m_size--;
     }
-
-    void reserve(size_t newCapacity)
+    void reserve(size_t _capacity)
     {
-        if (m_capacity < newCapacity)
-        {
-            if (m_capacity == StaticAllocSize) // we were using static buffer
-            {
-                value_type* pNewData = _alloc(newCapacity);
-                value_type* pCurrNewData = pNewData;
-                size_t      i = m_size;
-                while (i--) // copy content to dynamic buffer
-                {
-                    Helper::cmove(pCurrNewData++, std::move(*m_data));
-                    Helper::destroy(m_data++);
-                }
-                m_data = pNewData;
-            }
-            else
-            {
-                value_type* pOldData = m_data;
-                value_type* pNewData = _alloc(newCapacity);
-                value_type* pCurrNewData = pNewData;
-                size_t      i = m_size;
-                while (i--) // copy content to dynamic buffer
-                {
-                    Helper::cmove(pCurrNewData++, std::move(*m_data));
-                    Helper::destroy(m_data++);
-                }
-                _dealloc(pOldData);
-                m_data = pNewData;
-            }
-            m_capacity = newCapacity;
-        }
+        if (_capacity > m_capacity)
+            _grow(_capacity);
     }
     void resize(size_t newSize)
     {
@@ -395,10 +364,7 @@ public:
 
     void push_back(const value_type& val)
     {
-        if (m_size == m_capacity)
-        {
-            reserve(m_capacity + DynamicAllocInc);
-        }
+        reserve(m_size + 1);
         Helper::ccopy(&m_data[m_size++], val);
     }
 
@@ -531,12 +497,9 @@ public:
         size_t insertIndex = _where - begin();
         for (; _it != _end; ++_it)
         {
-            if (m_size == m_capacity)
-            {
-                size_t cur = _where - begin();
-                reserve(m_capacity + DynamicAllocInc);
-                _where = begin() + cur;
-            }
+            size_t cur = _where - begin();
+            reserve(m_size + 1);
+            _where = begin() + cur;
             auto lastToMove = end() - 1;
             auto firstToMove = _where;
             for (; lastToMove >= firstToMove; --lastToMove)
@@ -562,12 +525,8 @@ public:
         }
         else
         {
-            if (m_size == m_capacity)
-            {
-                size_t cur = _where - begin();
-                reserve(m_capacity + DynamicAllocInc);
-                _where = begin() + cur;
-            }
+            reserve(m_size + 1);
+            _where = begin() + index;
             size_t countToMove = end() - _where;
             while (countToMove--)
             {
@@ -592,12 +551,8 @@ public:
             push_back((value_type &&) val);
         else
         {
-            if (m_size == m_capacity)
-            {
-                size_t cur = _where - begin();
-                reserve(m_capacity + DynamicAllocInc);
-                _where = begin() + cur;
-            }
+            reserve(m_size + 1);
+            _where = begin() + index;
             size_t countToMove = end() - _where;
             while (countToMove--)
             {
@@ -614,20 +569,14 @@ public:
 
     void push_back(value_type&& val)
     {
-        if (m_size == m_capacity)
-        {
-            reserve(m_capacity + DynamicAllocInc);
-        }
+        reserve(m_size + 1);
         Helper::cmove(&m_data[m_size++], (value_type &&) val);
     }
 
     template<class... Args>
     value_type& emplace_back(Args&&... args)
     {
-        if (m_size == m_capacity)
-        {
-            reserve(m_capacity + DynamicAllocInc);
-        }
+        reserve(m_size + 1);
         return *(new (&m_data[m_size++]) value_type(std::forward<Args>(args)...));
     }
 
@@ -703,6 +652,39 @@ public:
     }
 
 private:
+    inline void _grow(size_t a_MinCapacity) { _reserve(a_MinCapacity << 1); }
+    void        _reserve(size_t newCapacity)
+    {
+        if (m_capacity == StaticAllocSize) // we were using static buffer
+        {
+            value_type* pNewData = _alloc(newCapacity);
+            value_type* pCurrNewData = pNewData;
+            size_t      i = m_size;
+            while (i--) // copy content to dynamic buffer
+            {
+                Helper::cmove(pCurrNewData++, std::move(*m_data));
+                Helper::destroy(m_data++);
+            }
+            m_data = pNewData;
+        }
+        else
+        {
+            value_type* pOldData = m_data;
+            value_type* pNewData = _alloc(newCapacity);
+            value_type* pCurrNewData = pNewData;
+            size_t      i = m_size;
+            while (i--) // copy content to dynamic buffer
+            {
+                Helper::cmove(pCurrNewData++, std::move(*m_data));
+                Helper::destroy(m_data++);
+            }
+            _dealloc(pOldData);
+            m_data = pNewData;
+        }
+        m_capacity = newCapacity;
+    }
+
+private:
     value_type* _alloc(size_t s)
     {
         return reinterpret_cast<value_type*>(
@@ -722,11 +704,7 @@ private:
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/MoveTraits.h>
 
-PHANTOM_DISABLE_TRAIT_IF_T(IsCopyAssignable, (class, size_t, size_t), (T, S, D), SmallVector,
-                           !IsCopyAssignable<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsMoveAssignable, (class, size_t, size_t), (T, S, D), SmallVector,
-                           !IsMoveAssignable<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsCopyConstructible, (class, size_t, size_t), (T, S, D), SmallVector,
-                           !IsCopyConstructible<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsMoveConstructible, (class, size_t, size_t), (T, S, D), SmallVector,
-                           !IsMoveConstructible<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsCopyAssignable, (class, size_t), (T, S), SmallVector, !IsCopyAssignable<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsMoveAssignable, (class, size_t), (T, S), SmallVector, !IsMoveAssignable<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsCopyConstructible, (class, size_t), (T, S), SmallVector, !IsCopyConstructible<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsMoveConstructible, (class, size_t), (T, S), SmallVector, !IsMoveConstructible<T>::value);

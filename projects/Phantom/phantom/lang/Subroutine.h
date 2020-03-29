@@ -815,7 +815,7 @@ public:
 
     void clearInstructions();
 
-    void saveArgs(void** a_pArgs, SmallVector<Variant, 10, 10>& a_variants) const override;
+    void saveArgs(void** a_pArgs, SmallVector<Variant, 10>& a_variants) const override;
 
 protected:
     Subroutine();

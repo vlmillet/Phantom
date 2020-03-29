@@ -16,12 +16,12 @@
 
 namespace phantom
 {
-template<class K, class V, size_t S, size_t D, class Pred>
-class SmallMultimap : public SmallVectorBasedContainer<Pair<const K, V>, S, D>
+template<class K, class V, size_t S, class Pred>
+class SmallMultimap : public SmallVectorBasedContainer<Pair<const K, V>, S>
 {
 public:
-    typedef SmallMultimap<K, V, S, D, Pred>                   SelfType;
-    typedef SmallVectorBasedContainer<Pair<const K, V>, S, D> BaseType;
+    typedef SmallMultimap<K, V, S, Pred>                   SelfType;
+    typedef SmallVectorBasedContainer<Pair<const K, V>, S> BaseType;
     typedef PHANTOM_TYPENAME BaseType::value_type value_type;
     typedef PHANTOM_TYPENAME BaseType::iterator iterator;
     typedef PHANTOM_TYPENAME BaseType::const_iterator const_iterator;
@@ -108,7 +108,7 @@ public:
 
     void swap(SelfType& a_Other)
     {
-        typedef SmallVector<Pair<K, V>, S, D> StorageTypeNoConst;
+        typedef SmallVector<Pair<K, V>, S> StorageTypeNoConst;
         ((StorageTypeNoConst&)this->m_storage).swap((StorageTypeNoConst&)a_Other.m_storage);
     }
 };

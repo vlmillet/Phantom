@@ -16,9 +16,7 @@ namespace phantom
 {
 namespace lang
 {
-VirtualMethodTable::VirtualMethodTable() : m_pMethods(PHANTOM_NEW(Methods))
-{
-}
+VirtualMethodTable::VirtualMethodTable() : m_pMethods(PHANTOM_NEW(Methods)) {}
 VirtualMethodTable::VirtualMethodTable(size_t a_uiSize) : m_pMethods(PHANTOM_NEW(Methods)())
 {
     m_pMethods->resize(a_uiSize);
@@ -135,9 +133,8 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
     }
 
     // We did not find any overrides
-    if (!(a_bOnlyIfOverrides) && getOffset() ==
-        0                           // and it's the main vtable
-        && a_pMethod->isVirtual()) // and the member function is virtual
+    if (!(a_bOnlyIfOverrides) && getOffset() == 0 // and it's the main vtable
+        && a_pMethod->isVirtual())                // and the member function is virtual
     {
         // => insert it
         if (a_pMethod->isNative() && !getOwnerClass()->isFinal())
@@ -158,37 +155,37 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
 void VirtualMethodTable::extractNativeClosures(void* a_pInstance)
 {
     PHANTOM_ASSERT(isNative());
-	if (m_ppClosures == nullptr)
-	{
-		void*** pppSrc = (void***)((byte*)a_pInstance + getOffset());
-		size_t vtableSize = getMethodCount() * sizeof(void*);
-		m_ppClosures = (void**)PHANTOM_MALLOC(vtableSize * sizeof(void*));
-		void* non_init_ptr = nullptr;
-		if (memcmp(pppSrc, &non_init_ptr, sizeof(void*)) != 0) // memory not isSame 0xdadadada => closures already
-																// present => a base vtable has been installed here
-		{
-			// extract native vtable closures for replacement
-			memcpy(m_ppClosures, *pppSrc, vtableSize * sizeof(void*));
-		}
+    if (m_ppClosures == nullptr)
+    {
+        void*** pppSrc = (void***)((byte*)a_pInstance + getOffset());
+        size_t  vtableSize = getMethodCount() * sizeof(void*);
+        m_ppClosures = (void**)PHANTOM_MALLOC(vtableSize * sizeof(void*));
+        void* non_init_ptr = nullptr;
+        if (memcmp(pppSrc, &non_init_ptr, sizeof(void*)) != 0) // memory not isSame 0xdadadada => closures already
+                                                               // present => a base vtable has been installed here
+        {
+            // extract native vtable closures for replacement
+            memcpy(m_ppClosures, *pppSrc, vtableSize * sizeof(void*));
+        }
 
-		auto   vtableOffset = getOffset();
-		size_t thisMethodCount = getMethodCount();
-		for (size_t i = 0; i < thisMethodCount; ++i)
-		{
-			if (Method* pMethod = (*m_pMethods)[i])
-			{
-				// method has no vtable closure defined,
-				// is not pure virtual,
-				// is native
-				// and belongs to the same class as this vtable
-				// => we can extract its original
-				// if (pMethod->getOwner() == getOwner())
-				{
-					pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
-				}
-			}
-		}
-	}
+        auto   vtableOffset = getOffset();
+        size_t thisMethodCount = getMethodCount();
+        for (size_t i = 0; i < thisMethodCount; ++i)
+        {
+            if (Method* pMethod = (*m_pMethods)[i])
+            {
+                // method has no vtable closure defined,
+                // is not pure virtual,
+                // is native
+                // and belongs to the same class as this vtable
+                // => we can extract its original
+                // if (pMethod->getOwner() == getOwner())
+                {
+                    pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
+                }
+            }
+        }
+    }
 }
 
 void VirtualMethodTable::construct(void* a_pInstance)
@@ -215,7 +212,7 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
     // Native class case
 
     if (isNative())
-	{
+    {
         if (m_ppClosures == nullptr)
         {
             size_t vtableSize = getMethodCount() * sizeof(void*);
@@ -228,29 +225,29 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
                 memcpy(m_ppClosures, *pppDest, vtableSize * sizeof(void*));
             }
 
-			auto   vtableOffset = getOffset();
-			size_t thisMethodCount = getMethodCount();
-			for (size_t i = 0; i < thisMethodCount; ++i)
-			{
-				if (Method* pMethod = (*m_pMethods)[i])
-				{
-					// method has no vtable closure defined,
-					// is not pure virtual,
-					// is native
-					// and belongs to the same class as this vtable
-					// => we can extract its original
-					// if (pMethod->getOwner() == getOwner())
-					{
-						pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
-					}
-				}
-			}
+            auto   vtableOffset = getOffset();
+            size_t thisMethodCount = getMethodCount();
+            for (size_t i = 0; i < thisMethodCount; ++i)
+            {
+                if (Method* pMethod = (*m_pMethods)[i])
+                {
+                    // method has no vtable closure defined,
+                    // is not pure virtual,
+                    // is native
+                    // and belongs to the same class as this vtable
+                    // => we can extract its original
+                    // if (pMethod->getOwner() == getOwner())
+                    {
+                        pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
+                    }
+                }
+            }
         }
         *pppDest = m_ppClosures;
         return;
     }
 
-	// Non-native class case
+    // Non-native class case
 
     if (m_pBaseTable)
     {
@@ -293,7 +290,6 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
                 {
                     m_ppClosures[i] = 0;
                 }
-
             }
         }
     }

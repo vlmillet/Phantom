@@ -24,10 +24,8 @@ public:
     virtual void     invoke(void* a_pThis, void** a_pArgs) const = 0;
     virtual void     invoke(void* a_pThis, void** a_pArgs, void* a_pReturnAddress) const = 0;
     virtual uint64_t getUniqueID() const = 0;
-    virtual void     saveArgs(void** a_pArgs, SmallVector<Variant, 10, 10>& a_variants) const = 0;
-    virtual void     onDisconnect()
-    {
-    }
+    virtual void     saveArgs(void** a_pArgs, SmallVector<Variant, 10>& a_variants) const = 0;
+    virtual void     onDisconnect() {}
 };
 
 } // namespace lang

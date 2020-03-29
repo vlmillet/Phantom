@@ -100,7 +100,7 @@ public:
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    explicit DynDelegate(OpaqueDynDelegate a_Dgt)
+    DynDelegate(OpaqueDynDelegate a_Dgt)
     {
         m_pThis = a_Dgt.m_pThis;
         m_pMethod = a_Dgt.m_pMethod;

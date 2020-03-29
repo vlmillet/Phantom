@@ -26,10 +26,10 @@ struct Less
     }
 };
 
-template<class T, size_t S, size_t D>
+template<class T, size_t S>
 class SmallVectorBasedContainer
 {
-    using StorageType = SmallVector<T, S, D>;
+    using StorageType = SmallVector<T, S>;
 
 public:
     using value_type = PHANTOM_TYPENAME     StorageType::value_type;

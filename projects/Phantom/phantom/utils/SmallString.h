@@ -18,24 +18,24 @@ PHANTOM_EXPORT_PHANTOM extern size_t SmallStringTotalSize;
 PHANTOM_EXPORT_PHANTOM extern size_t SmallStringTotalCount;
 #endif
 
-template<class T, size_t StaticAllocSize, size_t DynamicAllocInc>
+template<class T, size_t StaticAllocSize>
 class SmallString
 {
-    template<class, size_t, size_t>
+    template<class, size_t>
     friend class SmallString;
 
 public:
-    const static size_t                                      npos = size_t(-1);
-    typedef BasicStringView<T>                               StringViewType;
-    typedef size_t                                           size_type;
-    typedef SmallString<T, StaticAllocSize, DynamicAllocInc> SelfType;
-    typedef SmallVector<T, StaticAllocSize, DynamicAllocInc> ContainerType;
-    typedef T                                                value_type;
-    typedef T                                                CharT;
-    typedef value_type const*                                const_iterator;
-    typedef value_type*                                      iterator;
-    typedef std::reverse_iterator<const_iterator>            const_reverse_iterator;
-    typedef std::reverse_iterator<iterator>                  reverse_iterator;
+    const static size_t                           npos = size_t(-1);
+    typedef BasicStringView<T>                    StringViewType;
+    typedef size_t                                size_type;
+    typedef SmallString<T, StaticAllocSize>       SelfType;
+    typedef SmallVector<T, StaticAllocSize>       ContainerType;
+    typedef T                                     value_type;
+    typedef T                                     CharT;
+    typedef value_type const*                     const_iterator;
+    typedef value_type*                           iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    typedef std::reverse_iterator<iterator>       reverse_iterator;
 
     SmallString() { m_Chars.push_back(0); }
     SmallString(SelfType const& a_Other) = default;
@@ -65,8 +65,8 @@ public:
     SmallString(StringViewType a_View) : SmallString(a_View.data(), a_View.size()) {}
     SmallString(CharT const* a_pCstr) : SmallString(a_pCstr, strlen(a_pCstr)) {}
 
-    template<size_t S, size_t D>
-    explicit SmallString(SmallString<T, S, D> const& a_Other) : SmallString(a_Other.data(), a_Other.size())
+    template<size_t S>
+    explicit SmallString(SmallString<T, S> const& a_Other) : SmallString(a_Other.data(), a_Other.size())
     {
     }
 
@@ -80,8 +80,8 @@ public:
 
     SelfType& operator=(SelfType const& a_Other) = default;
 
-    template<size_t S, size_t D>
-    SelfType& operator=(SmallString<char, S, D> const& a_Other)
+    template<size_t S>
+    SelfType& operator=(SmallString<char, S> const& a_Other)
     {
         m_Chars = a_Other.m_Chars;
         return *this;
@@ -151,8 +151,8 @@ public:
     SelfType& operator+=(CharT const* a_pCstr) { return append(a_pCstr); }
     SelfType& operator+=(SelfType const& a_Other) { return append(a_Other); }
     SelfType& operator+=(CharT c) { return append(c); }
-    template<size_t S, size_t D>
-    SelfType& operator+=(SmallString<CharT, S, D> const& c)
+    template<size_t S>
+    SelfType& operator+=(SmallString<CharT, S> const& c)
     {
         return append(c.data(), c.size());
     }
@@ -330,8 +330,8 @@ public:
         return npos;
     }
 
-    template<size_t S, size_t D>
-    size_t find(SmallString<char, S, D> const& a_What, size_t a_Off = 0) const
+    template<size_t S>
+    size_t find(SmallString<char, S> const& a_What, size_t a_Off = 0) const
     {
         return find(a_What.data(), a_Off);
     }
@@ -371,8 +371,8 @@ public:
 
     StringViewType view() const { return StringViewType(begin(), end()); }
 
-    template<size_t S, size_t D>
-    int compare(SmallString<char, S, D> const& a_Other) const
+    template<size_t S>
+    int compare(SmallString<char, S> const& a_Other) const
     {
         return strcmp(data(), a_Other.data());
     }
@@ -400,14 +400,14 @@ public:
     bool operator==(StringViewType a_Other) const { return compare(a_Other) == 0; }
     bool operator!=(StringViewType a_Other) const { return compare(a_Other) != 0; }
 
-    template<size_t S, size_t D>
-    bool operator==(SmallString<char, S, D> const& a_Other) const
+    template<size_t S>
+    bool operator==(SmallString<char, S> const& a_Other) const
     {
         return compare(a_Other) == 0;
     }
 
-    template<size_t S, size_t D>
-    bool operator!=(SmallString<char, S, D> const& a_Other) const
+    template<size_t S>
+    bool operator!=(SmallString<char, S> const& a_Other) const
     {
         return compare(a_Other) != 0;
     }
@@ -425,47 +425,46 @@ private:
     ContainerType m_Chars;
 };
 
-template<class CharT, size_t S, size_t D>
-SmallString<CharT, S, D> operator+(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+SmallString<CharT, S> operator+(CharT const* a_pCstr, SmallString<CharT, S> const& a_Other)
 {
-    return SmallString<CharT, S, D>(a_pCstr) + a_Other;
+    return SmallString<CharT, S>(a_pCstr) + a_Other;
 }
 
-template<class CharT, size_t S, size_t D>
-SmallString<CharT, S, D> operator+(CharT a_Ch, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+SmallString<CharT, S> operator+(CharT a_Ch, SmallString<CharT, S> const& a_Other)
 {
-    return SmallString<CharT, S, D>(a_Ch) + a_Other;
+    return SmallString<CharT, S>(a_Ch) + a_Other;
 }
 
-template<class CharT, size_t S, size_t D>
-SmallString<CharT, S, D> operator+(BasicStringView<CharT> a_View, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+SmallString<CharT, S> operator+(BasicStringView<CharT> a_View, SmallString<CharT, S> const& a_Other)
 {
-    return SmallString<CharT, S, D>(a_View) + a_Other;
+    return SmallString<CharT, S>(a_View) + a_Other;
 }
 
-template<class CharT, size_t S, size_t D>
-bool operator==(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+bool operator==(CharT const* a_pCstr, SmallString<CharT, S> const& a_Other)
 {
     return a_Other.operator==(a_pCstr);
 }
 
-template<class CharT, size_t S, size_t D>
-bool operator!=(CharT const* a_pCstr, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+bool operator!=(CharT const* a_pCstr, SmallString<CharT, S> const& a_Other)
 {
     return a_Other.operator!=(a_pCstr);
 }
 
-template<class CharT, size_t S, size_t D>
-bool operator!=(BasicStringView<CharT> a_View, SmallString<CharT, S, D> const& a_Other)
+template<class CharT, size_t S>
+bool operator!=(BasicStringView<CharT> a_View, SmallString<CharT, S> const& a_Other)
 {
     return a_Other.operator!=(a_View);
 }
 
 template<class CharT>
-SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> operator+(BasicStringView<CharT> v0,
-                                                                                     BasicStringView<CharT> v1)
+SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(BasicStringView<CharT> v0, BasicStringView<CharT> v1)
 {
-    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> s;
+    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> s;
     s.reserve(v0.size() + v1.size());
     s.append(v0);
     s.append(v1);
@@ -473,9 +472,9 @@ SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> opera
 }
 
 template<class CharT>
-SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> operator+(BasicStringView<CharT> v, CharT c0)
+SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(BasicStringView<CharT> v, CharT c0)
 {
-    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> s;
+    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> s;
     s.reserve(v.size() + 1);
     s.append(v);
     s.append(c0);
@@ -483,18 +482,18 @@ SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> opera
 }
 
 template<class CharT>
-SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> operator+(CharT c0, BasicStringView<CharT> v)
+SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(CharT c0, BasicStringView<CharT> v)
 {
-    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE, PHANTOM_STRING_EXPAND_SIZE> s;
+    SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> s;
     s.reserve(v.size() + 1);
     s.append(c0);
     s.append(v);
     return s;
 }
 
-template<class CharT, class Traits, size_t S, size_t D>
-inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&       a_Out,
-                                                     phantom::SmallString<CharT, S, D> const& a_Str)
+template<class CharT, class Traits, size_t S>
+inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&    a_Out,
+                                                     phantom::SmallString<CharT, S> const& a_Str)
 {
     return a_Out.write(a_Str.data(), a_Str.size());
 }

@@ -54,8 +54,8 @@ Type::Type(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a
            Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags),
       m_eTypeKind(a_eTypeKind),
-      m_uiSize(a_uiSize),
-      m_uiAlignment(a_uiAlignment)
+      m_uiSize(uint32_t(a_uiSize)),
+      m_uiAlignment(uint16_t(a_uiAlignment))
 {
 }
 
@@ -64,8 +64,8 @@ Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, 
     : Symbol(a_strName, a_Modifiers, a_uiFlags),
       m_pUnderlyingType(a_pUnderlyingType),
       m_eTypeKind(a_eTypeKind),
-      m_uiSize(a_uiSize),
-      m_uiAlignment(a_uiAlignment)
+      m_uiSize(uint32_t(a_uiSize)),
+      m_uiAlignment(uint16_t(a_uiAlignment))
 {
     addReferencedElement(m_pUnderlyingType);
 }
@@ -95,7 +95,7 @@ size_t Type::getSize() const
 void Type::setSize(size_t a_uiSize)
 {
     PHANTOM_ASSERT(m_uiSize == 0);
-    m_uiSize = a_uiSize;
+    m_uiSize = uint32_t(a_uiSize);
 }
 
 void Type::getFlattenedAggregateFields(AggregateFields& _aggregateFields) const

@@ -33,7 +33,7 @@ public:
     Symbol* getSymbol() const;
 };
 
-typedef SmallVector<SymbolExtension*, 1, 1> SymbolExtensions;
+typedef SmallVector<SymbolExtension*, 1> SymbolExtensions;
 
 /// \brief  Represents a named element (symbol).
 class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement

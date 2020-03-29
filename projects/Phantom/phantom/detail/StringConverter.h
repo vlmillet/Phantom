@@ -499,10 +499,10 @@ struct StringConverter<std::basic_string<char, std::char_traits<char>, t_Alloc> 
     }
 };
 
-template<size_t S, size_t D>
-struct StringConverter<SmallString<char, S, D> >
+template<size_t S>
+struct StringConverter<SmallString<char, S> >
 {
-    typedef SmallString<char, S, D> InputType;
+    typedef SmallString<char, S> InputType;
 
     static void toLiteral(const lang::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
     {

@@ -188,8 +188,8 @@ private:
         CPPSYMPARS_ERROR("cannot solve " + CPPSYMPARS_IDENTIFIER);                                                     \
     }
 
-typedef SmallString<char, 32, 32> SymbolIdentifier;
-typedef SmallVector<Type*, 20>    FuncArgs;
+typedef SmallString<char, 32>  SymbolIdentifier;
+typedef SmallVector<Type*, 20> FuncArgs;
 
 static bool ReadInteger(StringViewStream& InStream, int64& a_Int)
 {
@@ -520,8 +520,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                 TemplateDependantTemplateInstance* pInst =
                                 PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
                                 pTemplate, templateArgs,
-                                phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
-                                                                             : PHANTOM_R_FLAG_NONE);
+                                phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE : PHANTOM_R_FLAG_NONE);
                                 a_Symbols.push_back(pInst);
                                 return true;
                             }
@@ -589,9 +588,8 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                                     a_Symbols.push_back(
                                                     PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
                                                     pTemplate, finalArgs,
-                                                    phantom::lang::detail::currentModule()
-                                                    ? PHANTOM_R_FLAG_NATIVE
-                                                    : PHANTOM_R_FLAG_NONE));
+                                                    phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
+                                                                                           : PHANTOM_R_FLAG_NONE));
                                                     return true;
                                                 }
                                             }

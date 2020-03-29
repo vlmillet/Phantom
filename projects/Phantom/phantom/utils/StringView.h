@@ -26,9 +26,9 @@ struct NullTerminatedBasicStringView
         if (*a_Str.end())
             notNullTerminated = a_Str;
     }
-                               operator const char*() { return notNullTerminated.size() ? notNullTerminated.c_str() : nullTerminated.begin(); }
-    BasicStringView<CharT>     nullTerminated;
-    SmallString<CharT, 32, 32> notNullTerminated;
+                           operator const char*() { return notNullTerminated.size() ? notNullTerminated.c_str() : nullTerminated.begin(); }
+    BasicStringView<CharT> nullTerminated;
+    SmallString<CharT, 32> notNullTerminated;
 };
 
 template<class CharT>
@@ -144,8 +144,8 @@ public:
         return npos;
     }
 
-    template<size_t S, size_t D>
-    size_t find(SmallString<CharT, S, D> const& a_What, size_t a_Off = 0) const
+    template<size_t S>
+    size_t find(SmallString<CharT, S> const& a_What, size_t a_Off = 0) const
     {
         return find(a_What.data(), a_Off);
     }

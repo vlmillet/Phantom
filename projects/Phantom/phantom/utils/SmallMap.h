@@ -16,14 +16,14 @@
 
 namespace phantom
 {
-template<class K, class V, size_t S, size_t D, class Pred>
-class SmallMap : public SmallVectorBasedContainer<Pair<const K, V>, S, D>
+template<class K, class V, size_t S, class Pred>
+class SmallMap : public SmallVectorBasedContainer<Pair<const K, V>, S>
 {
 public:
-    typedef SmallMap<K, V, S, D, Pred>                        SelfType;
-    typedef SmallVectorBasedContainer<Pair<const K, V>, S, D> BaseType;
-    typedef K                                                 key_type;
-    typedef V                                                 mapped_type;
+    typedef SmallMap<K, V, S, Pred>                        SelfType;
+    typedef SmallVectorBasedContainer<Pair<const K, V>, S> BaseType;
+    typedef K                                              key_type;
+    typedef V                                              mapped_type;
     typedef PHANTOM_TYPENAME BaseType::value_type value_type;
     typedef PHANTOM_TYPENAME BaseType::iterator iterator;
     typedef PHANTOM_TYPENAME BaseType::const_iterator const_iterator;
@@ -33,14 +33,8 @@ public:
 private:
     struct PredWrapper
     {
-        bool operator()(value_type const& l, K const& r)
-        {
-            return pred(l.first, r);
-        }
-        bool operator()(K const& l, value_type const& r)
-        {
-            return pred(l, r.first);
-        }
+        bool operator()(value_type const& l, K const& r) { return pred(l.first, r); }
+        bool operator()(K const& l, value_type const& r) { return pred(l, r.first); }
         Pred pred;
     };
 
@@ -106,14 +100,11 @@ public:
         return std::lower_bound(this->begin(), this->end(), _key, PredWrapper());
     }
 
-    iterator lower_bound(const K& _key)
-    {
-        return (iterator) const_cast<SelfType const*>(this)->lower_bound(_key);
-    }
+    iterator lower_bound(const K& _key) { return (iterator) const_cast<SelfType const*>(this)->lower_bound(_key); }
 
     void swap(SelfType& a_Other)
     {
-        typedef SmallVector<Pair<K, V>, S, D> StorageTypeNoConst;
+        typedef SmallVector<Pair<K, V>, S> StorageTypeNoConst;
         ((StorageTypeNoConst&)this->m_storage).swap((StorageTypeNoConst&)a_Other.m_storage);
     }
 

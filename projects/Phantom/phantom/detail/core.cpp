@@ -1083,7 +1083,7 @@ PHANTOM_EXPORT_PHANTOM size_t _dllModuleHandleFromAddress(void const* address)
     ::VirtualQuery(address, &mbi, sizeof(mbi));
     return (size_t)(mbi.AllocationBase);
 #    else
-    HMODULE module;
+    HMODULE module = 0;
     PHANTOM_VERIFY(GetModuleHandleExA(
     GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)address, &module));
     return (size_t)module;

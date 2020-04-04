@@ -126,9 +126,6 @@ void LanguageElement::addElement(LanguageElement* a_pElement)
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(a_pElement != this, "element added to itself");
     PHANTOM_ASSERT(a_pElement->m_pOwner == nullptr, "element already added to this or another element");
-    PHANTOM_ASSERT(a_pElement->isNative() == isNative() || (a_pElement->asNamespace() && asNamespace()) ||
-                   a_pElement == Namespace::Global() || this == Application::Get(),
-                   "adding non-native element to native one (and vice-versa) is forbidden");
     if (m_pElements == nullptr)
     {
         m_pElements = PHANTOM_NEW(LanguageElements);

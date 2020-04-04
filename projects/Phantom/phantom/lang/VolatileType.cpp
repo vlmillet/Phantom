@@ -16,7 +16,8 @@ namespace phantom
 namespace lang
 {
 VolatileType::VolatileType(Type* a_pType)
-    : QualifiedType(TypeKind::Unknown, a_pType, "volatile", 0, 0, PHANTOM_R_VOLATILE,
+    : QualifiedType(TypeKind::Unknown, a_pType, "volatile", a_pType->isNative() ? a_pType->getSize() : 0,
+                    a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_VOLATILE,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
     addReferencedElement(a_pType);

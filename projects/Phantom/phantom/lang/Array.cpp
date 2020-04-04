@@ -13,8 +13,10 @@ namespace phantom
 namespace lang
 {
 Array::Array(Type* a_pType, size_t a_uiCount)
-    : Type(TypeKind::Array, a_pType, String("[") + (a_uiCount ? phantom::lexical_cast<String>(a_uiCount) : "") + ']', 0,
-           0, 0, a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
+    : Type(TypeKind::Array, a_pType, String("[") + (a_uiCount ? phantom::lexical_cast<String>(a_uiCount) : "") + ']',
+           a_uiCount == 0 ? sizeof(void*) : a_pType->isNative() ? a_pType->getSize() * a_uiCount : 0,
+           a_uiCount == 0 ? PHANTOM_ALIGNOF(void*) : a_pType->isNative() ? a_pType->getAlignment() : 0, 0,
+           a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
 
       Aggregate(this),
       m_uiCount(a_uiCount) /// m_uiCount == 0 => unknown bound array

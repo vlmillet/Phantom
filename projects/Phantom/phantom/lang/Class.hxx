@@ -53,13 +53,21 @@ PHANTOM_PACKAGE("phantom.lang")
             ;
         }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
-        PHANTOM_STRUCT(StructBuilder)
+        PHANTOM_STRUCT(ClassBuilder)
         {
             using StringView = typedef_< phantom::StringView>;
             this_()
-            .method<StructBuilder&(StringView, size_t)>("begin", &_::begin)["0"]
-            .method<StructBuilder&(Type*, StringView, size_t, uint)>("field", &_::field)["0"]["~0u"]
-            .method<Class*()>("end", &_::end)
+        .public_()
+            .staticMethod<ClassBuilder(StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<ClassBuilder(StringView, size_t)>("class_", &_::class_)["0"]
+        
+        .public_()
+            .constructor<void(StringView, Access, size_t)>()["0"]
+            .method<ClassBuilder&(Class*)>("inherits", &_::inherits)
+            .method<ClassBuilder&(Type*, StringView, size_t, uint)>("field", &_::field)["0"]["~0u"]
+            .method<ClassBuilder&(Access)>("access", &_::access)
+            .method<Class*()>("finalize", &_::finalize)
+            .method<Class*()>("operator Class*", &_::operator notypedef<Class*>)
             ;
         }
         PHANTOM_CLASS(Class)

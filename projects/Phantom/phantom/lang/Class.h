@@ -7,6 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
+#include "../utils/Optional.h"
+
 #include <phantom/detail/ClassOfFwd.h>
 #include <phantom/lang/ClassType.h>
 #include <phantom/utils/SmallMap.h>
@@ -34,14 +36,30 @@ struct BaseClass
 };
 typedef SmallVector<BaseClass, 1> BaseClasses;
 
-struct PHANTOM_EXPORT_PHANTOM StructBuilder
+struct PHANTOM_EXPORT_PHANTOM ClassBuilder
 {
-    StructBuilder& begin(StringView _name, size_t _minalign = 0);
-    StructBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u);
-    Class*         end();
+public:
+    static ClassBuilder struct_(StringView _name, size_t _minalign = 0)
+    {
+        return ClassBuilder(_name, Access::Public, _minalign);
+    }
+    static ClassBuilder class_(StringView _name, size_t _minalign = 0)
+    {
+        return ClassBuilder(_name, Access::Private, _minalign);
+    }
+
+public:
+    ClassBuilder(StringView _name, Access _startAccess, size_t _minalign = 0);
+    ClassBuilder& inherits(Class* _class);
+    ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u);
+    ClassBuilder& access(Access _access);
+    Class*        finalize();
+
+    operator Class*() { return finalize(); }
 
 private:
     Class* m_pClass = nullptr;
+    Access m_Access;
     size_t m_MinAlign = 0;
 };
 
@@ -1062,6 +1080,7 @@ private:
     SignalList                           m_Signals;
     Members<Fields>                      m_FieldsWithRAII;
     void*                                m_pSingleton = nullptr;
+    mutable Optional<Subroutine*>        m_OpEquals;
 };
 
 /// inlines

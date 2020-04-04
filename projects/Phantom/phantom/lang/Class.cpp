@@ -1692,23 +1692,33 @@ void Class::copyConstruct(void* a_pDest, void const* a_pSrc) const
 
 bool Class::equal(void const* a_pInstance0, void const* a_pInstance1) const
 {
-    Type* pThis = (Type*)this;
-    Type* pThisConstRef = addConst()->addLValueReference();
-    if (Method* pOp = getMethod("operator==", TypesView{&pThis, 1}))
+    if (!m_OpEquals.isInitialized())
     {
-        bool res = false;
-        pOp->invoke((void*)a_pInstance0, (void**)&a_pInstance1, &res);
-        return res;
+        Type* pThis = (Type*)this;
+        m_OpEquals.emplace(nullptr);
+        *m_OpEquals = getMethod("operator==", TypesView{&pThis, 1});
+        if (!*m_OpEquals)
+        {
+            Type* pThisConstRef = addConst()->addLValueReference();
+            *m_OpEquals = getMethod("operator==", TypesView{&pThisConstRef, 1});
+            if (!*m_OpEquals)
+            {
+                *m_OpEquals = getNamingScope()->getFunction("operator==", Types{pThisConstRef, pThisConstRef});
+            }
+        }
     }
-    else if (Method* pOp2 = getMethod("operator==", TypesView{&pThisConstRef, 1}))
+    if (*m_OpEquals)
     {
-        bool res = false;
-        pOp2->invoke((void*)a_pInstance0, (void**)&a_pInstance1, &res);
-        return res;
-    }
-    else if (Function* pFunction = getNamingScope()->getFunction("operator==", Types{pThisConstRef, pThisConstRef}))
-    {
-        return pFunction->call<bool>(*(int*)a_pInstance0, *(int*)a_pInstance1);
+        if (Method* pMethod = (*m_OpEquals)->asMethod())
+        {
+            bool res = false;
+            pMethod->invoke((void*)a_pInstance0, (void**)&a_pInstance1, &res);
+            return res;
+        }
+        else
+        {
+            return static_cast<Function*>(*m_OpEquals)->call<bool>(*(int*)a_pInstance0, *(int*)a_pInstance1);
+        }
     }
     return false;
 }
@@ -1811,61 +1821,87 @@ void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
     PHANTOM_DELETE(ExtraData) this;
 }
 
-StructBuilder& StructBuilder::begin(StringView _name, size_t _minalign /*= 0*/)
+ClassBuilder::ClassBuilder(StringView _name, Access _access, size_t _minalign /*= 0*/) : m_Access(_access)
 {
-    PHANTOM_ASSERT(!m_pClass);
     m_MinAlign = _minalign;
-    m_pClass = PHANTOM_NEW(Class)(_name);
-    m_pClass->setDefaultAccess(Access::Public);
+    m_pClass = phantom::New<lang::Class>(_name);
+    m_pClass->setDefaultAccess(_access);
+}
+
+ClassBuilder& ClassBuilder::inherits(Class* _class)
+{
+    PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
+    m_pClass->addBaseClass(_class);
     return *this;
 }
 
-StructBuilder& StructBuilder::field(Type* a_pType, StringView a_Name, size_t a_Align /*= 0*/,
-                                    uint a_FilterMask /*= ~0u*/)
+ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Align /*= 0*/, uint a_FilterMask /*= ~0u*/)
 {
-    PHANTOM_ASSERT(m_pClass);
+    PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
+    if (a_pType->getOwner() == nullptr)
+        m_pClass->addType(a_pType);
     Field* pField = m_pClass->addField(a_pType, a_Name, a_FilterMask);
     if (a_Align)
         pField->setAlignment(std::max(a_pType->getAlignment(), a_Align));
     return *this;
 }
 
-Class* StructBuilder::end()
+PHANTOM_EXPORT_PHANTOM Functor<void(Class*)> m_SemanticClassFinalizer;
+
+Class* ClassBuilder::finalize()
 {
-    PHANTOM_ASSERT(m_pClass);
-    Type::AlignmentComputer computer(m_MinAlign);
-    size_t                  size = 0;
-    size_t                  align = 0;
-    computer.alignStruct(m_pClass->getDataElements(), size, align);
-    m_pClass->setSize(size);
-    m_pClass->setAlignment(align);
-    if (m_pClass->getDefaultConstructor() == nullptr && m_pClass->canHaveImplicitDefaultConstructor())
+    PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
+
+    if (m_SemanticClassFinalizer)
     {
-        m_pClass->addImplicitDefaultConstructor();
+        m_SemanticClassFinalizer(m_pClass);
     }
-    if (m_pClass->getCopyConstructor() == nullptr && m_pClass->canHaveImplicitCopyConstructor())
+    else
     {
-        m_pClass->addImplicitCopyConstructor();
-    }
-    if (m_pClass->getCopyAssignmentOperator() == nullptr && m_pClass->canHaveImplicitCopyAssignmentOperator())
-    {
-        m_pClass->addImplicitCopyAssignmentOperator();
-    }
-    if (m_pClass->getMoveConstructor() == nullptr && m_pClass->canHaveImplicitMoveConstructor())
-    {
-        m_pClass->addImplicitMoveConstructor();
-    }
-    if (m_pClass->getMoveAssignmentOperator() == nullptr && m_pClass->canHaveImplicitMoveAssignmentOperator())
-    {
-        m_pClass->addImplicitMoveAssignmentOperator();
-    }
-    if (m_pClass->getDestructor() == nullptr)
-    {
-        m_pClass->addImplicitDestructor();
+        Type::AlignmentComputer computer(m_MinAlign);
+        size_t                  size = 0;
+        size_t                  align = 0;
+        for (auto baseClass : m_pClass->getBaseClasses())
+        {
+            computer.push(baseClass.baseClass->getSize(), baseClass.baseClass->getAlignment());
+        }
+        computer.alignStruct(m_pClass->getDataElements(), size, align);
+        m_pClass->setSize(size);
+        m_pClass->setAlignment(align);
+        if (m_pClass->getDefaultConstructor() == nullptr && m_pClass->canHaveImplicitDefaultConstructor())
+        {
+            m_pClass->addImplicitDefaultConstructor();
+        }
+        if (m_pClass->getCopyConstructor() == nullptr && m_pClass->canHaveImplicitCopyConstructor())
+        {
+            m_pClass->addImplicitCopyConstructor();
+        }
+        if (m_pClass->getCopyAssignmentOperator() == nullptr && m_pClass->canHaveImplicitCopyAssignmentOperator())
+        {
+            m_pClass->addImplicitCopyAssignmentOperator();
+        }
+        if (m_pClass->getMoveConstructor() == nullptr && m_pClass->canHaveImplicitMoveConstructor())
+        {
+            m_pClass->addImplicitMoveConstructor();
+        }
+        if (m_pClass->getMoveAssignmentOperator() == nullptr && m_pClass->canHaveImplicitMoveAssignmentOperator())
+        {
+            m_pClass->addImplicitMoveAssignmentOperator();
+        }
+        if (m_pClass->getDestructor() == nullptr)
+        {
+            m_pClass->addImplicitDestructor();
+        }
     }
     auto pRes = m_pClass;
     m_pClass = nullptr;
     return pRes;
+}
+
+ClassBuilder& ClassBuilder::access(Access _access)
+{
+    m_pClass->setDefaultAccess(_access);
+    return *this;
 }
 
 } // namespace lang

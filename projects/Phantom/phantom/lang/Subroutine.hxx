@@ -24,6 +24,7 @@
 #include <phantom/static_method>
 #include <phantom/constructor>
 #include <phantom/field>
+#include <phantom/typedef>
 #include <phantom/using>
 #include <phantom/friend>
 
@@ -114,6 +115,7 @@ PHANTOM_PACKAGE("phantom.lang")
         }
         PHANTOM_CLASS(Subroutine)
         {
+            using ApplyPointer = typedef_<_::ApplyPointer>;
             using Instructions = typedef_< phantom::lang::Instructions>;
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
@@ -130,6 +132,9 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
+        
+        .public_()
+            .typedef_<ApplyPointer>("ApplyPointer")
         
         .public_()
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -199,6 +204,8 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<Closure() const, virtual_>("getClosure", &_::getClosure)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Closure)>("setClosure", &_::setClosure)
+            .method<ApplyPointer() const>("getApplyPointer", &_::getApplyPointer)
+            .method<void(ApplyPointer)>("setApplyPointer", &_::setApplyPointer)
             .method<size_t() const>("getFrameSize", &_::getFrameSize)
             .method<bool() const>("isRVOCandidate", &_::isRVOCandidate)
             .method<void(ExecutionContext&, void**, size_t) const>("call", &_::call)
@@ -233,6 +240,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .field("m_MemoryLocation", &_::m_MemoryLocation)
             /// missing symbol(s) reflection (phantom::lang::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_CallDelegate", &_::m_CallDelegate)
+            .field("m_ApplyPointer", &_::m_ApplyPointer)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_Closure", &_::m_Closure)
             .field("m_uiFrameSize", &_::m_uiFrameSize)

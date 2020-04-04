@@ -108,19 +108,19 @@ bool Method::canOverride(Method* a_pMethod) const
     if (!(a_pMethod->isVirtual()))
         return false;
     ESignatureRelation r = getSignatureRelationWith(a_pMethod);
-    return (r == e_SignatureRelation_Covariant) ||(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Covariant) || (r == e_SignatureRelation_Equal);
 }
 
 bool Method::canOverride(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/) const
 {
     ESignatureRelation r = getSignatureRelationWith(a_strName, a_pSignature, a_Modifiers);
-    return (r == e_SignatureRelation_Covariant) ||(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Covariant) || (r == e_SignatureRelation_Equal);
 }
 
 bool Method::isOverridableBy(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/) const
 {
     ESignatureRelation r = getSignatureRelationWith(a_strName, a_pSignature, a_Modifiers);
-    return (r == e_SignatureRelation_Contravariant) ||(r == e_SignatureRelation_Equal);
+    return (r == e_SignatureRelation_Contravariant) || (r == e_SignatureRelation_Equal);
 }
 
 bool Method::isOverridableBy(Method* a_pMethod) const
@@ -198,8 +198,8 @@ bool Method::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifiers) con
              PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
                                // function (every one can call a const member function but a const
                                // cannot call a non const member function)
-    &&(((signModifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
-        ||(signModifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
+    && (((signModifiers & (PHANTOM_R_REFQUAL_MASK)) == 0) ||
+        (signModifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
 }
 
 Type* Method::getImplicitObjectParameterType() const
@@ -228,6 +228,23 @@ LocalVariable* Method::getThis() const
     return m_pThis;
 }
 
+OpaqueDelegate Method::getOpaqueDelegate(void* a_pThis) const
+{
+    PHANTOM_ASSERT(a_pThis);
+    if (void* addr = getClosure().address)
+    {
+        struct
+        {
+            void* thisOrFunc_;
+            void* meth_;
+        } s;
+        s.thisOrFunc_ = a_pThis;
+        s.meth_ = addr;
+        return *reinterpret_cast<OpaqueDelegate*>(&s); // empty by default
+    }
+    return OpaqueDelegate();
+}
+
 void Method::onAncestorChanged(LanguageElement* a_pAncestor)
 {
     Subroutine::onAncestorChanged(a_pAncestor);
@@ -247,33 +264,77 @@ typedef SmallVector<void*, 7> TempArgs;
 
 void Method::invoke(void* a_pObject, void** a_pArgs) const
 {
-    size_t   argCount = m_pSignature->getParameters().size() + 1;
     TempArgs newArgs;
-    newArgs.resize(argCount);
-    newArgs[0] = &a_pObject;
-    if (a_pArgs && argCount > 1)
+    if (auto applyPointer = getApplyPointer())
     {
-        memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
+        Type*     pRetType = getReturnType();
+        bool      bRVO = isRVOCandidate();
+        const int extraArgs = 1 + bRVO;
+        size_t    argCount = m_pSignature->getParameters().size() + extraArgs;
+        newArgs.resize(argCount);
+        newArgs[0] = &a_pObject;
+        unsigned char dummy[16];
+        void*         ret{};
+        if (bRVO)
+        {
+            const int align = 32;
+            void*     p = _alloca(pRetType->getSize() + align - 1);
+            ret = (void*)((((intptr_t)p + align - 1) / align) * align);
+            pRetType->construct(ret);
+            newArgs[1] = &ret;
+        }
+        else
+        {
+            PHANTOM_ASSERT(pRetType->getSize() < 16);
+            ret = dummy;
+        }
+        if (a_pArgs && argCount > extraArgs)
+            memcpy(&newArgs[extraArgs], a_pArgs, (argCount - extraArgs) * sizeof(void*));
+        applyPointer(newArgs.data(), ret);
+        if (bRVO)
+            pRetType->destroy(ret);
     }
-    apply(newArgs.data(), argCount);
+    else
+    {
+        size_t argCount = m_pSignature->getParameters().size() + 1;
+        newArgs.resize(argCount);
+        newArgs[0] = &a_pObject;
+        if (a_pArgs && argCount > 1)
+        {
+            memcpy(&newArgs[0], a_pArgs, (argCount - 1) * sizeof(void*));
+        }
+        apply(newArgs.data(), argCount);
+    }
 }
 
 void Method::invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) const
 {
-    size_t   argCount = m_pSignature->getParameters().size() + 1;
+    PHANTOM_ASSERT(a_pReturnAddress);
     TempArgs newArgs;
-    newArgs.resize(argCount);
-    newArgs[0] = &a_pObject;
-    if (a_pArgs && argCount > 1)
+    if (auto applyPointer = getApplyPointer())
     {
-        memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
+        bool      bRVO = isRVOCandidate();
+        const int extraArgs = 1 + bRVO;
+        size_t    argCount = m_pSignature->getParameters().size() + extraArgs;
+        newArgs.resize(argCount);
+        newArgs[bRVO] = &a_pReturnAddress;
+        newArgs[0] = &a_pObject;
+        if (a_pArgs && argCount > extraArgs)
+            memcpy(&newArgs[extraArgs], a_pArgs, (argCount - extraArgs) * sizeof(void*));
+        applyPointer(newArgs.data(), reinterpret_cast<void*>(!bRVO * uint64_t(a_pReturnAddress)));
     }
-    apply(newArgs.data(), argCount, a_pReturnAddress);
+    else
+    {
+        size_t argCount = m_pSignature->getParameters().size() + 1;
+        newArgs.resize(argCount);
+        newArgs[0] = &a_pObject;
+        if (a_pArgs && argCount > 1)
+            memcpy(&newArgs[0], a_pArgs, (argCount - 1) * sizeof(void*));
+        apply(newArgs.data(), argCount, a_pReturnAddress);
+    }
 }
 
-void Method::placementInvoke(void*, void**, void*) const
-{
-}
+void Method::placementInvoke(void*, void**, void*) const {}
 
 } // namespace lang
 } // namespace phantom

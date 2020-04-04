@@ -255,21 +255,86 @@ Type* Subroutine::getReturnType() const
     return m_pSignature ? m_pSignature->getReturnType() : nullptr;
 }
 
-phantom::OpaqueDelegate Subroutine::getOpaqueDelegate(void*) const
+OpaqueDelegate Subroutine::getOpaqueDelegate(void*) const
 {
-    return OpaqueDelegate(); // empty by default
+    return OpaqueDelegate();
 }
+
+OpaqueDelegate Subroutine::getOpaqueDelegate() const
+{
+    if (void* addr = getClosure().address)
+    {
+        struct
+        {
+            void* thisOrFunc_;
+            void* meth_;
+        } s;
+        s.thisOrFunc_ = addr;
+        s.meth_ = nullptr;
+        return *reinterpret_cast<OpaqueDelegate*>(&s); // empty by default
+    }
+    return OpaqueDelegate();
+}
+
+typedef SmallVector<void*, 7> TempArgs;
 
 void Subroutine::call(void** a_pArgs) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void));
-    apply(a_pArgs, m_pSignature->getParameterCount() + (asMethod() != nullptr));
+    PHANTOM_ASSERT(asMethod() == nullptr);
+    Type* pRetType = getReturnType();
+    if (auto applyPointer = getApplyPointer())
+    {
+        if (isRVOCandidate()) // apply pointer must respect RVO convention
+        {
+            void*    retAddress = alloca(pRetType->getSize());
+            auto     sc = pRetType->scopedConstruct(retAddress);
+            size_t   argCount = m_pSignature->getParameters().size() + 1; // +1 is RV
+            TempArgs newArgs;
+            newArgs.resize(argCount);
+            newArgs[0] = &retAddress;
+            if (a_pArgs && argCount > 1)
+            {
+                memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
+            }
+            return applyPointer(newArgs.data(), nullptr);
+        }
+        else
+        {
+            // if method does not return a class (no rvo), we use a dummy buffer to welcome an eventual return value
+            PHANTOM_ASSERT(pRetType->getSize() < 16);
+            unsigned char dummy[16];
+            return applyPointer(a_pArgs, dummy);
+        }
+    }
+    return apply(a_pArgs, m_pSignature->getParameterCount());
 }
 
 void Subroutine::call(void** a_pArgs, void* a_pReturnAddress) const
 {
-    PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_pReturnAddress != nullptr);
-    apply(a_pArgs, m_pSignature->getParameterCount() + (asMethod() != nullptr), a_pReturnAddress);
+    PHANTOM_ASSERT(a_pReturnAddress);
+    if (auto applyPointer = getApplyPointer())
+    {
+        if (isRVOCandidate())
+        {
+            size_t   argCount = m_pSignature->getParameters().size() + 1; // +1 is RV
+            TempArgs newArgs;
+            newArgs.resize(argCount);
+            newArgs[0] = &a_pReturnAddress;
+            if (a_pArgs && argCount > 1)
+            {
+                memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
+            }
+            applyPointer(newArgs.data(), nullptr);
+        }
+        else
+        {
+            applyPointer(a_pArgs, a_pReturnAddress);
+        }
+    }
+    else
+    {
+        apply(a_pArgs, m_pSignature->getParameterCount(), a_pReturnAddress);
+    }
 }
 
 void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs) const
@@ -361,6 +426,7 @@ void Subroutine::apply(void** a_pArgs, size_t a_uiCount, void* a_pReturnAddress)
 void Subroutine::apply(void** a_pArgs, size_t a_uiCount) const
 {
     PHANTOM_ASSERT(!isNative());
+    PHANTOM_ASSERT(!m_ApplyPointer);
     PHANTOM_ASSERT(ExecutionContext::Current());
     ExecutionContext::Current()->call(const_cast<Subroutine*>(this), a_pArgs, a_uiCount);
 }
@@ -386,9 +452,8 @@ void Subroutine::placementApply(void** a_pArgs, size_t a_uiCount) const
 ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Signature* a_pSignature,
                                                         Modifiers a_Modifiers, uint) const
 {
-    if (a_strName !=
-        m_strName // not same name
-        &&(m_strName.front() != '~' || a_strName.front() != '~'))
+    if (a_strName != m_strName // not same name
+        && (m_strName.front() != '~' || a_strName.front() != '~'))
         return e_SignatureRelation_None;
     if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (m_Modifiers & PHANTOM_R_METHOD_QUAL_MASK))
         return e_SignatureRelation_None;
@@ -421,9 +486,9 @@ ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Si
 
     // Only (const) class pointer/reference types can postulate to covariance and contravariance
     // We filter them by using address type implicit conversion
-    if ((thisReturnType->asPointer() && otherReturnType->asPointer())||(
-        thisReturnType->asLValueReference() && otherReturnType->asLValueReference())
-        ||(thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
+    if ((thisReturnType->asPointer() && otherReturnType->asPointer()) ||
+        (thisReturnType->asLValueReference() && otherReturnType->asLValueReference()) ||
+        (thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
     {
         // Covariance and Contravariance test
         if (thisReturnType->getUnderlyingType()->isA(otherReturnType->getUnderlyingType()))
@@ -478,9 +543,9 @@ ESignatureRelation Subroutine::getSignatureRelationWith(Type* a_pReturnType, Str
 
     // Only (const) class pointer/reference types can postulate to covariance and contravariance
     // We filter them by using address type implicit conversion
-    if ((thisReturnType->asPointer() && otherReturnType->asPointer())||(
-        thisReturnType->asLValueReference() && otherReturnType->asLValueReference())
-        ||(thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
+    if ((thisReturnType->asPointer() && otherReturnType->asPointer()) ||
+        (thisReturnType->asLValueReference() && otherReturnType->asLValueReference()) ||
+        (thisReturnType->asRValueReference() && otherReturnType->asRValueReference()))
     {
         // Covariance and Contravariance test
         if (thisReturnType->getUnderlyingType()->isA(otherReturnType->getUnderlyingType()))
@@ -519,7 +584,7 @@ void Subroutine::getUniqueName(StringBuffer& a_Buf) const
             } while (StringUtil::IsBlank(baseName[8]));
 
             char c = baseName[8];
-            if (!((c >= 'a' && c <= 'z') ||(c >= 'A' && c <= 'Z') ||(c >= '0' && c <= '9') || c == '_'))
+            if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'))
             {
                 // classical operator + - / * ! ? ...
                 // => remain intact
@@ -573,7 +638,7 @@ void Subroutine::clearInstructions()
         deleteInstruction(m_pInstructions->back());
 }
 
-void Subroutine::saveArgs(void** a_pArgs, Variants& a_variants) const
+void Subroutine::saveArgs(void** a_pArgs, SmallVector<Variant, 10>& a_variants) const
 {
     size_t c = getParameters().size();
     for (size_t i = 0; i < c; ++i)

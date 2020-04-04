@@ -66,14 +66,8 @@ public:
     {
         Subroutine::placementCall(a_Context, a_pArgs);
     }
-    void call(void** a_pArgs) const override
-    {
-        Subroutine::call(a_pArgs);
-    }
-    void call(void** a_pArgs, void* a_pReturnAddress) const override
-    {
-        Subroutine::call(a_pArgs, a_pReturnAddress);
-    }
+    void call(void** a_pArgs) const override { Subroutine::call(a_pArgs); }
+    void call(void** a_pArgs, void* a_pReturnAddress) const override { Subroutine::call(a_pArgs, a_pReturnAddress); }
 
     template<class T, class... Args>
     Variant invokeV(T* a_pThis, Args&&... a_Args) const
@@ -177,18 +171,9 @@ public:
     {
         return (((m_Modifiers & PHANTOM_R_SLOT_METHOD) == PHANTOM_R_SLOT_METHOD)) ? const_cast<Method*>(this) : nullptr;
     }
-    virtual LanguageElement* asLanguageElement() const
-    {
-        return const_cast<Method*>(this);
-    }
-    Subroutine* asSubroutine() const override
-    {
-        return const_cast<Method*>(this);
-    }
-    Method* asMethod() const override
-    {
-        return const_cast<Method*>(this);
-    }
+    virtual LanguageElement* asLanguageElement() const { return const_cast<Method*>(this); }
+    Subroutine*              asSubroutine() const override { return const_cast<Method*>(this); }
+    Method*                  asMethod() const override { return const_cast<Method*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the virtual table index in which this member function is referenced.
@@ -235,10 +220,7 @@ public:
     /// \return null if no property is associated with this member function, else the property.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Property* getProperty() const
-    {
-        return m_pProperty;
-    }
+    Property* getProperty() const { return m_pProperty; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this member function accepts the given caller expression type (check
@@ -277,6 +259,8 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     LocalVariable* getThis() const;
+
+    OpaqueDelegate getOpaqueDelegate(void* a_pThis) const override;
 
 protected:
     Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, Modifiers a_Modifiers = 0,

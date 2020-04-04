@@ -311,6 +311,9 @@ class PHANTOM_EXPORT_PHANTOM Subroutine : public Symbol, public Callable
     friend class Class;
 
 public:
+    using ApplyPointer = void (*)(void** /*args*/, void* /*ret*/);
+
+public:
     PHANTOM_DTOR ~Subroutine() override;
 
     void terminate();
@@ -496,10 +499,7 @@ public:
     /// \return an opaque delegate.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual OpaqueDelegate getOpaqueDelegate() const
-    {
-        return OpaqueDelegate(); // empty by default
-    }
+    virtual OpaqueDelegate getOpaqueDelegate() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Creates an opaque delegate from a caller object.
@@ -786,6 +786,26 @@ public:
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the closure of this subroutine, if any defined by the user.
+    ///
+    /// \return null if it fails, else the closure.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ApplyPointer getApplyPointer() const { return m_ApplyPointer; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the closure of this subroutine.
+    ///
+    /// \param [in,out] a_pClosure  If non-null, the closure.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setApplyPointer(ApplyPointer a_ApplyPointer)
+    {
+        PHANTOM_ASSERT(!isNative());
+        m_ApplyPointer = a_ApplyPointer;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the frame size of this subroutine (memory used by local variables).
     ///
     /// \return The frame size.
@@ -869,6 +889,7 @@ protected:
     Block*         m_pBlock = nullptr;
     MemoryLocation m_MemoryLocation;
     CallDelegate   m_CallDelegate;
+    ApplyPointer   m_ApplyPointer = nullptr;
     Closure        m_Closure;
     size_t         m_uiFrameSize = 0;
 };

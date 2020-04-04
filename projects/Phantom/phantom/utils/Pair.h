@@ -17,12 +17,11 @@ namespace phantom
 template<class t_First, class t_Second>
 struct Pair
 {
-    Pair() : first(), second()
-    {
-    }
-    Pair(t_First a_First, t_Second a_Second) : first(a_First), second(a_Second)
-    {
-    }
+    Pair() : first(), second() {}
+    Pair(t_First const& a_First, t_Second const& a_Second) : first(a_First), second(a_Second) {}
+    Pair(t_First&& a_First, t_Second&& a_Second) : first(std::move(a_First)), second(std::move(a_Second)) {}
+    Pair(t_First&& a_First, t_Second const& a_Second) : first(std::move(a_First)), second(a_Second) {}
+    Pair(t_First const& a_First, t_Second&& a_Second) : first(a_First), second(std::move(a_Second)) {}
     template<class t_OtherFirst, class t_OtherSecond>
     Pair(Pair<t_OtherFirst, t_OtherSecond> const& a_Other) : first(a_Other.first), second(a_Other.second)
     {

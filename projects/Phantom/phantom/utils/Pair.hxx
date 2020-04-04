@@ -31,7 +31,10 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void()>()
             )
-            .PHANTOM_T constructor<void(t_First, t_Second)>()
+            .PHANTOM_T constructor<void(t_First const&, t_Second const&)>()
+            .PHANTOM_T constructor<void(t_First&&, t_Second&&)>()
+            .PHANTOM_T constructor<void(t_First&&, t_Second const&)>()
+            .PHANTOM_T constructor<void(t_First const&, t_Second&&)>()
             .PHANTOM_T field("first", &_::first)
             .PHANTOM_T field("second", &_::second)
             ;

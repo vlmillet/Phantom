@@ -551,7 +551,7 @@ void Signature::getUniqueParameterTypeNameList(StringBuffer& a_Buf) const
 
 bool Signature::isRVOCandidate() const
 {
-    return m_pReturnType->removeConst()->asClassType() != nullptr;
+    return m_pReturnType->removeQualifiers()->asClassType() != nullptr;
 }
 
 Subroutine* Signature::getOwnerSubroutine() const

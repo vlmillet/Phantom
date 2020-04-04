@@ -70,7 +70,6 @@ PHANTOM_PACKAGE("phantom.utils")
             // .PHANTOM_T method<FunctorID(const Delegate<void (Parms...)>&)>("connect", &_::connect)
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<FunctorID(Delegate<void (Parms...)>&&)>("connect", &_::connect)
-            .PHANTOM_T method<void(OpaqueDynDelegate&&)>("disconnect", &_::disconnect)
             .PHANTOM_T method<void(OpaqueDynDelegate const&)>("disconnect", &_::disconnect)
             .PHANTOM_T method<void(FunctorID)>("disconnect", &_::disconnect)
             /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files

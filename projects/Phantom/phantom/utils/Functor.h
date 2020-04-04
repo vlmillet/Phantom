@@ -320,32 +320,49 @@ public:
 
     // DynDelegateType
 
-    Functor(DynDelegateType const& a_In) : m_Type(_Type::DynDelegate) { new (&m_DynDelegate) DynDelegateType(a_In); }
-
-    Functor(DynDelegateType&& a_In) : m_Type(_Type::DynDelegate)
+    Functor(DynDelegateType const& a_In)
     {
-        new (&m_DynDelegate) DynDelegateType(std::move(a_In));
+        if (auto const& od = a_In.getOpaqueDelegate())
+        {
+            m_Type = _Type::Delegate;
+            new (&m_DynDelegate) DelegateType(od);
+        }
+        else
+        {
+            m_Type = _Type::DynDelegate;
+            new (&m_DynDelegate) DynDelegateType(a_In);
+        }
     }
 
-    Functor(lang::Function* a_pFunction) : m_Type(_Type::DynDelegate)
+    Functor(DynDelegateType&& a_In)
     {
-        new (&m_DynDelegate) DynDelegateType(a_pFunction);
+        if (auto&& od = a_In.getOpaqueDelegate())
+        {
+            m_Type = _Type::Delegate;
+            new (&m_DynDelegate) DelegateType(std::move(od));
+        }
+        else
+        {
+            m_Type = _Type::DynDelegate;
+            new (&m_DynDelegate) DynDelegateType(std::move(a_In));
+        }
     }
-    Functor(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod) : m_Type(_Type::DynDelegate)
+
+    Functor(lang::Function* a_pFunction) : Functor(DynDelegateType(a_pFunction)) {}
+    Functor(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod)
+        : Functor(DynDelegateType(a_pInstance, a_pClass, a_pMethod))
     {
-        new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_pMethod);
     }
-    Functor(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName) : m_Type(_Type::DynDelegate)
+    Functor(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName)
+        : Functor(DynDelegateType(a_pInstance, a_pClass, a_MethodName))
     {
-        new (&m_DynDelegate) DynDelegateType(a_pInstance, a_pClass, a_MethodName);
     }
-    Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : m_Type(_Type::DynDelegate)
-    {
-        new (&m_DynDelegate) DynDelegateType(a_OpaqueDynDelegate);
-    }
+    Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : Functor(DynDelegateType(a_OpaqueDynDelegate)) {}
 
     ThisType& operator=(DynDelegateType const& a_In)
     {
+        if (auto const& od = a_In.getOpaqueDelegate())
+            return operator=(DelegateType(od));
         if (m_Type == _Type::DynDelegate)
         {
             _dynDelegate() = a_In;
@@ -359,23 +376,13 @@ public:
         return *this;
     }
 
-    ThisType& operator=(OpaqueDynDelegate const& a_In)
-    {
-        if (m_Type == _Type::DynDelegate)
-        {
-            _dynDelegate() = DynDelegateType(a_In);
-        }
-        else
-        {
-            _destroy();
-            m_Type = _Type::DynDelegate;
-            new (&m_Delegate) DynDelegateType(a_In);
-        }
-        return *this;
-    }
+    ThisType& operator=(OpaqueDynDelegate const& a_In) { return operator=(DynDelegateType(a_In)); }
 
     ThisType& operator=(DynDelegateType&& a_In)
     {
+        if (auto&& od = a_In.getOpaqueDelegate())
+            return operator=(DelegateType(std::move(od)));
+
         if (m_Type == _Type::DynDelegate)
         {
             _dynDelegate() = std::move(a_In);

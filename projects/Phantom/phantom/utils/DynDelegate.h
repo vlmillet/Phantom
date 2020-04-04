@@ -35,6 +35,9 @@ public:
     lang::Method*     getMethod() const { return m_pMethod; }
     lang::Subroutine* getSubroutine() const;
 
+    OpaqueDelegate const& getOpaqueDelegate() const& { return m_OpaqueDelegate; }
+    OpaqueDelegate&&      getOpaqueDelegate() && { return std::move(m_OpaqueDelegate); }
+
     bool isEmpty() const { return m_pFunction == nullptr; }
 
     operator bool() const { return m_pFunction != nullptr; }
@@ -61,6 +64,7 @@ private:
         void*           m_pThis = nullptr;
         lang::Function* m_pFunction;
     };
+    OpaqueDelegate m_OpaqueDelegate;
 };
 
 namespace _DynDelegate
@@ -100,10 +104,8 @@ public:
         PHANTOM_ASSERT(_CheckSignature());
     }
 
-    DynDelegate(OpaqueDynDelegate a_Dgt)
+    DynDelegate(OpaqueDynDelegate const& a_Dgt) : OpaqueDynDelegate(a_Dgt)
     {
-        m_pThis = a_Dgt.m_pThis;
-        m_pMethod = a_Dgt.m_pMethod;
         PHANTOM_ASSERT(this->isEmpty() || _CheckSignature());
     }
 

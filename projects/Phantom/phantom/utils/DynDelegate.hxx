@@ -55,6 +55,8 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<lang::Function*() const>("getFunction", &_::getFunction)
             .method<lang::Method*() const>("getMethod", &_::getMethod)
             .method<lang::Subroutine*() const>("getSubroutine", &_::getSubroutine)
+            .method<OpaqueDelegate const&() const&>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<OpaqueDelegate&&()&&>("getOpaqueDelegate", &_::getOpaqueDelegate)
             .method<bool() const>("isEmpty", &_::isEmpty)
             .method<bool() const>("operator bool", &_::operator notypedef<bool>)
             .method<bool(const OpaqueDynDelegate&) const>("operator==", &_::operator==)
@@ -90,23 +92,35 @@ PHANTOM_END("phantom.utils")
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("DynDelegate")
 
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
         PHANTOM_CLASS_TVS((class), (R), (class, Params), (R(Params...)), DynDelegate)
         {
             using StringView = typedef_< phantom::StringView>;
             using ThisType = typedef_<PHANTOM_TYPENAME _::ThisType>;
             this_()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T inherits<::phantom::OpaqueDynDelegate>()
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
         .public_()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T typedef_<ThisType>("ThisType")
+        /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
         
         .public_()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T constructor<void(::phantom::lang::Function *)>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, StringView)>()
-            .PHANTOM_T constructor<void(OpaqueDynDelegate)>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            .PHANTOM_T constructor<void(OpaqueDynDelegate const&)>()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())
             ;
         }

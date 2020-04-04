@@ -18,9 +18,13 @@ OpaqueDynDelegate::OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, l
 {
     m_pThis = a_pClass->cast(a_pMethod->getOwnerClass(), a_pInstance);
     PHANTOM_ASSERT(m_pThis, "given object is an instance of the given method class");
+    m_OpaqueDelegate = m_pMethod->getOpaqueDelegate(m_pThis);
 }
 
-OpaqueDynDelegate::OpaqueDynDelegate(lang::Function* a_pFunction) : m_pFunction(a_pFunction) {}
+OpaqueDynDelegate::OpaqueDynDelegate(lang::Function* a_pFunction) : m_pFunction(a_pFunction)
+{
+    m_OpaqueDelegate = m_pFunction->getOpaqueDelegate();
+}
 
 OpaqueDynDelegate::OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName)
 {
@@ -30,6 +34,7 @@ OpaqueDynDelegate::OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, S
     m_pThis = a_pClass->cast(pMethod->getOwnerClass(), a_pInstance);
     PHANTOM_ASSERT(m_pThis);
     m_pMethod = pMethod;
+    m_OpaqueDelegate = m_pMethod->getOpaqueDelegate(m_pThis);
 }
 
 phantom::lang::Subroutine* OpaqueDynDelegate::getSubroutine() const
@@ -64,8 +69,9 @@ bool OpaqueDynDelegate::_CheckSignature(lang::Type* a_pRetType, lang::TypesView 
     {
         lang::Type* pArgT = a_Types[i];
         lang::Type* pParamT = pSign->getParameterType(i);
-        if (!pArgT->isSame(pSign->getParameterType(i)) &&((pArgT->asPointer() == nullptr) ||(
-            pParamT != PHANTOM_TYPEOF(void*) && pArgT != PHANTOM_TYPEOF(void*)))) // X* -> void* || void* -> X*
+        if (!pArgT->isSame(pSign->getParameterType(i)) &&
+            ((pArgT->asPointer() == nullptr) ||
+             (pParamT != PHANTOM_TYPEOF(void*) && pArgT != PHANTOM_TYPEOF(void*)))) // X* -> void* || void* -> X*
             return false;
     }
     return true;

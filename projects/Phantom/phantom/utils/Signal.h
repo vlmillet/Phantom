@@ -191,8 +191,12 @@ public:
         return connect(Functor<R(Parms...)>(a_pThis, _Signal::SlotCaster<R(Parms...)>::PHANTOM_T Cast<T>(a_Func)));
     }
 
-    void disconnect(OpaqueDynDelegate&& a_ODynDelegate) { return _disconnect(a_ODynDelegate.getID()); }
-    void disconnect(OpaqueDynDelegate const& a_ODynDelegate) { return _disconnect(a_ODynDelegate.getID()); }
+    void disconnect(OpaqueDynDelegate const& a_ODynDelegate)
+    {
+        if (auto const& od = a_ODynDelegate.getOpaqueDelegate())
+            return _disconnect(od.getID());
+        return _disconnect(a_ODynDelegate.getID());
+    }
 
     // @brief disconnects a lambda
     template<class T, class = typename FunctorType::template EnableIfCustomArg<T>>

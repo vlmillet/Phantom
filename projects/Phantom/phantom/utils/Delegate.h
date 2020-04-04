@@ -8,15 +8,12 @@
 
 #pragma once
 
-#include <haunt>
-#include <memory.h>
-#include <phantom/detail/macros.h>
-
-HAUNT_STOP;
-
 #include "FunctorID.h"
 
+#include <haunt>
+#include <memory.h>
 #include <phantom/detail/MethodClosure.h>
+#include <phantom/detail/macros.h>
 #include <phantom/detail/typedefs.h>
 
 namespace phantom
@@ -38,7 +35,7 @@ HAUNT_ON class OpaqueDelegate
 {
     HAUNT_OFF protected : HAUNT_OFF typedef void (detail::DelegateGenericClass::*MFPtr)();
     HAUNT_OFF detail::DelegateGenericClass* m_pThis;
-    HAUNT_OFF MFPtr m_pFunction;
+    HAUNT_OFF MFPtr                         m_pFunction;
 
 public:
     OpaqueDelegate() : m_pThis(0), m_pFunction(0){};
@@ -57,6 +54,8 @@ public:
 
     inline bool operator!() const { return m_pThis == 0 && m_pFunction == 0; }
     inline bool empty() const { return m_pThis == 0 && m_pFunction == 0; }
+
+    operator bool() const { return m_pThis || m_pFunction; }
 
     int getThisOffset() const { return Closure(MethodClosure(m_pFunction)).offset; }
 
@@ -332,6 +331,8 @@ public:
 
     Delegate(FuncPtrT function_to_bind) { bind(function_to_bind); }
 
+    Delegate(OpaqueDelegate const& _od) { m_Closure.copyFrom(this, _od); }
+
     template<
     class T,
     class = std::enable_if_t<!std::is_lvalue_reference<T>::value && std::is_convertible<T, FuncPtrT>::value, void>>
@@ -342,6 +343,12 @@ public:
     SelfType& operator=(const SelfType& other)
     {
         m_Closure.copyFrom(this, other.m_Closure);
+        return *this;
+    }
+
+    SelfType& operator=(const OpaqueDelegate& _od)
+    {
+        m_Closure.copyFrom(this, _od);
         return *this;
     }
 

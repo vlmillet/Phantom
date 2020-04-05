@@ -983,6 +983,13 @@ auto _PHTNM_TemplateTypeOfH()
         phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::_PHNTM_User>();                     \
     }
 
+#define _PHNTM_TEMPLATE_TYPEOF_BY_UNDEFINED(TemplateSign, DecoratedType)                                               \
+    PHANTOM_PP_IDENTITY TemplateSign inline auto _PHNTM_TypeOf(phantom::TypeOfTag<PHANTOM_PP_IDENTITY DecoratedType>)  \
+    {                                                                                                                  \
+        return phantom::lang::TypeOfUndefined<                                                                         \
+        phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::object();                           \
+    }
+
 #define _PHANTOM_CLASS_T_COMMON(TemplateSpec, TemplateSign, DecoratedType, TypeName, StartAccess, ExtraCode, ...)      \
     _PHANTOM_CLASS_COMMON(TemplateSpec, TemplateSign, TemplateSign, DecoratedType, StartAccess, ExtraCode, _T,         \
                           __VA_ARGS__ _PHNTM_TEMPLATE_TYPEOF_BY_ADL(TemplateSign, DecoratedType))
@@ -1031,7 +1038,7 @@ auto _PHTNM_TemplateTypeOfH()
     _PHANTOM_CLASS_FULL_SPEC(                                                                                          \
     (template<>), (), (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>), StartAccess, ExtraCode,                            \
     PHANTOM_PP_IDENTITY(PHANTOM_PP_CAT)(TypeName, __COUNTER__),                                                        \
-    _PHNTM_TEMPLATE_TYPEOF_BY_ADL((template<>), (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>)))
+    _PHNTM_TEMPLATE_TYPEOF_BY_UNDEFINED((template<>), (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>)))
 
 #define _PHANTOM_CLASS_TS(TemplateTypes, TemplateParams, TemplateArgs, TypeName, StartAccess, ExtraCode)               \
     _PHANTOM_CLASS_T_COMMON((), (template<PHANTOM_PP_MIX(TemplateTypes, TemplateParams)>),                             \

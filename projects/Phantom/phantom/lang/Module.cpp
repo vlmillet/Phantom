@@ -295,23 +295,7 @@ void Module::findClasses(Classes& a_Classes, lang::Class* a_pBaseClass /*= nullp
     {
         for (Source* s : p->getSources())
         {
-            for (Type* t : s->getTypes())
-            {
-                Class* pClass = t->asClass();
-                if (pClass &&(a_pBaseClass ==
-                               nullptr ||(pClass->isA(a_pBaseClass) && !(pClass->isSame(a_pBaseClass))))
-                    &&(a_bDefaultInstanciable == false || pClass->isDefaultInstanciable()))
-                    a_Classes.push_back(pClass);
-            }
-
-            for (auto t : s->getTemplateSpecializations())
-            {
-                Class* pClass = t->getTemplated() ? t->getTemplated()->asClass() : nullptr;
-                if (pClass &&(a_pBaseClass ==
-                               nullptr ||(pClass->isA(a_pBaseClass) && !(pClass->isSame(a_pBaseClass))))
-                    &&(a_bDefaultInstanciable == false || pClass->isDefaultInstanciable()))
-                    a_Classes.push_back(pClass);
-            }
+            s->findClasses(a_Classes, a_pBaseClass, a_bDefaultInstanciable);
         }
     }
 }

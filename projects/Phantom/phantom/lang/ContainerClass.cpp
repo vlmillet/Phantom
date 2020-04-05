@@ -59,6 +59,22 @@ void ContainerClass::clear(void* a_pContainer) const
     m_Data->m_pFunc_clear->invoke((void*)a_pContainer, nullptr);
 }
 
+void ContainerClass::insert(void* a_pContainer, void const* a_pIt, void const* a_pValue, void* a_pOutIt) const
+{
+    if (!m_Data->m_pFunc_insert)
+    {
+        PHANTOM_VERIFY(m_Data->m_pFunc_insert =
+                       getMethod("insert", TypesView{getIteratorType(), getValueType()->addConstLValueReference()}));
+    }
+    void* args[2]{(void*)a_pIt, (void*)a_pValue};
+    return m_Data->m_pFunc_insert->invoke((void*)a_pContainer, args, a_pOutIt);
+}
+
+void ContainerClass::eraseKey(void* a_pContainer, void const* a_pKey) const
+{
+    eraseAt(a_pContainer, *reinterpret_cast<size_t const*>(a_pKey));
+}
+
 void ContainerClass::begin(void* a_pContainer, void* a_pOutIt) const
 {
     _initBegin();
@@ -248,7 +264,7 @@ Property* ContainerClass::createSizeProperty() const
         if (auto pSetMethod = getMethod("resize(size_t)"))
             pProp->setSet(pSetMethod);
     }
-	return pProp;
+    return pProp;
 }
 
 } // namespace lang

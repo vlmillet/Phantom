@@ -31,6 +31,7 @@ class PHANTOM_EXPORT_PHANTOM ContainerClass : public Class
         Method* m_pFunc_beginc = nullptr;
         Method* m_pFunc_endc = nullptr;
         Method* m_pFunc_eraseAt = nullptr;
+        Method* m_pFunc_insert = nullptr;
     };
 
 protected:
@@ -40,6 +41,9 @@ protected:
 
 public:
     ~ContainerClass() override;
+
+    virtual Type* getKeyType() const { return PHANTOM_TYPEOF(size_t); }
+    virtual Type* getMappedType() const { return m_pValueType; }
 
     inline Type* getValueType() const { return m_pValueType; }
     void         setValueType(Type* a_pValueType);
@@ -57,6 +61,8 @@ public:
     virtual void   erase(void* a_pContainer, void const* a_pIt) const;
     virtual void   clear(void* a_pContainer) const;
 
+    virtual void        insert(void* a_pContainer, void const* a_pIt, void const* a_pValue, void* a_pRetIt) const;
+    virtual void        eraseKey(void* a_pContainer, void const* a_pKey) const;
     virtual void        eraseAt(void* a_pContainer, size_t a_uiIndex) const;
     virtual const void* referenceAt(void const* a_pContainer, size_t a_uiIndex) const;
     virtual void*       referenceAt(void* a_pContainer, size_t a_uiIndex) const;

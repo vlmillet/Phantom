@@ -32,32 +32,19 @@ class PHANTOM_EXPORT_PHANTOM MapClass : public ContainerClass
     };
 
 protected:
-    MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-                uint a_uiFlags);
+    MapClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
     MapClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ~MapClass() override;
 
-    Type* getKeyType() const
-    {
-        return m_pKeyType;
-    }
-    Type* getMappedType() const
-    {
-        return m_pMappedType;
-    }
-    void setKeyType(Type* a_pType)
-    {
-        m_pKeyType = a_pType;
-    }
-    void setMappedType(Type* a_pType)
-    {
-        m_pMappedType = a_pType;
-    }
+    Type* getKeyType() const override final { return m_pKeyType; }
+    Type* getMappedType() const override final { return m_pMappedType; }
+    void  setKeyType(Type* a_pType) { m_pKeyType = a_pType; }
+    void  setMappedType(Type* a_pType) { m_pMappedType = a_pType; }
 
-    virtual void eraseKey(void* a_pContainer, void const* a_pKey) const;
+    virtual void eraseKey(void* a_pContainer, void const* a_pKey) const override;
     virtual void insert(void* a_pContainer, void const* a_pPair) const;
     virtual void map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const;
     virtual void find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const;

@@ -43,10 +43,10 @@ public:
 
     ~SetClass() override;
 
-    Type* getKeyType() const { return m_pValueType; }
+    Type* getKeyType() const override final { return m_pValueType; }
 
     virtual void insert(void* a_pContainer, void const* a_pKey) const;
-    virtual void eraseKey(void* a_pContainer, void const* a_pKey) const;
+    void         eraseKey(void* a_pContainer, void const* a_pKey) const override;
     virtual void find(void const* a_pContainer, void const* a_pKey, void* a_pIt) const;
 
 protected:

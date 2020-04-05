@@ -50,7 +50,7 @@ RegistrerId ModuleRegistrationInfo::addRegistrer(ArrayView<RegistrationStep>    
         else
         // register for incoming future steps
         {
-#define _PHNTM_ADD_REGISTRER(registrers) registrers.push_back(a_pRegistrer); 
+#define _PHNTM_ADD_REGISTRER(registrers) registrers.push_back(a_pRegistrer);
             _PHNTM_APPLY_TO_REGISTRERS(step, _PHNTM_ADD_REGISTRER);
         }
     }
@@ -232,15 +232,14 @@ void ModuleRegistrationInfo::stepRegistration(RegistrationStep a_Step)
     PHANTOM_ASSERT(int(m_CurrentRegistrationStep) < int(a_Step));
     m_CurrentRegistrationStep = a_Step;
 
-#define _PHNTM_CALL__PHNTM_process(registrers)\
-    for (size_t i = 0; i < registrers.size(); ++i)\
-        registrers[i]->__PHNTM_process(a_Step);\
+#define _PHNTM_CALL__PHNTM_process(registrers)                                                                         \
+    for (size_t i = 0; i < registrers.size(); ++i)                                                                     \
+        registrers[i]->__PHNTM_process(a_Step);                                                                        \
     registrers.clear();
     _PHNTM_APPLY_TO_REGISTRERS(a_Step, _PHNTM_CALL__PHNTM_process);
 }
 
-TypeInstallationInfo::TypeInstallationInfo(lang::Type* a_pType, lang::Source* a_pSource,
-                                           TypeInstallFunc a_setupFunc)
+TypeInstallationInfo::TypeInstallationInfo(lang::Type* a_pType, lang::Source* a_pSource, TypeInstallFunc a_setupFunc)
     : installFunc(a_setupFunc), type(a_pType), m_pSource(a_pSource), steps(uint(TypeInstallationStep::Uninstalled))
 {
 }
@@ -268,9 +267,7 @@ void TypeInstallationInfo::exec(TypeInstallationStep a_Step)
         phantom::lang::detail::popSource();
 }
 
-void TypeInstallationInfo::installSymbolExtenders()
-{
-}
+void TypeInstallationInfo::installSymbolExtenders() {}
 
 void ModuleRegistrationInfo::_SetOnRequestMembersFunc(lang::ClassType* a_pType, TypeInstallationDelegate func)
 {

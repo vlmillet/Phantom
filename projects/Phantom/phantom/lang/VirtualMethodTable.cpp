@@ -198,7 +198,8 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
 {
     void*** pppDest = (void***)((byte*)a_pInstance + getOffset());
     size_t& vtableSizeAtDest = a_VTableSizeAtAddress[pppDest];
-    size_t  vTableSize = m_pBaseTable ? std::max(getMethodCount(), m_pBaseTable->getMethodCount()) : getMethodCount();
+    size_t  baseVtableSize = m_pBaseTable ? m_pBaseTable->getMethodCount() : 0;
+    size_t  vTableSize = std::max(getMethodCount(), baseVtableSize);
     if (vtableSizeAtDest == 0) // if not methods already present at this address with more methods
     {
         vtableSizeAtDest = vTableSize;
@@ -268,7 +269,7 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
 
             {
                 memcpy(m_ppClosures, *pppDest,
-                       vtableSizeAtDest * sizeof(void*)); // extract native vtable closures for replacement
+                       baseVtableSize * sizeof(void*)); // extract native vtable closures for replacement
             }
         }
 

@@ -5,13 +5,19 @@
 // ]
 
 #include "ExecutionContext.h"
-#include "Type.h"
+
+#include "Class.h"
 
 namespace phantom
 {
 namespace lang
 {
-static thread_local SmallVector<lang::ExecutionContext*> g_ExecutionContexts;
+PHANTOM_EXPORT_PHANTOM ExecutionContext* (*GetDefaultExecutionContext)();
+
+namespace
+{
+thread_local SmallVector<lang::ExecutionContext*> g_ExecutionContexts;
+} // namespace
 
 ExecutionContext::~ExecutionContext()
 {
@@ -20,6 +26,7 @@ ExecutionContext::~ExecutionContext()
 
 void ExecutionContext::Push(ExecutionContext* a_pExecutionContext)
 {
+    PHANTOM_ASSERT(a_pExecutionContext);
     g_ExecutionContexts.push_back(a_pExecutionContext);
 }
 
@@ -31,15 +38,19 @@ void ExecutionContext::Pop()
 
 ExecutionContext* ExecutionContext::Current()
 {
-    PHANTOM_ASSERT(g_ExecutionContexts.size(),
+    PHANTOM_ASSERT(g_ExecutionContexts.size() || GetDefaultExecutionContext,
                    "no execution context, use ExecutionContext::Push() / ExecutionContext::Pop()");
+    if (g_ExecutionContexts.empty())
+    {
+        return GetDefaultExecutionContext();
+    }
     return g_ExecutionContexts.back();
 }
 
 void ExecutionContext::pushTempDestruction(Evaluable* a_pScope, Type* a_pType, void* a_pBuffer)
 {
-    m_Temporaries.push_back(TempDestruction{
-    a_pScope, SmallVector<std::pair<Type*, void*> >{std::make_pair(a_pType, a_pBuffer)}});
+    m_Temporaries.push_back(
+    TempDestruction{a_pScope, SmallVector<std::pair<Type*, void*> >{std::make_pair(a_pType, a_pBuffer)}});
 }
 
 void ExecutionContext::releaseTemporaries(Evaluable* a_pScope)

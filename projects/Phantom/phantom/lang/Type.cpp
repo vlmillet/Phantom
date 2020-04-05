@@ -579,7 +579,7 @@ Array* Type::makeArray(size_t a_uiCount) const
         pType = createArray(a_uiCount);
         if (!pType)
             return nullptr;
-        if (m_uiSize)
+        if (!isNative() && a_uiCount && m_uiSize)
         {
             pType->setSize(m_uiSize * a_uiCount);
             pType->setAlignment(m_uiAlignment);
@@ -604,7 +604,7 @@ ConstType* Type::makeConst() const
         pType = createConstType();
         if (!pType)
             return nullptr;
-        if (m_uiSize)
+        if (!isNative() && m_uiSize)
         {
             pType->setSize(m_uiSize);
             pType->setAlignment(m_uiAlignment);
@@ -629,7 +629,7 @@ VolatileType* Type::makeVolatile() const
         pType = createVolatileType();
         if (!pType)
             return nullptr;
-        if (m_uiSize)
+        if (!isNative() && m_uiSize)
         {
             pType->setSize(m_uiSize);
             pType->setAlignment(m_uiAlignment);
@@ -654,7 +654,7 @@ ConstVolatileType* Type::makeConstVolatile() const
         pType = createConstVolatileType();
         if (!pType)
             return nullptr;
-        if (m_uiSize)
+        if (!isNative() && m_uiSize)
         {
             pType->setSize(m_uiSize);
             pType->setAlignment(m_uiAlignment);

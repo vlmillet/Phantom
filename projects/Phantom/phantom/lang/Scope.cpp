@@ -848,5 +848,34 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
     return pTemplateSpecialization;
 }
 
+void Scope::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullptr*/,
+                        bool a_bDefaultInstanciable /*= false*/) const
+{
+    for (size_t i = 0; i < m_Types->size(); ++i)
+    {
+        if (Class* pClass = (*m_Types)[i]->asClass())
+        {
+            if ((a_pBaseClass == nullptr || (pClass->isA(a_pBaseClass) && !(pClass->isSame(a_pBaseClass)))) &&
+                (a_bDefaultInstanciable == false || pClass->isDefaultInstanciable()))
+                a_Classes.push_back(pClass);
+            pClass->findClasses(a_Classes, a_pBaseClass, a_bDefaultInstanciable);
+        }
+    }
+
+    for (size_t i = 0; i < m_TemplateSpecializations->size(); ++i)
+    {
+        if (auto pTemplated = (*m_TemplateSpecializations)[i]->getTemplated())
+        {
+            if (Class* pClass = pTemplated->asClass())
+            {
+                if ((a_pBaseClass == nullptr || (pClass->isA(a_pBaseClass) && !(pClass->isSame(a_pBaseClass)))) &&
+                    (a_bDefaultInstanciable == false || pClass->isDefaultInstanciable()))
+                    a_Classes.push_back(pClass);
+                pClass->findClasses(a_Classes, a_pBaseClass, a_bDefaultInstanciable);
+            }
+        }
+    }
+}
+
 } // namespace lang
 } // namespace phantom

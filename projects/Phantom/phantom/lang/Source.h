@@ -89,10 +89,7 @@ public:
     /// \return null if no source file associated with this source, else the source file.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SourceStream* getSourceStream() const
-    {
-        return m_pSourceStream;
-    }
+    SourceStream* getSourceStream() const { return m_pSourceStream; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get or create a function pointer type.
@@ -186,10 +183,7 @@ public:
     /// \return An iterator pointing to the end of imports in this source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Imports const& getImports() const
-    {
-        return m_Imports;
-    }
+    Imports const& getImports() const { return m_Imports; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets all the imported source (recursively).
@@ -203,10 +197,7 @@ public:
     /// \brief  Gets a list of the sources importing this one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sources const& getImportings() const
-    {
-        return m_Importings;
-    }
+    Sources const& getImportings() const { return m_Importings; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds an imported source to this source.
@@ -283,10 +274,7 @@ public:
     /// \return An iterator pointing to the end of dependencies in this source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Sources& getDependencies() const
-    {
-        return m_Dependencies;
-    }
+    const Sources& getDependencies() const { return m_Dependencies; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this source has a given dependency on the given source (real definition
@@ -338,31 +326,19 @@ public:
 
     void removeDependency(Source* a_pSource);
 
-    Sources const& getDependings() const
-    {
-        return m_Dependings;
-    }
+    Sources const& getDependings() const { return m_Dependings; }
 
     void clearImports();
 
     void clearDependencies();
 
-    Source* asSource() const override
-    {
-        return (Source*)this;
-    }
+    Source* asSource() const override { return (Source*)this; }
 
-    Scope* asScope() const override
-    {
-        return (Scope*)this;
-    }
+    Scope* asScope() const override { return (Scope*)this; }
 
     bool canBeUnloaded() const override;
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getQualifiedName(a_Buf);
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getQualifiedName(a_Buf); }
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getUniqueName(StringBuffer& a_Buf) const override;
 
@@ -370,14 +346,8 @@ public:
     using LanguageElement::getQualifiedDecoratedName;
     using LanguageElement::getUniqueName;
 
-    void addElement(LanguageElement* a_pElement)
-    {
-        Symbol::addElement(a_pElement);
-    }
-    void removeElement(LanguageElement* a_pElement)
-    {
-        Symbol::removeElement(a_pElement);
-    }
+    void addElement(LanguageElement* a_pElement) { Symbol::addElement(a_pElement); }
+    void removeElement(LanguageElement* a_pElement) { Symbol::removeElement(a_pElement); }
 
     Source* getCodeLocationSource() const override;
 

@@ -30,37 +30,16 @@ public:
     virtual void addScopeElement(Symbol* a_pElement) = 0;
     virtual void removeScopeElement(Symbol* a_pElement) = 0;
 
-    PHANTOM_FORCEINLINE LanguageElement* asLanguageElement() const
-    {
-        return m_pThisElement;
-    }
+    PHANTOM_FORCEINLINE LanguageElement* asLanguageElement() const { return m_pThisElement; }
 
-    PHANTOM_FORCEINLINE Symbol* asSymbol() const
-    {
-        return m_pThisElement->asSymbol();
-    }
-    PHANTOM_FORCEINLINE Namespace* asNamespace() const
-    {
-        return m_pThisElement->asNamespace();
-    }
+    PHANTOM_FORCEINLINE Symbol* asSymbol() const { return m_pThisElement->asSymbol(); }
+    PHANTOM_FORCEINLINE Namespace* asNamespace() const { return m_pThisElement->asNamespace(); }
 
-    bool isSame(Symbol* a_pSymbol) const
-    {
-        return m_pThisElement->isSame((LanguageElement*)a_pSymbol);
-    }
-    bool isSame(LanguageElement* a_pElement) const
-    {
-        return m_pThisElement->isSame(a_pElement);
-    }
-    bool isSame(Scope* a_pScope) const
-    {
-        return m_pThisElement->isSame(a_pScope->m_pThisElement);
-    }
+    bool isSame(Symbol* a_pSymbol) const { return m_pThisElement->isSame((LanguageElement*)a_pSymbol); }
+    bool isSame(LanguageElement* a_pElement) const { return m_pThisElement->isSame(a_pElement); }
+    bool isSame(Scope* a_pScope) const { return m_pThisElement->isSame(a_pScope->m_pThisElement); }
 
-    virtual Scope* getNamedScope() const
-    {
-        return (Scope*)this;
-    }
+    virtual Scope* getNamedScope() const { return (Scope*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a type to this scope.
@@ -86,10 +65,7 @@ public:
     /// \return The type at given index position.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getType(size_t a_uiIndex) const
-    {
-        return m_Types[a_uiIndex];
-    }
+    Type* getType(size_t a_uiIndex) const { return m_Types[a_uiIndex]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the types declared in this scope.
@@ -97,10 +73,7 @@ public:
     /// \return The type list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Types const& getTypes() const
-    {
-        return *m_Types;
-    }
+    Types const& getTypes() const { return *m_Types; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the type matching the given name.
@@ -202,10 +175,7 @@ public:
     /// \return The template list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Templates const& getTemplates() const
-    {
-        return *m_Templates;
-    }
+    Templates const& getTemplates() const { return *m_Templates; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a template specialization to this scope.
@@ -277,10 +247,7 @@ public:
     /// \return The template specialization list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecializations const& getTemplateSpecializations() const
-    {
-        return *m_TemplateSpecializations;
-    }
+    TemplateSpecializations const& getTemplateSpecializations() const { return *m_TemplateSpecializations; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template specialization matching given template name and arguments.
@@ -335,10 +302,7 @@ public:
     /// \return the variable list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Variables const& getVariables() const
-    {
-        return *m_Variables;
-    }
+    Variables const& getVariables() const { return *m_Variables; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a constant to this scope.
@@ -382,10 +346,7 @@ public:
     /// \return the constant list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Constants const& getConstants() const
-    {
-        return *m_Constants;
-    }
+    Constants const& getConstants() const { return *m_Constants; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a PHANTOM_NEW(alias) (typedef, using, etc...) to this scope.
@@ -469,10 +430,7 @@ public:
     /// \return the alias list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Aliases const& getAliases() const
-    {
-        return *m_Aliases;
-    }
+    Aliases const& getAliases() const { return *m_Aliases; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the element aliased with the given alias name.
@@ -536,10 +494,7 @@ public:
     /// \return The functions list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Functions const& getFunctions() const
-    {
-        return *m_Functions;
-    }
+    Functions const& getFunctions() const { return *m_Functions; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a function from given name and parameters' types.
@@ -610,10 +565,7 @@ public:
     /// \return null if it fails, else the anonymous sections.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    AnonymousSections const& getAnonymousSections() const
-    {
-        return *m_AnonymousSections.operator->();
-    }
+    AnonymousSections const& getAnonymousSections() const { return *m_AnonymousSections.operator->(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a subroutine from given name, parameters' types and optional modifiers.
@@ -712,6 +664,20 @@ public:
 
     virtual void getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) const;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Find all the classes in this source derived from the given base class into a vector
+    ///         container.
+    ///
+    /// \param [in,out] a_Classes       [in,out] The found classes.
+    /// \param  a_pBaseClass            (optional) If non-null, the base class used to filter the
+    ///                                 searched classes. If null, every class in the module will be
+    ///                                 collected.
+    /// \param  a_bDefaultInstanciable  (optional) check if the classes must be default instanciable
+    /// (not abstract + default constructible).
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void findClasses(Classes& a_Classes, Class* a_pBaseClass = nullptr, bool a_bDefaultInstanciable = false) const;
+
 protected:
     void scopedElementAdded(LanguageElement* a_pElement);
     void scopedElementRemoved(LanguageElement* a_pElement);
@@ -727,6 +693,8 @@ protected:
     Members<TemplateSpecializations> m_TemplateSpecializations;
     Members<AnonymousSections>       m_AnonymousSections;
     Members<Aliases>                 m_Aliases;
+
+public:
 };
 
 } // namespace lang

@@ -39,6 +39,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using Aliases = typedef_< phantom::lang::Aliases>;
             using AnonymousSections = typedef_< phantom::lang::AnonymousSections>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using Constants = typedef_< phantom::lang::Constants>;
             using Functions = typedef_< phantom::lang::Functions>;
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
@@ -131,6 +132,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Types&) const>("fetchTypesCascade", &_::fetchTypesCascade)
             .method<bool(Symbol*) const>("isSymbolHidden", &_::isSymbolHidden)
             .method<void(StringView, Symbols&) const, virtual_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)
+            .method<void(Classes&, Class*, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
         
         .protected_()
             .method<void(LanguageElement*)>("scopedElementAdded", &_::scopedElementAdded)
@@ -147,6 +149,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .field("m_TemplateSpecializations", &_::m_TemplateSpecializations)
             .field("m_AnonymousSections", &_::m_AnonymousSections)
             .field("m_Aliases", &_::m_Aliases)
+        
+        .public_()
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

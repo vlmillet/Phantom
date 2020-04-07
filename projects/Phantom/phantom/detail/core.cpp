@@ -177,10 +177,10 @@ static StringView  g_pPackage;
 #if PHANTOM_REFLECTION_DEBUG_ENABLED
 static lang::LanguageElements* g_elements;
 #endif
-static MessageReportFunc g_assert_func;
-static MessageReportFunc g_warning_func;
-static MessageReportFunc g_error_func;
-static LogFunc           g_LogFunc;
+static MessageReportFunc g_assert_func{defaultAssert};
+static MessageReportFunc g_warning_func{defaultWarning};
+static MessageReportFunc g_error_func{defaultError};
+static LogFunc           g_LogFunc{defaultLog};
 lang::ClassHookFunc      g_InstanceHook_func;
 
 typedef SmallMap<String, lang::Package*> PackageMap;
@@ -261,11 +261,6 @@ void DynamicCppInitializerH::init()
 #endif
 
     g_instance = nullptr;
-
-    g_assert_func = defaultAssert;
-    g_warning_func = defaultWarning;
-    g_error_func = defaultError;
-    g_LogFunc = defaultLog;
 
     g_module = nullptr;
 
@@ -394,8 +389,8 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 
     PHANTOM_ASSERT(lang::detail::currentModule());
 
-    if (a_pTypeInstallInfo->type->getOwner() ==
-        nullptr && !(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM)))
+    if (a_pTypeInstallInfo->type->getOwner() == nullptr &&
+        !(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM)))
     {
         /// not a template instance and not a nested type => we add it to the current source
         /// or the current module anonymous source if no current source is defined
@@ -580,8 +575,8 @@ void DynamicCppInitializerH::installModules()
         lang::Application::Get()->_registerBuiltInTypes();
 
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
-    PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() || lang::Application::Get()->getMainModule() ==
-                   nullptr ||                              modulesToInstallCount == 1);
+    PHANTOM_ASSERT(lang::Plugin::HasLoadingInProgress() || lang::Application::Get()->getMainModule() == nullptr ||
+                   modulesToInstallCount == 1);
 
     // no module to install
     if (modulesToInstallCount == 0)

@@ -26,7 +26,7 @@ public:
     static void UnregisterForCleanup(void* a_pAddr);
     static bool TryUnregisterForCleanup(void* a_pAddr);
     static bool ReleaseInProgress(void* a_pModuleHandle);
-    static void Release(void* a_pModuleHandle);
+    static void Release(void* a_pModuleStartAddress, void* a_pModuleEndAddress);
 };
 
 template<class T>

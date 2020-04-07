@@ -10,9 +10,11 @@ namespace phantom
 {
 namespace
 {
-bool     s_destroyedOnce;
-void*    s_releaseInProgress;
-uint64_t s_staticGlobalCounter;
+bool            s_destroyedOnce;
+void*           s_releaseInProgress;
+uint64_t        s_staticGlobalCounter;
+SmallSet<void*> s_encounteredModules;
+void*           s_lastEncounteredModules;
 
 struct StaticGlobalInfo
 {
@@ -38,7 +40,9 @@ static Placement<SmallMap<void*, StaticGlobalInfo, StaticGlobalMapStaticSize>>& 
 void StaticGlobals::RegisterForCleanup(void* a_pAddr, void* a_pModuleHandle, CleanupDelegate a_Delegate)
 {
     PHANTOM_ASSERT(_CleanupMap()->find(a_pAddr) == _CleanupMap()->end());
-    (*_CleanupMap())[a_pAddr] = {a_Delegate, s_staticGlobalCounter++, a_pModuleHandle};
+    PHANTOM_ASSERT(voidptr(_dllModuleHandleFromAddress(a_pAddr)) == a_pModuleHandle);
+    auto& map = (*_CleanupMap());
+    map[a_pAddr] = {a_Delegate, s_staticGlobalCounter++, a_pModuleHandle};
 }
 
 void StaticGlobals::UnregisterForCleanup(void* a_pAddr)
@@ -62,64 +66,57 @@ bool StaticGlobals::ReleaseInProgress(void* a_pModuleHandle)
     return s_releaseInProgress == a_pModuleHandle;
 }
 
-void StaticGlobals::Release(void* a_pModuleHandle)
+void StaticGlobals::Release(void* a_pModuleStartAddress, void* a_pModuleEndAddress)
 {
-    PHANTOM_ASSERT(a_pModuleHandle == nullptr || !ReleaseInProgress(a_pModuleHandle));
-    s_releaseInProgress = a_pModuleHandle;
-    // nasty hack to be able to resort map by time counter instead of by pointer
-    SmallVector<Pair<void*, StaticGlobalInfo>, StaticGlobalMapStaticSize>& sortedByTimeReverse =
-    (SmallVector<Pair<void*, StaticGlobalInfo>, StaticGlobalMapStaticSize>&)*_CleanupMap();
-    std::sort(sortedByTimeReverse.begin(), sortedByTimeReverse.end(),
-              [](Pair<void*, StaticGlobalInfo> const& p0, Pair<void*, StaticGlobalInfo> const& p1) -> bool {
-                  return p0.second.cnt > p1.second.cnt;
-              });
-
-    auto startIt = sortedByTimeReverse.end();
-    auto endIt = sortedByTimeReverse.begin();
-    if (!a_pModuleHandle)
+    auto& sgmap = *_CleanupMap();
+    if (a_pModuleStartAddress == nullptr) // special main case
     {
-        for (auto it = sortedByTimeReverse.begin(); it != sortedByTimeReverse.end(); ++it)
-            it->second.dgt(it->first);
+        PHANTOM_ASSERT(a_pModuleEndAddress == nullptr);
+        // we release all remaining addresses
+        s_releaseInProgress = a_pModuleStartAddress;
+        auto start = std::make_reverse_iterator(sgmap.end());
+        auto end = std::make_reverse_iterator(sgmap.begin());
+        for (auto it = start; it != end; ++it)
+        {
+            if (it->second.dgt)
+                it->second.dgt(it->first);
+        }
+        sgmap.clear();
+
+        s_destroyedOnce = true;
+        s_releaseInProgress = nullptr;
+        _CleanupMap().destroy();
     }
     else
     {
-        for (auto it = sortedByTimeReverse.begin(); it != sortedByTimeReverse.end(); ++it)
+        auto sgmapend = sgmap.end();
+        auto moduleStart = sgmap.find(a_pModuleStartAddress);
+        PHANTOM_ASSERT(moduleStart != sgmap.end());
+        auto start = moduleStart + 1; // skip base address (its a fake entry)
+        auto end = start;
+
+        PHANTOM_ASSERT(a_pModuleStartAddress == nullptr || !ReleaseInProgress(a_pModuleStartAddress));
+        s_releaseInProgress = a_pModuleStartAddress;
+
+        SmallVector<Pair<void* const, StaticGlobalInfo>*, 1024> toExecReverse;
+
+        for (end = start; end != sgmapend; ++end)
         {
-            if (it->second.hnd == a_pModuleHandle)
-            {
-                PHANTOM_ASSERT(endIt == sortedByTimeReverse.begin());
-                if (startIt == sortedByTimeReverse.end())
-                    startIt = it;
-                it->second.dgt(it->first);
-            }
-            else
-            {
-                PHANTOM_ASSERT(startIt == sortedByTimeReverse.end() || endIt == sortedByTimeReverse.begin());
-                if (startIt != sortedByTimeReverse.end())
-                {
-                    endIt = it;
-                    break;
-                }
-            }
+            if (end->first >= a_pModuleEndAddress)
+                break; // we are out of this module range, we can stop search
+            toExecReverse.push_back(end);
         }
-    }
-    if (startIt != sortedByTimeReverse.end())
-    {
-        if (endIt == sortedByTimeReverse.begin())
-            endIt = sortedByTimeReverse.end();
-        sortedByTimeReverse.erase(startIt, endIt);
-    }
-    s_destroyedOnce = true;
-    s_releaseInProgress = nullptr;
 
-    // resort it back
-    std::sort(sortedByTimeReverse.begin(), sortedByTimeReverse.end(),
-              [](Pair<void*, StaticGlobalInfo> const& p0, Pair<void*, StaticGlobalInfo> const& p1) -> bool {
-                  return p0.first < p1.first;
-              });
+        for (auto it = toExecReverse.rbegin(); it != toExecReverse.rend(); ++it)
+        {
+            (*it)->second.dgt((*it)->first);
+        }
 
-    if (a_pModuleHandle == nullptr)
-        _CleanupMap().destroy();
+        sgmap.erase(moduleStart, end);
+
+        s_destroyedOnce = true;
+        s_releaseInProgress = nullptr;
+    }
 }
 
 } // namespace phantom

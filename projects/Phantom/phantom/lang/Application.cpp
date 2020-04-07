@@ -14,9 +14,12 @@
 
 #include <phantom/detail/core.h>
 #include <phantom/utils/Path.h>
+
+// clang-format off
 #ifndef __DOXYGEN__
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-#        include "windows.h"
+#        include <windows.h>
+#        include <Psapi.h>
 
 #        include <TlHelp32.h>
 #        include <winternl.h>
@@ -29,6 +32,8 @@
 #        include <mach-o/getsect.h>
 #    endif
 #endif
+// clang-format on
+
 #include "ConstVolatileType.h"
 #include "CppSymbolParser.h"
 #include "LValueReference.h"
@@ -99,8 +104,12 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
     // #endif
     {
         PHANTOM_ASSERT(getModule(info->m_Name) == nullptr, "module '%s' already exists", info->m_Name);
-        info->setModule(PHANTOM_DEFERRED_NEW(Module)(info->m_ModuleHandle, info->m_Name, info->m_BinaryFileName,
-                                                     info->m_Source, info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
+        MODULEINFO modInfo{};
+        PHANTOM_VERIFY(
+        GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));
+        info->setModule(PHANTOM_DEFERRED_NEW(Module)(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
+                                                     info->m_BinaryFileName, info->m_Source,
+                                                     info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
@@ -183,7 +192,7 @@ void Application::terminate()
         PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
     }
 
-    StaticGlobals::Release(0);
+    StaticGlobals::Release(nullptr, nullptr);
 
     _uninstallNativeModule(m_Modules.back());
 
@@ -734,7 +743,7 @@ Module* Application::nativeModuleFromProgramCounter(const byte* epc)
     for (auto pMod : nativeModules)
     {
         byte* pMemoryStart = pMod->getMemoryStart();
-        if (pMemoryStart &&(epc > pMemoryStart)) // current instruction pointer is after current
+        if (pMemoryStart && (epc > pMemoryStart)) // current instruction pointer is after current
                                                   // module start => current module is candidate
         {
             if ((epc - pMemoryStart) < distanceFromModuleStart)
@@ -1270,7 +1279,7 @@ Symbol* Application::_findSymbol(const Strings& words, const Types* a_pFunctionS
             else
             {
                 Subroutine* pSubroutine;
-                if (name.size() && name.front() == '$' &&(pSubroutine = pScope->asSubroutine())) // parameter
+                if (name.size() && name.front() == '$' && (pSubroutine = pScope->asSubroutine())) // parameter
                 {
                     int i2 = -1;
                     if (sscanf(name.c_str() + 1, "%d", &i2) != 1 || i2 < 0 || i2 >= pSubroutine->getParameters().size())

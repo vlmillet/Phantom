@@ -28,6 +28,8 @@ ModuleRegistrationInfo::ModuleRegistrationInfo(size_t a_ModuleHandle)
       m_HashToTypeMap(&CustomAllocator::Default()),
       m_bInstalled(false)
 {
+    // register a fake static global for helping sorting them by module handle
+    StaticGlobals::RegisterForCleanup((void*)a_ModuleHandle, (void*)a_ModuleHandle, CleanupDelegate());
 }
 
 RegistrerId ModuleRegistrationInfo::addRegistrer(ArrayView<RegistrationStep>                    a_RegistrationSteps,

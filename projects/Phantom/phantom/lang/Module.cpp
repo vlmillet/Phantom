@@ -33,10 +33,11 @@ bool g_ReleasingPhantomModule;
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "cleanup Module ctor arguments")
 #endif
-Module::Module(size_t a_PlatformHandle, StringView a_strName, StringView a_LibraryFullName,
+Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_strName, StringView a_LibraryFullName,
                StringView a_DeclarationCppFullName, uint a_uiFlags)
     : Symbol(a_strName, Modifier::None, a_uiFlags | PHANTOM_R_ALWAYS_VALID),
-      m_pBaseAddress((void*)a_PlatformHandle),
+      m_pBaseAddress((void*)a_NativeHandle),
+      m_ImageSize(a_NativeImageSize),
       m_LibraryFullName(a_LibraryFullName),
       m_DeclarationCppFullName(a_DeclarationCppFullName)
 {
@@ -51,7 +52,7 @@ Module::Module(size_t a_PlatformHandle, StringView a_strName, StringView a_Libra
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
-    : Module(0, a_strName, StringView(), StringView(), a_uiFlags)
+    : Module(0, 0, a_strName, StringView(), StringView(), a_uiFlags)
 {
 }
 
@@ -126,7 +127,7 @@ void Module::terminate()
     }
     else if (isNative())
     {
-        StaticGlobals::Release(m_pBaseAddress);
+        StaticGlobals::Release(m_pBaseAddress, reinterpret_cast<uint8_t*>(m_pBaseAddress) + m_ImageSize);
     }
     m_pPlugin = nullptr;
     Symbol::terminate();

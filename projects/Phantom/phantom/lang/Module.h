@@ -101,6 +101,14 @@ public:
     void* getBaseAddress() const { return m_pBaseAddress; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets image size of this module, or 0 if not a native or jit module.
+    ///
+    /// \return The image size (MODULEINFO.SizeOfImage on windows)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    size_t getImageSize() const { return m_ImageSize; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets runtime JIT module base address.
     ///
     /// \return The platform handle (or 0x0 if your OS don't have such a value)..
@@ -110,6 +118,18 @@ public:
     {
         PHANTOM_ASSERT(!isNative());
         m_pBaseAddress = a_pBaseAddress;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets runtime JIT module base address.
+    ///
+    /// \return The platform handle (or 0x0 if your OS don't have such a value)..
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setImageSize(size_t a_ImageSize)
+    {
+        PHANTOM_ASSERT(!isNative());
+        m_ImageSize = a_ImageSize;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,8 +305,8 @@ private:
     /// \param  a_strSourcePath Full pathname of the sources.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Module(size_t a_NativeHandle, StringView a_strName, StringView a_LibFullName, StringView a_DeclarationCppFullName,
-           uint a_uiFlags = 0);
+    Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_strName, StringView a_LibFullName,
+           StringView a_DeclarationCppFullName, uint a_uiFlags = 0);
 
     void _registerType(hash64 a_Hash, Type* a_pType);
     void _unregisterType(hash64 a_Hash, Type* a_pType);
@@ -294,6 +314,7 @@ private:
 private:
     Packages                m_Packages;
     void*                   m_pBaseAddress = nullptr;
+    size_t                  m_ImageSize = 0;
     StringBuffer            m_LibraryFullName;
     StringBuffer            m_DeclarationCppFullName;
     Modules                 m_Dependencies;

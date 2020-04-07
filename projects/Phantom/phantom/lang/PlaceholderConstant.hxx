@@ -61,11 +61,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("toString", &_::toString)
             .method<void(StringBuffer&) const, virtual_|override_>("toLiteral", &_::toLiteral)
             .method<void const*() const, virtual_|override_>("getAddress", &_::getAddress)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
-            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<Placeholder*(uint) const, virtual_|override_>("clone", &_::clone)["0"]
             ;
         }

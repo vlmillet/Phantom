@@ -26,6 +26,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -63,7 +64,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .method<TemplateSpecialization*() const, virtual_|override_>("asTemplateSpecialization", &_::asTemplateSpecialization)
             .method<TemplateSpecialization*() const, virtual_>("getEnclosingTemplateSpecialization", &_::getEnclosingTemplateSpecialization)
-            .method<Scope*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
+            .method<LanguageElement*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
             .method<size_t() const>("getArgumentCount", &_::getArgumentCount)
             .method<Type*(StringView) const>("getArgumentAsType", &_::getArgumentAsType)
             .method<LanguageElement*(StringView) const>("getArgument", &_::getArgument)
@@ -81,6 +82,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateParameters const&() const>("getTemplateParameters", &_::getTemplateParameters)
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
+            .method<hash64() const>("getDecorationHash", &_::getDecorationHash)
             .method<void(StringBuffer&) const>("getQualifiedDecoration", &_::getQualifiedDecoration)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)

@@ -24,7 +24,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -38,7 +37,6 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(PlaceholderClassType)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::ClassType, ::phantom::lang::Placeholder>()
@@ -55,11 +53,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
             .method<bool(Class*) const, virtual_>("isA", &_::isA)
             .method<Class*() const>("toClass", &_::toClass)
-            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<Placeholder*(uint) const, virtual_|override_>("clone", &_::clone)["0"]
             ;

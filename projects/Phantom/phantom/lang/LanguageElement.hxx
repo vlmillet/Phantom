@@ -27,6 +27,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Delegate.hxx>
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallSet.hxx>
 #include <phantom/utils/SmallString.hxx>
@@ -59,6 +60,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
+            using SymbolFilter = typedef_<_::SymbolFilter>;
             using Symbols = typedef_< phantom::lang::Symbols>;
             this_()
             .inherits<::phantom::Object>()
@@ -69,8 +71,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .typedef_<SymbolFilter>("SymbolFilter")
+            .typedef_<SymbolFilter>("SymbolFilter")
             .staticMethod<Symbol*(Symbol*, bool)>("NoFilter", &_::NoFilter)
             .staticMethod<Symbol*(Symbol*, bool)>("PublicFilter", &_::PublicFilter)
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
@@ -224,8 +225,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(ModuleSet&) const>("fetchReferencingModulesDeep", &_::fetchReferencingModulesDeep)
             .method<void(LanguageElements&) const>("getElements", &_::getElements)
             .method<void(Symbols&) const>("fetchSymbols", &_::fetchSymbols)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Symbols&, SymbolFilter, bool, bool) const>("fetchSymbols", &_::fetchSymbols)["true"]["false"]
+            .method<void(Symbols&, SymbolFilter, bool, bool) const>("fetchSymbols", &_::fetchSymbols)["true"]["false"]
             .method<void(LanguageElements&) const>("getElementsDeep", &_::getElementsDeep)
             .method<void(LanguageElement*)>("addElement", &_::addElement)
             .method<void(Symbol*)>("addSymbol", &_::addSymbol)
@@ -237,17 +237,20 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(::std::basic_ostream<char> &) const>("dumpElementListCascade", &_::dumpElementListCascade)
             .method<String() const, virtual_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<String(LanguageElement*) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<String() const, virtual_>("getQualifiedName", &_::getQualifiedName)
             .method<String() const, virtual_>("getDecoratedName", &_::getDecoratedName)
             .method<String() const>("getName", &_::getName)
             .method<String() const>("getUniqueName", &_::getUniqueName)
             .method<void(StringBuffer&) const, virtual_>("getName", &_::getName)
             .method<void(StringBuffer&) const, virtual_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeName", &_::getRelativeName)
             .method<void(StringBuffer&) const, virtual_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<void(StringBuffer&) const, virtual_>("getUniqueName", &_::getUniqueName)
-            .method<Scope*() const, virtual_>("getNamingScope", &_::getNamingScope)
-            .method<bool(Scope*) const>("hasNamingScopeCascade", &_::hasNamingScopeCascade)
+            .method<LanguageElement*() const, virtual_>("getNamingScope", &_::getNamingScope)
+            .method<bool(LanguageElement*) const>("hasNamingScopeCascade", &_::hasNamingScopeCascade)
             .method<void()>("clear", &_::clear)
             .method<void(LanguageElement*)>("steal", &_::steal)
             .method<void()>("detach", &_::detach)

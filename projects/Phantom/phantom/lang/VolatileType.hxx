@@ -61,6 +61,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

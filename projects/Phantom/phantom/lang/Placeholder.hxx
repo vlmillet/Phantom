@@ -20,6 +20,12 @@
 #include <phantom/class>
 #include <phantom/method>
 
+#include <phantom/template-only-push>
+
+#include <phantom/utils/SmallString.hxx>
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
@@ -28,15 +34,17 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Placeholder)
         {
+            using StringBuffer = typedef_< phantom::StringBuffer>;
             this_()
         .public_()
-            .method<bool(Placeholder*) const>("isSame", &_::isSame)
             .method<Symbol*() const, pure_virtual>("asSymbol", &_::asSymbol)
             .method<Placeholder*() const, pure_virtual>("asPlaceholder", &_::asPlaceholder)
             .method<PlaceholderType*() const, virtual_>("asPlaceholderType", &_::asPlaceholderType)
             .method<PlaceholderConstant*() const, virtual_>("asPlaceholderConstant", &_::asPlaceholderConstant)
             .method<PlaceholderClass*() const, virtual_>("asPlaceholderClass", &_::asPlaceholderClass)
             .method<PlaceholderTemplate*() const, virtual_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
+            .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)
+            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)
             .method<Placeholder*(uint) const, pure_virtual>("clone", &_::clone)["0"]
             ;

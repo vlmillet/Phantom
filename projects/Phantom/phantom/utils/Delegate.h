@@ -315,6 +315,8 @@ class Delegate
 template<class R, class... Params>
 class Delegate<R(Params...)>
 {
+    HAUNT_PAUSE;
+
 private:
     typedef R (*FuncPtrT)(Params...);
     typedef R (detail::DelegateGenericClass::*member_function_pointer_t)(Params...);
@@ -409,6 +411,7 @@ public:
     {
         m_Closure.bindF(this, &SelfType::callStaticF, function_to_bind);
     }
+    HAUNT_RESUME;
 
     R operator()(Params... ps) const { return (m_Closure.getThis()->*(m_Closure.getMFPtr()))(((Params)ps)...); }
 

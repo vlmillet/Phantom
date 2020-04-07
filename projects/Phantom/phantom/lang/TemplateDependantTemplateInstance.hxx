@@ -50,11 +50,15 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<const LanguageElements&() const>("getArguments", &_::getArguments)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
+            .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
+            .method<void(StringBuffer&) const>("getQualifiedDecoration", &_::getQualifiedDecoration)
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

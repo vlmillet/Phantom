@@ -26,6 +26,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -39,6 +40,7 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(TemplateSignature)
         {
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
             this_()
@@ -56,6 +58,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<TemplateSignature*(StringView, StringView, LanguageElement*, uint)>("Parse", &_::Parse)["PHANTOM_R_NONE"]
             .method<TemplateSignature*() const, virtual_|override_>("asTemplateSignature", &_::asTemplateSignature)
             .method<Template*() const>("getTemplate", &_::getTemplate)
+            .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<TemplateParameter*(Type*, StringView)>("addTemplateValueParameter", &_::addTemplateValueParameter)
             .method<TemplateParameter*(StringView)>("addTemplateTypeParameter", &_::addTemplateTypeParameter)
             .method<TemplateParameter*(TemplateSignature*, StringView)>("addTemplateTemplateParameter", &_::addTemplateTemplateParameter)
@@ -79,6 +82,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(bool)>("setVariadic", &_::setVariadic)
             .method<TemplateSignature*(uint) const>("clone", &_::clone)["0"]
+            .method<void(StringBuffer&) const, virtual_|override_>("getName", &_::getName)
+            .method<hash64() const, virtual_>("computeLocalHash", &_::computeLocalHash)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

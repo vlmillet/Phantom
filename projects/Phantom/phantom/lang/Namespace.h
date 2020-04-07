@@ -36,18 +36,9 @@ public:
     Namespace(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     PHANTOM_DTOR ~Namespace() override;
 
-    Scope* asScope() const override
-    {
-        return (Namespace*)this;
-    }
-    Namespace* asNamespace() const override
-    {
-        return (Namespace*)this;
-    }
-    Namespace* toNamespace() const override
-    {
-        return (Namespace*)this;
-    }
+    Scope*     asScope() const override { return (Namespace*)this; }
+    Namespace* asNamespace() const override { return (Namespace*)this; }
+    Namespace* toNamespace() const override { return (Namespace*)this; }
 
     void addScopeElement(Symbol* a_pElement) override;
     void removeScopeElement(Symbol* a_pElement) override;
@@ -147,10 +138,7 @@ public:
     /// \return the child namespace list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespaces const& getNamespaces() const
-    {
-        return m_Namespaces;
-    }
+    Namespaces const& getNamespaces() const { return m_Namespaces; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the namespace aliases referenced in this namespace.
@@ -158,10 +146,7 @@ public:
     /// \return the namespace aliases list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Aliases const& getNamespaceAliases() const
-    {
-        return m_NamespaceAliases;
-    }
+    Aliases const& getNamespaceAliases() const { return m_NamespaceAliases; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Converts this namespace name to a path with given separator.
@@ -187,12 +172,11 @@ public:
 
     void getElementDoubles(Symbol* a_pElement, Symbols& out) const override;
 
-    bool isSame(Symbol* a_pOther) const override
-    {
-        return a_pOther == this;
-    }
+    bool isSame(Symbol* a_pOther) const override { return a_pOther == this; }
 
     void getQualifiedName(StringBuffer& a_Buf) const override;
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
 
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
@@ -203,10 +187,7 @@ public:
     phantom::Signal<void(Alias*)>     namespaceAliasRemoved;
 
 protected:
-    void setParentNamespace(Namespace* a_pNamespace)
-    {
-        m_pOwner = a_pNamespace;
-    }
+    void setParentNamespace(Namespace* a_pNamespace) { m_pOwner = a_pNamespace; }
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
     void onElementRemoved(LanguageElement* a_pElement) override;
 

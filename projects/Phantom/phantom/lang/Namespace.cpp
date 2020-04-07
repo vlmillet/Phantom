@@ -47,9 +47,7 @@ Namespace::Namespace(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a
 {
 }
 
-Namespace::~Namespace()
-{
-}
+Namespace::~Namespace() {}
 
 Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
 {
@@ -299,14 +297,30 @@ void Namespace::getElementDoubles(Symbol* a_pElement, Symbols& out) const
 
 void Namespace::getQualifiedName(StringBuffer& a_Buf) const
 {
-    Namespace* pNamespace = getParentNamespace();
-    if (pNamespace == nullptr || pNamespace == Namespace::Global())
+    Namespace* pParent = getParentNamespace();
+    if (pParent == nullptr || pParent == Namespace::Global())
         return getName(a_Buf);
 
-    pNamespace->getQualifiedName(a_Buf);
+    pParent->getQualifiedName(a_Buf);
     a_Buf += ':';
     a_Buf += ':';
     getName(a_Buf);
+}
+
+void Namespace::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    Namespace* pParent = getParentNamespace();
+    if (pParent == nullptr || pParent == Namespace::Global() || a_pTo == pParent)
+        return getName(a_Buf);
+    pParent->getRelativeName(a_pTo, a_Buf);
+    a_Buf += ':';
+    a_Buf += ':';
+    getName(a_Buf);
+}
+
+void Namespace::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    getRelativeName(a_pTo, a_Buf);
 }
 
 Namespace* Namespace::getParentNamespace() const

@@ -73,5 +73,12 @@ void LValueReference::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += '&';
 }
 
+hash64 LValueReference::computeLocalHash() const
+{
+    hash64 h = getUnderlyingType()->computeLocalHash();
+    CombineHash(h, '&');
+    return h;
+}
+
 } // namespace lang
 } // namespace phantom

@@ -19,12 +19,9 @@ namespace lang
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpecialization* a_pTemplateSpecialization,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : ClassType(TypeKind::ClassType,
-                (a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate())
-                ? a_pTemplateSpecialization->getTemplate()->getName()
-                : "",
-                0, 0, 0, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pTemplate(a_pTemplateSpecialization ? a_pTemplateSpecialization->getTemplate() : nullptr),
+    : ClassType(TypeKind::ClassType, a_pTemplateSpecialization->getTemplate()->getName(), 0, 0, 0,
+                a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
+      m_pTemplate(a_pTemplateSpecialization->getTemplate()),
       m_pTemplateSpecialization(a_pTemplateSpecialization),
       m_Arguments(a_Arguments)
 {
@@ -77,6 +74,83 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
             return false;
     }
     return true;
+}
+
+void TemplateDependantTemplateInstance::getDecoration(StringBuffer& a_Buf) const
+{
+    a_Buf += '<';
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        m_Arguments[i]->getRelativeDecoratedName(m_pTemplate, a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateDependantTemplateInstance::getQualifiedDecoration(StringBuffer& a_Buf) const
+{
+    a_Buf += '<';
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        if (Placeholder* ph = m_Arguments[i]->asPlaceholder())
+        {
+            ph->asSymbol()->getOwner()->getRelativeDecoratedName(m_pTemplate, a_Buf);
+        }
+        else
+        {
+            m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
+        }
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateDependantTemplateInstance::getDecoratedName(StringBuffer& a_Buf) const
+{
+    if (m_strName.size())
+        getName(a_Buf);
+    else
+        formatAnonymousName(a_Buf);
+    getDecoration(a_Buf);
+}
+
+void TemplateDependantTemplateInstance::getQualifiedName(StringBuffer& a_Buf) const
+{
+    return m_pTemplate->getQualifiedName(a_Buf);
+}
+
+void TemplateDependantTemplateInstance::getQualifiedDecoratedName(StringBuffer& a_Buf) const
+{
+    getQualifiedName(a_Buf);
+    getQualifiedDecoration(a_Buf);
+}
+
+void TemplateDependantTemplateInstance::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    LanguageElement::getRelativeDecoratedName(a_pTo, a_Buf);
+}
+
+hash64 TemplateDependantTemplateInstance::computeLocalHash() const
+{
+    hash64     h = 0;
+    StringView n = getName();
+    if (n.size())
+        h = ComputeHash(n.data(), n.size());
+    else
+    {
+        CombineHash(h, hash64(this));
+    }
+    for (auto pArg : m_Arguments)
+    {
+        CombineHash(h, pArg->asSymbol()->getHash());
+    }
+    return h;
 }
 
 } // namespace lang

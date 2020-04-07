@@ -63,6 +63,8 @@ public:
 
     bool isMoveAssignable() const override { return false; }
     bool isCopyAssignable() const override { return false; }
+
+    hash64 computeLocalHash() const override;
 };
 
 } // namespace lang

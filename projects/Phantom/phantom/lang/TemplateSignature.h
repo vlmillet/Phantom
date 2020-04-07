@@ -49,21 +49,23 @@ public:
 
     PHANTOM_DTOR ~TemplateSignature() override;
 
-    TemplateSignature* asTemplateSignature() const override
-    {
-        return const_cast<TemplateSignature*>(this);
-    }
+    TemplateSignature* asTemplateSignature() const override { return const_cast<TemplateSignature*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the template owning this signature.
+    /// \brief  Gets the template related to the specialization owning this signature.
+    ///
+    /// \return The template related to this signature.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Template* getTemplate() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the template specialization owning this signature.
     ///
     /// \return The template owning this signature.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Template* getTemplate() const
-    {
-        return getOwner() ? getOwner()->asTemplate() : nullptr;
-    }
+    TemplateSpecialization* getTemplateSpecialization() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a template value parameter (ex : bool t_Bool, int t_Int ...).
@@ -192,10 +194,7 @@ public:
     /// \return The placeholders.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const LanguageElements& getPlaceholders() const
-    {
-        return m_Placeholders;
-    }
+    const LanguageElements& getPlaceholders() const { return m_Placeholders; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template parameters list.
@@ -203,10 +202,7 @@ public:
     /// \return The template parameters list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const TemplateParameters& getTemplateParameters() const
-    {
-        return m_TemplateParameters;
-    }
+    const TemplateParameters& getTemplateParameters() const { return m_TemplateParameters; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the parameter matching the given name, if any.
@@ -270,6 +266,13 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     TemplateSignature* clone(uint a_Flags = 0) const;
+
+    void getName(StringBuffer& a_Buf) const override;
+
+    virtual hash64 computeLocalHash() const
+    {
+        return 0;
+    } // template signature doesn't add more than its owning template specialization
 
 private:
     TemplateParameters       m_TemplateParameters;

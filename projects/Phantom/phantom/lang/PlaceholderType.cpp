@@ -44,16 +44,6 @@ ClassType* PlaceholderType::toClassType() const
     return m_pAsClassType;
 }
 
-bool PlaceholderType::isSame(Symbol* a_pOther) const
-{
-    if (this == a_pOther)
-        return true;
-    TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
-    TemplateSpecialization* pOtherSpec = a_pOther->getEnclosingTemplateSpecialization();
-    return (a_pOther->getName() == getName() && a_pOther->asPlaceholder() && pSpec && pOtherSpec &&
-            pSpec->isSame(pOtherSpec));
-}
-
 Placeholder* PlaceholderType::clone(uint) const
 {
     return PHANTOM_NEW(PlaceholderType)(getName(), getModifiers(), 0);

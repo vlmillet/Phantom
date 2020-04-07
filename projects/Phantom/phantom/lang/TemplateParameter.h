@@ -5,10 +5,9 @@
 // ]
 
 #pragma once
-// #pragma __PragmaPrintFile__
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Symbol.h>
+#include <phantom/lang/LanguageElement.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -35,18 +34,12 @@ public:
     /// \param  a_Modifiers         (optional) The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateParameter(Placeholder* a_pPlaceholder, LanguageElement* a_pDefaultArgument = nullptr,
-                      Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    TemplateParameter(Placeholder* a_pPlaceholder, LanguageElement* a_pDefaultArgument = nullptr, uint a_uiFlags = 0);
 
     /// \brief  Destructor.
-    ~TemplateParameter() override
-    {
-    }
+    ~TemplateParameter() override {}
 
-    TemplateParameter* asTemplateParameter() const override
-    {
-        return (TemplateParameter*)this;
-    }
+    TemplateParameter* asTemplateParameter() const override { return (TemplateParameter*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the index of this template parameter in its templat signature.
@@ -65,19 +58,23 @@ public:
     /// signature owning this template parameter.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSignature* getTemplateSignature() const
-    {
-        return getOwner() ? getOwner()->asTemplateSignature() : nullptr;
-    }
+    TemplateSignature* getTemplateSignature() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the template using this template parameter.
+    /// \brief  Gets the template related to this template parameter.
     ///
-    /// \return null if no template signature owns this template parameter, else the template using
-    /// this template parameter.
+    /// \return  the template related to this template parameter.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Template* getTemplate() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the template specialization using this template parameter.
+    ///
+    /// \return null the template specialization using this template parameter.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    TemplateSpecialization* getTemplateSpecialization() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the default argument of this template parameter.
@@ -85,10 +82,7 @@ public:
     /// \return null if no default argument, else the default argument.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LanguageElement* getDefaultArgument() const
-    {
-        return m_pDefaultArgument;
-    }
+    LanguageElement* getDefaultArgument() const { return m_pDefaultArgument; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the default argument of this templat parameter.
@@ -104,10 +98,7 @@ public:
     /// \return The placeholder associated with this template parameter.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Placeholder* getPlaceholder() const
-    {
-        return m_pPlaceholder;
-    }
+    Placeholder* getPlaceholder() const { return m_pPlaceholder; }
 
     /// \internal
     bool partialAccepts(LanguageElement* a_pLanguageElement, size_t& a_Score,
@@ -123,51 +114,13 @@ public:
 
     bool acceptsArgument(LanguageElement* a_pLanguageElement) const;
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-
-    using LanguageElement::getQualifiedName;
-    using LanguageElement::getDecoratedName;
-    using LanguageElement::getQualifiedDecoratedName;
-
-    bool isSame(Symbol* a_pLanguageElement) const override
-    {
-        TemplateParameter* pTP = a_pLanguageElement->asTemplateParameter();
-        return pTP &&     isSame(pTP);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Tests if this template parameter is considered equal to another.
-    ///
-    /// \param [in,out] a_pOther    The template parameter to compare to this one.
-    ///
-    /// \return true if the template parameters are considered equal, false if they are not.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    bool isSame(TemplateParameter* a_pOther) const;
-
-    using Symbol::isSame;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this template parameter is a variadic template parameter pack.
     ///
     /// \return true if the template parameter is a variadic template parameter, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isPack() const
-    {
-        return m_bPack;
-    }
+    bool isPack() const { return m_bPack; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Helper which created a replicate of this parameter with its own placeholder.
@@ -175,9 +128,22 @@ public:
 
     TemplateParameter* clone(uint a_Flags = 0) const;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the decorated name of this template parameter
+    ///
+    /// \return The decorated name.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+    {
+        return getRelativeName(a_pTo, a_Buf);
+    }
+
 protected:
-    void onElementRemoved(LanguageElement* a_pElement) override;
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    void   onElementRemoved(LanguageElement* a_pElement) override;
+    void   onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    hash64 computeLocalHash() const override;
 
 protected:
     Placeholder*     m_pPlaceholder{};

@@ -29,44 +29,24 @@ public:
                                       const LanguageElements& a_Arguments, uint a_uiFlags = 0);
     TemplateDependantTemplateInstance(Template* a_pTemplate, const LanguageElements& a_Arguments, uint a_uiFlags = 0);
 
-    bool isA(Type*) const override
-    {
-        return true;
-    }
+    bool isA(Type*) const override { return true; }
 
-    Template* getTemplate() const
-    {
-        return m_pTemplate;
-    }
-    TemplateSpecialization* getTemplateSpecialization() const
-    {
-        return m_pTemplateSpecialization;
-    }
+    Template*               getTemplate() const { return m_pTemplate; }
+    TemplateSpecialization* getTemplateSpecialization() const { return m_pTemplateSpecialization; }
 
-    const LanguageElements& getArguments() const
-    {
-        return m_Arguments;
-    }
+    const LanguageElements& getArguments() const { return m_Arguments; }
+    bool                    isSame(Symbol* a_pOther) const override;
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
+    bool isCopyable() const override { return true; }
 
-    bool isSame(Symbol* a_pOther) const override;
+    void getDecoration(StringBuffer& a_Buf) const;
+    void getQualifiedDecoration(StringBuffer& a_Buf) const;
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    void   getDecoratedName(StringBuffer& a_Buf) const override;
+    void   getQualifiedName(StringBuffer& a_Buf) const override;
+    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void   getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    hash64 computeLocalHash() const override;
 
 private:
     Template*               m_pTemplate = nullptr;

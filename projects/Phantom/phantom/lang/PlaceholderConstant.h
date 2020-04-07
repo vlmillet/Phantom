@@ -54,17 +54,6 @@ public:
         return nullptr;
     }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        a_Buf += "@ph ";
-        getName(a_Buf);
-    }
-
-    bool isSame(Symbol* a_pOther) const override;
-
     Placeholder* clone(uint a_Flags = 0) const override;
 
 private:

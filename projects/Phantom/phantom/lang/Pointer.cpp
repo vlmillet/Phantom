@@ -230,5 +230,12 @@ void Pointer::subtract(void** a_pArgs, void* a_pOutput)
     *(byte**)a_pOutput = *(byte**)a_pArgs[0] - m_pUnderlyingType->getSize() * (*(ptrdiff_t*)a_pArgs[1]);
 }
 
+hash64 Pointer::computeLocalHash() const
+{
+    hash64 h = getUnderlyingType()->computeLocalHash();
+    CombineHash(h, '*');
+    return h;
+}
+
 } // namespace lang
 } // namespace phantom

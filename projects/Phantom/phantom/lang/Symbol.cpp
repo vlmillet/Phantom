@@ -10,6 +10,7 @@
 #include "Application.h"
 #include "Module.h"
 #include "Namespace.h"
+#include "Placeholder.h"
 #include "Template.h"
 #include "TemplateSpecialization.h"
 #include "phantom/detail/new.h"
@@ -91,10 +92,23 @@ int Symbol::destructionPriority() const
 
 hash64 Symbol::computeHash() const
 {
-    PHANTOM_ASSERT_DEBUG(m_Hash != 0 || getRootElement() == Application::Get());
-    StringBuffer buffer;
-    getQualifiedDecoratedName(buffer);
-    return ComputeHash(buffer.c_str(), buffer.size());
+    PHANTOM_ASSERT_DEBUG(m_Hash != 0 || getRootElement() == Application::Get() || getModule());
+    hash64 h = getLocalHash();
+    if (auto pNamingScope = getNamingScope())
+    {
+        Symbol* pNSSym = pNamingScope->asSymbol();
+        while (!pNSSym)
+        {
+            CombineHash(h, pNamingScope->getOwner()->getElementIndex(pNamingScope));
+            if (pNamingScope = pNamingScope->getNamingScope())
+                pNSSym = pNamingScope->asSymbol();
+            else
+                break;
+        }
+        if (pNSSym)
+            CombineHash(h, pNSSym->getHash());
+    }
+    return h;
 }
 
 hash64 Symbol::ComputeHash(const char* a_Str, size_t a_Len)
@@ -129,17 +143,6 @@ void Symbol::formatAnonymousName(StringBuffer& a_Buf) const
 void Symbol::onAncestorChanged(LanguageElement* a_pAncestor)
 {
     LanguageElement::onAncestorChanged(a_pAncestor);
-    if (!isNative())
-    {
-        PHANTOM_ASSERT_DEBUG(getRootElement() == Application::Get());
-        m_Hash = _computeHash();
-    }
-}
-
-hash64 Symbol::_computeHash() const
-{
-    hash64 hash = computeHash();
-    return hash;
 }
 
 const Variant& Symbol::getMetaData(StringView a_Name) const
@@ -176,9 +179,6 @@ const MetaDatas& Symbol::getMetaDatas() const
 bool Symbol::hasAnnotation(StringView a_strName) const
 {
     return (m_pAnnotations && m_pAnnotations->find(a_strName) != m_pAnnotations->end());
-    if (m_pAnnotations == nullptr)
-        return false;
-    return m_pAnnotations->find(a_strName) != m_pAnnotations->end();
 }
 
 bool Symbol::addAnnotation(StringView a_strName)
@@ -330,7 +330,7 @@ bool Symbol::isSame(LanguageElement* a_pOther) const
 
 bool Symbol::isSame(Symbol* a_pOther) const
 {
-    return (this == a_pOther || (isNative() && getHash() == a_pOther->getHash()));
+    return (this == a_pOther || (a_pOther->getModule() && this->getModule() && getHash() == a_pOther->getHash()));
 }
 
 bool Symbol::hasElementWithName(StringView a_strName) const
@@ -347,7 +347,7 @@ bool Symbol::hasElementWithName(StringView a_strName) const
     return false;
 }
 
-Scope* Symbol::getNamingScope() const
+LanguageElement* Symbol::getNamingScope() const
 {
     if (m_pNamespace)
         return m_pNamespace;
@@ -359,7 +359,7 @@ Scope* Symbol::getNamingScope() const
             {
                 return pSpec->getTemplate()->getNamingScope();
             }
-            return pOwner->asScope();
+            return pOwner;
         }
     }
     return nullptr;
@@ -372,10 +372,11 @@ Namespace* Symbol::getNamespace() const
 
 void Symbol::getDoubles(Symbols& out) const
 {
-    Scope* pNamingScope = getNamingScope();
+    LanguageElement* pNamingScope = getNamingScope();
     if (pNamingScope)
     {
-        pNamingScope->getElementDoubles(const_cast<Symbol*>(this), out);
+        if (Scope* pScpe = pNamingScope->asScope())
+            pScpe->getElementDoubles(const_cast<Symbol*>(this), out);
     }
 }
 
@@ -484,27 +485,21 @@ void Symbol::getName(StringBuffer& a_Buf) const
 
 void Symbol::getQualifiedName(StringBuffer& a_Buf) const
 {
-    Scope* pNamingScope = getNamingScope();
+    LanguageElement* pNamingScope = getNamingScope();
     if (TemplateSpecialization* pSpec = getTemplateSpecialization())
     {
         return pSpec->getTemplate()->getQualifiedName(a_Buf);
     }
-    LanguageElement* pNS = pNamingScope ? pNamingScope->asLanguageElement() : nullptr;
-    if (pNS == nullptr)
+    if (pNamingScope)
     {
-        if (m_strName.size())
-            getName(a_Buf);
-        else
-            formatAnonymousName(a_Buf);
-        return;
-    }
-    size_t prev = a_Buf.size();
-    pNS->getQualifiedDecoratedName(a_Buf);
-    bool ownerEmpty = (a_Buf.size() - prev) == 0;
-    if (!ownerEmpty) // no owner name
-    {
-        a_Buf += ':';
-        a_Buf += ':';
+        size_t prev = a_Buf.size();
+        pNamingScope->getQualifiedDecoratedName(a_Buf);
+        bool ownerEmpty = (a_Buf.size() - prev) == 0;
+        if (!ownerEmpty) // no owner name
+        {
+            a_Buf += ':';
+            a_Buf += ':';
+        }
     }
     if (m_strName.size())
         getName(a_Buf);
@@ -516,6 +511,73 @@ void Symbol::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 {
     getQualifiedName(a_Buf);
     getTemplateQualifiedDecoration(a_Buf);
+}
+
+hash64 Symbol::getLocalHash() const
+{
+    if (m_LocalHash == 0)
+        m_LocalHash = computeLocalHash();
+    return m_LocalHash;
+}
+
+hash64 Symbol::getRelativeHash(LanguageElement* a_pTo) const
+{
+    if (hasNamingScopeCascade(a_pTo))
+    {
+        hash64 h = getLocalHash();
+        if (auto pScope = getNamingScope())
+        {
+            if (pScope != a_pTo && pScope->asSymbol())
+            {
+                CombineHash(h, static_cast<Symbol*>(pScope)->getRelativeHash(a_pTo));
+            }
+        }
+        return h;
+    }
+    return getHash();
+}
+
+hash64 Symbol::computeLocalHash() const
+{
+    hash64 h = 0;
+    if (m_strName.size())
+        h = ComputeHash(m_strName.data(), m_strName.size());
+    else
+    {
+        CombineHash(h, hash64(this));
+    }
+    CombineHash(h, getTemplateDecorationHash());
+    return h;
+}
+
+void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    LanguageElement* pNamingScope = getNamingScope();
+    if (TemplateSpecialization* pSpec = getTemplateSpecialization())
+    {
+        return pSpec->getTemplate()->getRelativeName(a_pTo, a_Buf);
+    }
+    if (pNamingScope && a_pTo != pNamingScope)
+    {
+        size_t prev = a_Buf.size();
+        pNamingScope->getRelativeDecoratedName(a_pTo, a_Buf);
+        bool ownerEmpty = (a_Buf.size() - prev) == 0;
+        if (!ownerEmpty) // no owner name
+        {
+            a_Buf += ':';
+            a_Buf += ':';
+        }
+    }
+    if (m_strName.size())
+        getName(a_Buf);
+    else
+        formatAnonymousName(a_Buf);
+}
+
+void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    getRelativeName(a_pTo, a_Buf);
+    getTemplateDecoration(a_Buf);
 }
 
 void Symbol::setName(StringView a_strName)
@@ -544,6 +606,16 @@ void Symbol::getTemplateDecoration(StringBuffer& a_Buf) const
     pSpec->getDecoration(a_Buf);
 }
 
+hash64 Symbol::getTemplateDecorationHash() const
+{
+    TemplateSpecialization* pSpec = getTemplateSpecialization();
+    if (pSpec == nullptr)
+    {
+        return 0;
+    }
+    return pSpec->getDecorationHash();
+}
+
 void Symbol::getTemplateQualifiedDecoration(StringBuffer& a_Buf) const
 {
     TemplateSpecialization* pSpec = getTemplateSpecialization();
@@ -552,6 +624,19 @@ void Symbol::getTemplateQualifiedDecoration(StringBuffer& a_Buf) const
         return;
     }
     pSpec->getQualifiedDecoration(a_Buf);
+}
+
+TemplateSpecialization* Symbol::getTemplateSpecialization() const
+{
+    if (m_pOwner)
+    {
+        if (TemplateSpecialization* pSpec = m_pOwner->asTemplateSpecialization())
+        {
+            if (pSpec->getTemplated() == this)
+                return pSpec;
+        }
+    }
+    return nullptr;
 }
 
 void Symbol::getUniqueTemplateDecoration(StringBuffer& a_Buf) const
@@ -585,9 +670,16 @@ void Symbol::setUserData(UserData&& a_UserData)
 
 hash64 Symbol::getHash() const
 {
+    // clang-format off
+    PHANTOM_ASSERT_DEBUG(isNative()
+        || isTemplateDependant() 
+        || this == Application::Get() 
+		|| asNamespace()
+		|| getModule());
+    // clang-format on
     if (m_Hash == 0)
     {
-        m_Hash = _computeHash();
+        m_Hash = computeHash();
     }
     PHANTOM_ASSERT_DEBUG(computeHash() == m_Hash, "hash for symbol %s is inconsistent over time",
                          getQualifiedDecoratedName().c_str());

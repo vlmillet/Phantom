@@ -24,6 +24,7 @@
 #include "Template.h"
 #include "TemplateDependantTemplateInstance.h"
 #include "TemplateParameter.h"
+#include "TemplateSignature.h"
 #include "TemplateSpecialization.h"
 #include "Type.h"
 #include "TypeOf.h"
@@ -621,6 +622,13 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
             if (pSolveScope)
             {
                 pSolveScope->getScopedSymbolsWithName(identifier, a_Symbols);
+            }
+            else if (TemplateSignature* pTS = pSolveElement->asTemplateSignature())
+            {
+                if (TemplateParameter* pTP = pTS->getTemplateParameter(identifier))
+                {
+                    a_Symbols.push_back(pTP->getPlaceholder()->asSymbol());
+                }
             }
             else
             {

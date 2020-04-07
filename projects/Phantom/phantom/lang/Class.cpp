@@ -1703,7 +1703,7 @@ bool Class::equal(void const* a_pInstance0, void const* a_pInstance1) const
             *m_OpEquals = getMethod("operator==", TypesView{&pThisConstRef, 1});
             if (!*m_OpEquals)
             {
-                *m_OpEquals = getNamingScope()->getFunction("operator==", Types{pThisConstRef, pThisConstRef});
+                *m_OpEquals = getEnclosingNamespace()->getFunction("operator==", Types{pThisConstRef, pThisConstRef});
             }
         }
     }

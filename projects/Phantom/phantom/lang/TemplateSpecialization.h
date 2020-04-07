@@ -40,10 +40,7 @@ protected:
 public:
     PHANTOM_DTOR ~TemplateSpecialization() override;
 
-    TemplateSpecialization* asTemplateSpecialization() const override
-    {
-        return (TemplateSpecialization*)this;
-    }
+    TemplateSpecialization* asTemplateSpecialization() const override { return (TemplateSpecialization*)this; }
 
     virtual TemplateSpecialization* getEnclosingTemplateSpecialization() const
     {
@@ -55,7 +52,7 @@ public:
     /// scope of the related template.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Scope* getNamingScope() const override;
+    LanguageElement* getNamingScope() const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the argument count of this template specialization.
@@ -63,10 +60,7 @@ public:
     /// \return The argument count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getArgumentCount() const
-    {
-        return m_Arguments.size();
-    }
+    size_t getArgumentCount() const { return m_Arguments.size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the argument matching the given template parameter name, if it is type.
@@ -97,29 +91,17 @@ public:
     /// \return The argument at given index position.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LanguageElement* getArgument(size_t i) const
-    {
-        return m_Arguments[i];
-    }
+    LanguageElement* getArgument(size_t i) const { return m_Arguments[i]; }
     size_t           getArgumentIndex(StringView a_strParameterName) const;
     LanguageElement* getDefaultArgument(size_t i) const
     {
         return m_pDefaultArguments ? (*m_pDefaultArguments)[i] : nullptr;
     }
     LanguageElement*        getDefaultArgument(StringView a_strParameterName) const;
-    const LanguageElements& getArguments() const
-    {
-        return m_Arguments;
-    }
+    const LanguageElements& getArguments() const { return m_Arguments; }
 
-    LanguageElements::const_iterator beginArguments() const
-    {
-        return m_Arguments.begin();
-    }
-    LanguageElements::const_iterator endArguments() const
-    {
-        return m_Arguments.end();
-    }
+    LanguageElements::const_iterator beginArguments() const { return m_Arguments.begin(); }
+    LanguageElements::const_iterator endArguments() const { return m_Arguments.end(); }
 
     void setArgument(size_t a_uiIndex, LanguageElement* a_pElement);
     void setDefaultArgument(size_t i, LanguageElement* a_pElement);
@@ -140,20 +122,15 @@ public:
 
     bool isVariadic() const;
 
-    void getDecoration(StringBuffer& a_Buf) const;
-    void getQualifiedDecoration(StringBuffer& a_Buf) const;
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
-    void getDecoratedName(StringBuffer& a_Buf) const override;
-    void getQualifiedName(StringBuffer& a_Buf) const override;
+    void   getDecoration(StringBuffer& a_Buf) const;
+    hash64 getDecorationHash() const;
+    void   getQualifiedDecoration(StringBuffer& a_Buf) const;
+    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void   getDecoratedName(StringBuffer& a_Buf) const override;
+    void   getQualifiedName(StringBuffer& a_Buf) const override;
 
-    Template* getTemplate() const
-    {
-        return m_pTemplate;
-    }
-    TemplateSignature* getTemplateSignature() const
-    {
-        return m_pTemplateSignature;
-    }
+    Template*          getTemplate() const { return m_pTemplate; }
+    TemplateSignature* getTemplateSignature() const { return m_pTemplateSignature; }
 
     void checkCompleteness() const override;
     bool canBeDestroyed() const override;
@@ -175,10 +152,7 @@ public:
     bool partialAccepts(const LanguageElements& a_Arguments, size_t& a_Score, PlaceholderMap& a_Deductions) const;
 
     void    setTemplated(Symbol* a_pTemplated);
-    Symbol* getTemplated() const
-    {
-        return m_pTemplated;
-    }
+    Symbol* getTemplated() const { return m_pTemplated; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets an extended version of this template specialization  (for example set by a scripting language to
@@ -198,20 +172,11 @@ public:
     /// \brief  Gets the extended version of this template specialization
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* getExtendedSpecialization() const
-    {
-        return m_pExtendedSpecialization;
-    }
+    TemplateSpecialization* getExtendedSpecialization() const { return m_pExtendedSpecialization; }
 
-    TemplateSpecialization* getInstantiationSpecialization() const
-    {
-        return m_pInstantiationSpecialization;
-    }
+    TemplateSpecialization* getInstantiationSpecialization() const { return m_pInstantiationSpecialization; }
 
-    PlaceholderMap const& getPlaceholderSubstitutions() const
-    {
-        return m_PlaceholderSubstitutions;
-    }
+    PlaceholderMap const& getPlaceholderSubstitutions() const { return m_PlaceholderSubstitutions; }
 
     Source* getCodeLocationSource() const override;
 

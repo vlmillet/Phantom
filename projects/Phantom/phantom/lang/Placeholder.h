@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/ClassType.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -20,33 +20,23 @@ namespace lang
 class PHANTOM_EXPORT_PHANTOM Placeholder
 {
 public:
-    bool isSame(Placeholder* a_pOther) const
-    {
-        return asSymbol()->getHash() == a_pOther->asSymbol()->getHash();
-    }
-
     virtual Symbol* asSymbol() const = 0;
 
     virtual Placeholder* asPlaceholder() const = 0;
 
-    virtual PlaceholderType* asPlaceholderType() const
-    {
-        return nullptr;
-    }
+    virtual PlaceholderType* asPlaceholderType() const { return nullptr; }
 
-    virtual PlaceholderConstant* asPlaceholderConstant() const
-    {
-        return nullptr;
-    }
+    virtual PlaceholderConstant* asPlaceholderConstant() const { return nullptr; }
 
-    virtual PlaceholderClass* asPlaceholderClass() const
-    {
-        return nullptr;
-    }
+    virtual PlaceholderClass* asPlaceholderClass() const { return nullptr; }
 
-    virtual PlaceholderTemplate* asPlaceholderTemplate() const
+    virtual PlaceholderTemplate* asPlaceholderTemplate() const { return nullptr; }
+
+    hash64 getRelativeHash(LanguageElement* a_pTo) const { return asSymbol()->getRelativeHash(a_pTo); }
+
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
     {
-        return nullptr;
+        return asSymbol()->getOwner()->getRelativeDecoratedName(a_pTo, a_Buf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,10 +47,7 @@ public:
     /// \return true if it succeeds, false if it fails.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool accepts(LanguageElement*) const
-    {
-        return false;
-    }
+    virtual bool accepts(LanguageElement*) const { return false; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Clones this placeholder.

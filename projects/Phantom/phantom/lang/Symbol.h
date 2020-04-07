@@ -148,8 +148,9 @@ public:
     void setName(StringView a_strName);
 
     hash64 getHash() const;
-
-    bool hasElementWithName(StringView a_strName) const;
+    hash64 getLocalHash() const;
+    hash64 getRelativeHash(LanguageElement* a_pTo) const;
+    bool   hasElementWithName(StringView a_strName) const;
 
     virtual bool isPOD() const { return false; }
 
@@ -341,10 +342,10 @@ public:
     /// \return the meta data list as a key/value map.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void         getDoubles(Symbols& out) const;
-    bool         isSame(LanguageElement* a_pOther) const override;
-    virtual bool isSame(Symbol* a_pOther) const;
-    Scope*       getNamingScope() const override;
+    void             getDoubles(Symbols& out) const;
+    bool             isSame(LanguageElement* a_pOther) const override;
+    virtual bool     isSame(Symbol* a_pOther) const;
+    LanguageElement* getNamingScope() const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the namespace enclosing this symbol.
@@ -371,6 +372,8 @@ public:
 
     void getTemplateDecoration(StringBuffer& a_Buf) const;
 
+    hash64 getTemplateDecorationHash() const;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template decoration constituted from qualified decorated names (see
     /// getQualifiedDecoratedName()).
@@ -386,10 +389,7 @@ public:
     /// \return null if no template specialization, else the template specialization.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* getTemplateSpecialization() const
-    {
-        return m_pOwner ? m_pOwner->asTemplateSpecialization() : nullptr;
-    }
+    TemplateSpecialization* getTemplateSpecialization() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Associates a user data to this class (for quicker custom data access than symbol
@@ -421,12 +421,16 @@ public:
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
+    using LanguageElement::getRelativeDecoratedName;
+    using LanguageElement::getRelativeName;
     using LanguageElement::getUniqueName;
 
-    void getName(StringBuffer& a_Buf) const override;
+    void getName(StringBuffer& a_Buf) const override final;
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getDecoratedName(StringBuffer& a_Buf) const override;
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void getUniqueName(StringBuffer& a_Buf) const override;
 
 protected:
@@ -438,13 +442,16 @@ protected:
             m_uiFlags &= ~PHANTOM_R_FLAG_IMPORTABLE;
     }
     virtual hash64 computeHash() const;
+    virtual hash64 computeLocalHash() const;
     static hash64  ComputeHash(const char* a_Str, size_t a_Len);
-    void           onElementRemoved(LanguageElement* a_pElement) override;
-    virtual void   formatAnonymousName(StringBuffer& a_Buf) const;
-    void           onAncestorChanged(LanguageElement* a_pAncestor) override;
+    static void    CombineHash(hash64& a_rSeed, hash64 a_Value)
+    {
+        a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
+    }
 
-private:
-    hash64 _computeHash() const;
+    void         onElementRemoved(LanguageElement* a_pElement) override;
+    virtual void formatAnonymousName(StringBuffer& a_Buf) const;
+    void         onAncestorChanged(LanguageElement* a_pAncestor) override;
 
 protected:
     String     m_strName;
@@ -455,6 +462,7 @@ protected:
     SymbolExtensions* m_pExtensions = nullptr;
     Modifiers         m_Modifiers = PHANTOM_R_NONE;
     mutable hash64    m_Hash = 0;
+    mutable hash64    m_LocalHash = 0;
     Access            m_eAccess = Access::Undefined;
     UserData          m_UserData;
 };

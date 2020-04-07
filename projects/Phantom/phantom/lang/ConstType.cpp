@@ -69,5 +69,12 @@ void ConstType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += " const";
 }
 
+hash64 ConstType::computeLocalHash() const
+{
+    hash64 h = getUnderlyingType()->computeLocalHash();
+    CombineHash(h, 'µ');
+    return h;
+}
+
 } // namespace lang
 } // namespace phantom

@@ -151,6 +151,15 @@ void Array::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf.append(buf, n);
 }
 
+hash64 Array::computeLocalHash() const
+{
+    hash64 h = getUnderlyingType()->computeLocalHash();
+    CombineHash(h, '[');
+    CombineHash(h, m_uiCount);
+    CombineHash(h, ']');
+    return h;
+}
+
 void Array::getFields(AggregateFields& _fields) const
 {
     _fields.reserve(m_uiCount);

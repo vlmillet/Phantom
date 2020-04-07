@@ -661,6 +661,8 @@ public:
 
     virtual String getQualifiedDecoratedName() const;
 
+    virtual String getRelativeDecoratedName(LanguageElement* a_pTo) const;
+
     virtual String getQualifiedName() const;
 
     virtual String getDecoratedName() const;
@@ -691,6 +693,15 @@ public:
     virtual void getQualifiedName(StringBuffer& a_Buf) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets this element's relative non-decorated name (ex :
+    /// relative::"...::element0").
+    ///
+    /// \return The qualified name.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    virtual void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets this elemnet's decorated name (ex : element0<typename0>).
     ///
     /// \return The decorated name.
@@ -700,7 +711,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets this elemnet's qualified decorated name (ex :
-    /// namespace0::namespace1::element0<typename0>).
+    /// "namespace0::namespace1::element0<typename0>").
     ///
     /// \return The qualified decorated name.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -708,16 +719,25 @@ public:
     virtual void getQualifiedDecoratedName(StringBuffer& a_Buf) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets this element's relative decorated name (ex :
+    /// relative::"...::element0<typename0>").
+    ///
+    /// \return The qualified decorated name.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    virtual void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets this elements' unique name, i.e based on module/package/source structure (ex:
     /// package0.source0.class0).
     ///
-    /// \return The unique name.
+    /// \return The relative decorated name.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void   getUniqueName(StringBuffer& a_Buf) const;
-    virtual Scope* getNamingScope() const;
+    virtual void             getUniqueName(StringBuffer& a_Buf) const;
+    virtual LanguageElement* getNamingScope() const;
 
-    bool hasNamingScopeCascade(Scope* a_pScope) const;
+    bool hasNamingScopeCascade(LanguageElement* a_pScope) const;
 
     /// \brief  Remove all elements from this one.
     void clear();

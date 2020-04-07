@@ -48,9 +48,7 @@ protected:
     }
 
 public:
-    ~TypeT()
-    {
-    }
+    ~TypeT() {}
 
     virtual uint64_t hash(const void* a_pInstance) const override
     {
@@ -67,15 +65,9 @@ public:
         phantom::Mover<t_Ty>::move(reinterpret_cast<t_Ty*>(a_pDest), reinterpret_cast<t_Ty*>(a_pSrc));
     }
 
-    virtual void* allocate() const override
-    {
-        return AllocatorType::allocate();
-    }
-    virtual void* allocate(size_t a_uiCount) const override
-    {
-        return AllocatorType::allocate(a_uiCount);
-    }
-    virtual void deallocate(void* a_pAddress) const override
+    virtual void* allocate() const override { return AllocatorType::allocate(); }
+    virtual void* allocate(size_t a_uiCount) const override { return AllocatorType::allocate(a_uiCount); }
+    virtual void  deallocate(void* a_pAddress) const override
     {
         AllocatorType::deallocate(reinterpret_cast<t_Ty*>(a_pAddress));
     }
@@ -108,30 +100,12 @@ public:
         AllocatorType::deallocate(reinterpret_cast<t_Ty*>(a_pInstance));
     }
 
-    virtual bool isCopyable() const override
-    {
-        return IsCopyable<t_Ty>::value;
-    }
-    virtual bool isCopyAssignable() const override
-    {
-        return IsCopyAssignableAndNotDisabled<t_Ty>::value;
-    }
-    virtual bool isCopyConstructible() const override
-    {
-        return IsCopyConstructibleAndNotDisabled<t_Ty>::value;
-    }
-    virtual bool isMoveable() const override
-    {
-        return IsMoveable<t_Ty>::value;
-    }
-    virtual bool isMoveAssignable() const override
-    {
-        return IsMoveAssignableAndNotDisabled<t_Ty>::value;
-    }
-    virtual bool isMoveConstructible() const override
-    {
-        return IsMoveConstructibleAndNotDisabled<t_Ty>::value;
-    }
+    virtual bool isCopyable() const override { return IsCopyable<t_Ty>::value; }
+    virtual bool isCopyAssignable() const override { return IsCopyAssignableAndNotDisabled<t_Ty>::value; }
+    virtual bool isCopyConstructible() const override { return IsCopyConstructibleAndNotDisabled<t_Ty>::value; }
+    virtual bool isMoveable() const override { return IsMoveable<t_Ty>::value; }
+    virtual bool isMoveAssignable() const override { return IsMoveAssignableAndNotDisabled<t_Ty>::value; }
+    virtual bool isMoveConstructible() const override { return IsMoveConstructibleAndNotDisabled<t_Ty>::value; }
     virtual bool isTriviallyMoveAssignable() const override
     {
         return IsTriviallyMoveAssignableAndNotDisabled<t_Ty>::value;
@@ -153,15 +127,9 @@ public:
     {
         return TypeInfosOfType::object().qualifiedDecoratedName();
     }
-    virtual String getQualifiedName() const override
-    {
-        return TypeInfosOfType::object().qualifiedName();
-    }
-    virtual String getDecoratedName() const override
-    {
-        return TypeInfosOfType::object().decoratedName();
-    }
-    virtual void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
+    virtual String getQualifiedName() const override { return TypeInfosOfType::object().qualifiedName(); }
+    virtual String getDecoratedName() const override { return TypeInfosOfType::object().decoratedName(); }
+    virtual void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override
     {
         TypeInfosOfType::object().qualifiedDecoratedName(a_Buf);
     }
@@ -173,20 +141,13 @@ public:
     {
         TypeInfosOfType::object().decoratedName(a_Buf);
     }
-
-    virtual hash64 computeHash() const override
-    {
-        return TypeInfosOf<t_Ty>::object().hash;
-    }
+    virtual hash64 computeHash() const override { return TypeInfosOf<t_Ty>::object().hash; }
 };
 
 template<typename t_Ty, typename t_Base>
 struct TypeOf<TypeT<t_Ty, t_Base> >
 {
-    static Type* object()
-    {
-        return Class::metaClass;
-    }
+    static Type* object() { return Class::metaClass; }
 };
 
 template<typename t_Ty, typename t_Base>

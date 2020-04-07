@@ -31,43 +31,12 @@ public:
     }
 
     bool         accepts(LanguageElement* a_pLanguageElement) const override;
-    virtual bool isA(Type*) const
-    {
-        return true;
-    }
+    virtual bool isA(Type*) const { return true; }
 
-    Symbol* asSymbol() const override
-    {
-        return (PlaceholderTemplate*)this;
-    }
-    Placeholder* asPlaceholder() const override
-    {
-        return (PlaceholderTemplate*)this;
-    }
-    PlaceholderTemplate* asPlaceholderTemplate() const override
-    {
-        return (PlaceholderTemplate*)this;
-    }
+    Symbol*              asSymbol() const override { return (PlaceholderTemplate*)this; }
+    Placeholder*         asPlaceholder() const override { return (PlaceholderTemplate*)this; }
+    PlaceholderTemplate* asPlaceholderTemplate() const override { return (PlaceholderTemplate*)this; }
 
-    bool isSame(Symbol* a_pOther) const override;
-
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        a_Buf += "@ph ";
-        getName(a_Buf);
-    }
     Placeholder* clone(uint a_Flags = 0) const override;
 };
 

@@ -195,11 +195,18 @@ void LanguageElement::addUniquelyReferencedElement(LanguageElement* a_pElement)
     PHANTOM_ASSERT(std::find(m_pReferencedElements->begin(), m_pReferencedElements->end(), a_pElement) ==
                    m_pReferencedElements->end(),
                    "Element already referenced");
+#if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
+    auto foundWithDecName =
+    std::find_if(m_pReferencedElements->begin(), m_pReferencedElements->end(), [&](LanguageElement* a_pElem) {
+        return a_pElement->getDecoratedName() == a_pElem->getDecoratedName() && a_pElem->getModule() &&
+        a_pElem->getModule() == a_pElement->getModule();
+    });
+    PHANTOM_ASSERT_DEBUG(foundWithDecName == m_pReferencedElements->end(),
+                         "element already registered with same name inside same module");
+#endif
     m_pReferencedElements->push_back(a_pElement);
     a_pElement->registerReferencingElement(this);
     onReferencedElementAdded(a_pElement);
-    if (a_pElement->isIncomplete())
-        setIncomplete();
     if (a_pElement->isTemplateDependant() && asEvaluable())
     {
         setTemplateDependant();
@@ -319,11 +326,10 @@ ClassType* LanguageElement::getEnclosingClassType() const
 
 Namespace* LanguageElement::getEnclosingNamespace() const
 {
-    Namespace* pNamespace;
-    Scope*     pNamingScope = getNamingScope();
+    Namespace*       pNamespace;
+    LanguageElement* pNamingScope = getNamingScope();
     return pNamingScope
-    ? ((pNamespace = pNamingScope->asNamespace()) ? pNamespace
-                                                  : pNamingScope->asLanguageElement()->getEnclosingNamespace())
+    ? ((pNamespace = pNamingScope->asNamespace()) ? pNamespace : pNamingScope->getEnclosingNamespace())
     : nullptr;
 }
 
@@ -461,7 +467,7 @@ bool LanguageElement::partialAccepts(LanguageElement* a_pLanguageElement, size_t
 
 bool LanguageElement::isSame(LanguageElement* a_pOther) const
 {
-    return (this == a_pOther);
+    return (this == a_pOther) && m_uiFlags == a_pOther->m_uiFlags;
 }
 
 void LanguageElement::addScopedElement(LanguageElement* a_pElement)
@@ -628,9 +634,6 @@ bool LanguageElement::hasFriendCascade(Symbol* a_pElement) const
 
 void LanguageElement::addSymbol(Symbol* a_pElement)
 {
-    // first add the element
-    addElement(a_pElement);
-
 #if PHANTOM_DEBUG_LEVEL != PHANTOM_DEBUG_LEVEL_FULL
     if (!isNative())
 #endif
@@ -644,13 +647,15 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
                     continue;
                 Symbol* pSymbol = pElm->asSymbol();
                 (void)pSymbol;
-                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->computeHash() != a_pElement->computeHash(),
+                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->getLocalHash() != a_pElement->getLocalHash(),
                                      "equal element already added : be careful not having "
                                      "duplicate member declarations in your class, or check not "
                                      "registering not two type with same name in the same source");
             };
         }
     }
+    // first add the element
+    addElement(a_pElement);
 }
 
 bool LanguageElement::isTemplateElement() const
@@ -735,11 +740,10 @@ size_t LanguageElement::getElementIndex(LanguageElement* a_pElement) const
     return ~size_t(0);
 }
 
-bool LanguageElement::hasNamingScopeCascade(Scope* a_pScope) const
+bool LanguageElement::hasNamingScopeCascade(LanguageElement* a_pScope) const
 {
-    Scope* pScope = getNamingScope();
-    return (pScope != nullptr) &&
-    ((pScope == a_pScope) || pScope->asLanguageElement()->hasNamingScopeCascade(a_pScope));
+    LanguageElement* pScope = getNamingScope();
+    return (pScope != nullptr) && ((pScope == a_pScope) || pScope->hasNamingScopeCascade(a_pScope));
 }
 
 void LanguageElement::onElementAdded(LanguageElement*) {}
@@ -781,7 +785,10 @@ void LanguageElement::steal(LanguageElement* a_pInput)
     }
 }
 
-void LanguageElement::getName(StringBuffer&) const {}
+void LanguageElement::getName(StringBuffer&) const
+{
+    PHANTOM_ASSERT_NO_IMPL();
+}
 
 String LanguageElement::getName() const
 {
@@ -790,7 +797,15 @@ String LanguageElement::getName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getQualifiedName(StringBuffer&) const {}
+void LanguageElement::getQualifiedName(StringBuffer& a_Buf) const
+{
+    size_t s = a_Buf.size();
+    if (m_pOwner)
+        m_pOwner->getQualifiedDecoratedName(a_Buf);
+    if (s != a_Buf.size())
+        a_Buf += "::";
+    getName(a_Buf);
+}
 
 String LanguageElement::getQualifiedName() const
 {
@@ -799,7 +814,25 @@ String LanguageElement::getQualifiedName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getDecoratedName(StringBuffer&) const {}
+void LanguageElement::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (auto pScope = getNamingScope())
+    {
+        if (pScope != a_pTo)
+        {
+            size_t sz = a_Buf.size();
+            pScope->getRelativeName(a_pTo, a_Buf);
+            if (sz != a_Buf.size())
+                a_Buf += "::";
+        }
+    }
+    return getName(a_Buf);
+}
+
+void LanguageElement::getDecoratedName(StringBuffer& a_Buf) const
+{
+    getName(a_Buf);
+}
 
 String LanguageElement::getDecoratedName() const
 {
@@ -808,7 +841,10 @@ String LanguageElement::getDecoratedName() const
     return String(cstr.data(), cstr.size());
 }
 
-void LanguageElement::getQualifiedDecoratedName(StringBuffer&) const {}
+void LanguageElement::getQualifiedDecoratedName(StringBuffer& a_Buf) const
+{
+    getQualifiedName(a_Buf);
+}
 
 String LanguageElement::getQualifiedDecoratedName() const
 {
@@ -817,12 +853,33 @@ String LanguageElement::getQualifiedDecoratedName() const
     return String(cstr.data(), cstr.size());
 }
 
+void LanguageElement::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (auto pScope = getNamingScope())
+    {
+        if (pScope != a_pTo)
+        {
+            size_t sz = a_Buf.size();
+            pScope->getRelativeDecoratedName(a_pTo, a_Buf);
+            if (sz != a_Buf.size())
+                a_Buf += "::";
+        }
+    }
+    return getDecoratedName(a_Buf);
+}
+
+String LanguageElement::getRelativeDecoratedName(LanguageElement* a_pTo) const
+{
+    StringBuffer cstr;
+    getRelativeDecoratedName(a_pTo, cstr);
+    return String(cstr.data(), cstr.size());
+}
+
 void LanguageElement::getUniqueName(StringBuffer&) const {}
 
-Scope* LanguageElement::getNamingScope() const
+LanguageElement* LanguageElement::getNamingScope() const
 {
-    Scope* pScope;
-    return m_pOwner ? ((pScope = m_pOwner->asScope()) ? pScope : m_pOwner->getNamingScope()) : nullptr;
+    return m_pOwner;
 }
 
 void LanguageElement::detach()

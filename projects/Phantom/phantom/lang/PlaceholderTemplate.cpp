@@ -16,18 +16,9 @@ namespace lang
 {
 bool PlaceholderTemplate::accepts(LanguageElement* a_pLanguageElement) const
 {
-    ClassType*            pClassType = a_pLanguageElement->asClassType();
-    return pClassType && getTemplateSignature()->acceptsArguments(
-    pClassType->getTemplateSpecialization()->getArguments());
-}
-
-bool PlaceholderTemplate::isSame(Symbol* a_pOther) const
-{
-    if (Template::isSame(a_pOther))
-        return true;
-    Placeholder*         pPH = a_pOther->asPlaceholder();
-    PlaceholderTemplate* pPHT = pPH ? pPH->asPlaceholderTemplate() : nullptr;
-    return pPHT &&      pPHT->getTemplateSignature()->isSame(getTemplateSignature());
+    ClassType* pClassType = a_pLanguageElement->asClassType();
+    return pClassType &&
+    getTemplateSignature()->acceptsArguments(pClassType->getTemplateSpecialization()->getArguments());
 }
 
 Placeholder* PlaceholderTemplate::clone(uint a_Flags /*= 0*/) const

@@ -8,7 +8,9 @@
 #include "TemplateParameter.h"
 
 #include "Placeholder.h"
+#include "Template.h"
 #include "TemplateSignature.h"
+#include "TemplateSpecialization.h"
 #include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
@@ -16,9 +18,8 @@ namespace phantom
 namespace lang
 {
 TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElement* a_pDefaultArgument,
-                                     Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_pPlaceholder ? a_pPlaceholder->asSymbol()->getName() : "", a_Modifiers, a_uiFlags),
-      m_pPlaceholder(a_pPlaceholder)
+                                     uint a_uiFlags /*= 0*/)
+    : Symbol(a_pPlaceholder->asSymbol()->getName(), 0, a_uiFlags), m_pPlaceholder(a_pPlaceholder)
 {
     PHANTOM_ASSERT(m_pPlaceholder);
     addElement(m_pPlaceholder->asSymbol());
@@ -30,14 +31,39 @@ TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElemen
 
 TemplateParameter* TemplateParameter::clone() const
 {
-    TemplateParameter* pTP = PHANTOM_NEW(TemplateParameter)(m_pPlaceholder, m_pDefaultArgument, m_Modifiers);
+    TemplateParameter* pTP = PHANTOM_NEW(TemplateParameter)(m_pPlaceholder, m_pDefaultArgument);
     pTP->setCodeRange(getCodeRange());
     return pTP;
 }
 
 TemplateParameter* TemplateParameter::clone(uint a_Flags /*= 0*/) const
 {
-    return PHANTOM_NEW(TemplateParameter)(getPlaceholder()->clone(), m_pDefaultArgument, Modifiers(), a_Flags);
+    return PHANTOM_NEW(TemplateParameter)(getPlaceholder()->clone(), m_pDefaultArgument, a_Flags);
+}
+
+TemplateSignature* TemplateParameter::getTemplateSignature() const
+{
+    PHANTOM_ASSERT(getOwner() && getOwner()->asTemplateSignature());
+    return static_cast<TemplateSignature*>(getOwner());
+}
+
+hash64 TemplateParameter::computeLocalHash() const
+{
+    PHANTOM_ASSERT(getOwner());
+    return getIndex();
+}
+
+void TemplateParameter::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (a_pTo == getTemplateSpecialization() || a_pTo == getTemplateSignature())
+    {
+        return getName(a_Buf);
+    }
+    size_t sz = a_Buf.size();
+    getTemplateSpecialization()->getRelativeName(a_pTo, a_Buf);
+    PHANTOM_ASSERT(sz != a_Buf.size());
+    a_Buf += "::";
+    getName(a_Buf);
 }
 
 void TemplateParameter::onElementRemoved(LanguageElement* a_pElement)
@@ -79,12 +105,6 @@ bool TemplateParameter::acceptsArgument(LanguageElement* a_pLanguageElement) con
     return m_pPlaceholder->accepts(a_pLanguageElement);
 }
 
-bool TemplateParameter::isSame(TemplateParameter* a_pOther) const
-{
-    return a_pOther->m_pPlaceholder && m_pPlaceholder && a_pOther->m_pPlaceholder->asSymbol()->isSame(
-    m_pPlaceholder->asSymbol());
-}
-
 size_t TemplateParameter::getIndex() const
 {
     return static_cast<TemplateSignature*>(getOwner())->getTemplateParameterIndex(const_cast<TemplateParameter*>(this));
@@ -93,6 +113,11 @@ size_t TemplateParameter::getIndex() const
 Template* TemplateParameter::getTemplate() const
 {
     return getTemplateSignature()->getTemplate();
+}
+
+TemplateSpecialization* TemplateParameter::getTemplateSpecialization() const
+{
+    return getTemplateSignature()->getTemplateSpecialization();
 }
 
 } // namespace lang

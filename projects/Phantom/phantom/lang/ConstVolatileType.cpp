@@ -69,5 +69,12 @@ void ConstVolatileType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += " const volatile";
 }
 
+hash64 ConstVolatileType::computeLocalHash() const
+{
+    hash64 h = getUnderlyingType()->computeLocalHash();
+    CombineHash(h, '£');
+    return h;
+}
+
 } // namespace lang
 } // namespace phantom

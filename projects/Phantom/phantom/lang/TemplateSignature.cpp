@@ -16,9 +16,10 @@
 #endif
 #include "Application.h"
 #include "Namespace.h"
+#include "TemplateSpecialization.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/detail/core_internal.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -29,9 +30,7 @@ TemplateSignature* TemplateSignature::Create(uint a_Flags)
     return PHANTOM_DEFERRED_NEW(TemplateSignature)(a_Flags);
 }
 
-TemplateSignature::TemplateSignature(uint a_uiFlags) : LanguageElement(a_uiFlags)
-{
-}
+TemplateSignature::TemplateSignature(uint a_uiFlags) : LanguageElement(a_uiFlags) {}
 
 TemplateSignature::TemplateSignature(const TemplateParameters& a_Parameters, bool a_bVariadic,
                                      uint flags /*= PHANTOM_R_NONE*/)
@@ -104,14 +103,23 @@ TemplateSignature* TemplateSignature::Parse(StringView a_strTemplateParameterTyp
                          pram.valueType, pram.name, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE))
                        : static_cast<Placeholder*>(PHANTOM_DEFERRED_NEW(PlaceholderType)(
                          pram.name, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE)),
-        nullptr, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE));
+        nullptr, a_uiFlags & PHANTOM_R_FLAG_NATIVE));
     }
 
     return PHANTOM_DEFERRED_NEW(TemplateSignature)(tParams, bVariadic, a_uiFlags);
 }
 
-TemplateSignature::~TemplateSignature()
+TemplateSignature::~TemplateSignature() {}
+
+Template* TemplateSignature::getTemplate() const
 {
+    return getTemplateSpecialization()->getTemplate();
+}
+
+TemplateSpecialization* TemplateSignature::getTemplateSpecialization() const
+{
+    PHANTOM_ASSERT(getOwner() && getOwner()->asTemplateSpecialization());
+    return static_cast<TemplateSpecialization*>(getOwner());
 }
 
 TemplateParameter* TemplateSignature::addTemplateValueParameter(Type* a_pType, StringView a_Name)
@@ -141,7 +149,7 @@ size_t TemplateSignature::getTemplateParameterIndex(StringView a_strName) const
 {
     for (size_t i = 0; i < m_TemplateParameters.size(); ++i)
     {
-        if (m_TemplateParameters[i]->getName() == a_strName)
+        if (m_TemplateParameters[i]->getPlaceholder()->asSymbol()->getName() == a_strName)
             return i;
     }
     auto found = m_TemplateParameterAliasNames.find(a_strName);
@@ -210,7 +218,8 @@ void TemplateSignature::addTemplateParameter(TemplateParameter* a_pTemplateParam
 {
     PHANTOM_ASSERT(!isVariadic(), "variadic template signature cannot have more template parameters");
     PHANTOM_ASSERT(a_pTemplateParameter);
-    PHANTOM_ASSERT(getTemplateParameterIndex(a_pTemplateParameter->getName()) == ~size_t(0),
+    PHANTOM_ASSERT(getTemplateParameterIndex(a_pTemplateParameter->getPlaceholder()->asSymbol()->getName()) ==
+                   ~size_t(0),
                    "template parameter with this name already exists in this template signature");
     addElement(a_pTemplateParameter);
     m_TemplateParameters.push_back(a_pTemplateParameter);
@@ -242,8 +251,8 @@ bool TemplateSignature::acceptsArguments(const LanguageElements& a_Arguments) co
         return false;
     for (size_t i = 0; i < m_TemplateParameters.size(); ++i)
     {
-        if (a_Arguments[i] == nullptr || m_TemplateParameters[i] ==
-            nullptr ||                   !(m_TemplateParameters[i]->acceptsArgument(a_Arguments[i])))
+        if (a_Arguments[i] == nullptr || m_TemplateParameters[i] == nullptr ||
+            !(m_TemplateParameters[i]->acceptsArgument(a_Arguments[i])))
             return false;
     }
     return true;
@@ -265,7 +274,7 @@ bool TemplateSignature::isSame(TemplateSignature* a_pOther) const
 bool TemplateSignature::isSame(Symbol* a_pLanguageElement) const
 {
     TemplateSignature* pTS = a_pLanguageElement->asTemplateSignature();
-    return pTS &&     isSame(pTS);
+    return pTS && isSame(pTS);
 }
 
 bool TemplateSignature::isVariadic() const
@@ -287,6 +296,11 @@ TemplateSignature* TemplateSignature::clone(uint a_Flags) const
         params[i] = m_TemplateParameters[i]->clone(a_Flags);
     }
     return PHANTOM_NEW(TemplateSignature)(params, isVariadic(), a_Flags);
+}
+
+void TemplateSignature::getName(StringBuffer& a_Buf) const
+{
+    a_Buf += '$';
 }
 
 } // namespace lang

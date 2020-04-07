@@ -126,10 +126,11 @@ public:
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
 
-    void getUniqueName(StringBuffer& a_Buf) const override;
-    void getQualifiedName(StringBuffer& a_Buf) const override;
-    void getDecoratedName(StringBuffer& a_Buf) const override;
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void   getUniqueName(StringBuffer& a_Buf) const override;
+    void   getQualifiedName(StringBuffer& a_Buf) const override;
+    void   getDecoratedName(StringBuffer& a_Buf) const override;
+    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    hash64 computeLocalHash() const override;
 
 protected:
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;

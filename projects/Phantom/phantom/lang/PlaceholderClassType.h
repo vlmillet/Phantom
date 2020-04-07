@@ -38,19 +38,6 @@ public:
 
     Class* toClass() const;
 
-    bool isSame(Symbol* a_pOther) const override
-    {
-        return Type::isSame(a_pOther) || (a_pOther->asType() && a_pOther->asPlaceholder());
-    }
-
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getUniqueName(StringBuffer& a_Buf) const override
-    {
-        a_Buf += "@ph ";
-        getName(a_Buf);
-    }
     bool isCopyable() const override { return true; }
 
     Placeholder* clone(uint a_Flags = 0) const override;

@@ -96,7 +96,7 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
             auto& params = a_pInstantiationSpecialization->getTemplateParameters();
             for (size_t i = 0; i < params.size(); ++i)
             {
-                if (params[i]->getPlaceholder()->isSame(pair.first))
+                if (params[i]->getPlaceholder()->asSymbol()->isSame(pair.first->asSymbol()))
                 {
                     found = true;
                     break;
@@ -134,11 +134,28 @@ void TemplateSpecialization::getDecoration(StringBuffer& a_Buf) const
     {
         if (i)
             a_Buf += ',';
-        m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
+        m_Arguments[i]->getRelativeDecoratedName(const_cast<TemplateSpecialization*>(this), a_Buf);
     }
     if (a_Buf.back() == '>')
         a_Buf += ' ';
     a_Buf += '>';
+}
+
+hash64 TemplateSpecialization::getDecorationHash() const
+{
+    hash64 h = '<'; // just to differentiate '<>' from ''
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (Placeholder* ph = m_Arguments[i]->asPlaceholder())
+        {
+            CombineHash(h, ph->getRelativeHash(const_cast<TemplateSpecialization*>(this)));
+        }
+        else
+        {
+            CombineHash(h, m_Arguments[i]->asSymbol()->getHash());
+        }
+    }
+    return h;
 }
 
 void TemplateSpecialization::getQualifiedDecoration(StringBuffer& a_Buf) const
@@ -148,7 +165,14 @@ void TemplateSpecialization::getQualifiedDecoration(StringBuffer& a_Buf) const
     {
         if (i)
             a_Buf += ',';
-        m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
+        if (Placeholder* ph = m_Arguments[i]->asPlaceholder())
+        {
+            ph->getRelativeDecoratedName(const_cast<TemplateSpecialization*>(this), a_Buf);
+        }
+        else
+        {
+            m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
+        }
     }
     if (a_Buf.back() == '>')
         a_Buf += ' ';
@@ -178,7 +202,7 @@ LanguageElement* TemplateSpecialization::getArgument(StringView a_strParameterNa
     return (index != ~size_t(0)) ? m_Arguments[index] : nullptr;
 }
 
-Scope* TemplateSpecialization::getNamingScope() const
+LanguageElement* TemplateSpecialization::getNamingScope() const
 {
     return m_pTemplate->getNamingScope();
 }

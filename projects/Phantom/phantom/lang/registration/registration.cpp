@@ -295,6 +295,7 @@ NamespaceBuilder& NamespaceBuilder::namespace_alias(StringView a_Name, StringVie
     Symbol* pSymbol = phantom::lang::Application::Get()->findCppSymbol(a_Namespace, _PHNTM_pNamespace);
     PHANTOM_ASSERT(pSymbol && pSymbol->asNamespace(), "cannot find namespace '%.*s' use in namespace alias '%.*s'",
                    PHANTOM_STRING_AS_PRINTF_ARG(a_Name), PHANTOM_STRING_AS_PRINTF_ARG(a_Namespace));
+
     _PHNTM_pNamespace->addNamespaceAlias(a_Name, static_cast<Namespace*>(pSymbol));
     return *this;
 }
@@ -399,8 +400,8 @@ void TypeBuilderBase::_addField(lang::Symbol* a_pOwner, StringView a_Name, ArgFw
     member.filter = a_Filter;
     m_Members.push_back(std::move(member));
 }
-void TypeBuilderBase::_addProperty(lang::Symbol* a_pOwner, StringView a_Name,
-                                   std::initializer_list<ArgFwd> a_Args, uint a_Filter, MemberRegistrer a_Reg)
+void TypeBuilderBase::_addProperty(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args,
+                                   uint a_Filter, MemberRegistrer a_Reg)
 {
     MemberBuilder member{};
     member.registrer = a_Reg;
@@ -582,8 +583,7 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
                     pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }
 
-PHANTOM_EXPORT_PHANTOM lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage,
-                                                        StringView a_strSource)
+PHANTOM_EXPORT_PHANTOM lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource)
 {
     return dynamic_initializer_()->nativeSource(a_strFile, a_strPackage, a_strSource);
 }

@@ -18,8 +18,8 @@
 #include "Namespace.h"
 #include "Source.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/detail/core_internal.h>
+#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -40,7 +40,7 @@ bool Package::IsValidName(StringView a_strName)
             prevChar = c;
             continue;
         }
-        if (!((((c) >= '0') &&((c) <= '9')) ||(((c | 0x20) >= 'a') &&((c | 0x20) <= 'z')) ||(c) == '_'))
+        if (!((((c) >= '0') && ((c) <= '9')) || (((c | 0x20) >= 'a') && ((c | 0x20) <= 'z')) || (c) == '_'))
             return false;
         prevChar = c;
     }
@@ -51,7 +51,7 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
     String namespaceName = m_strName;
-    StringUtil::ReplaceAll(namespaceName, ".", "_");
+    StringUtil::ReplaceAll(namespaceName, ".", "::");
     m_pNamespace = Namespace::Global()->findOrCreateNamespace(namespaceName);
     PHANTOM_ASSERT(m_pNamespace);
     Strings folders;
@@ -76,9 +76,7 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
     m_pFolder->_addPackage(this);
 }
 
-Package::~Package()
-{
-}
+Package::~Package() {}
 
 void Package::terminate()
 {

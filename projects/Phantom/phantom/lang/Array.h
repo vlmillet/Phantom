@@ -144,12 +144,12 @@ public:
 
     void getUniqueName(StringBuffer& a_Buf) const override;
 
-    void getQualifiedName(StringBuffer& a_Buf) const override;
-    void getDecoratedName(StringBuffer& a_Buf) const override;
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
-
-    void getFields(AggregateFields& _fields) const override;
-    void getFlattenedAggregateFields(AggregateFields& _aggregateFields) const override;
+    void   getQualifiedName(StringBuffer& a_Buf) const override;
+    void   getDecoratedName(StringBuffer& a_Buf) const override;
+    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    hash64 computeLocalHash() const override;
+    void   getFields(AggregateFields& _fields) const override;
+    void   getFlattenedAggregateFields(AggregateFields& _aggregateFields) const override;
 
     Type* replicate(Type* a_pInput) const override;
 

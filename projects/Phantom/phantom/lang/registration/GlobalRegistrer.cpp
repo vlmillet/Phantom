@@ -23,7 +23,7 @@ lang::Namespace* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
     {
         StringView scope = _PHNTM_TypeInfosGetter().scope();
         if (!scope.empty())
-            _PHNTM_pNamingScope = phantom::lang::Namespace::Global()->findOrCreateNamespace(scope);
+            _PHNTM_pNamingScope = phantom::lang::Namespace::Global()->getOrCreateNamespace(scope);
         else
             _PHNTM_pNamingScope = phantom::lang::Namespace::Global();
     }

@@ -312,8 +312,8 @@ enum class OperatorKind
 enum class UserDefinedFunctions
 {
     None = 0,
-    Implicits,
-    Explicits,
+    ImplicitsOnly,
+    All,
 };
 
 /// \brief  Conversions types.

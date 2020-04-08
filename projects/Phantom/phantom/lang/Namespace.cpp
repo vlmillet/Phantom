@@ -67,7 +67,7 @@ Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
     return NULL;
 }
 
-Namespace* Namespace::findOrCreateNamespace(Strings* a_HierarchyWords)
+Namespace* Namespace::getOrCreateNamespace(Strings* a_HierarchyWords)
 {
     if (a_HierarchyWords->empty())
         return this;
@@ -89,16 +89,16 @@ Namespace* Namespace::findOrCreateNamespace(Strings* a_HierarchyWords)
     }
     else
     {
-        return pChildNamespace->findOrCreateNamespace(a_HierarchyWords);
+        return pChildNamespace->getOrCreateNamespace(a_HierarchyWords);
     }
     return NULL;
 }
 
-Namespace* Namespace::findOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern)
+Namespace* Namespace::getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern)
 {
     Strings words;
     StringUtil::Split(words, a_strNamespaceName, separatorPattern);
-    return findOrCreateNamespace(&words);
+    return getOrCreateNamespace(&words);
 }
 
 Namespace* Namespace::getNamespace(StringView a_strName) const

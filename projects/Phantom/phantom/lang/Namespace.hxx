@@ -22,6 +22,7 @@
 #include <phantom/static_method>
 #include <phantom/constructor>
 #include <phantom/field>
+#include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
@@ -74,7 +75,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Namespace*(StringView) const>("getNamespace", &_::getNamespace)
             .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)["\":\""]
             .method<Namespace*() const>("getParentNamespace", &_::getParentNamespace)
-            .method<Namespace*(StringView, const char*)>("findOrCreateNamespace", &_::findOrCreateNamespace)["\":\""]
+            .method<Namespace*(StringView, const char*)>("getOrCreateNamespace", &_::getOrCreateNamespace)["\":\""]
             .method<Alias*(StringView, Namespace*)>("addNamespaceAlias", &_::addNamespaceAlias)
             .method<void(StringView)>("removeNamespaceAlias", &_::removeNamespaceAlias)
             .method<Alias*(StringView) const>("getNamespaceAlias", &_::getNamespaceAlias)
@@ -86,6 +87,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)
             .method<void(Symbol*, Symbols&) const, virtual_|override_>("getElementDoubles", &_::getElementDoubles)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
+            .using_("Symbol::getQualifiedName")
+            .using_("Symbol::getQualifiedDecoratedName")
+            .using_("Symbol::getRelativeName")
+            .using_("Symbol::getRelativeDecoratedName")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)

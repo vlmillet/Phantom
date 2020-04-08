@@ -585,7 +585,7 @@ void Application::_registerBuiltInTypes()
     Namespace::Global()->addReferencedElement(pUnsignedAlias);
 
     Namespace* pGlobal = Namespace::Global();
-    Namespace* pPhantom = pGlobal->findOrCreateNamespace("phantom");
+    Namespace* pPhantom = pGlobal->getOrCreateNamespace("phantom");
 
 #define _PHNTM_FUND_TD(t) pPhantomModule->addElement(pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE))
 

@@ -91,7 +91,7 @@ public:
     /// \return null if it fails, else the found or create namespace cascade.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* findOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
+    Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a namespace alias to this namespace.
@@ -174,6 +174,11 @@ public:
 
     bool isSame(Symbol* a_pOther) const override { return a_pOther == this; }
 
+    using Symbol::getQualifiedName;
+    using Symbol::getQualifiedDecoratedName;
+    using Symbol::getRelativeName;
+    using Symbol::getRelativeDecoratedName;
+
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
@@ -197,7 +202,7 @@ protected:
 
 private:
     Namespace* getNamespaceCascade(Strings& a_HierarchyWords) const;
-    Namespace* findOrCreateNamespace(Strings* a_HierarchyWords);
+    Namespace* getOrCreateNamespace(Strings* a_HierarchyWords);
 
 private:
     void release(Types& out_types);

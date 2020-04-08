@@ -353,7 +353,7 @@ void DynamicCppInitializerH::stepTemplateInstanceInstallation(size_t a_ModuleHan
 
 lang::Namespace* DynamicCppInitializerH::parseNamespace(StringView a_strNamespace) const
 {
-    return lang::Namespace::Global()->findOrCreateNamespace(a_strNamespace);
+    return lang::Namespace::Global()->getOrCreateNamespace(a_strNamespace);
 }
 
 void DynamicCppInitializerH::registerTemplateInstance(size_t a_ModuleHandle, lang::TypeInstallationInfo* a_pTii)

@@ -472,7 +472,7 @@ TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strF
 void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
 {
     phantom::lang::Symbol* pNamingScope =
-    (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->findOrCreateNamespace(m_func(0));
+    (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->getOrCreateNamespace(m_func(0));
     PHANTOM_ASSERT(pNamingScope,
                    "template scope has not been registered => ensure that the nesting class of "
                    "your template is registered before it (above in the translation unit)");

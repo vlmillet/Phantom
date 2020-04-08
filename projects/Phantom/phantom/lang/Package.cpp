@@ -52,7 +52,7 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
     PHANTOM_ASSERT(IsValidName(a_strName));
     String namespaceName = m_strName;
     StringUtil::ReplaceAll(namespaceName, ".", "::");
-    m_pNamespace = Namespace::Global()->findOrCreateNamespace(namespaceName);
+    m_pNamespace = Namespace::Global()->getOrCreateNamespace(namespaceName);
     PHANTOM_ASSERT(m_pNamespace);
     Strings folders;
     StringUtil::Split(folders, a_strName, ".");

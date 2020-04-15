@@ -34,9 +34,9 @@ public:
 
     hash64 getRelativeHash(LanguageElement* a_pTo) const { return asSymbol()->getRelativeHash(a_pTo); }
 
-    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+    void getRelativeDecoratedName(LanguageElement* /*a_pTo*/, StringBuffer& a_Buf) const
     {
-        return asSymbol()->getOwner()->getRelativeDecoratedName(a_pTo, a_Buf);
+        return asSymbol()->getName(a_Buf);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -54,10 +54,6 @@ Expression* ValueMember::getDefaultExpression() const
             PHANTOM_WARNING(false, "%s : cannot solve default value '%s'", getQualifiedDecoratedName().c_str(),
                             m_pNativeDefaultExpressionStr);
         }
-        else
-        {
-            const_cast<ValueMember*>(this)->addElement(reinterpret_cast<LanguageElement*>(m_pDefaultExpression));
-        }
     }
     return m_pDefaultExpression;
 }

@@ -61,7 +61,8 @@ Expression* Parameter::getDefaultArgumentExpression() const
         !Application::Get()->getCppExpressionParser().empty())
     {
         PHANTOM_ASSERT(isNative());
-        return Application::Get()->cppExpression(m_NativeDefaultArgumentStr, getOwner()->getOwner());
+        m_pDefaultArgumentExpression =
+        Application::Get()->cppExpression(m_NativeDefaultArgumentStr, getOwner()->getOwner());
     }
     return m_pDefaultArgumentExpression;
 }

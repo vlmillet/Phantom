@@ -49,30 +49,6 @@ bool LValueReference::isSame(Symbol* a_pOther) const
      m_pUnderlyingType->isSame(static_cast<LValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 
-void LValueReference::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    a_Buf += '&';
-}
-
-void LValueReference::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    a_Buf += '&';
-}
-
-void LValueReference::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    a_Buf += '&';
-}
-
-void LValueReference::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    a_Buf += '&';
-}
-
 hash64 LValueReference::computeLocalHash() const
 {
     hash64 h = getUnderlyingType()->computeLocalHash();

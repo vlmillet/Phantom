@@ -60,6 +60,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(StringView)>()
             .method<Package*() const, virtual_|override_>("asPackage", &_::asPackage)
             .method<Source*(StringView) const>("getSource", &_::getSource)
+            .method<Source*(StringView, bool)>("getOrCreateSource", &_::getOrCreateSource)["false"]
             .method<PackageFolder*() const>("getPackageFolder", &_::getPackageFolder)
             .method<Sources const&()>("getSources", &_::getSources)
             .method<void(Source*)>("addSource", &_::addSource)

@@ -97,14 +97,7 @@ void TemplateDependantTemplateInstance::getQualifiedDecoration(StringBuffer& a_B
     {
         if (i)
             a_Buf += ',';
-        if (Placeholder* ph = m_Arguments[i]->asPlaceholder())
-        {
-            ph->asSymbol()->getOwner()->getRelativeDecoratedName(m_pTemplate, a_Buf);
-        }
-        else
-        {
-            m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
-        }
+        m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
     }
     if (a_Buf.back() == '>')
         a_Buf += ' ';
@@ -113,10 +106,10 @@ void TemplateDependantTemplateInstance::getQualifiedDecoration(StringBuffer& a_B
 
 void TemplateDependantTemplateInstance::getDecoratedName(StringBuffer& a_Buf) const
 {
-    if (m_strName.size())
-        getName(a_Buf);
-    else
+    if (m_strName.empty())
         formatAnonymousName(a_Buf);
+    else
+        getName(a_Buf);
     getDecoration(a_Buf);
 }
 
@@ -140,11 +133,13 @@ hash64 TemplateDependantTemplateInstance::computeLocalHash() const
 {
     hash64     h = 0;
     StringView n = getName();
-    if (n.size())
-        h = ComputeHash(n.data(), n.size());
-    else
+    if (n.empty())
     {
         CombineHash(h, hash64(this));
+    }
+    else
+    {
+        h = ComputeHash(n.data(), n.size());
     }
     for (auto pArg : m_Arguments)
     {

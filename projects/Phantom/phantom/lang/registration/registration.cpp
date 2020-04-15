@@ -136,7 +136,19 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
         if (m_TemplateSpecArgumentRegistrer)
         {
             Template* pTemplate = this->_getClassTemplate(static_cast<lang::ClassType*>(a_pType), m_pNamingScope);
+
+            // ---------------------------------------
+            // If you get an assert here, it probably means that your manual-written reflection file has reflection
+            // headers ordering messed up (be careful of clang-format !).
+            // Indeed, you need to always have other template .hxx included
+            // in between 'template-only-push' and 'template-only-pop'
+            // as shown below :
+            // #include <phantom/template-only-push>
+            // #include "vector.hxx"
+            // #include <phantom/template-only-pop>
+            // ---------------------------------------
             PHANTOM_ASSERT(pTemplate);
+
             auto                    args = m_TemplateSpecArgumentRegistrer();
             TemplateSpecialization* pSpec = pTemplate->getTemplateInstantiation(args);
             if (pSpec == nullptr || pSpec->getModule() != detail::currentModule())

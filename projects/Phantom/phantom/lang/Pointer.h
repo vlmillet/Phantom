@@ -37,11 +37,13 @@ protected:
     /// \param a_pType The pointer type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Pointer(Type* a_pPointeeType);
+    Pointer(Type* a_pPointeeType)
+        : PointerType(TypeKind::Pointer, a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, 0,
+                      PHANTOM_R_FLAG_IMPLICIT | a_pPointeeType->getFlags())
+    {
+    }
 
 public:
-    PHANTOM_DTOR ~Pointer() override;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the pointed type (ex: int* => int).
     ///
@@ -126,11 +128,12 @@ public:
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
 
-    void   getUniqueName(StringBuffer& a_Buf) const override;
-    void   getQualifiedName(StringBuffer& a_Buf) const override;
-    void   getDecoratedName(StringBuffer& a_Buf) const override;
-    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
-    hash64 computeLocalHash() const override;
+    void             getUniqueName(StringBuffer& a_Buf) const override;
+    void             getQualifiedName(StringBuffer& a_Buf) const override;
+    void             getDecoratedName(StringBuffer& a_Buf) const override;
+    void             getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    hash64           computeLocalHash() const override;
+    LanguageElement* getNamingScope() const override { return getUnderlyingType()->getNamingScope(); }
 
 protected:
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;

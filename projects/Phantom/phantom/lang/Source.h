@@ -44,7 +44,7 @@ class PHANTOM_EXPORT_PHANTOM Source : public Symbol, public Scope
 public:
     struct Import
     {
-        Source* source;
+        Symbol* symbol;
         bool    isPublic;
         bool    isStatic;
         Alias*  alias;
@@ -191,7 +191,7 @@ public:
     /// \param a_Importeds The container which receives the imported list
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void getImported(Sources& a_Imports) const;
+    void getImported(Symbols& a_Imports) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a list of the sources importing this one.
@@ -200,16 +200,16 @@ public:
     Sources const& getImportings() const { return m_Importings; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds an imported source to this source.
+    /// \brief  Adds an imported symbol to this source.
     ///
-    /// \param [in,out] a_pSource   The imported source.
+    /// \param [in,out] a_pSource   The imported symbol.
     /// \param  a_bStatic           (optional) is the import 'static' (which means you need to use
     /// the full qualified name of a symbol to access it). \param  a_bPublic           (optional) is
     /// the import 'public' (which means import is 'open' to importing sources and will be
     /// accessible to them).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool addImport(Source* a_pSource, bool a_bStatic = false, bool a_bPublic = false);
+    bool addImport(Symbol* a_pSource, bool a_bStatic = false, bool a_bPublic = false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds an imported source with given name to this source.
@@ -228,7 +228,7 @@ public:
     /// \param  a_strName   The imported source name.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void removeImport(Source* a_pSource);
+    void removeImport(Symbol* a_pSource);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this source has the given described imported source with given modifiers
@@ -242,7 +242,7 @@ public:
     /// \return true if import, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool hasImport(Source* a_pSource) const;
+    bool hasImport(Symbol* a_pSource) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this source has the given imported source (imported directly or imported by
@@ -253,7 +253,7 @@ public:
     /// \return true if imported from the given source, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool hasImported(Source* a_pSource) const;
+    bool hasImported(Symbol* a_pSource) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if we can import the given source with given modifiers and flags.
@@ -265,7 +265,7 @@ public:
     /// \return true if we can import the source without name collisions, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool canImport(Source* a_pSource, Access a_eAccess = Access::Public, Modifiers a_Modifiers = 0, uint a_uiFlags = 0,
+    bool canImport(Symbol* a_pSymbol, Access a_eAccess = Access::Public, Modifiers a_Modifiers = 0, uint a_uiFlags = 0,
                    SmallMap<Symbol*, Symbols>* a_pCollidingSymbols = nullptr) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,11 +363,11 @@ protected:
     hash64 computeHash() const override;
 
 private:
-    bool _hasImported(Source* a_pSource, SmallSet<const Source*>& treated) const;
-    void _addImporting(Source* _source);
-    void _removeImporting(Source* _source);
-    void _addDepending(Source* _source);
-    void _removeDepending(Source* _source);
+    bool _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
+    void _addImporting(Source*);
+    void _removeImporting(Source*);
+    void _addDepending(Source*);
+    void _removeDepending(Source*);
     bool _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
 
 public:

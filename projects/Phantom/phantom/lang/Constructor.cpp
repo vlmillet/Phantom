@@ -13,9 +13,7 @@ namespace phantom
 {
 namespace lang
 {
-Constructor::Constructor() : Method(ABI::MethodCall)
-{
-}
+Constructor::Constructor() : Method(ABI::MethodCall) {}
 
 Constructor::Constructor(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/,
                          uint a_uiFlags /*= 0*/)

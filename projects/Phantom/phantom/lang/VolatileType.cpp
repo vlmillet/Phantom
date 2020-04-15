@@ -16,7 +16,7 @@ namespace phantom
 namespace lang
 {
 VolatileType::VolatileType(Type* a_pType)
-    : QualifiedType(TypeKind::Unknown, a_pType, "volatile", a_pType->isNative() ? a_pType->getSize() : 0,
+    : QualifiedType(TypeKind::Unknown, a_pType, " volatile", a_pType->isNative() ? a_pType->getSize() : 0,
                     a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_VOLATILE,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
@@ -45,30 +45,6 @@ bool VolatileType::isSame(Symbol* a_pOther) const
 Type* VolatileType::replicate(Type* a_pInput) const
 {
     return m_pUnderlyingType->replicate(a_pInput)->addVolatile();
-}
-
-void VolatileType::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    a_Buf += "@volatile";
-}
-
-void VolatileType::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    a_Buf += " volatile";
-}
-
-void VolatileType::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    a_Buf += " volatile";
-}
-
-void VolatileType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    a_Buf += " volatile";
 }
 
 hash64 VolatileType::computeLocalHash() const

@@ -4,7 +4,7 @@
 
 // clang-format off
 
-#include "PointerType.h"
+#include "ExtendedType.h"
 
 #if defined(_MSC_VER)
 #   pragma warning(push, 0)
@@ -21,11 +21,11 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -33,15 +33,16 @@
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
-    PHANTOM_SOURCE("PointerType")
+    PHANTOM_SOURCE("ExtendedType")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_CLASS(PointerType)
+        PHANTOM_CLASS(ExtendedType)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::lang::ExtendedType>()
+            .inherits<::phantom::lang::Type>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -51,24 +52,18 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
         
         .protected_()
-            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
-        
-        .public_()
-            .method<Type*() const, virtual_|override_>("asPOD", &_::asPOD)
-            .method<void(void**, void*)>("less", &_::less)
-            .method<void(void**, void*)>("greater", &_::greater)
-            .method<void(void**, void*)>("lessEqual", &_::lessEqual)
-            .method<void(void**, void*)>("greaterEqual", &_::greaterEqual)
-            .method<void(void**, void*)>("equal", &_::equal)
-            .method<void(void**, void*)>("notEqual", &_::notEqual)
-            .using_("Type::equal")
-            .method<void(void**, void*)>("assignment", &_::assignment)
-        
-        .protected_()
+            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()
+            .method<LanguageElement*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
-    PHANTOM_END("PointerType")
+    PHANTOM_END("ExtendedType")
 PHANTOM_END("phantom.lang")
 }
 }

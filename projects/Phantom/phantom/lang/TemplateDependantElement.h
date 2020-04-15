@@ -36,32 +36,20 @@ public:
     ~TemplateDependantElement() override;
 
     Type*            toType() const override;
-    LanguageElement* getLeft() const
-    {
-        return m_pLeft;
-    }
+    LanguageElement* getLeft() const { return m_pLeft; }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
-    void getQualifiedName(StringBuffer& a_Buf) const override
-    {
-        return getName(a_Buf);
-    }
+    void getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
+    void getDecoration(StringBuffer& a_Buf) const;
+    void getQualifiedDecoration(StringBuffer& a_Buf) const;
 
-    LanguageElements* getTemplateArguments() const
-    {
-        return m_pTemplateArguments;
-    }
-    LanguageElements* getFunctionArguments() const
-    {
-        return m_pFunctionArguments;
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void getDecoratedName(StringBuffer& a_Buf) const override;
+    void getQualifiedName(StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+
+    LanguageElements* getTemplateArguments() const { return m_pTemplateArguments; }
+    LanguageElements* getFunctionArguments() const { return m_pFunctionArguments; }
 
 protected:
     mutable Type*     m_pAsType = nullptr;

@@ -65,6 +65,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using Properties = typedef_< phantom::lang::Properties>;
             using StringView = typedef_< phantom::StringView>;
             using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using Symbols = typedef_< phantom::lang::Symbols>;
             using Types = typedef_< phantom::lang::Types>;
             using TypesView = typedef_< phantom::lang::TypesView>;
             using ValueMembers = typedef_< phantom::lang::ValueMembers>;
@@ -209,6 +210,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateSpecialization*(StringView, const LanguageElements&) const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<void(Symbol*)>("addFriend", &_::addFriend)
             .method<bool(Symbol*) const, virtual_|override_>("hasFriend", &_::hasFriend)
+            .method<Symbols const&() const>("getFriends", &_::getFriends)
             .method<void() const, virtual_|override_>("checkCompleteness", &_::checkCompleteness)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<bool(LanguageElement*) const, virtual_|override_>("isSame", &_::isSame)

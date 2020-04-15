@@ -539,6 +539,7 @@ PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_IOS
         if (!Path::Exists(nativeBinaryPath))
         {
             PHANTOM_LOG(Error, "dynamic library path '%s' does not exist", nativeBinaryPath.genericString().c_str());
+            Path::SetCurrentWorkingDir(prev);
             return false;
         }
         nativeBinaryPath = nativeBinaryPath.absolute().canonical();

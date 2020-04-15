@@ -965,6 +965,8 @@ public:
     void addFriend(Symbol* a_pFriend);
     bool hasFriend(Symbol* a_pFriend) const override;
 
+    Symbols const& getFriends() const { return *m_Friends; }
+
     void checkCompleteness() const override;
 
     bool isSame(Symbol* a_pSymbol) const override;

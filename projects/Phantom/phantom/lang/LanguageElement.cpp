@@ -83,11 +83,11 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     const_cast<LanguageElement*>(this)->_onElementsAccess();
     if (m_pElements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
+        for (auto& m_pElement : *m_pElements)
         {
-            if (a_pClass == nullptr || (*it)->as(a_pClass))
+            if (a_pClass == nullptr || m_pElement->as(a_pClass))
             {
-                out.push_back(*it);
+                out.push_back(m_pElement);
             }
         }
     }
@@ -216,7 +216,7 @@ void LanguageElement::addUniquelyReferencedElement(LanguageElement* a_pElement)
 void LanguageElement::removeReferencedElement(LanguageElement* a_pElement)
 {
     m_pReferencedElements->erase(std::find(m_pReferencedElements->begin(), m_pReferencedElements->end(), a_pElement));
-    if (m_pReferencedElements->size() == 0)
+    if (m_pReferencedElements->empty())
     {
         PHANTOM_DELETE(LanguageElements) m_pReferencedElements;
         m_pReferencedElements = nullptr;
@@ -242,7 +242,7 @@ void LanguageElement::unregisterReferencingElement(LanguageElement* a_pElement)
 {
     m_pReferencingElements->erase(
     std::find(m_pReferencingElements->begin(), m_pReferencingElements->end(), a_pElement));
-    if (m_pReferencingElements->size() == 0)
+    if (m_pReferencingElements->empty())
     {
         PHANTOM_DELETE(LanguageElements) m_pReferencingElements;
         m_pReferencingElements = nullptr;
@@ -855,17 +855,24 @@ String LanguageElement::getQualifiedDecoratedName() const
 
 void LanguageElement::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    if (auto pScope = getNamingScope())
+    if (a_pTo == this || a_pTo == getNamingScope())
+        return getDecoratedName(a_Buf);
+
+    if (hasNamingScopeCascade(a_pTo))
     {
-        if (pScope != a_pTo)
+        if (auto pScope = getNamingScope())
         {
-            size_t sz = a_Buf.size();
-            pScope->getRelativeDecoratedName(a_pTo, a_Buf);
-            if (sz != a_Buf.size())
-                a_Buf += "::";
+            if (pScope != a_pTo)
+            {
+                size_t sz = a_Buf.size();
+                pScope->getRelativeDecoratedName(a_pTo, a_Buf);
+                if (sz != a_Buf.size())
+                    a_Buf += "::";
+            }
         }
+        return getDecoratedName(a_Buf);
     }
-    return getDecoratedName(a_Buf);
+    return getQualifiedDecoratedName(a_Buf);
 }
 
 String LanguageElement::getRelativeDecoratedName(LanguageElement* a_pTo) const

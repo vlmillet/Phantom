@@ -25,7 +25,7 @@ Constant::Constant(Type* a_pValueType, StringView a_strName, Modifiers a_Modifie
 
 void Constant::getQualifiedName(StringBuffer& a_Buf) const
 {
-    if (m_strName.size())
+    if (!m_strName.empty())
     {
         return Symbol::getQualifiedName(a_Buf);
     }
@@ -42,7 +42,7 @@ void Constant::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 
 void Constant::getDecoratedName(StringBuffer& a_Buf) const
 {
-    if (m_strName.size())
+    if (!m_strName.empty())
     {
         return Symbol::getDecoratedName(a_Buf);
     }
@@ -54,9 +54,25 @@ void Constant::getDecoratedName(StringBuffer& a_Buf) const
 
 void Constant::getUniqueName(StringBuffer& a_Buf) const
 {
-    if (m_strName.size())
+    if (!m_strName.empty())
     {
         return Symbol::getUniqueName(a_Buf);
+    }
+    void* pValue = m_pValueType->allocate();
+    getValue(pValue);
+    m_pValueType->valueToLiteral(a_Buf, pValue);
+    m_pValueType->deallocate(pValue);
+}
+
+void Constant::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    getRelativeName(a_pTo, a_Buf);
+}
+void Constant::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (!m_strName.empty())
+    {
+        return Symbol::getRelativeName(a_pTo, a_Buf);
     }
     void* pValue = m_pValueType->allocate();
     getValue(pValue);

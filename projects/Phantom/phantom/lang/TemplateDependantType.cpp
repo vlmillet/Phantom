@@ -21,5 +21,30 @@ TemplateDependantType::TemplateDependantType(TemplateDependantElement* a_pElemen
     addElement(a_pElement);
 }
 
+void TemplateDependantType::getDecoratedName(StringBuffer& a_Buf) const
+{
+    return m_pElement->getDecoratedName(a_Buf);
+}
+
+void TemplateDependantType::getQualifiedName(StringBuffer& a_Buf) const
+{
+	return m_pElement->getQualifiedName(a_Buf);
+}
+
+void TemplateDependantType::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+	return m_pElement->getRelativeName(a_pTo, a_Buf);
+}
+
+void TemplateDependantType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
+{
+	return m_pElement->getQualifiedDecoratedName(a_Buf);
+}
+
+void TemplateDependantType::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+	return m_pElement->getRelativeDecoratedName(a_pTo, a_Buf);
+}
+
 } // namespace lang
 } // namespace phantom

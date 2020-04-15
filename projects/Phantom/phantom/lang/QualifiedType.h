@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Type.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 
@@ -17,7 +17,7 @@ namespace lang
 {
 /// \brief  Base for const/volatile qualified type
 
-class PHANTOM_EXPORT_PHANTOM QualifiedType : public Type
+class PHANTOM_EXPORT_PHANTOM QualifiedType : public ExtendedType
 {
     PHANTOM_DECL_TYPE;
 
@@ -28,7 +28,10 @@ class PHANTOM_EXPORT_PHANTOM QualifiedType : public Type
 
 protected:
     QualifiedType(TypeKind a_eTypeKind, Type* a_pType, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
-                  Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+                  Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+        : ExtendedType(a_eTypeKind, a_pType, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+    {
+    }
 
 public:
     void* cast(Type* a_pTargetType, void* a_pSrc) const override;

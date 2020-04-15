@@ -77,5 +77,96 @@ Type* TemplateDependantElement::toType() const
     return PHANTOM_NEW(TemplateDependantType)((TemplateDependantElement*)this);
 }
 
+void TemplateDependantElement::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (!m_pTemplateArguments)
+        return;
+    a_Buf += '<';
+    for (size_t i = 0; i < (*m_pTemplateArguments).size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        (*m_pTemplateArguments)[i]->getRelativeDecoratedName(a_pTo, a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateDependantElement::getDecoration(StringBuffer& a_Buf) const
+{
+    if (!m_pTemplateArguments)
+        return;
+    a_Buf += '<';
+    for (size_t i = 0; i < (*m_pTemplateArguments).size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        (*m_pTemplateArguments)[i]->getDecoratedName(a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateDependantElement::getQualifiedDecoration(StringBuffer& a_Buf) const
+{
+    if (!m_pTemplateArguments)
+        return;
+    a_Buf += '<';
+    for (size_t i = 0; i < m_pTemplateArguments->size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        (*m_pTemplateArguments)[i]->getQualifiedDecoratedName(a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateDependantElement::getQualifiedDecoratedName(StringBuffer& a_Buf) const
+{
+    if (m_pLeft)
+    {
+        m_pLeft->getQualifiedDecoratedName(a_Buf);
+        a_Buf += "::";
+    }
+    getName(a_Buf);
+    getQualifiedDecoration(a_Buf);
+}
+
+void TemplateDependantElement::getDecoratedName(StringBuffer& a_Buf) const
+{
+    getName(a_Buf);
+    getDecoration(a_Buf);
+}
+
+void TemplateDependantElement::getQualifiedName(StringBuffer& a_Buf) const
+{
+    getName(a_Buf);
+}
+
+void TemplateDependantElement::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (m_pLeft)
+    {
+        m_pLeft->getRelativeDecoratedName(a_pTo, a_Buf);
+        a_Buf += "::";
+    }
+    getName(a_Buf);
+    getRelativeDecoration(a_pTo, a_Buf);
+}
+
+void TemplateDependantElement::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (m_pLeft)
+    {
+        m_pLeft->getRelativeDecoratedName(a_pTo, a_Buf);
+        a_Buf += "::";
+    }
+    getName(a_Buf);
+}
+
 } // namespace lang
 } // namespace phantom

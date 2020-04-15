@@ -42,34 +42,6 @@ bool RValueReference::isSame(Symbol* a_pOther) const
      m_pUnderlyingType->isSame(static_cast<RValueReference*>(a_pOther)->m_pUnderlyingType));
 }
 
-void RValueReference::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    a_Buf += '&';
-    a_Buf += '&';
-}
-
-void RValueReference::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    a_Buf += '&';
-    a_Buf += '&';
-}
-
-void RValueReference::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    a_Buf += '&';
-    a_Buf += '&';
-}
-
-void RValueReference::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    a_Buf += '&';
-    a_Buf += '&';
-}
-
 hash64 RValueReference::computeLocalHash() const
 {
     hash64 h = getUnderlyingType()->computeLocalHash();

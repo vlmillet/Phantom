@@ -11,14 +11,6 @@ namespace phantom
 {
 namespace lang
 {
-Pointer::Pointer(Type* a_pPointeeType)
-    : PointerType(TypeKind::Pointer, a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, 0,
-                  PHANTOM_R_FLAG_IMPLICIT | a_pPointeeType->getFlags())
-{
-}
-
-Pointer::~Pointer() {}
-
 void Pointer::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
     Type::onReferencedElementRemoved(a_pElement);

@@ -663,6 +663,13 @@ Module* Application::getMainModule() const
     return m_pMainModule;
 }
 
+Module* Application::getOrCreateModule(StringView a_name)
+{
+    Module* pMod = New<Module>(a_name);
+    addModule(pMod);
+    return pMod;
+}
+
 Modules Application::getNativeModules() const
 {
     Modules m;

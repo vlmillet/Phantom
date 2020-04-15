@@ -124,10 +124,13 @@ public:
 
     void   getDecoration(StringBuffer& a_Buf) const;
     hash64 getDecorationHash() const;
+    void   getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
     void   getQualifiedDecoration(StringBuffer& a_Buf) const;
     void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
-    void   getDecoratedName(StringBuffer& a_Buf) const override;
     void   getQualifiedName(StringBuffer& a_Buf) const override;
+    void   getDecoratedName(StringBuffer& a_Buf) const override;
+    void   getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    void   getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
 
     Template*          getTemplate() const { return m_pTemplate; }
     TemplateSignature* getTemplateSignature() const { return m_pTemplateSignature; }

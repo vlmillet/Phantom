@@ -26,7 +26,6 @@
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -83,10 +82,13 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
             .method<hash64() const>("getDecorationHash", &_::getDecorationHash)
+            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoration", &_::getRelativeDecoration)
             .method<void(StringBuffer&) const>("getQualifiedDecoration", &_::getQualifiedDecoration)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSignature*() const>("getTemplateSignature", &_::getTemplateSignature)
             .method<void() const, virtual_|override_>("checkCompleteness", &_::checkCompleteness)

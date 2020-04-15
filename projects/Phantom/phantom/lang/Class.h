@@ -39,20 +39,39 @@ typedef SmallVector<BaseClass, 1> BaseClasses;
 struct PHANTOM_EXPORT_PHANTOM ClassBuilder
 {
 public:
-    static ClassBuilder struct_(StringView _name, size_t _minalign = 0)
+    static ClassBuilder struct_(StringView a_Name, size_t a_MinAlign = 0)
     {
-        return ClassBuilder(_name, Access::Public, _minalign);
+        return ClassBuilder(nullptr, nullptr, a_Name, Access::Public, a_MinAlign);
     }
-    static ClassBuilder class_(StringView _name, size_t _minalign = 0)
+    static ClassBuilder class_(StringView a_Name, size_t a_MinAlign = 0)
     {
-        return ClassBuilder(_name, Access::Private, _minalign);
+        return ClassBuilder(nullptr, nullptr, a_Name, Access::Private, a_MinAlign);
+    }
+    static ClassBuilder struct_(Scope* a_pOwnerScope, StringView a_Name, size_t a_MinAlign = 0)
+    {
+        return ClassBuilder(a_pOwnerScope, nullptr, a_Name, Access::Public, a_MinAlign);
+    }
+    static ClassBuilder class_(Scope* a_pOwnerScope, StringView a_Name, size_t a_MinAlign = 0)
+    {
+        return ClassBuilder(a_pOwnerScope, nullptr, a_Name, Access::Private, a_MinAlign);
+    }
+    static ClassBuilder struct_(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringView a_Name, size_t a_MinAlign = 0)
+    {
+        return ClassBuilder(a_pOwnerScope, a_pNamingScope, a_Name, Access::Public, a_MinAlign);
+    }
+    static ClassBuilder class_(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringView a_Name, size_t a_MinAlign = 0)
+    {
+        return ClassBuilder(a_pOwnerScope, a_pNamingScope, a_Name, Access::Private, a_MinAlign);
     }
 
 public:
-    ClassBuilder(StringView _name, Access _startAccess, size_t _minalign = 0);
+    ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringView a_Name, Access a_Access,
+                 size_t a_MinAlign = 0);
+
+    Scope*        scope() const;
     ClassBuilder& inherits(Class* _class);
     ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u);
-    ClassBuilder& access(Access _access);
+    ClassBuilder& access(Access a_Access);
     Class*        finalize();
 
     operator Class*() { return finalize(); }

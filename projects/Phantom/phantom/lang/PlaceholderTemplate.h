@@ -38,6 +38,12 @@ public:
     PlaceholderTemplate* asPlaceholderTemplate() const override { return (PlaceholderTemplate*)this; }
 
     Placeholder* clone(uint a_Flags = 0) const override;
+
+	virtual void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { getName(a_Buf); }
+	virtual void getDecoratedName(StringBuffer& a_Buf) const override { getName(a_Buf); }
+	virtual void getQualifiedName(StringBuffer& a_Buf) const override { getName(a_Buf); }
+	virtual void getRelativeDecoratedName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
+	virtual void getRelativeName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
 };
 
 } // namespace lang

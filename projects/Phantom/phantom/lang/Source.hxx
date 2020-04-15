@@ -64,7 +64,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .struct_<Import>()
-                .field("source", &_::Import::source)
+                .field("symbol", &_::Import::symbol)
                 .field("isPublic", &_::Import::isPublic)
                 .field("isStatic", &_::Import::isStatic)
                 .field("alias", &_::Import::alias)
@@ -91,14 +91,14 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<FieldPointer*(ClassType*, Type*, Modifiers, uint)>("fieldPointerType", &_::fieldPointerType)["0"]["0"]
             .method<void(SourceStream*)>("setSourceStream", &_::setSourceStream)
             .method<Imports const&() const>("getImports", &_::getImports)
-            .method<void(Sources&) const>("getImported", &_::getImported)
+            .method<void(Symbols&) const>("getImported", &_::getImported)
             .method<Sources const&() const>("getImportings", &_::getImportings)
-            .method<bool(Source*, bool, bool)>("addImport", &_::addImport)["false"]["false"]
+            .method<bool(Symbol*, bool, bool)>("addImport", &_::addImport)["false"]["false"]
             .method<bool(StringView, bool, bool)>("addImport", &_::addImport)["false"]["false"]
-            .method<void(Source*)>("removeImport", &_::removeImport)
-            .method<bool(Source*) const>("hasImport", &_::hasImport)
-            .method<bool(Source*) const>("hasImported", &_::hasImported)
-            .method<bool(Source*, Access, Modifiers, uint, SmallMap<Symbol*, Symbols>*) const>("canImport", &_::canImport)["Access::Public"]["0"]["0"]["nullptr"]
+            .method<void(Symbol*)>("removeImport", &_::removeImport)
+            .method<bool(Symbol*) const>("hasImport", &_::hasImport)
+            .method<bool(Symbol*) const>("hasImported", &_::hasImported)
+            .method<bool(Symbol*, Access, Modifiers, uint, SmallMap<Symbol*, Symbols>*) const>("canImport", &_::canImport)["Access::Public"]["0"]["0"]["nullptr"]
             .method<const Sources&() const>("getDependencies", &_::getDependencies)
             .method<bool(Source*) const>("hasDependency", &_::hasDependency)
             .method<bool(Source*) const>("hasDependencyCascade", &_::hasDependencyCascade)

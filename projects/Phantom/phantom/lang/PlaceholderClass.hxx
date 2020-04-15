@@ -24,6 +24,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -37,6 +38,7 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(PlaceholderClass)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Class, ::phantom::lang::Placeholder>()
@@ -54,6 +56,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Class*) const, virtual_>("isA", &_::isA)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<Placeholder*(uint) const, virtual_|override_>("clone", &_::clone)["0"]
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

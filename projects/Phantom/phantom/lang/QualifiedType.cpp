@@ -11,12 +11,6 @@ namespace phantom
 {
 namespace lang
 {
-QualifiedType::QualifiedType(TypeKind a_eTypeKind, Type* a_pType, StringView a_strName, size_t a_uiSize,
-                             size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
-    : Type(a_eTypeKind, a_pType, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
-{
-}
-
 void* QualifiedType::cast(Type* a_pTargetType, void* a_pSrc) const
 {
     return m_pUnderlyingType->cast(a_pTargetType, a_pSrc);

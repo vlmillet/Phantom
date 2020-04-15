@@ -45,7 +45,7 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
     if (isNative())
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
     addPackage(pDefaultPackage);
-    m_pAnonymousSource = PHANTOM_DEFERRED_NEW(Source)("", Modifier::None);
+    m_pAnonymousSource = PHANTOM_DEFERRED_NEW(Source)("default", Modifier::None);
     if (isNative())
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
     pDefaultPackage->addSource(m_pAnonymousSource);
@@ -251,6 +251,14 @@ Package* Module::getPackage(StringView a_strName) const
             return p;
     }
     return nullptr;
+}
+
+Package* Module::getOrCreatePackage(StringView a_strName)
+{
+    Package* pPck = getPackage(a_strName);
+    if (!pPck)
+        addPackage(pPck = New<Package>(a_strName));
+    return pPck;
 }
 
 void Module::_registerType(hash64 a_Hash, Type* a_pType)

@@ -24,12 +24,6 @@
 #include <phantom/static_method>
 #include <phantom/friend>
 
-#include <phantom/template-only-push>
-
-#include <phantom/utils/SmallString.hxx>
-
-#include <phantom/template-only-pop>
-
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
@@ -39,7 +33,6 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(ConstType)
         {
             using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
-            using StringBuffer = typedef_< phantom::StringBuffer>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::QualifiedType>()
         .public_()
@@ -55,10 +48,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             .method<bool(Type*) const, virtual_>("isConstConvertibleTo", &_::isConstConvertibleTo)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<bool() const, virtual_|override_>("isMoveAssignable", &_::isMoveAssignable)
             .method<bool() const, virtual_|override_>("isCopyAssignable", &_::isCopyAssignable)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)

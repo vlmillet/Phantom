@@ -89,12 +89,12 @@
     </Type>
  
     <Type Name="phantom::lang::ConstantT&lt;*&gt;">
-        <DisplayString Condition="m_strName.m_Chars.m_size == 1">{m_Value}</DisplayString>
+        <DisplayString Condition="m_strName.m_Chars.m_size == 1">{m_Value, d}</DisplayString>
         <DisplayString Condition="m_strName.m_Chars.m_size > 1">{m_strName}({m_Value})</DisplayString>
     </Type>
 
     <Type Name="phantom::lang::ValueMember">
-        <DisplayString>{m_strName, sb} ({*m_pValueType})</DisplayString>
+        <DisplayString>{m_strName, sb} ({*m_pValueType, view(name)})</DisplayString>
         <Expand>
             <Item Name="Type">
                 m_pValueType
@@ -105,7 +105,7 @@
         </Expand>
     </Type>
     <Type Name="phantom::lang::LocalVariable">
-        <DisplayString>{*m_pValueType} {m_strName, sb}</DisplayString>
+        <DisplayString>{*m_pValueType, view(name)} {m_strName, sb}</DisplayString>
         <Expand>
             <Item Name="Type">
                 m_pValueType
@@ -128,21 +128,25 @@
         </Expand>
     </Type>
     <Type Name="phantom::lang::Symbol">
-        <DisplayString IncludeView="is_template"></DisplayString>
-        <DisplayString>{m_strName,sb}</DisplayString>
+      <DisplayString IncludeView="template" Condition="(m_uiFlags &amp; 0x01000000) == 0"></DisplayString>
+      <DisplayString IncludeView="template" Condition="m_uiFlags &amp; 0x01000000">{*m_pOwner,view(sign)}</DisplayString>
+      <DisplayString IncludeView="native" Condition="(m_uiFlags &amp; 0x00000001) == 0"></DisplayString>
+      <DisplayString IncludeView="native" Condition="m_uiFlags &amp; 0x00000001">{" ",sb}[C++]</DisplayString>
+      <DisplayString IncludeView="name">{m_strName, sb} {*this,view(template)}</DisplayString>
+      <DisplayString>{*this,view(name)}{*this, view(native)}</DisplayString>
     </Type>
     <Type Name="phantom::lang::Signature">
-        <DisplayString IncludeView="retType">{*m_pReturnType}</DisplayString>
+        <DisplayString IncludeView="retType">{*m_pReturnType, view(name)}</DisplayString>
         <DisplayString IncludeView="parm0" Condition="m_Parameters.m_size &lt; 1"></DisplayString>
-        <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0]}{*this,view(parm1)nd}</DisplayString>
+        <DisplayString IncludeView="parm0">{*m_Parameters.m_data[0], view(name)}{*this,view(parm1)nd}</DisplayString>
         <DisplayString IncludeView="parm1" Condition="m_Parameters.m_size &lt; 2"></DisplayString>
-        <DisplayString IncludeView="parm1">, {*m_Parameters.m_data[1]}{*this,view(parm2)nd}</DisplayString>
+        <DisplayString IncludeView="parm1">, {*m_Parameters.m_data[1], view(name)}{*this,view(parm2)nd}</DisplayString>
         <DisplayString IncludeView="parm2" Condition="m_Parameters.m_size &lt; 3"></DisplayString>
-        <DisplayString IncludeView="parm2">, {*m_Parameters.m_data[2]}{*this,view(parm3)nd}</DisplayString>
+        <DisplayString IncludeView="parm2">, {*m_Parameters.m_data[2], view(name)}{*this,view(parm3)nd}</DisplayString>
         <DisplayString IncludeView="parm3" Condition="m_Parameters.m_size &lt; 4"></DisplayString>
-        <DisplayString IncludeView="parm3">, {*m_Parameters.m_data[3]}{*this,view(parm4)nd}</DisplayString>
+        <DisplayString IncludeView="parm3">, {*m_Parameters.m_data[3], view(name)}{*this,view(parm4)nd}</DisplayString>
         <DisplayString IncludeView="parm4" Condition="m_Parameters.m_size &lt; 5"></DisplayString>
-        <DisplayString IncludeView="parm4">, {*m_Parameters.m_data[4]}{*this,view(parm5)nd}</DisplayString>
+        <DisplayString IncludeView="parm4">, {*m_Parameters.m_data[4], view(name)}{*this,view(parm5)nd}</DisplayString>
         <DisplayString>{*this,view(retType)nd} ({*this,view(parm0)nd})</DisplayString>
         <Expand>
             <Item Name="Parameters">
@@ -171,46 +175,44 @@
     <Type Name="phantom::lang::TemplateSpecialization">
         <DisplayString IncludeView="sign">&lt;{*this,view(tparm0)}&gt;</DisplayString>
         <DisplayString IncludeView="tparm0" Condition="m_Arguments.m_size &lt; 1"></DisplayString>
-        <DisplayString IncludeView="tparm0">{*m_Arguments.m_data[0]}{*this,view(tparm1)nd}</DisplayString>
+        <DisplayString IncludeView="tparm0">{*m_Arguments.m_data[0], view(name)}{*this,view(tparm1)nd}</DisplayString>
         <DisplayString IncludeView="tparm1" Condition="m_Arguments.m_size &lt; 2"></DisplayString>
-        <DisplayString IncludeView="tparm1">, {*m_Arguments.m_data[1]}{*this,view(tparm2)nd}</DisplayString>
+        <DisplayString IncludeView="tparm1">, {*m_Arguments.m_data[1], view(name)}{*this,view(tparm2)nd}</DisplayString>
         <DisplayString IncludeView="tparm2" Condition="m_Arguments.m_size &lt; 3"></DisplayString>
-        <DisplayString IncludeView="tparm2">, {*m_Arguments.m_data[2]}{*this,view(tparm3)nd}</DisplayString>
+        <DisplayString IncludeView="tparm2">, {*m_Arguments.m_data[2], view(name)}{*this,view(tparm3)nd}</DisplayString>
         <DisplayString IncludeView="tparm3" Condition="m_Arguments.m_size &lt; 4"></DisplayString>
-        <DisplayString IncludeView="tparm3">, {*m_Arguments.m_data[3]}{*this,view(tparm4)nd}</DisplayString>
+        <DisplayString IncludeView="tparm3">, {*m_Arguments.m_data[3], view(name)}{*this,view(tparm4)nd}</DisplayString>
         <DisplayString IncludeView="tparm4" Condition="m_Arguments.m_size &lt; 5"></DisplayString>
-        <DisplayString IncludeView="tparm4">, {*m_Arguments.m_data[4]}{*this,view(tparm5)nd}</DisplayString>
-        <DisplayString>{m_strName, sb}{*this,view(sign)}</DisplayString>
+        <DisplayString IncludeView="tparm4">, {*m_Arguments.m_data[4], view(name)}{*this,view(tparm5)nd}</DisplayString>
+        <DisplayString>{m_strName, sb}{*this,view(sign)}{(phantom::lang::Symbol&amp;)*this,view(native)}</DisplayString>
         <Expand>
             <Item Name="Arguments">
                 m_Arguments
             </Item>
         </Expand>
     </Type>
-    <Type Name="phantom::lang::Type">
-        <DisplayString IncludeView="template" Condition="(m_uiFlags &amp; 0x01000000) == 0"></DisplayString>
-        <DisplayString IncludeView="template" Condition="m_uiFlags &amp; 0x01000000">{*m_pOwner,view(sign)}</DisplayString>
-        <DisplayString>{m_strName, sb}{*this,view(template)}</DisplayString>
-    </Type>
     <Type Name="phantom::lang::Pointer">
-        <DisplayString IncludeView="is_template"></DisplayString>
-        <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+      <DisplayString IncludeView="is_template"></DisplayString>
+      <DisplayString IncludeView="name">{*m_pUnderlyingType, view(name)}{m_strName,sb}</DisplayString>
+      <DisplayString>{*this, view(name)}{(phantom::lang::Symbol&amp;)(*this), view(native)}</DisplayString>
     </Type>
     <Type Name="phantom::lang::LValueReference">
       <DisplayString IncludeView="is_template"></DisplayString>
-      <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+      <DisplayString IncludeView="name">{*m_pUnderlyingType, view(name)}{m_strName,sb}</DisplayString>
+      <DisplayString>{*this, view(name)}{(phantom::lang::Symbol&amp;)(*this), view(native)}</DisplayString>
     </Type>
     <Type Name="phantom::lang::RValueReference">
       <DisplayString IncludeView="is_template"></DisplayString>
-      <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+      <DisplayString IncludeView="name">{*m_pUnderlyingType, view(name)}{m_strName,sb}</DisplayString>
+      <DisplayString>{*this, view(name)}{(phantom::lang::Symbol&amp;)(*this), view(native)}</DisplayString>
     </Type>
   <Type Name="phantom::lang::Array">
     <DisplayString IncludeView="is_template"></DisplayString>
-    <DisplayString>{*m_pUnderlyingType}{m_strName,sb}</DisplayString>
+    <DisplayString>{*m_pUnderlyingType,view(name)}{m_strName,sb}</DisplayString>
   </Type>
     <Type Name="phantom::lang::QualifiedType">
         <DisplayString IncludeView="is_template"></DisplayString>
-        <DisplayString>{*m_pUnderlyingType} {m_strName,sb}</DisplayString>
+        <DisplayString>{*m_pUnderlyingType,view(name)} {m_strName,sb}</DisplayString>
     </Type>
     <Type Name="phantom::lang::Expression">
         <DisplayString>Eval As : {*m_pValueType} ({*rtti.metaClass})</DisplayString>

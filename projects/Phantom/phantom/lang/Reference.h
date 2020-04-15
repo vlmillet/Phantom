@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Type.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -17,7 +17,7 @@ namespace phantom
 namespace lang
 {
 /// \brief  Base class for reference types (l-value, r-value or custom reference type).
-class PHANTOM_EXPORT_PHANTOM Reference : public Type
+class PHANTOM_EXPORT_PHANTOM Reference : public ExtendedType
 {
     PHANTOM_DECL_TYPE;
 
@@ -27,11 +27,13 @@ public:
     friend class Type;
 
 protected:
-    Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName);
+    Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName)
+        : ExtendedType(a_eTypeKind, a_pReferencedType, a_strName, sizeof(void*), std::alignment_of<void*>::value, 0,
+                       a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
+    {
+    }
 
 public:
-    PHANTOM_DTOR ~Reference() override;
-
     bool isDefaultConstructible() const override { return false; }
 
     Type* asClassAddressType() const override

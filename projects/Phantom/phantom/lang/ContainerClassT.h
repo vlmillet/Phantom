@@ -17,8 +17,7 @@ namespace lang
 {
 struct EraseOrAssert
 {
-    template<class Container, class It,
-             class = std::enable_if_t<HasContainerErase<Container>::value, void>>
+    template<class Container, class It, class = std::enable_if_t<HasContainerErase<Container>::value, void>>
     static void Erase(Container* a_pContainer, It* a_It)
     {
         // if you get compilation error here, this means your container value type don't use sfinae
@@ -42,8 +41,7 @@ class ContainerClassT : public ClassT<t_Ty, Base>
     typedef PHANTOM_TYPENAME t_Ty::iterator ContainerIterator;
 
 public:
-    ContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0)
-        : BaseType(a_strName, a_Modifiers)
+    ContainerClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
     {
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));
     }
@@ -59,7 +57,7 @@ public:
         t_Ty* pContainer = static_cast<t_Ty*>(a_pContainer);
         auto  it = pContainer->begin();
         std::advance(it, a_uiIndex);
-        return &*it;
+        return (void*)&*it;
     }
 
     virtual void const* referenceAt(void const* a_pContainer, size_t a_uiIndex) const override
@@ -78,10 +76,7 @@ public:
         EraseOrAssert::Erase<t_Ty, ContainerValueType, ContainerIterator>(pContainer, &it);
     }
 
-    virtual void clear(void* a_pContainer) const override
-    {
-        static_cast<t_Ty*>(a_pContainer)->clear();
-    }
+    virtual void clear(void* a_pContainer) const override { static_cast<t_Ty*>(a_pContainer)->clear(); }
 
     virtual void begin(void* a_pContainer, void* a_pOutIt) const override
     {
@@ -90,8 +85,7 @@ public:
 
     virtual void begin(void const* a_pContainer, void* a_pOutIt) const override
     {
-        *reinterpret_cast<ContainerConstIterator*>(a_pOutIt) =
-        static_cast<t_Ty const*>(a_pContainer)->begin();
+        *reinterpret_cast<ContainerConstIterator*>(a_pOutIt) = static_cast<t_Ty const*>(a_pContainer)->begin();
     }
 
     virtual void end(void* a_pContainer, void* a_pOutIt) const override
@@ -101,14 +95,10 @@ public:
 
     virtual void end(void const* a_pContainer, void* a_pOutIt) const override
     {
-        *reinterpret_cast<ContainerConstIterator*>(a_pOutIt) =
-        static_cast<t_Ty const*>(a_pContainer)->end();
+        *reinterpret_cast<ContainerConstIterator*>(a_pOutIt) = static_cast<t_Ty const*>(a_pContainer)->end();
     }
 
-    void* dereferenceIterator(void* a_pIt) const override
-    {
-        return &*reinterpret_cast<ContainerIterator*>(a_pIt);
-    }
+    void* dereferenceIterator(void* a_pIt) const override { return &*reinterpret_cast<ContainerIterator*>(a_pIt); }
 
     void advanceIterator(void* a_pIt, size_t a_N = 1) const override
     {
@@ -118,18 +108,11 @@ public:
 
     bool compareIterators(void* a_pIt1, void* a_pIt2) const override
     {
-        return *reinterpret_cast<ContainerIterator*>(a_pIt1) ==
-        *reinterpret_cast<ContainerIterator*>(a_pIt2);
+        return *reinterpret_cast<ContainerIterator*>(a_pIt1) == *reinterpret_cast<ContainerIterator*>(a_pIt2);
     }
 
-    Type* getIteratorType() const override
-    {
-        return PHANTOM_TYPEOF(ContainerIterator);
-    }
-    Type* getConstIteratorType() const override
-    {
-        return PHANTOM_TYPEOF(ContainerConstIterator);
-    }
+    Type* getIteratorType() const override { return PHANTOM_TYPEOF(ContainerIterator); }
+    Type* getConstIteratorType() const override { return PHANTOM_TYPEOF(ContainerConstIterator); }
 };
 } // namespace lang
 } // namespace phantom

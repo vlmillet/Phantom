@@ -38,10 +38,7 @@ public:
 
     void terminate();
 
-    Package* asPackage() const override
-    {
-        return const_cast<Package*>(this);
-    }
+    Package* asPackage() const override { return const_cast<Package*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the source with given name.
@@ -54,15 +51,23 @@ public:
     Source* getSource(StringView a_strName) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the source with given name or creates and add it if it doesn't exist yet.
+    ///
+    /// \param  a_strName   The source name.
+    /// \param  a_bInvisible  If true this source won't be visible through any hash or name lookup (use this to build temporary sources).
+    ///
+    /// \return the found or new source.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Source* getOrCreateSource(StringView a_strName, bool a_bInvisible = false);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package folder associated with this package
     ///
     /// \return the package folder.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    PackageFolder* getPackageFolder() const
-    {
-        return m_pFolder;
-    }
+    PackageFolder* getPackageFolder() const { return m_pFolder; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets an iterator pointing to the first source owned by this package.
@@ -70,10 +75,7 @@ public:
     /// \return An iterator pointing to the first source owned by this package.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sources const& getSources()
-    {
-        return m_Sources;
-    }
+    Sources const& getSources() { return m_Sources; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a source to this package. The source must not conflict with the present ones
@@ -91,15 +93,9 @@ public:
     /// \return The counterpart namespace of this package.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* getCounterpartNamespace() const
-    {
-        return m_pNamespace;
-    }
+    Namespace* getCounterpartNamespace() const { return m_pNamespace; }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        return getQualifiedName(a_Buf);
-    }
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getQualifiedName(a_Buf); }
 
     void getQualifiedName(StringBuffer& a_Buf) const override;
 

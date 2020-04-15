@@ -16,7 +16,7 @@ namespace phantom
 namespace lang
 {
 ConstType::ConstType(Type* a_pType)
-    : QualifiedType(TypeKind::Unknown, a_pType, "const", a_pType->isNative() ? a_pType->getSize() : 0,
+    : QualifiedType(TypeKind::Unknown, a_pType, " const", a_pType->isNative() ? a_pType->getSize() : 0,
                     a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_CONST,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
@@ -43,30 +43,6 @@ bool ConstType::isSame(Symbol* a_pOther) const
 {
     return a_pOther == this ||
     (a_pOther->asConstType() && m_pUnderlyingType->isSame(static_cast<ConstType*>(a_pOther)->m_pUnderlyingType));
-}
-
-void ConstType::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    a_Buf += "@const";
-}
-
-void ConstType::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    a_Buf += " const";
-}
-
-void ConstType::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    a_Buf += " const";
-}
-
-void ConstType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    a_Buf += " const";
 }
 
 hash64 ConstType::computeLocalHash() const

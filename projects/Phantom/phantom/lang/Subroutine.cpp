@@ -39,6 +39,7 @@ Subroutine::Subroutine(StringView a_strName, Signature* a_pSignature, ABI a_eABI
 {
     PHANTOM_ASSERT(m_pSignature);
     m_pSignature->setModifiers((getModifiers() & PHANTOM_R_METHOD_QUAL_MASK) | m_pSignature->getModifiers());
+    setModifiers((m_pSignature->getModifiers() & PHANTOM_R_METHOD_QUAL_MASK) | getModifiers());
     if (m_pSignature->isShared())
     {
         addReferencedElement(a_pSignature);
@@ -95,7 +96,6 @@ void Subroutine::getQualifiedName(StringBuffer& a_Buf) const
         a_Buf += ':';
         a_Buf += ':';
         getName(a_Buf);
-        m_pSignature->getQualifiedName(a_Buf);
         return;
     }
     return getName(a_Buf);

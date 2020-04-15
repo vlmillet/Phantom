@@ -60,9 +60,14 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .staticMethod<ClassBuilder(StringView, size_t)>("struct_", &_::struct_)["0"]
             .staticMethod<ClassBuilder(StringView, size_t)>("class_", &_::class_)["0"]
+            .staticMethod<ClassBuilder(Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<ClassBuilder(Scope*, StringView, size_t)>("class_", &_::class_)["0"]
+            .staticMethod<ClassBuilder(Scope*, Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<ClassBuilder(Scope*, Scope*, StringView, size_t)>("class_", &_::class_)["0"]
         
         .public_()
-            .constructor<void(StringView, Access, size_t)>()["0"]
+            .constructor<void(Scope*, Scope*, StringView, Access, size_t)>()["0"]
+            .method<Scope*() const>("scope", &_::scope)
             .method<ClassBuilder&(Class*)>("inherits", &_::inherits)
             .method<ClassBuilder&(Type*, StringView, size_t, uint)>("field", &_::field)["0"]["~0u"]
             .method<ClassBuilder&(Access)>("access", &_::access)

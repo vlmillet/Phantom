@@ -39,11 +39,15 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
     void getDecoratedName(StringBuffer& a_Buf) const override;
     void getUniqueName(StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
 
     using LanguageElement::getQualifiedName;
     using LanguageElement::getQualifiedDecoratedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getUniqueName;
+    using LanguageElement::getRelativeDecoratedName;
+    using LanguageElement::getRelativeName;
 
     Constant*         clone() const;
     virtual Constant* cloneImpl() const = 0;

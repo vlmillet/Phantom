@@ -23,12 +23,6 @@
 #include <phantom/constructor>
 #include <phantom/friend>
 
-#include <phantom/template-only-push>
-
-#include <phantom/utils/SmallString.hxx>
-
-#include <phantom/template-only-pop>
-
 namespace phantom {
 namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
@@ -38,7 +32,6 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(VolatileType)
         {
             using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
-            using StringBuffer = typedef_< phantom::StringBuffer>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::QualifiedType>()
         .public_()
@@ -57,10 +50,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void*(Type*, void*) const, virtual_|override_>("downcast", &_::downcast)
             .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             ;
         }

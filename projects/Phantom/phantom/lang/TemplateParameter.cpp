@@ -55,7 +55,7 @@ hash64 TemplateParameter::computeLocalHash() const
 
 void TemplateParameter::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    if (a_pTo == getTemplateSpecialization() || a_pTo == getTemplateSignature())
+    if (a_pTo == getTemplateSpecialization() || a_pTo == getTemplateSignature() || a_pTo == getTemplate())
     {
         return getName(a_Buf);
     }

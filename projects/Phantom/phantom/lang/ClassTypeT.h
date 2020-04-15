@@ -18,7 +18,7 @@ HAUNT_STOP;
 #include <phantom/lang/TypeT.h>
 
 #define _PHNTM_do_not_declare_trivials_text                                                                            \
-    "do not declare lang for default or trivial constructors/operators or destructors, it "                      \
+    "do not declare lang for default or trivial constructors/operators or destructors, it "                            \
     "is automatic because required by the lang system"
 
 namespace phantom
@@ -50,9 +50,7 @@ struct DefaultCtorProviderH
 template<typename t_Ty>
 struct DefaultCtorProviderH<t_Ty, false>
 {
-    static void apply(Type*, StringView)
-    {
-    }
+    static void apply(Type*, StringView) {}
 };
 
 template<typename t_Ty, bool t_is_notstructure_copy_constructible>
@@ -80,9 +78,7 @@ struct DefaultCopyCtorProviderH
 template<typename t_Ty>
 struct DefaultCopyCtorProviderH<t_Ty, false>
 {
-    static void apply(Type*, StringView)
-    {
-    }
+    static void apply(Type*, StringView) {}
 };
 
 template<typename t_Ty, bool t_is_notstructure_copy_constructible>
@@ -116,7 +112,7 @@ struct DefaultCopyAssignOpProviderH
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
                               PHANTOM_R_FLAG_NATIVE),
-            (int& (DummyClass::*)(int&))mf);
+            (int& (DummyClass::*)(int&))mf, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
         }
@@ -131,9 +127,7 @@ struct DefaultCopyAssignOpProviderH
 template<typename t_Ty>
 struct DefaultCopyAssignOpProviderH<t_Ty, false>
 {
-    static void apply(Type*)
-    {
-    }
+    static void apply(Type*) {}
 };
 
 template<typename t_Ty, bool t_is_notstructure_move_constructible>
@@ -160,9 +154,7 @@ struct DefaultMoveCtorProviderH
 template<typename t_Ty>
 struct DefaultMoveCtorProviderH<t_Ty, false>
 {
-    static void apply(Type*, StringView)
-    {
-    }
+    static void apply(Type*, StringView) {}
 };
 
 template<typename t_Ty, bool t_is_notstructure_and_has_move_assignment_op>
@@ -200,7 +192,7 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addRValueReference(), Modifiers(0),
                               PHANTOM_R_FLAG_NATIVE),
-            (int& (DummyClass::*)(int&))mf);
+            (int& (DummyClass::*)(int&))mf, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
         }
@@ -215,9 +207,7 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
 template<typename t_Ty>
 struct DefaultMoveAssignOpProviderH<t_Ty, false>
 {
-    static void apply(Type*)
-    {
-    }
+    static void apply(Type*) {}
 };
 
 template<typename t_Ty, bool t_is_class>
@@ -235,17 +225,15 @@ struct DtorProviderH
 template<typename t_Ty>
 struct DtorProviderH<t_Ty, false>
 {
-    static void apply(Type* a_pType, StringView a_strName)
-    {
-    }
+    static void apply(Type* a_pType, StringView a_strName) {}
 };
 } // namespace detail
 
 template<typename t_Ty>
 struct DefaultCtorProvider
     : public detail::DefaultCtorProviderH<t_Ty,
-                                          std::is_class<t_Ty>::value && !std::is_abstract<t_Ty>::value
-                                                                     &&::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value>
+                                          std::is_class<t_Ty>::value && !std::is_abstract<t_Ty>::value &&
+                                          ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value>
 {
 };
 
@@ -253,15 +241,14 @@ template<typename t_Ty>
 struct DefaultCopyCtorProvider
     : public detail::DefaultCopyCtorProviderH<t_Ty,
                                               !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value &&
-                                                                                     IsCopyConstructibleAndNotDisabled<t_Ty>::value>
+                                              IsCopyConstructibleAndNotDisabled<t_Ty>::value>
 {
 };
 
 template<typename t_Ty>
 struct DefaultCopyAssignOpProvider
     : public detail::DefaultCopyAssignOpProviderH<
-      t_Ty,
-      !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasCopyAssignmentOperator<t_Ty>::value>
+      t_Ty, !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasCopyAssignmentOperator<t_Ty>::value>
 {
 };
 
@@ -269,15 +256,14 @@ template<typename t_Ty>
 struct DefaultMoveCtorProvider
     : public detail::DefaultMoveCtorProviderH<t_Ty,
                                               !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value &&
-                                                                                     IsMoveConstructibleAndNotDisabled<t_Ty>::value>
+                                              IsMoveConstructibleAndNotDisabled<t_Ty>::value>
 {
 };
 
 template<typename t_Ty>
 struct DefaultMoveAssignOpProvider
     : public detail::DefaultMoveAssignOpProviderH<
-      t_Ty,
-      !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasMoveAssignmentOperator<t_Ty>::value>
+      t_Ty, !phantom::IsStructure<t_Ty>::value && std::is_class<t_Ty>::value && HasMoveAssignmentOperator<t_Ty>::value>
 {
 };
 
@@ -303,83 +289,41 @@ protected:
     }
 
 public:
-    bool canHaveImplicitDefaultConstructor() const override
-    {
-        return SelfType::isDefaultConstructible();
-    }
+    bool canHaveImplicitDefaultConstructor() const override { return SelfType::isDefaultConstructible(); }
 
-    void addImplicitDefaultConstructor() override
-    {
-        DefaultCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
-    }
+    void addImplicitDefaultConstructor() override { DefaultCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
 
-    bool canHaveImplicitCopyConstructor() const override
-    {
-        return SelfType::isTriviallyCopyConstructible();
-    }
+    bool canHaveImplicitCopyConstructor() const override { return SelfType::isTriviallyCopyConstructible(); }
 
-    bool canHaveImplicitMoveConstructor() const override
-    {
-        return SelfType::isTriviallyMoveConstructible();
-    }
+    bool canHaveImplicitMoveConstructor() const override { return SelfType::isTriviallyMoveConstructible(); }
 
-    void addImplicitCopyConstructor() override
-    {
-        DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
-    }
+    void addImplicitCopyConstructor() override { DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
 
-    void addImplicitMoveConstructor() override
-    {
-        DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
-    }
+    void addImplicitMoveConstructor() override { DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
 
-    bool canHaveImplicitCopyAssignmentOperator() const override
-    {
-        return SelfType::isTriviallyCopyAssignable();
-    }
+    bool canHaveImplicitCopyAssignmentOperator() const override { return SelfType::isTriviallyCopyAssignable(); }
 
-    bool canHaveImplicitMoveAssignmentOperator() const override
-    {
-        return SelfType::isTriviallyMoveAssignable();
-    }
+    bool canHaveImplicitMoveAssignmentOperator() const override { return SelfType::isTriviallyMoveAssignable(); }
 
-    void addImplicitCopyAssignmentOperator() override
-    {
-        DefaultCopyAssignOpProvider<t_Ty>::apply(this);
-    }
+    void addImplicitCopyAssignmentOperator() override { DefaultCopyAssignOpProvider<t_Ty>::apply(this); }
 
-    void addImplicitMoveAssignmentOperator() override
-    {
-        DefaultMoveAssignOpProvider<t_Ty>::apply(this);
-    }
+    void addImplicitMoveAssignmentOperator() override { DefaultMoveAssignOpProvider<t_Ty>::apply(this); }
 
-    void addImplicitDestructor() override
-    {
-        DtorProvider<t_Ty>::apply(this, "~" + BaseType::m_strName);
-    }
+    void addImplicitDestructor() override { DtorProvider<t_Ty>::apply(this, "~" + BaseType::m_strName); }
 
-    bool isPolymorphic() const override
-    {
-        return std::is_polymorphic<t_Ty>::value;
-    }
+    bool isPolymorphic() const override { return std::is_polymorphic<t_Ty>::value; }
     bool isDefaultConstructible() const override
     {
-        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&(
-        (this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0);
+        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&
+        ((this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0);
     }
     virtual bool isDefaultInstanciable() const override
     {
-        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&(
-        (this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && !std::is_abstract<t_Ty>::value;
+        return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&
+        ((this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && !std::is_abstract<t_Ty>::value;
     }
-    bool hasCopyDisabled() const override
-    {
-        return HasCopyDisabled<t_Ty>::value;
-    }
-    bool hasMoveDisabled() const override
-    {
-        return HasMoveDisabled<t_Ty>::value;
-    }
+    bool hasCopyDisabled() const override { return HasCopyDisabled<t_Ty>::value; }
+    bool hasMoveDisabled() const override { return HasMoveDisabled<t_Ty>::value; }
 
     virtual void finalizeNative() override
     {
@@ -392,19 +336,13 @@ public:
         DtorProvider<t_Ty>::apply(this, "~" + BaseType::m_strName);
     }
 
-    void onElementsAccess() override
-    {
-        this->_onNativeElementsAccess();
-    }
+    void onElementsAccess() override { this->_onNativeElementsAccess(); }
 };
 
 template<typename t_Ty, typename t_Base>
 struct TypeOf<ClassTypeT<t_Ty, t_Base> >
 {
-    static Type* object()
-    {
-        return Class::metaClass;
-    }
+    static Type* object() { return Class::metaClass; }
 };
 
 template<typename t_Ty, typename t_Base>

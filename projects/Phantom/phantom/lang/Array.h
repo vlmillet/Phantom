@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Type.h>
+#include <phantom/lang/ExtendedType.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -20,7 +20,7 @@ namespace lang
 /// \brief  Represents an array type (ex: int[5]).
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PHANTOM_EXPORT_PHANTOM Array : public Type, public Aggregate
+class PHANTOM_EXPORT_PHANTOM Array : public ExtendedType, public Aggregate
 {
     PHANTOM_DECL_TYPE;
 
@@ -34,11 +34,18 @@ protected:
     /// \internal
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Array(Type* a_pType, size_t a_uiCount);
+    Array(Type* a_pType, size_t a_uiCount)
+        : ExtendedType(TypeKind::Array, a_pType, String("[") + (a_uiCount ? StringUtil::ToString(a_uiCount) : "") + ']',
+                       a_uiCount == 0 ? sizeof(void*) : a_pType->isNative() ? a_pType->getSize() * a_uiCount : 0,
+                       a_uiCount == 0 ? PHANTOM_ALIGNOF(void*) : a_pType->isNative() ? a_pType->getAlignment() : 0, 0,
+                       a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
+
+          Aggregate(this),
+          m_uiCount(a_uiCount) /// m_uiCount == 0 => unknown bound array
+    {
+    }
 
 public:
-    PHANTOM_DTOR ~Array() override;
-
     bool isDefaultConstructible() const override { return m_pUnderlyingType->isDefaultConstructible(); }
 
     Type* asPOD() const override { return m_pUnderlyingType->asPOD() ? (Type*)this : nullptr; }
@@ -142,11 +149,6 @@ public:
 
     bool isSame(Symbol* a_pOther) const override;
 
-    void getUniqueName(StringBuffer& a_Buf) const override;
-
-    void   getQualifiedName(StringBuffer& a_Buf) const override;
-    void   getDecoratedName(StringBuffer& a_Buf) const override;
-    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
     hash64 computeLocalHash() const override;
     void   getFields(AggregateFields& _fields) const override;
     void   getFlattenedAggregateFields(AggregateFields& _aggregateFields) const override;

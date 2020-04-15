@@ -37,9 +37,11 @@ public:
 
     TemplateDependantElement* getTemplateDependantElement() const { return m_pElement; }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getDecoratedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
-    void getQualifiedName(StringBuffer& a_Buf) const override { return getName(a_Buf); }
+    void getDecoratedName(StringBuffer& a_Buf) const override;
+    void getQualifiedName(StringBuffer& a_Buf) const override;
+    void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
+    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
 
 private:
     TemplateDependantElement* m_pElement;

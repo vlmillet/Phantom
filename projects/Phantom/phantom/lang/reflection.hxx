@@ -197,8 +197,8 @@ PHANTOM_PACKAGE("phantom.lang")
         }
         PHANTOM_REGISTER(Enums) { this_().enum_<UserDefinedFunctions>().values({
             {"None",UserDefinedFunctions::None},
-            {"Implicits",UserDefinedFunctions::ImplicitsOnly},
-            {"Explicits",UserDefinedFunctions::All}});
+            {"ImplicitsOnly",UserDefinedFunctions::ImplicitsOnly},
+            {"All",UserDefinedFunctions::All}});
         }
         PHANTOM_REGISTER(Enums) { this_().enum_<CastKind>().values({
             {"Implicit",CastKind::Implicit},

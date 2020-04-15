@@ -97,6 +97,7 @@ bool Package::canBeUnloaded() const
 
 void Package::addSource(Source* a_pSource)
 {
+    PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_pSource->getName()) == nullptr);
     PHANTOM_ASSERT(getModule());
     PHANTOM_ASSERT(a_pSource->getOwner() == nullptr);
     PHANTOM_ASSERT(getSource(a_pSource->getName()) == nullptr);
@@ -177,6 +178,14 @@ Source* Package::getSource(StringView a_strName) const
             return *it;
     }
     return nullptr;
+}
+
+Source* Package::getOrCreateSource(StringView a_strName, bool a_bInvisible)
+{
+    Source* pSource = getSource(a_strName);
+    if (!pSource)
+        addSource(pSource = New<Source>(a_strName, Modifier::None, a_bInvisible ? PHANTOM_R_FLAG_PRIVATE_VIS : 0));
+    return pSource;
 }
 
 void Package::setNamespace(Namespace* a_pNamespace)

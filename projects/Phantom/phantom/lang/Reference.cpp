@@ -11,14 +11,6 @@ namespace phantom
 {
 namespace lang
 {
-Reference::Reference(TypeKind a_eTypeKind, Type* a_pReferencedType, StringView a_strName)
-    : Type(a_eTypeKind, a_pReferencedType, a_strName, sizeof(void*), std::alignment_of<void*>::value, 0,
-           a_pReferencedType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
-{
-}
-
-Reference::~Reference() {}
-
 void Reference::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
     Type::onReferencedElementRemoved(a_pElement);

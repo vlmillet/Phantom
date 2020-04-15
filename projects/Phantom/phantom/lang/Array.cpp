@@ -12,19 +12,6 @@ namespace phantom
 {
 namespace lang
 {
-Array::Array(Type* a_pType, size_t a_uiCount)
-    : Type(TypeKind::Array, a_pType, String("[") + (a_uiCount ? phantom::lexical_cast<String>(a_uiCount) : "") + ']',
-           a_uiCount == 0 ? sizeof(void*) : a_pType->isNative() ? a_pType->getSize() * a_uiCount : 0,
-           a_uiCount == 0 ? PHANTOM_ALIGNOF(void*) : a_pType->isNative() ? a_pType->getAlignment() : 0, 0,
-           a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT),
-
-      Aggregate(this),
-      m_uiCount(a_uiCount) /// m_uiCount == 0 => unknown bound array
-{
-}
-
-Array::~Array() {}
-
 void Array::copyConstruct(void* a_pDest, void const* a_pSrc) const
 {
     size_t i = 0;
@@ -117,38 +104,6 @@ bool Array::isSame(Symbol* a_pOther) const
     return (a_pOther == this) ||
     (a_pOther->asArray() && m_pUnderlyingType->isSame(static_cast<Array*>(a_pOther)->m_pUnderlyingType) &&
      m_uiCount == static_cast<Array*>(a_pOther)->m_uiCount);
-}
-
-void Array::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    char buf[32];
-    int  n = snprintf(buf, 32, "[%zu]", m_uiCount);
-    a_Buf.append(buf, n);
-}
-
-void Array::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    char buf[32];
-    int  n = snprintf(buf, 32, "[%zu]", m_uiCount);
-    a_Buf.append(buf, n);
-}
-
-void Array::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    char buf[32];
-    int  n = snprintf(buf, 32, "[%zu]", m_uiCount);
-    a_Buf.append(buf, n);
-}
-
-void Array::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    char buf[32];
-    int  n = snprintf(buf, 32, "[%zu]", m_uiCount);
-    a_Buf.append(buf, n);
 }
 
 hash64 Array::computeLocalHash() const

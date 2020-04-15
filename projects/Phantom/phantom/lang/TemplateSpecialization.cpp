@@ -40,6 +40,7 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     }
     PHANTOM_ASSERT(m_pTemplated);
     addElement(m_pTemplated);
+    m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     PHANTOM_ASSERT(m_pTemplateSignature);
     addElement(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
@@ -127,20 +128,6 @@ TemplateSpecialization::~TemplateSpecialization()
     }
 }
 
-void TemplateSpecialization::getDecoration(StringBuffer& a_Buf) const
-{
-    a_Buf += '<';
-    for (size_t i = 0; i < m_Arguments.size(); ++i)
-    {
-        if (i)
-            a_Buf += ',';
-        m_Arguments[i]->getRelativeDecoratedName(const_cast<TemplateSpecialization*>(this), a_Buf);
-    }
-    if (a_Buf.back() == '>')
-        a_Buf += ' ';
-    a_Buf += '>';
-}
-
 hash64 TemplateSpecialization::getDecorationHash() const
 {
     hash64 h = '<'; // just to differentiate '<>' from ''
@@ -158,6 +145,34 @@ hash64 TemplateSpecialization::getDecorationHash() const
     return h;
 }
 
+void TemplateSpecialization::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    a_Buf += '<';
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        m_Arguments[i]->getRelativeDecoratedName(a_pTo, a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
+void TemplateSpecialization::getDecoration(StringBuffer& a_Buf) const
+{
+    a_Buf += '<';
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        m_Arguments[i]->getDecoratedName(a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
+}
+
 void TemplateSpecialization::getQualifiedDecoration(StringBuffer& a_Buf) const
 {
     a_Buf += '<';
@@ -165,14 +180,7 @@ void TemplateSpecialization::getQualifiedDecoration(StringBuffer& a_Buf) const
     {
         if (i)
             a_Buf += ',';
-        if (Placeholder* ph = m_Arguments[i]->asPlaceholder())
-        {
-            ph->getRelativeDecoratedName(const_cast<TemplateSpecialization*>(this), a_Buf);
-        }
-        else
-        {
-            m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
-        }
+        m_Arguments[i]->getQualifiedDecoratedName(a_Buf);
     }
     if (a_Buf.back() == '>')
         a_Buf += ' ';
@@ -184,6 +192,14 @@ void TemplateSpecialization::getDecoratedName(StringBuffer& a_Buf) const
     getName(a_Buf);
     getDecoration(a_Buf);
 }
+
+void TemplateSpecialization::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    getTemplate()->getRelativeName(a_pTo, a_Buf);
+    getRelativeDecoration(a_pTo, a_Buf);
+}
+
+void TemplateSpecialization::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const {}
 
 void TemplateSpecialization::getQualifiedName(StringBuffer& a_Buf) const
 {
@@ -437,6 +453,7 @@ void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
     PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");
     m_pTemplated = a_pTemplated;
+    m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     if (!isFull())
     {
         m_pTemplated->setTemplateDependant();

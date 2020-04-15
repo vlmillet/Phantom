@@ -14,7 +14,7 @@ namespace phantom
 namespace lang
 {
 ConstVolatileType::ConstVolatileType(Type* a_pType)
-    : QualifiedType(TypeKind::Unknown, a_pType, "const volatile", a_pType->isNative() ? a_pType->getSize() : 0,
+    : QualifiedType(TypeKind::Unknown, a_pType, " const volatile", a_pType->isNative() ? a_pType->getSize() : 0,
                     a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_VOLATILE | PHANTOM_R_CONST,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
@@ -43,30 +43,6 @@ bool ConstVolatileType::isSame(Symbol* a_pOther) const
     return a_pOther == this ||
     (a_pOther->asConstVolatileType() &&
      m_pUnderlyingType->isSame(static_cast<ConstVolatileType*>(a_pOther)->m_pUnderlyingType));
-}
-
-void ConstVolatileType::getUniqueName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getUniqueName(a_Buf);
-    a_Buf += "@const@volatile";
-}
-
-void ConstVolatileType::getQualifiedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedName(a_Buf);
-    a_Buf += " const volatile";
-}
-
-void ConstVolatileType::getDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getDecoratedName(a_Buf);
-    a_Buf += " const volatile";
-}
-
-void ConstVolatileType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
-{
-    m_pUnderlyingType->getQualifiedDecoratedName(a_Buf);
-    a_Buf += " const volatile";
 }
 
 hash64 ConstVolatileType::computeLocalHash() const

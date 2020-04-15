@@ -14,6 +14,7 @@
 #include "InstanceCache.h"
 #include "LValueReference.h"
 #include "MapClass.h"
+#include "Package.h"
 #include "Parameter.h"
 #include "Pointer.h"
 #include "RValueReference.h"
@@ -955,7 +956,7 @@ void Class::getFields(AggregateFields& a_OutFields) const
     }
     if (isPolymorphic())
     {
-        if (a_OutFields[firstField].type == nullptr) // vtable already set
+        if (a_OutFields.size() && a_OutFields[firstField].type == nullptr) // vtable already set
         {
             PHANTOM_ASSERT(a_OutFields[firstField].offset == 0);
         }
@@ -1662,7 +1663,7 @@ void Class::addImplicitMoveAssignmentOperator()
 void Class::addImplicitDestructor()
 {
     PHANTOM_ASSERT(!isNative());
-    addDestructor(PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    addDestructor(PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT)->setAccess(Access::Public);
 }
 
 bool Class::hasMemberCascade(LanguageElement* a_pElement) const
@@ -1821,11 +1822,54 @@ void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
     PHANTOM_DELETE(ExtraData) this;
 }
 
-ClassBuilder::ClassBuilder(StringView _name, Access _access, size_t _minalign /*= 0*/) : m_Access(_access)
+namespace
 {
-    m_MinAlign = _minalign;
-    m_pClass = phantom::New<lang::Class>(_name);
-    m_pClass->setDefaultAccess(_access);
+const int anonymous_inc = 1;
+}
+
+ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringView a_Name, Access a_Access,
+                           size_t a_MinAlign /*= 0*/)
+    : m_Access(a_Access), m_MinAlign(a_MinAlign)
+{
+    if (a_pNamingScope == nullptr)
+        a_pNamingScope = Namespace::Global();
+
+    if (a_Name.size())
+    {
+        StringViews nameParts;
+        StringUtil::Split(nameParts, a_Name, ":");
+        if (nameParts.size() > 1)
+        {
+            Namespace* pNS = a_pNamingScope->asNamespace();
+            PHANTOM_ASSERT(pNS);
+            for (size_t i = 0; i < nameParts.size() - 1; ++i)
+            {
+                pNS = pNS->getOrCreateNamespace(nameParts[i]);
+            }
+            a_pNamingScope = pNS;
+        }
+        m_pClass = phantom::New<lang::Class>(nameParts.back());
+    }
+    else
+    {
+        m_pClass = phantom::New<lang::Class>(StringView());
+    }
+    m_pClass->setDefaultAccess(a_Access);
+
+    if (a_pNamingScope != a_pOwnerScope)
+        a_pNamingScope->addType(m_pClass);
+    if (a_pOwnerScope)
+        a_pOwnerScope->addType(m_pClass);
+    else
+    {
+        // by default insert it in Your.Exe.default
+        Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default")->addType(m_pClass);
+    }
+}
+
+Scope* ClassBuilder::scope() const
+{
+    return m_pClass;
 }
 
 ClassBuilder& ClassBuilder::inherits(Class* _class)

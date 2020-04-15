@@ -23,17 +23,11 @@ PackageFolder* PackageFolder::Create()
     return PHANTOM_DEFERRED_NEW_EX(PackageFolder);
 }
 
-PackageFolder::PackageFolder() : Symbol("", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE)
-{
-}
+PackageFolder::PackageFolder() : Symbol("", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE) {}
 
-PackageFolder::PackageFolder(StringView a_strName) : Symbol(a_strName, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE)
-{
-}
+PackageFolder::PackageFolder(StringView a_strName) : Symbol(a_strName, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE) {}
 
-PackageFolder::~PackageFolder()
-{
-}
+PackageFolder::~PackageFolder() {}
 
 void PackageFolder::terminate()
 {

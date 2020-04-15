@@ -27,6 +27,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Delegate.hxx>
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
@@ -66,7 +67,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .typedef_<LoadedLibraryModules>("LoadedLibraryModules")
             .typedef_<LoadedLibraries>("LoadedLibraries")
-            /// missing symbol(s) reflection (phantom::lang::Expression, phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .typedef_<CppExpressionParser>("CppExpressionParser")
         
         .public_()
@@ -91,6 +92,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Type*(StringView, StringBuffer*)>("findCppType", &_::findCppType)["nullptr"]
             .method<Class*(StringView, StringBuffer*)>("findCppClass", &_::findCppClass)["nullptr"]
             .method<Module*() const>("getMainModule", &_::getMainModule)
+            .method<Module*(StringView)>("getOrCreateModule", &_::getOrCreateModule)
             .method<Modules() const>("getNativeModules", &_::getNativeModules)
             .method<Module*(StringView) const>("getSharedLibraryModule", &_::getSharedLibraryModule)
             .method<Module*(const byte*, uint, byte*)>("nativeModuleFromStackContext", &_::nativeModuleFromStackContext)["1"]["nullptr"]

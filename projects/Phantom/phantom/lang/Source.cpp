@@ -42,8 +42,6 @@ namespace lang
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this)
 {
-    // PHANTOM_ASSERT(a_strName.empty() || ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
-    // name must contain only letters, numbers or underscore");
 }
 
 Source::Source(Package* a_pPackage, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -67,13 +65,14 @@ Source::~Source()
         if (m_pInitializerListTypes)
             PHANTOM_DELETE(InitializerListTypes) m_pInitializerListTypes;
     }
-    while (m_Importings.size())
+    while (!m_Importings.empty())
     {
         m_Importings.back()->removeImport(this);
     }
     for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
     {
-        it->source->_removeImporting(this);
+        if (Source* source = it->symbol->asSource())
+            source->_removeImporting(this);
     }
     if (m_pSourceStream)
     {
@@ -260,35 +259,6 @@ Source* Source::getCodeLocationSource() const
     return const_cast<Source*>(this);
 }
 
-void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, SmallSet<const Symbol*>& treated)
-{
-    if (!treated.insert(a_pSymbol).second)
-        return;
-    if (Alias* pAlias = a_pSymbol->asAlias())
-        a_pSymbol = pAlias->getAliasedSymbol();
-    for (auto p : a_pSymbol->getElements())
-    {
-        Symbol* pSymbol = p->asSymbol();
-        if (pSymbol // is a symbol && is publicly imported
-            && (pSymbol->getFlags() & (PHANTOM_R_FLAG_PROTECTED_VIS | PHANTOM_R_FLAG_PRIVATE_VIS)) == 0)
-        {
-            if (pSymbol->getName().empty())
-            {
-                Source_fetchImportedSymbols(pSymbol, a_Symbols, treated);
-            }
-            else
-            {
-                a_Symbols.push_back(pSymbol);
-            }
-        }
-    }
-}
-void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols)
-{
-    SmallSet<const Symbol*> treated;
-    Source_fetchImportedSymbols(a_pSymbol, a_Symbols, treated);
-}
-
 MethodPointer* Source::methodPointerType(ClassType* a_pObjectType, Type* a_pReturnType, TypesView a_ParameterTypes,
                                          Modifiers a_RefQualifiers, uint a_uiFlags)
 {
@@ -416,24 +386,24 @@ InitializerListType* Source::initializerListType(TypesView a_Types)
     return pIT;
 }
 
-bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
+bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
 {
-    PHANTOM_ASSERT(a_pSource != this);
-    if (!(canImport(a_pSource, a_bPublic ? Access::Public : Access::Private,
+    PHANTOM_ASSERT(a_pSymbol != this);
+    if (!(canImport(a_pSymbol, a_bPublic ? Access::Public : Access::Private,
                     Modifiers(a_bStatic ? Modifier::Static : 0))))
     {
         return false;
     }
-    PHANTOM_ASSERT(a_pSource);
+    PHANTOM_ASSERT(a_pSymbol);
     Import i;
-    i.source = a_pSource;
+    i.symbol = a_pSymbol;
     i.isPublic = a_bPublic;
     i.isStatic = a_bStatic;
     Alias* pAlias = nullptr;
     if (a_bStatic)
     {
         PackageFolders folders;
-        a_pSource->getPackage()->getPackageFolder()->getPackageFolders(folders);
+        a_pSymbol->getPackage()->getPackageFolder()->getPackageFolders(folders);
         for (auto it = folders.begin(); it != folders.end(); ++it)
         {
             if (it == folders.begin())
@@ -458,7 +428,7 @@ bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
                 pAlias = pSubAlias;
             }
         }
-        auto pLastNamedAlias = PHANTOM_NEW(Alias)(a_pSource, a_pSource->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
+        auto pLastNamedAlias = PHANTOM_NEW(Alias)(a_pSymbol, a_pSymbol->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
         if (pAlias)
             pAlias->addAlias(pLastNamedAlias);
         else
@@ -466,23 +436,25 @@ bool Source::addImport(Source* a_pSource, bool a_bStatic, bool a_bPublic)
     }
     else
     {
-        addAlias(pAlias = PHANTOM_NEW(Alias)(a_pSource, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
+        addAlias(pAlias = PHANTOM_NEW(Alias)(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
                                              (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT));
     }
     i.alias = pAlias;
     m_Imports.push_back(i);
-    a_pSource->_addImporting(this);
+    if (Source* pSource = a_pSymbol->asSource())
+        pSource->_addImporting(this);
     return true;
 }
 
-void Source::removeImport(Source* a_pSource)
+void Source::removeImport(Symbol* a_pSource)
 {
     for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
     {
-        if (it->source == a_pSource)
+        if (it->symbol == a_pSource)
         {
             PHANTOM_DELETE(Alias) it->alias;
-            it->source->_removeImporting(this);
+            if (Source* pSource = it->symbol->asSource())
+                pSource->_removeImporting(this);
             m_Imports.erase(it);
             return;
         }
@@ -501,40 +473,72 @@ bool Source::addImport(StringView a_strName, bool a_bStatic, bool a_bPublic)
     return addImport(pSource, a_bStatic, a_bPublic);
 }
 
-bool Source::canImport(Source* a_pSource, Access, Modifiers a_Modifiers /*= 0*/, uint /*= 0*/,
+void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, SmallSet<const Symbol*>& treated,
+                                 int _skipFlags)
+{
+    if (!treated.insert(a_pSymbol).second)
+        return;
+    for (auto p : a_pSymbol->getElements())
+    {
+        Symbol* pSymbol = p->asSymbol();
+        if (pSymbol // is a symbol && is publicly imported
+            && (pSymbol->getFlags() & _skipFlags) == 0 && pSymbol->asTemplateSpecialization() == nullptr)
+        {
+            if (pSymbol->getName().empty())
+            {
+                if (Alias* pAlias = pSymbol->asAlias())
+                    pSymbol = pAlias->getAliasedSymbol();
+                Source_fetchImportedSymbols(pSymbol, a_Symbols, treated, (_skipFlags | PHANTOM_R_FLAG_PROTECTED_VIS));
+            }
+            else
+            {
+                a_Symbols.push_back(pSymbol);
+            }
+        }
+    }
+}
+void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, int _skipFlags)
+{
+    SmallSet<const Symbol*> treated;
+    Source_fetchImportedSymbols(a_pSymbol, a_Symbols, treated, _skipFlags);
+}
+
+bool Source::canImport(Symbol* a_pSymbol, Access, Modifiers a_Modifiers /*= 0*/, uint /*= 0*/,
                        SmallMap<Symbol*, Symbols>* a_pCollidingSymbols /*= nullptr*/) const
 {
-    if (a_pSource == this)
+    if (a_pSymbol == this)
+        return false;
+    if (a_pSymbol->asSubroutine())
         return false;
     if (a_Modifiers & PHANTOM_R_STATIC)
         return true;
     Symbols symbols0;
     Symbols symbols1;
-    Source_fetchImportedSymbols(this, symbols0);
-    Source_fetchImportedSymbols(a_pSource, symbols1);
+    Source_fetchImportedSymbols(this, symbols0, PHANTOM_R_FLAG_PRIVATE_VIS);
+    Source_fetchImportedSymbols(a_pSymbol, symbols1, PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS);
     bool result = true;
-    for (auto it0 = symbols0.begin(); it0 != symbols0.end(); ++it0)
+    for (Symbol* pSymbol0 : symbols0)
     {
-        Symbol* pSymbol0 = *it0;
-        PHANTOM_ASSERT((pSymbol0->getFlags() & (PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS)) == 0);
-        for (auto it1 = symbols1.begin(); it1 != symbols1.end(); ++it1)
+        for (Symbol* pSymbol1 : symbols1)
         {
-            Symbol* pSymbol1 = *it1;
-            PHANTOM_ASSERT((pSymbol1->getFlags() & (PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS)) == 0);
             if (pSymbol0 != pSymbol1)
             {
                 if (pSymbol1->getName() == pSymbol0->getName())
                 {
-                    if (pSymbol1->getDecoratedName() == pSymbol0->getDecoratedName())
+                    bool sr0 = pSymbol0->asSubroutine();
+                    bool sr1 = pSymbol1->asSubroutine();
+                    if (sr0 && sr1)
                     {
-                        if (a_pCollidingSymbols)
-                        {
-                            result = false;
-                            (*a_pCollidingSymbols)[pSymbol0].push_back(pSymbol1);
-                        }
-                        else
-                            return false;
+                        if (pSymbol0->getDecoratedName() != pSymbol1->getDecoratedName())
+                            continue;
                     }
+                    if (a_pCollidingSymbols)
+                    {
+                        result = false;
+                        (*a_pCollidingSymbols)[pSymbol0].push_back(pSymbol1);
+                    }
+                    else
+                        return false;
                 }
             }
         }
@@ -542,53 +546,55 @@ bool Source::canImport(Source* a_pSource, Access, Modifiers a_Modifiers /*= 0*/,
     return result;
 }
 
-bool Source::hasImport(Source* a_pSource) const
+bool Source::hasImport(Symbol* a_pSym) const
 {
     for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
     {
-        if (it->source == a_pSource)
+        if (it->symbol == a_pSym)
             return true;
     }
     return false;
 }
 
-static void Source_getImported(const Source* _this, Sources& a_Imports, SmallSet<const Source*>& treated)
+static void Source_getImported(const Symbol* _this, Symbols& a_Imports, SmallSet<const Symbol*>& treated)
 {
     if (treated.insert(_this).second)
     {
-        for (Source::Import const& import : _this->getImports())
-        {
-            a_Imports.push_back(import.source);
-            if (import.isPublic)
+        if (Source* pThisSource = _this->asSource())
+            for (Source::Import const& import : pThisSource->getImports())
             {
-                Source_getImported(import.source, a_Imports, treated);
+                a_Imports.push_back(import.symbol);
+                if (import.isPublic)
+                {
+                    Source_getImported(import.symbol, a_Imports, treated);
+                }
             }
-        }
     }
 }
 
-void Source::getImported(Sources& a_Imports) const
+void Source::getImported(Symbols& a_Imports) const
 {
-    SmallSet<const Source*> treated;
+    SmallSet<const Symbol*> treated;
     Source_getImported(this, a_Imports, treated);
 }
 
-bool Source::_hasImported(Source* a_pSource, SmallSet<const Source*>& treated) const
+bool Source::_hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const
 {
     if (treated.insert(this).second)
     {
         for (Source::Import const& import : m_Imports)
         {
-            if (import.source == a_pSource)
+            if (import.symbol == a_pSymbol)
                 return true;
-            if (import.isPublic && import.source->_hasImported(a_pSource, treated))
-                return true;
+            if (Source* importSource = import.symbol->asSource())
+                if (import.isPublic && importSource->_hasImported(a_pSymbol, treated))
+                    return true;
         }
     }
     return false;
 }
 
-bool Source::hasImported(Source* a_pSource) const
+bool Source::hasImported(Symbol* a_pSource) const
 {
     SmallSet<const Source*> treated;
     return _hasImported(a_pSource, treated);
@@ -608,9 +614,9 @@ void Source::_removeImporting(Source* _source)
 
 void Source::clearImports()
 {
-    while (m_Imports.size())
+    while (!m_Imports.empty())
     {
-        removeImport(m_Imports.back().source);
+        removeImport(m_Imports.back().symbol);
     }
 }
 

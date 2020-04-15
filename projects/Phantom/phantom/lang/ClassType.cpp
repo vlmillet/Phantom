@@ -234,7 +234,7 @@ Constructor* ClassType::getConstructor(Type* a_pType) const
     for (; it != end; ++it)
     {
         Constructor* pConstructor = static_cast<Constructor*>((*it));
-        if (pConstructor->getParameters().size() == 1 && pConstructor->getParameterType(0) == a_pType)
+        if (pConstructor->getParameters().size() == 1 && pConstructor->getParameterType(0)->isSame(a_pType))
         {
             return pConstructor;
         }
@@ -250,7 +250,7 @@ Method* ClassType::getConversionFunction(Type* a_pType) const
         if (pMF->getName().size() > 8 && pMF->getName()[8] == ' ' && pMF->getName().find("operator") == 0)
         {
             PHANTOM_ASSERT(pMF->getParameters().size() == 0);
-            if (pMF->getReturnType() == a_pType)
+            if (pMF->getReturnType()->isSame(a_pType))
                 return pMF;
         }
     }
@@ -259,32 +259,16 @@ Method* ClassType::getConversionFunction(Type* a_pType) const
 
 Method* ClassType::getCopyAssignmentOperator() const
 {
-    Type* pConstLValueRefType = makeConst()->makeLValueReference();
-    for (auto it = m_Methods->begin(); it != m_Methods->end(); ++it)
-    {
-        Method* pMF = *it;
-        if (pMF->getParameters().size() == 1 && pMF->getName() == "operator=")
-        {
-            if (pMF->getParameterType(0) == this || pMF->getParameterType(0) == (pConstLValueRefType))
-                return pMF;
-        }
-    }
-    return nullptr;
+    Type*   pConstLValueRefType = makeConst()->makeLValueReference();
+    Method* pMethod = getMethod("operator=", TypesView{pConstLValueRefType});
+    if (!pMethod)
+        return getMethod("operator=", TypesView{const_cast<ClassType*>(this)});
+    return pMethod;
 }
 
 Method* ClassType::getMoveAssignmentOperator() const
 {
-    Type* pRValueRefType = makeRValueReference();
-    for (auto it = m_Methods->begin(); it != m_Methods->end(); ++it)
-    {
-        Method* pMF = *it;
-        if (pMF->getParameters().size() == 1 && pMF->getName() == "operator=")
-        {
-            if (pMF->getParameterType(0) == (pRValueRefType))
-                return pMF;
-        }
-    }
-    return nullptr;
+    return getMethod("operator=", TypesView{makeRValueReference()});
 }
 
 void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/) const
@@ -550,7 +534,8 @@ Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFi
 {
     if (hasSymbol(a_strName))
     {
-        PHANTOM_LOG(Error, "a symbol with name '%s' already exists in this class type");
+        PHANTOM_LOG(Error, "a symbol with name '%.*s' already exists in this class type",
+                    PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
         return nullptr;
     }
     Field* pField = PHANTOM_DEFERRED_NEW_EX(Field)(a_pValueType, a_strName, a_uiFilterFlag, a_Modifiers, a_uiFlags);

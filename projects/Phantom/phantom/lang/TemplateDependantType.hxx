@@ -48,9 +48,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
             .method<TemplateDependantType*() const, virtual_>("asTemplateDependantType", &_::asTemplateDependantType)
             .method<TemplateDependantElement*() const>("getTemplateDependantElement", &_::getTemplateDependantElement)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

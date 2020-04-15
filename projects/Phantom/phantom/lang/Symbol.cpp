@@ -552,15 +552,28 @@ hash64 Symbol::computeLocalHash() const
 
 void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    LanguageElement* pNamingScope = getNamingScope();
     if (TemplateSpecialization* pSpec = getTemplateSpecialization())
     {
         return pSpec->getTemplate()->getRelativeName(a_pTo, a_Buf);
     }
-    if (pNamingScope && a_pTo != pNamingScope)
+    LanguageElement* pTo = a_pTo;
+    while (pTo != Namespace::Global())
+    {
+        if (pTo == this)
+            return getName(a_Buf);
+        if (hasNamingScopeCascade(pTo))
+            break;
+        pTo = pTo->getNamingScope();
+    }
+
+    if (pTo == Namespace::Global())
+        return getQualifiedName(a_Buf);
+
+    LanguageElement* pNamingScope = getNamingScope();
+    if (pNamingScope && pTo != pNamingScope)
     {
         size_t prev = a_Buf.size();
-        pNamingScope->getRelativeDecoratedName(a_pTo, a_Buf);
+        pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
         bool ownerEmpty = (a_Buf.size() - prev) == 0;
         if (!ownerEmpty) // no owner name
         {
@@ -568,16 +581,47 @@ void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
             a_Buf += ':';
         }
     }
-    if (m_strName.size())
-        getName(a_Buf);
+    if (m_strName.empty())
+        return formatAnonymousName(a_Buf);
     else
-        formatAnonymousName(a_Buf);
+        return getName(a_Buf);
 }
 
 void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    getRelativeName(a_pTo, a_Buf);
-    getTemplateDecoration(a_Buf);
+    if (TemplateSpecialization* pSpec = getTemplateSpecialization())
+    {
+        return pSpec->getRelativeDecoratedName(a_pTo, a_Buf);
+    }
+    LanguageElement* pTo = a_pTo;
+    while (pTo != Namespace::Global())
+    {
+        if (pTo == this)
+            return getDecoratedName(a_Buf);
+        if (hasNamingScopeCascade(pTo))
+            break;
+        pTo = pTo->getNamingScope();
+    }
+
+    if (pTo == Namespace::Global())
+        return getQualifiedDecoratedName(a_Buf);
+
+    LanguageElement* pNamingScope = getNamingScope();
+    if (pNamingScope && pTo != pNamingScope)
+    {
+        size_t prev = a_Buf.size();
+        pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
+        bool ownerEmpty = (a_Buf.size() - prev) == 0;
+        if (!ownerEmpty) // no owner name
+        {
+            a_Buf += ':';
+            a_Buf += ':';
+        }
+    }
+    if (m_strName.empty())
+        return formatAnonymousName(a_Buf);
+    else
+        return getDecoratedName(a_Buf);
 }
 
 void Symbol::setName(StringView a_strName)

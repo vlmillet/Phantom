@@ -16,21 +16,28 @@ namespace phantom
 {
 namespace lang
 {
-VirtualMethodTable::VirtualMethodTable() : m_pMethods(PHANTOM_NEW(Methods)) {}
-VirtualMethodTable::VirtualMethodTable(size_t a_uiSize) : m_pMethods(PHANTOM_NEW(Methods)())
+VirtualMethodTable::VirtualMethodTable()
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods))
+{
+}
+VirtualMethodTable::VirtualMethodTable(size_t a_uiSize)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)())
 {
     m_pMethods->resize(a_uiSize);
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
-    : m_pMethods(a_pBaseTable->m_pMethods), m_pBaseTable(a_pBaseTable), m_bShared(true)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS),
+      m_pMethods(a_pBaseTable->m_pMethods),
+      m_pBaseTable(a_pBaseTable),
+      m_bShared(true)
 {
     m_pBaseTable->m_DerivedTables.push_back(this);
     addReferencedElement(m_pBaseTable);
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize)
-    : m_pMethods(PHANTOM_NEW(Methods)()), m_pBaseTable(a_pBaseTable)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)()), m_pBaseTable(a_pBaseTable)
 {
     PHANTOM_ASSERT(a_uiSize >= a_pBaseTable->getMethodCount(),
                    "a derived vtable must have equal or greater size than base");
@@ -44,7 +51,7 @@ VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t 
 }
 
 VirtualMethodTable::VirtualMethodTable(void** a_ppClosures, size_t a_uiSize)
-    : m_pMethods(PHANTOM_NEW(Methods)()), m_ppClosures(a_ppClosures)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)()), m_ppClosures(a_ppClosures)
 {
     m_pMethods->resize(a_uiSize);
 }

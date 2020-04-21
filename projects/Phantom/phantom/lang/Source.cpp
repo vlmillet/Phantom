@@ -185,9 +185,9 @@ void Source::onElementRemoved(LanguageElement* a_pElement)
     Scope::scopedElementRemoved(a_pElement);
     if (Symbol* pSymbol = a_pElement->asSymbol())
     {
-        if (pSymbol->getNamespace())
+        if (auto pNS = pSymbol->getNamespace())
         {
-            pSymbol->getNamespace()->removeScopeElement(pSymbol);
+            pNS->removeScopeElement(pSymbol);
         }
     }
     if (a_pElement->asType())

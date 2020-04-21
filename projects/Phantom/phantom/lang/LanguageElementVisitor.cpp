@@ -324,7 +324,7 @@ void LanguageElementVisitor::visit(TemplateDependantElement* a_pInput, VisitorDa
 }
 void LanguageElementVisitor::visit(TemplateDependantTemplateInstance* a_pInput, VisitorData a_Data)
 {
-    visit(static_cast<ClassType*>(a_pInput), a_Data);
+    visit(static_cast<Type*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(TemplateDependantType* a_pInput, VisitorData a_Data)
 {

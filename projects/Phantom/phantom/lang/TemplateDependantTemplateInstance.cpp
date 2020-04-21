@@ -19,8 +19,8 @@ namespace lang
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpecialization* a_pTemplateSpecialization,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : ClassType(TypeKind::ClassType, a_pTemplateSpecialization->getTemplate()->getName(), 0, 0, 0,
-                a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
+    : Type(TypeKind::Unknown, a_pTemplateSpecialization->getTemplate()->getName(), 0, 0, 0,
+           a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pTemplate(a_pTemplateSpecialization->getTemplate()),
       m_pTemplateSpecialization(a_pTemplateSpecialization),
       m_Arguments(a_Arguments)
@@ -41,8 +41,8 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(Template*               a_pTemplate,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : ClassType(TypeKind::ClassType, a_pTemplate->getName(), 0, 0, 0,
-                PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS | a_uiFlags),
+    : Type(TypeKind::Unknown, a_pTemplate->getName(), 0, 0, 0,
+           PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS | a_uiFlags),
       m_pTemplate(a_pTemplate),
       m_Arguments(a_Arguments)
 {
@@ -74,6 +74,20 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
             return false;
     }
     return true;
+}
+
+void TemplateDependantTemplateInstance::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    a_Buf += '<';
+    for (size_t i = 0; i < m_Arguments.size(); ++i)
+    {
+        if (i)
+            a_Buf += ',';
+        m_Arguments[i]->getRelativeDecoratedName(a_pTo, a_Buf);
+    }
+    if (a_Buf.back() == '>')
+        a_Buf += ' ';
+    a_Buf += '>';
 }
 
 void TemplateDependantTemplateInstance::getDecoration(StringBuffer& a_Buf) const
@@ -124,9 +138,15 @@ void TemplateDependantTemplateInstance::getQualifiedDecoratedName(StringBuffer& 
     getQualifiedDecoration(a_Buf);
 }
 
+void TemplateDependantTemplateInstance::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    return m_pTemplate->getRelativeName(a_pTo, a_Buf);
+}
+
 void TemplateDependantTemplateInstance::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    LanguageElement::getRelativeDecoratedName(a_pTo, a_Buf);
+    getRelativeName(a_pTo, a_Buf);
+    getRelativeDecoration(a_pTo, a_Buf);
 }
 
 hash64 TemplateDependantTemplateInstance::computeLocalHash() const
@@ -146,6 +166,54 @@ hash64 TemplateDependantTemplateInstance::computeLocalHash() const
         CombineHash(h, pArg->asSymbol()->getHash());
     }
     return h;
+}
+
+Class* TemplateDependantTemplateInstance::promoteAsClass()
+{
+    m_pAsClass = New<TemplateDependantClassPromotion>(this);
+    addElement(m_pAsClass);
+    return m_pAsClass;
+}
+
+void TemplateDependantClassPromotion::visit(phantom::lang::LanguageElementVisitor* a_pVisitor,
+                                            phantom::lang::VisitorData             a_Data)
+{
+    m_pBase->visit(a_pVisitor, a_Data); // we directly visit the base as this is what really matters
+}
+
+TemplateDependantClassPromotion::TemplateDependantClassPromotion(Type* a_pBase)
+    : Class(TypeKind::Class, a_pBase->getName(), a_pBase->getModifiers(), a_pBase->getFlags()), m_pBase(a_pBase)
+{
+}
+
+void TemplateDependantClassPromotion::getDecoratedName(StringBuffer& a_Buf) const
+{
+    return m_pBase->getDecoratedName(a_Buf);
+}
+
+void TemplateDependantClassPromotion::getQualifiedName(StringBuffer& a_Buf) const
+{
+    return m_pBase->getQualifiedName(a_Buf);
+}
+
+void TemplateDependantClassPromotion::getQualifiedDecoratedName(StringBuffer& a_Buf) const
+{
+    return m_pBase->getQualifiedDecoratedName(a_Buf);
+}
+
+void TemplateDependantClassPromotion::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    m_pBase->getRelativeName(a_pTo, a_Buf);
+}
+
+void TemplateDependantClassPromotion::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    m_pBase->getRelativeDecoratedName(a_pTo, a_Buf);
+}
+
+phantom::hash64 TemplateDependantClassPromotion::computeLocalHash() const
+{
+    return static_cast<TemplateDependantClassPromotion*>(m_pBase)->computeLocalHash();
 }
 
 } // namespace lang

@@ -51,6 +51,10 @@ void SolveAliasTemplate(RegistrationStep a_Step, Template*& a_rpTemplate, T& a_B
     else // PostTypes
     {
         SolveAliasTemplateDefaultArguments(a_rpTemplate->getTemplateSignature(), a_Defaults);
+        while (::isspace(a_TemplateDep.front()))
+            a_TemplateDep.dropFront();
+        if (a_TemplateDep.startsWith("typename "))
+            a_TemplateDep = a_TemplateDep.substr(9);
         Type* pType = Application::Get()->findCppType(a_TemplateDep, a_rpTemplate->getTemplateSignature());
         PHANTOM_ASSERT(pType, "cannot resolve template dependant type '%.*s'",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateDep));
@@ -68,7 +72,7 @@ void SolveAliasTemplate(RegistrationStep a_Step, Template*& a_rpTemplate, T& a_B
 #define _PHANTOM_ALIAS_TEMPLATE_5(TemplateTypes, TemplateParams, Defaults, Name, Aliased)                              \
     PHANTOM_REGISTER(Typedefs, PostTypes)                                                                              \
     {                                                                                                                  \
-        static phantom::lang::Template* pAliasT = nullptr;                                                       \
+        static phantom::lang::Template* pAliasT = nullptr;                                                             \
         SolveAliasTemplate(PHANTOM_REGISTRATION_STEP, pAliasT, this_(), PHANTOM_PP_QUOTE TemplateTypes,                \
                            PHANTOM_PP_QUOTE TemplateParams, PHANTOM_PP_QUOTE(Name),                                    \
                            PHANTOM_PP_IDENTITY(PHANTOM_PP_QUOTE)(PHANTOM_PP_REMOVE_PARENS(Aliased)),                   \

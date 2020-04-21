@@ -37,15 +37,32 @@ OpaqueDynDelegate::OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, S
     m_OpaqueDelegate = m_pMethod->getOpaqueDelegate(m_pThis);
 }
 
-phantom::lang::Subroutine* OpaqueDynDelegate::getSubroutine() const
+OpaqueDynDelegate::OpaqueDynDelegate(lang::Method* a_pMethod) : m_pMethod(a_pMethod)
+{
+    PHANTOM_ASSERT(m_pMethod);
+    m_OpaqueDelegate = m_pMethod->getOpaqueDelegate();
+}
+
+OpaqueDynDelegate::OpaqueDynDelegate(lang::Class* a_pClass, StringView a_MethodName)
+{
+    lang::Method* pMethod = a_pClass->getMethodCascade(a_MethodName);
+    PHANTOM_ASSERT(pMethod, "no method '%.*s' found in class '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_MethodName),
+                   PHANTOM_STRING_AS_PRINTF_ARG(a_pClass->getName()));
+    m_pMethod = pMethod;
+    m_OpaqueDelegate = m_pMethod->getOpaqueDelegate(m_pThis);
+}
+
+lang::Subroutine* OpaqueDynDelegate::getSubroutine() const
 {
     return m_pMethod ? static_cast<lang::Subroutine*>(m_pMethod) : m_pFunction;
 }
 
 void OpaqueDynDelegate::call(void** a_pArgs) const
 {
-    if (m_pMethod)
+    if (m_pMethod && m_pThis)
         m_pMethod->invoke(m_pThis, a_pArgs);
+    else if (m_pMethod)
+        m_pMethod->call(a_pArgs);
     else
         m_pFunction->call(a_pArgs);
 }

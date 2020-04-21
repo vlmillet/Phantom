@@ -286,7 +286,10 @@ void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Acces
     PHANTOM_ASSERT(isNative() || !(a_pBaseClass->hasStrongDependencyOnType(this)), "cyclic class strong dependency");
     m_BaseClasses.push_back(BaseClass(a_pBaseClass, a_uiOffset, a_Access));
     a_pBaseClass->addDerivedClass(const_cast<Class*>(this));
-    addReferencedElement(a_pBaseClass);
+    if (a_pBaseClass->isTemplateDependant() && a_pBaseClass->getOwner() == nullptr)
+        addElement(a_pBaseClass);
+    else
+        addReferencedElement(a_pBaseClass);
 }
 
 void Class::addBaseClass(Class* a_pClass, Access a_Access)

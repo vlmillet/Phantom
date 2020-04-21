@@ -7,7 +7,7 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/LanguageElement.h>
+#include <phantom/lang/Symbol.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
 

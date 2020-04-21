@@ -758,31 +758,32 @@ void LanguageElement::clear()
     }
 }
 
-void LanguageElement::steal(LanguageElement* a_pInput)
+void LanguageElement::steal(LanguageElement*)
 {
-    // backup this elements
-    LanguageElements backup = getElements();
-
-    // remove this elements
-    while (m_pElements)
-    {
-        LanguageElement* pElement = m_pElements->front();
-        removeElement(pElement);
-    }
-
-    // steal input elements while removing to it
-    while (a_pInput->m_pElements)
-    {
-        LanguageElement* pElement = a_pInput->m_pElements->front();
-        a_pInput->removeElement(pElement);
-        addElement(pElement);
-    }
-
-    // swap backup elements to input
-    for (auto pElm : backup)
-    {
-        a_pInput->addElement(pElm);
-    }
+    PHANTOM_ASSERT(false);
+    //     // backup this elements
+    //     LanguageElements backup = getElements();
+    //
+    //     // remove this elements
+    //     while (m_pElements)
+    //     {
+    //         LanguageElement* pElement = m_pElements->front();
+    //         removeElement(pElement);
+    //     }
+    //
+    //     // steal input elements while removing to it
+    //     while (a_pInput->m_pElements)
+    //     {
+    //         LanguageElement* pElement = a_pInput->m_pElements->front();
+    //         a_pInput->removeElement(pElement);
+    //         addElement(pElement);
+    //     }
+    //
+    //     // swap backup elements to input
+    //     for (auto pElm : backup)
+    //     {
+    //         a_pInput->addElement(pElm);
+    //     }
 }
 
 void LanguageElement::getName(StringBuffer&) const

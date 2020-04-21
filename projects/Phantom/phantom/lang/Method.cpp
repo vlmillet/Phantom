@@ -245,6 +245,24 @@ OpaqueDelegate Method::getOpaqueDelegate(void* a_pThis) const
     return OpaqueDelegate();
 }
 
+OpaqueDelegate Method::getOpaqueDelegate() const
+{
+    // universal calling convention delegate
+
+    if (void* addr = getClosure().address)
+    {
+        struct
+        {
+            void* thisOrFunc_;
+            void* meth_;
+        } s;
+        s.thisOrFunc_ = addr;
+        s.meth_ = nullptr;
+        return *reinterpret_cast<OpaqueDelegate*>(&s); // empty by default
+    }
+    return OpaqueDelegate();
+}
+
 void Method::onAncestorChanged(LanguageElement* a_pAncestor)
 {
     Subroutine::onAncestorChanged(a_pAncestor);

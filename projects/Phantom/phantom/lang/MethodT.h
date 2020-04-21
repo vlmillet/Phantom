@@ -76,10 +76,7 @@ public:
         return VTableIndexOf<true>::apply(m_Pointer);
     }
 
-    virtual Closure getClosure() const override
-    {
-        return MethodClosure(m_Pointer);
-    }
+    virtual Closure getClosure() const override { return MethodClosure(m_Pointer); }
 
     virtual OpaqueDelegate getOpaqueDelegate(void* a_pObject) const override
     {
@@ -125,10 +122,7 @@ public:
         _placementInvoke(a_pObject, a_pArgs, a_pReturnAddress, BuildIndices<sizeof...(v_Params)>{});
     }
 
-    virtual bool equalsPointer(void* a_pPtrOnPtr) const override
-    {
-        return *(MethodPtrType*)a_pPtrOnPtr == m_Pointer;
-    }
+    virtual bool equalsPointer(void* a_pPtrOnPtr) const override { return *(MethodPtrType*)a_pPtrOnPtr == m_Pointer; }
 
 private:
     template<size_t... Is>
@@ -181,10 +175,7 @@ public:
         return VTableIndexOf<true>::apply(m_Pointer);
     }
 
-    virtual Closure getClosure() const override
-    {
-        return MethodClosure(m_Pointer);
-    }
+    virtual Closure getClosure() const override { return MethodClosure(m_Pointer); }
 
     virtual OpaqueDelegate getOpaqueDelegate(void* a_pObject) const override
     {
@@ -222,10 +213,7 @@ public:
         PHANTOM_ASSERT(false, "expecting return address from a void function call");
     }
 
-    virtual bool equalsPointer(void* a_pPtrOnPtr) const override
-    {
-        return *(MethodPtrType*)a_pPtrOnPtr == m_Pointer;
-    }
+    virtual bool equalsPointer(void* a_pPtrOnPtr) const override { return *(MethodPtrType*)a_pPtrOnPtr == m_Pointer; }
 
 private:
     template<size_t... Is>

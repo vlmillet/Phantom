@@ -27,6 +27,8 @@ class PHANTOM_EXPORT_PHANTOM OpaqueDynDelegate
 public:
     OpaqueDynDelegate() = default;
     OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, lang::Method* a_pMethod);
+    OpaqueDynDelegate(lang::Class* a_pClass, StringView a_MethodName);
+    OpaqueDynDelegate(lang::Method* a_pMethod);
     OpaqueDynDelegate(lang::Function* a_pFunction);
     OpaqueDynDelegate(void* a_pInstance, lang::Class* a_pClass, StringView a_MethodName);
 

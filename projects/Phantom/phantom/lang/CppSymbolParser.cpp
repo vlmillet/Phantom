@@ -6,6 +6,7 @@
 
 #include "CppSymbolParser.h"
 
+#include <phantom/utils/OptionalArrayView.h>
 #include "Alias.h"
 #include "Array.h"
 #include "ConstType.h"
@@ -22,6 +23,7 @@
 #include "Scope.h"
 #include "Subroutine.h"
 #include "Template.h"
+#include "TemplateDependantElement.h"
 #include "TemplateDependantTemplateInstance.h"
 #include "TemplateParameter.h"
 #include "TemplateSignature.h"
@@ -785,6 +787,15 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
             bool qualified = scope != nullptr;
             if (qualified)
             {
+                if (scope->isTemplateDependant())
+                {
+                    if (funcArgs.size())
+                        return false;
+                    a_Symbols.push_back(New<TemplateDependantElement>(
+                    scope, identifier, NullOpt,
+                    templateArgs.size() ? OptionalArrayView<LanguageElement*>(templateArgs) : NullOpt));
+                    return true;
+                }
                 return SolveQualified(scope, a_Symbols, a_LastError);
             }
             while (a_pScope)
@@ -996,6 +1007,10 @@ state_symbol_suffix:
     CPPSYMPARS_ON_EOF;
     switch (c = InStream.peek())
     {
+    case ':':
+    {
+        goto state_post_symbol_name;
+    }
     case '>':
     {
         InStream.ignore();

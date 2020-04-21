@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::lang::ClassType>()
+            .inherits<::phantom::lang::Type>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -54,9 +54,30 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
             .method<void(StringBuffer&) const>("getQualifiedDecoration", &_::getQualifiedDecoration)
+            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoration", &_::getRelativeDecoration)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
+            .method<Class*()>("promoteAsClass", &_::promoteAsClass)
+            ;
+        }
+        PHANTOM_CLASS(TemplateDependantClassPromotion)
+        {
+            using StringBuffer = typedef_< phantom::StringBuffer>;
+            this_()(PHANTOM_R_FLAG_NO_COPY)
+            .inherits<::phantom::lang::Class>()
+        .public_()
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+        
+        .public_()
+            .constructor<void(Type*)>()
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             ;

@@ -93,8 +93,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Modifiers) const>("acceptsCallerExpressionQualifiers", &_::acceptsCallerExpressionQualifiers)
             .method<Type*() const>("getImplicitObjectParameterType", &_::getImplicitObjectParameterType)
             .method<LocalVariable*() const>("getThis", &_::getThis)
-            /// missing symbol(s) reflection (phantom::OpaqueDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<OpaqueDelegate(void*) const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<OpaqueDelegate(void*) const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<OpaqueDelegate() const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)
         
         .protected_()
             .constructor<void(LanguageElement*, StringView, StringView, Modifiers, uint)>()["0"]["0"]

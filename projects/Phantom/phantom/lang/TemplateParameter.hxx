@@ -40,7 +40,8 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
-            this_()
+            this_()(PHANTOM_R_FLAG_NO_COPY)
+            .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -49,7 +50,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(Placeholder*, LanguageElement*, uint)>()["nullptr"]["0"]
-            .method<TemplateParameter*() const>("asTemplateParameter", &_::asTemplateParameter)
+            .method<TemplateParameter*() const, virtual_|override_>("asTemplateParameter", &_::asTemplateParameter)
             .method<size_t() const>("getIndex", &_::getIndex)
             .method<TemplateParameter*() const>("clone", &_::clone)
             .method<TemplateSignature*() const>("getTemplateSignature", &_::getTemplateSignature)
@@ -58,17 +59,17 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<LanguageElement*() const>("getDefaultArgument", &_::getDefaultArgument)
             .method<void(LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
             .method<Placeholder*() const>("getPlaceholder", &_::getPlaceholder)
-            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const>("partialAccepts", &_::partialAccepts)
+            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(LanguageElement*) const>("acceptsArgument", &_::acceptsArgument)
             .method<bool() const>("isPack", &_::isPack)
             .method<TemplateParameter*(uint) const>("clone", &_::clone)["0"]
-            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeName", &_::getRelativeName)
-            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeName", &_::getRelativeName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
         
         .protected_()
-            .method<void(LanguageElement*)>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*)>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<hash64() const>("computeLocalHash", &_::computeLocalHash)
+            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
+            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
+            .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
         
         .protected_()
             .field("m_pPlaceholder", &_::m_pPlaceholder)

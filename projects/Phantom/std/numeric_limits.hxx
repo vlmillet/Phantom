@@ -1,6 +1,9 @@
 #pragma once
 
+// clang-format off
+
 #include <limits>
+#include <phantom/source>
 #include <phantom/class>
 #include <phantom/static_method>
 #include <phantom/typedef>
@@ -15,6 +18,8 @@
 
 #undef min
 #undef max
+
+PHANTOM_SOURCE("std.limits");
 
 namespace std
 {
@@ -32,6 +37,8 @@ PHANTOM_PUBLIC:
     PHANTOM_STATIC_METHOD(T, signaling_NaN, ());
 }
 } // namespace std
+
+PHANTOM_END("std.limits");
 
 #if defined(_MSC_VER)
 #    pragma warning(pop)

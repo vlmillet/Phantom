@@ -68,12 +68,15 @@ public:
 public:
     TemplateDependantClassPromotion(Type* a_pBase);
 
+    Type* getBase() const { return m_pBase; }
+
     void   getDecoratedName(StringBuffer& a_Buf) const override;
     void   getQualifiedName(StringBuffer& a_Buf) const override;
     void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
     void   getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void   getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     hash64 computeLocalHash() const override;
+    bool   isSame(Symbol* a_pOther) const override;
 
 private:
     Type* m_pBase = nullptr;

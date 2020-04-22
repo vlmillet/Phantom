@@ -60,20 +60,24 @@ bool TemplateDependantTemplateInstance::isSame(Symbol* a_pOther) const
 {
     if (Type::isSame(a_pOther))
         return true;
-    Placeholder*                       pPH = a_pOther->asPlaceholder();
-    TemplateDependantTemplateInstance* pTDTI =
-    pPH ? phantom::Object::Cast<TemplateDependantTemplateInstance>(pPH->asSymbol()) : nullptr;
-    if (pTDTI == nullptr || !(pTDTI->m_pTemplate->isSame(m_pTemplate)))
-        return false;
-    size_t count = m_Arguments.size();
-    if (count != pTDTI->m_Arguments.size())
-        return false;
-    for (size_t i = 0; i < count; ++i)
+    if (a_pOther->getMetaClass() == PHANTOM_CLASSOF(TemplateDependantClassPromotion))
     {
-        if (!(m_Arguments[i]->isSame(pTDTI->m_Arguments[i])))
-            return false;
+        a_pOther = static_cast<TemplateDependantClassPromotion*>(a_pOther)->getBase();
     }
-    return true;
+    if (a_pOther->getMetaClass() == PHANTOM_CLASSOF(TemplateDependantTemplateInstance))
+    {
+        TemplateDependantTemplateInstance* pTDTI = static_cast<TemplateDependantTemplateInstance*>(a_pOther);
+        size_t                             count = m_Arguments.size();
+        if (count != pTDTI->m_Arguments.size() || !pTDTI->m_pTemplate->isSame(m_pTemplate))
+            return false;
+        for (size_t i = 0; i < count; ++i)
+        {
+            if (!(m_Arguments[i]->isSame(pTDTI->m_Arguments[i])))
+                return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 void TemplateDependantTemplateInstance::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const
@@ -214,6 +218,11 @@ void TemplateDependantClassPromotion::getRelativeDecoratedName(LanguageElement* 
 phantom::hash64 TemplateDependantClassPromotion::computeLocalHash() const
 {
     return static_cast<TemplateDependantClassPromotion*>(m_pBase)->computeLocalHash();
+}
+
+bool TemplateDependantClassPromotion::isSame(Symbol* a_pOther) const
+{
+    return m_pBase->isSame(a_pOther);
 }
 
 } // namespace lang

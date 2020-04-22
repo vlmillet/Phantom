@@ -74,12 +74,14 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(Type*)>()
+            .method<Type*() const>("getBase", &_::getBase)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
+            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

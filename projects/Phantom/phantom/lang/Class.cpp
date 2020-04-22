@@ -1666,7 +1666,16 @@ void Class::addImplicitMoveAssignmentOperator()
 void Class::addImplicitDestructor()
 {
     PHANTOM_ASSERT(!isNative());
-    addDestructor(PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT)->setAccess(Access::Public);
+    Method* pDtor = addDestructor(PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    pDtor->setAccess(Access::Public);
+    for (Class* pBaseClass : getBaseClasses())
+    {
+        if (pBaseClass->getDestructor()->isVirtual())
+        {
+            pDtor->setVirtual();
+            break;
+        }
+    }
 }
 
 bool Class::hasMemberCascade(LanguageElement* a_pElement) const

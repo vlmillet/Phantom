@@ -834,7 +834,9 @@ Destructor* ClassType::getDestructor() const
 
 bool ClassType::isDefaultInstanciable() const
 {
-    return (getTemplateSpecialization() == nullptr || getTemplateSpecialization()->isFull());
+    Constructor* pDtor;
+    return (getTemplateSpecialization() == nullptr || getTemplateSpecialization()->isFull()) &&
+    (pDtor = getDefaultConstructor()) && pDtor->isPublic() && !pDtor->testModifiers(Modifier::Deleted);
 }
 
 size_t ClassType::getFieldIndex(Field* a_pField) const

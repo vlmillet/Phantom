@@ -354,5 +354,17 @@ void Method::invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) con
 
 void Method::placementInvoke(void*, void**, void*) const {}
 
+void Method::call(void** a_pArgs) const
+{
+    void* pThis = *(void**)(*a_pArgs++);
+    Method::invoke(pThis, a_pArgs);
+}
+
+void Method::call(void** a_pArgs, void* a_pReturnAddress) const
+{
+    void* pThis = *(void**)(*a_pArgs++);
+    Method::invoke(pThis, a_pArgs, a_pReturnAddress);
+}
+
 } // namespace lang
 } // namespace phantom

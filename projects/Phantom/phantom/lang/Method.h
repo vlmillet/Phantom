@@ -66,8 +66,8 @@ public:
     {
         Subroutine::placementCall(a_Context, a_pArgs);
     }
-    void call(void** a_pArgs) const override { Subroutine::call(a_pArgs); }
-    void call(void** a_pArgs, void* a_pReturnAddress) const override { Subroutine::call(a_pArgs, a_pReturnAddress); }
+    void call(void** a_pArgs) const override;
+    void call(void** a_pArgs, void* a_pReturnAddress) const override;
 
     template<class T, class... Args>
     Variant invokeV(T* a_pThis, Args&&... a_Args) const

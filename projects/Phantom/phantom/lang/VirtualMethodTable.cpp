@@ -98,6 +98,8 @@ size_t VirtualMethodTable::getOffset() const
 
 void VirtualMethodTable::addMethod(Method* a_pMethod)
 {
+    if (sharesMethods())
+        copyOnWrite();
     setMethod(getMethodCount(), a_pMethod);
 }
 

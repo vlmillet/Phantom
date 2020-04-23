@@ -99,7 +99,7 @@ void LocalVariable::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 
 bool LocalVariable::isThis() const
 {
-    Method*            pMethod = getSubroutine()->asMethod();
+    Method* pMethod = getSubroutine()->asMethod();
     return pMethod && pMethod->getThis() == this;
 }
 

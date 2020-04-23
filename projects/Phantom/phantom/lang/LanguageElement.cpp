@@ -647,7 +647,9 @@ void LanguageElement::addSymbol(Symbol* a_pElement)
                     continue;
                 Symbol* pSymbol = pElm->asSymbol();
                 (void)pSymbol;
-                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->getLocalHash() != a_pElement->getLocalHash(),
+                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
+                                     a_pElement->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
+                                     pSymbol->getDecoratedName() != a_pElement->getDecoratedName(),
                                      "equal element already added : be careful not having "
                                      "duplicate member declarations in your class, or check not "
                                      "registering not two type with same name in the same source");

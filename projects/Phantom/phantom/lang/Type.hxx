@@ -30,6 +30,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/Delegate.hxx>
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -60,6 +61,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using RecursiveSpinMutex = typedef_< phantom::RecursiveSpinMutex>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
+            using TypeFilter = typedef_<_::TypeFilter>;
             using Types = typedef_< phantom::lang::Types>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Symbol>()
@@ -70,8 +72,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .typedef_<TypeFilter>("TypeFilter")
+            .typedef_<TypeFilter>("TypeFilter")
             .staticMethod<bool(Type*)>("DataPointerFilter", &_::DataPointerFilter)
             .staticMethod<bool(Type*)>("NoFilter", &_::NoFilter)
             .enum_<TypeRelation>().values({

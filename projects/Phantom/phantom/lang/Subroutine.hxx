@@ -116,6 +116,7 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(Subroutine)
         {
             using ApplyPointer = typedef_<_::ApplyPointer>;
+            using CallDelegate = typedef_< phantom::lang::CallDelegate>;
             using Instructions = typedef_< phantom::lang::Instructions>;
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
@@ -165,10 +166,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(const LanguageElements&, TypesView, Modifiers) const, virtual_>("matches", &_::matches)["Modifiers()"]
             .method<bool(StringView, TypesView, Modifiers) const>("matches", &_::matches)["Modifiers()"]
             .method<Type*() const>("getReturnType", &_::getReturnType)
-            /// missing symbol(s) reflection (phantom::OpaqueDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
-            /// missing symbol(s) reflection (phantom::OpaqueDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
             .method<void(ExecutionContext&, void**) const, virtual_>("call", &_::call)
             .method<void(ExecutionContext&, void**, Types const&) const, virtual_>("callVarArg", &_::callVarArg)
             .method<void(void*, void**, void*) const, virtual_>("placementInvoke", &_::placementInvoke)
@@ -238,8 +237,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pBlock", &_::m_pBlock)
             .field("m_MemoryLocation", &_::m_MemoryLocation)
-            /// missing symbol(s) reflection (phantom::lang::CallDelegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_CallDelegate", &_::m_CallDelegate)
+            .field("m_CallDelegate", &_::m_CallDelegate)
             .field("m_ApplyPointer", &_::m_ApplyPointer)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_Closure", &_::m_Closure)

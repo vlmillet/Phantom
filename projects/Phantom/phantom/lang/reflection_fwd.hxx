@@ -23,6 +23,7 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/Delegate.hxx>
 #include <phantom/utils/SmallVector.hxx>
 
 #include <phantom/template-only-pop>
@@ -414,8 +415,7 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("reflection_fwd")
 
         #if PHANTOM_NOT_TEMPLATE
-        /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<CallDelegate>("CallDelegate"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<CallDelegate>("CallDelegate"); }
         PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate);}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection_fwd")

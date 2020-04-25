@@ -26,6 +26,7 @@
 
 #include <phantom/template-only-push>
 
+#include "Delegate.hxx"
 #include "Generic.hxx"
 #include "SmallString.hxx"
 #include "StringView.hxx"
@@ -41,14 +42,12 @@ PHANTOM_PACKAGE("phantom.utils")
         {
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
+            using TypeConverter = typedef_<_::TypeConverter>;
             this_()
         .public_()
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .typedef_<TypeConverter>("TypeConverter")
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .staticMethod<void(TypeConverter)>("SetTypeConverter", &_::SetTypeConverter)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .staticMethod<TypeConverter()>("GetTypeConverter", &_::GetTypeConverter)
+            .typedef_<TypeConverter>("TypeConverter")
+            .staticMethod<void(TypeConverter)>("SetTypeConverter", &_::SetTypeConverter)
+            .staticMethod<TypeConverter()>("GetTypeConverter", &_::GetTypeConverter)
             .staticMethod<Variant(::phantom::Generic::Param<>, ::phantom::Generic::Arg<Generic::ParamType<0> *, void *>)>("From", &_::From)
         
         .public_()

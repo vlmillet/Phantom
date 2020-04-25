@@ -27,6 +27,7 @@
 #include <phantom/template-only-push>
 
 #include <phantom/thread/LockGuard.hxx>
+#include "Delegate.hxx"
 #include "Functor.hxx"
 
 #include <phantom/template-only-pop>
@@ -66,16 +67,12 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<FunctorID(OpaqueDynDelegate const&)>("connect", &_::connect)
             .PHANTOM_T method<FunctorID(FunctorType const&)>("connect", &_::connect)
             .PHANTOM_T method<FunctorID(FunctorType&&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<FunctorID(const Delegate<void (Parms...)>&)>("connect", &_::connect)
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<FunctorID(Delegate<void (Parms...)>&&)>("connect", &_::connect)
+            .PHANTOM_T method<FunctorID(const Delegate<void (Parms...)>&)>("connect", &_::connect)
+            .PHANTOM_T method<FunctorID(Delegate<void (Parms...)>&&)>("connect", &_::connect)
             .PHANTOM_T method<void(OpaqueDynDelegate const&)>("disconnect", &_::disconnect)
             .PHANTOM_T method<void(FunctorID)>("disconnect", &_::disconnect)
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<void(const Delegate<void (Parms...)>&)>("disconnect", &_::disconnect)
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<void(Delegate<void (Parms...)>&&)>("disconnect", &_::disconnect)
+            .PHANTOM_T method<void(const Delegate<void (Parms...)>&)>("disconnect", &_::disconnect)
+            .PHANTOM_T method<void(Delegate<void (Parms...)>&&)>("disconnect", &_::disconnect)
             .PHANTOM_T method<void(Parms...) const>("operator()", &_::operator())
             .PHANTOM_T method<void(void*, Parms...) const>("emit", &_::emit)
             .PHANTOM_T method<SignalMutexType&()>("mutex", &_::mutex)

@@ -27,6 +27,7 @@
 
 #include <phantom/template-only-push>
 
+#include "Delegate.hxx"
 #include "DynDelegate.hxx"
 #include "StringView.hxx"
 
@@ -62,14 +63,14 @@ PHANTOM_PACKAGE("phantom.utils")
         #endif // PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS_TVS((class), (R), (class, Params), (R(Params...)), Functor)
         {
+            using DelegateType = typedef_<PHANTOM_TYPENAME _::DelegateType>;
             using DynDelegateType = typedef_<PHANTOM_TYPENAME _::DynDelegateType>;
             using StringView = typedef_< phantom::StringView>;
             using ThisType = typedef_<PHANTOM_TYPENAME _::ThisType>;
             this_()
         .public_()
             .PHANTOM_T typedef_<ThisType>("ThisType")
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T typedef_<DelegateType>("DelegateType")
+            .PHANTOM_T typedef_<DelegateType>("DelegateType")
             /// missing symbol(s) reflection (std::function) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T typedef_<StdFuncType>("StdFuncType")
             .PHANTOM_T typedef_<DynDelegateType>("DynDelegateType")
@@ -81,16 +82,12 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T constructor<void(ThisType&&)>()
             .PHANTOM_T method<ThisType&(ThisType const&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             .PHANTOM_T method<ThisType&(ThisType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(DelegateType const&)>()
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T constructor<void(DelegateType&&)>()
+            .PHANTOM_T constructor<void(DelegateType const&)>()
+            .PHANTOM_T constructor<void(DelegateType&&)>()
             .PHANTOM_T constructor<void(R (*)(Params...))>()
             .PHANTOM_T method<ThisType&(R (*)(Params...))>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<ThisType&(DelegateType const&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<ThisType&(DelegateType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+            .PHANTOM_T method<ThisType&(DelegateType const&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+            .PHANTOM_T method<ThisType&(DelegateType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T constructor<void(StdFuncType const&, void*)>()["nullptr"]
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -114,8 +111,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<bool() const>("operator bool", &_::operator notypedef<bool>)
             .PHANTOM_T method<bool(ThisType const&) const>("operator==", &_::operator==)
             .PHANTOM_T method<bool(ThisType const&) const>("operator!=", &_::operator!=)
-            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(DelegateType&)>("as", &_::as)
+            .PHANTOM_T method<bool(DelegateType&)>("as", &_::as)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .PHANTOM_T method<bool(StdFuncType&)>("as", &_::as)
             .PHANTOM_T method<bool(DynDelegateType&)>("as", &_::as)

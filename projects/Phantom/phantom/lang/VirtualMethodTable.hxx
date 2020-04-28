@@ -55,7 +55,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<size_t(Method*) const>("getMethodIndex", &_::getMethodIndex)
             .method<void**() const>("getClosurePointers", &_::getClosurePointers)
             .method<bool(Method*, bool)>("insertMethod", &_::insertMethod)
-            .method<void(void*)>("extractNativeClosures", &_::extractNativeClosures)
+            .method<void(void*)>("extractNativeVTable", &_::extractNativeVTable)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

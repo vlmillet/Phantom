@@ -16,6 +16,57 @@ namespace phantom
 {
 namespace lang
 {
+namespace
+{
+struct Microsoft
+{
+    struct TypeDescriptor
+    {
+        unsigned long hash;
+        void*         spare;
+        char          name[0];
+    };
+
+    struct PMD
+    {
+        int mdisp;
+        int pdisp;
+        int vdisp;
+    };
+
+    struct RTTIBaseClassDescriptor
+    {
+        TypeDescriptor* pTypeDescriptor;
+        unsigned long   numContainedBases;
+        PMD             where;
+        unsigned long   attributes;
+    };
+
+#pragma warning(disable : 4200)
+    struct RTTIBaseClassArray
+    {
+        RTTIBaseClassDescriptor* arrayOfBaseClassDescriptors[];
+    };
+#pragma warning(default : 4200)
+    struct RTTIClassHierarchyDescriptor
+    {
+        unsigned long       signature;
+        unsigned long       attributes;
+        unsigned long       numBaseClasses;
+        RTTIBaseClassArray* pBaseClassArray;
+    };
+
+    struct RTTICompleteObjectLocator
+    {
+        unsigned long                 signature;
+        unsigned long                 offset;
+        unsigned long                 cdOffset;
+        TypeDescriptor*               pTypeDescriptor;
+        RTTIClassHierarchyDescriptor* pClassDescriptor;
+    };
+};
+} // namespace
+
 VirtualMethodTable::VirtualMethodTable()
     : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods))
 {
@@ -64,7 +115,7 @@ PHANTOM_DTOR VirtualMethodTable::~VirtualMethodTable()
     if (!(sharesMethods()))
         PHANTOM_DELETE(Methods) m_pMethods;
     if (m_ppClosures)
-        PHANTOM_FREE(m_ppClosures);
+        PHANTOM_FREE(m_ppClosures - 1);
 }
 
 size_t VirtualMethodTable::getIndexOf(Method* a_pMethod) const
@@ -161,21 +212,22 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
     return false;
 }
 
-void VirtualMethodTable::extractNativeClosures(void* a_pInstance)
+void VirtualMethodTable::extractNativeVTable(void* a_pInstance)
 {
     PHANTOM_ASSERT(isNative());
     if (m_ppClosures == nullptr)
     {
-        void*** pppSrc = (void***)((byte*)a_pInstance + getOffset());
-        size_t  vtableSize = getMethodCount() * sizeof(void*);
-        m_ppClosures = (void**)PHANTOM_MALLOC(vtableSize * sizeof(void*));
-        void* non_init_ptr = nullptr;
-        if (memcmp(pppSrc, &non_init_ptr, sizeof(void*)) != 0) // memory not isSame 0xdadadada => closures already
-                                                               // present => a base vtable has been installed here
+        PHANTOM_ASSERT(m_pNativeRttiData == nullptr);
+        void** ppVTablePtrAddr = reinterpret_cast<void**>(reinterpret_cast<byte*>(a_pInstance) + getOffset());
+
+        size_t vtableSize = getMethodCount() * sizeof(void*);
+        m_ppClosures = reinterpret_cast<void**>(PHANTOM_MALLOC((vtableSize + 1) * sizeof(void*))) + 1;
+        if (*ppVTablePtrAddr != nullptr)
         {
             // extract native vtable closures for replacement
-            memcpy(m_ppClosures, *pppSrc, vtableSize * sizeof(void*));
+            memcpy(m_ppClosures, *ppVTablePtrAddr, vtableSize * sizeof(void*));
         }
+        m_pNativeRttiData = *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(m_ppClosures - 1);
 
         auto   vtableOffset = getOffset();
         size_t thisMethodCount = getMethodCount();
@@ -183,15 +235,7 @@ void VirtualMethodTable::extractNativeClosures(void* a_pInstance)
         {
             if (Method* pMethod = (*m_pMethods)[i])
             {
-                // method has no vtable closure defined,
-                // is not pure virtual,
-                // is native
-                // and belongs to the same class as this vtable
-                // => we can extract its original
-                // if (pMethod->getOwner() == getOwner())
-                {
-                    pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
-                }
+                pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
             }
         }
     }
@@ -199,14 +243,14 @@ void VirtualMethodTable::extractNativeClosures(void* a_pInstance)
 
 void VirtualMethodTable::construct(void* a_pInstance)
 {
-    SmallMap<void***, size_t, 16> vmethodCountAtAddress;
+    SmallMap<void**, size_t, 16> vmethodCountAtAddress;
     _construct(a_pInstance, vmethodCountAtAddress);
 }
 
-void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t, 16>& a_VTableSizeAtAddress)
+void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void**, size_t, 16>& a_VTableSizeAtAddress)
 {
-    void*** pppDest = (void***)((byte*)a_pInstance + getOffset());
-    size_t& vtableSizeAtDest = a_VTableSizeAtAddress[pppDest];
+    void**  ppVTablePtrAddr = reinterpret_cast<void**>(reinterpret_cast<byte*>(a_pInstance) + getOffset());
+    size_t& vtableSizeAtDest = a_VTableSizeAtAddress[ppVTablePtrAddr];
     size_t  baseVtableSize = m_pBaseTable ? m_pBaseTable->getMethodCount() : 0;
     size_t  vTableSize = std::max(getMethodCount(), baseVtableSize);
     if (vtableSizeAtDest == 0) // if not methods already present at this address with more methods
@@ -225,15 +269,15 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
     {
         if (m_ppClosures == nullptr)
         {
+            PHANTOM_ASSERT(m_pNativeRttiData == nullptr);
+
             size_t vtableSize = getMethodCount() * sizeof(void*);
-            m_ppClosures = (void**)PHANTOM_MALLOC(vtableSize * sizeof(void*));
-            void* non_init_ptr = nullptr;
-            if (memcmp(pppDest, &non_init_ptr, sizeof(void*)) != 0) // memory not isSame 0xdadadada => closures already
-                                                                    // present => a base vtable has been installed here
+            m_ppClosures = reinterpret_cast<void**>(PHANTOM_MALLOC((vtableSize + 1) * sizeof(void*))) + 1;
+            if (*ppVTablePtrAddr) // there is vtable
             {
-                // extract native vtable closures for replacement
-                memcpy(m_ppClosures, *pppDest, vtableSize * sizeof(void*));
+                memcpy(m_ppClosures, *ppVTablePtrAddr, vtableSize * sizeof(void*));
             }
+            m_pNativeRttiData = *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(m_ppClosures - 1);
 
             auto   vtableOffset = getOffset();
             size_t thisMethodCount = getMethodCount();
@@ -247,13 +291,11 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
                     // and belongs to the same class as this vtable
                     // => we can extract its original
                     // if (pMethod->getOwner() == getOwner())
-                    {
-                        pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
-                    }
+                    pMethod->setVTableClosure(vtableOffset, m_ppClosures[i]);
                 }
             }
         }
-        *pppDest = m_ppClosures;
+        *ppVTablePtrAddr = m_ppClosures;
         return;
     }
 
@@ -268,18 +310,22 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
     }
     if (m_ppClosures == nullptr)
     {
-        m_ppClosures = (void**)PHANTOM_MALLOC(vtableSizeAtDest * sizeof(void*));
+        m_ppClosures = reinterpret_cast<void**>(PHANTOM_MALLOC((vtableSizeAtDest + 1) * sizeof(void*))) + 1;
         if (m_pBaseTable)
         {
-            void* non_init_ptr = nullptr;
-            if (memcmp(pppDest, &non_init_ptr, sizeof(void*)) !=
-                0) // memory not isSame 0xdadadada => closures
-                   // already present => a base vtable has been installed here
-
+            if (*ppVTablePtrAddr) // there is vtable
             {
-                memcpy(m_ppClosures, *pppDest,
+                memcpy(m_ppClosures, *ppVTablePtrAddr,
                        baseVtableSize * sizeof(void*)); // extract native vtable closures for replacement
             }
+            m_pNativeRttiData = *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(ppVTablePtrAddr - 1);
+        }
+        else
+        {
+            // TODO : build RTTI Complete Object Locator
+            m_pNativeRttiData = nullptr;
+            *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(ppVTablePtrAddr - 1) =
+            reinterpret_cast<Microsoft::RTTICompleteObjectLocator*>(m_pNativeRttiData);
         }
 
         auto   vtableOffset = getOffset();
@@ -303,7 +349,7 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void***, size_t,
             }
         }
     }
-    *pppDest = m_ppClosures; // write (resp. overwrite) vtable pointer (resp. base vtable pointer)
+    *ppVTablePtrAddr = m_ppClosures; // write (resp. overwrite) vtable pointer (resp. base vtable pointer)
 }
 
 Method* VirtualMethodTable::getRootMethod(size_t a_uiIndex) const

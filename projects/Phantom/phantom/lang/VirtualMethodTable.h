@@ -51,10 +51,7 @@ public:
     /// \return The member function count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getMethodCount() const
-    {
-        return m_pMethods->size();
-    }
+    size_t getMethodCount() const { return m_pMethods->size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get index of the given member function.
@@ -74,10 +71,7 @@ public:
     /// \return The member function at given position index.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Method* getMethod(size_t a_uiIndex) const
-    {
-        return (*m_pMethods)[a_uiIndex];
-    }
+    Method* getMethod(size_t a_uiIndex) const { return (*m_pMethods)[a_uiIndex]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the owner class of this table.
@@ -85,10 +79,7 @@ public:
     /// \return The owner class.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Class* getOwnerClass() const
-    {
-        return getOwner() ? getOwner()->asClass() : nullptr;
-    }
+    Class* getOwnerClass() const { return getOwner() ? getOwner()->asClass() : nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the original class of this table (if table sharing base class table).
@@ -158,10 +149,7 @@ public:
 
     Method* getRootMethod(Method* a_pMethod) const;
 
-    VirtualMethodTable* asVirtualMethodTable() const override
-    {
-        return const_cast<VirtualMethodTable*>(this);
-    }
+    VirtualMethodTable* asVirtualMethodTable() const override { return const_cast<VirtualMethodTable*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Retrieve the index of this member function in this vtable.
@@ -171,21 +159,21 @@ public:
     /// \return The required member function index.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	size_t getMethodIndex(Method* a_pMethod) const;
+    size_t getMethodIndex(Method* a_pMethod) const;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \brief  Retrieve the index of this member function in this vtable.
-	///
-	/// \param [in,out] a_pMethod   The required member function.
-	///
-	/// \return The required member function index.
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Retrieve the index of this member function in this vtable.
+    ///
+    /// \param [in,out] a_pMethod   The required member function.
+    ///
+    /// \return The required member function index.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void** getClosurePointers() const { return m_ppClosures; }
 
     bool insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides);
 
-    void extractNativeClosures(void* a_pInstance);
+    void extractNativeVTable(void* a_pInstance);
 
 private: // Derivation constructors
     VirtualMethodTable(VirtualMethodTable* a_pBaseTable);
@@ -201,12 +189,13 @@ private: // Derivation constructors
     void copyOnWrite();
     bool canBeDestroyed() const override;
     void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void _construct(void* a_pInstance, SmallMap<void***, size_t, 16>& a_VTableSizeAtAddress);
+    void _construct(void* a_pInstance, SmallMap<void**, size_t, 16>& a_VTableSizeAtAddress);
 
 private:
     Methods*            m_pMethods{};
     VirtualMethodTable* m_pBaseTable{};
     VirtualMethodTables m_DerivedTables;
+    void*               m_pNativeRttiData{};
     void**              m_ppClosures{};
     bool                m_bShared{};
 };

@@ -103,7 +103,8 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
 {
     // #endif
     {
-        PHANTOM_ASSERT(getModule(info->m_Name) == nullptr, "module '%s' already exists", info->m_Name);
+        PHANTOM_ASSERT(getModule(info->m_Name) == nullptr, "module '%.*s' already exists",
+                       PHANTOM_STRING_AS_PRINTF_ARG(info->m_Name));
         MODULEINFO modInfo{};
         PHANTOM_VERIFY(
         GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));

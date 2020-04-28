@@ -12,7 +12,6 @@ HAUNT_STOP;
 #include <phantom/lang/ClassTypeT.h>
 #include <phantom/lang/NativeVTableInspector.h>
 #include <phantom/lang/NativeVTableSizeComputer.h>
-#include <phantom/lang/VirtualMethodTable.h>
 
 namespace phantom
 {
@@ -35,37 +34,31 @@ public:
 
     VirtualMethodTable* createVirtualMethodTable() const override
     {
-        void** ppNativeVTable = nullptr; // vtable_extractor<t_Ty>::apply(this);
-        return PHANTOM_META_NEW(VirtualMethodTable)(ppNativeVTable, virtualMethodCountOf<t_Ty>());
+        void** ppNativeVTable = nullptr;
+        return Class::CreateVirtualMethodTable(ppNativeVTable, virtualMethodCountOf<t_Ty>());
     }
 
     VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) const override
     {
         PHANTOM_ASSERT(this->asClass());
-        size_t uiOffset = ((Class*)this)->getBaseClassOffsetCascade(a_pVirtualMethodTable->getOriginalClass());
+        size_t uiOffset = ((Class*)this)->getBaseClassOffsetCascade(Class::VTablePrimaryClass(a_pVirtualMethodTable));
         if (uiOffset == 0)
         {
-            return a_pVirtualMethodTable->derive(virtualMethodCountOf<t_Ty>());
+            return Class::DeriveVirtualMethodTable(a_pVirtualMethodTable, virtualMethodCountOf<t_Ty>());
         }
         else
         {
-            return a_pVirtualMethodTable->derive();
+            return Class::DeriveVirtualMethodTable(a_pVirtualMethodTable);
         }
     }
 
-    virtual void onElementsAccess() override
-    {
-        this->_onNativeElementsAccess();
-    }
+    virtual void onElementsAccess() override { this->_onNativeElementsAccess(); }
 };
 
 template<typename t_Ty, typename t_Base>
 struct TypeOf<ClassT<t_Ty, t_Base> >
 {
-    static Type* object()
-    {
-        return Class::metaClass;
-    }
+    static Type* object() { return Class::metaClass; }
 };
 
 template<typename t_Ty, typename t_Base>

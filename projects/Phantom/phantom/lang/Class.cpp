@@ -1197,6 +1197,21 @@ SymbolExtension* Class::getExtensionCascade(Class* a_pSymbolExtensionClass, size
     return nullptr;
 }
 
+VirtualMethodTable* Class::DeriveVirtualMethodTable(VirtualMethodTable* a_pBase, size_t a_MethodCount)
+{
+    return a_pBase->derive(a_MethodCount);
+}
+
+VirtualMethodTable* Class::DeriveVirtualMethodTable(VirtualMethodTable* a_pBase)
+{
+    return a_pBase->derive();
+}
+
+Class* Class::VTablePrimaryClass(VirtualMethodTable* a_pVTable)
+{
+    return a_pVTable->getOriginalClass();
+}
+
 VirtualMethodTable* Class::createVirtualMethodTable() const
 {
     return PHANTOM_NEW(VirtualMethodTable);
@@ -1613,6 +1628,11 @@ bool Class::canHaveImplicitMoveAssignmentOperator() const
             return false;
     }
     return true;
+}
+
+VirtualMethodTable* Class::CreateVirtualMethodTable(void** a_ppAddr, size_t a_MethodCount)
+{
+    return PHANTOM_NEW(VirtualMethodTable)(a_ppAddr, a_MethodCount);
 }
 
 void Class::addImplicitDefaultConstructor()

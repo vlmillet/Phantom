@@ -1029,6 +1029,10 @@ public:
     bool canHaveImplicitMoveConstructor() const override;
     bool canHaveImplicitMoveAssignmentOperator() const override;
 
+    static VirtualMethodTable*  CreateVirtualMethodTable(void** a_ppAddr, size_t a_MethodCount);
+    static VirtualMethodTable*  DeriveVirtualMethodTable(VirtualMethodTable* a_pBase, size_t a_MethodCount);
+    static VirtualMethodTable*  DeriveVirtualMethodTable(VirtualMethodTable* a_pBase);
+    static Class*               VTablePrimaryClass(VirtualMethodTable* a_pVTable);
     virtual VirtualMethodTable* createVirtualMethodTable() const;
     virtual VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) const;
 

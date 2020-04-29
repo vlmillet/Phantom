@@ -54,10 +54,7 @@ public:
 
     virtual Closure getClosure(void* a_pPointer) const;
 
-    FunctionPointer* asFunctionPointer() const override
-    {
-        return const_cast<FunctionPointer*>(this);
-    }
+    FunctionPointer* asFunctionPointer() const override { return const_cast<FunctionPointer*>(this); }
 
     void valueFromString(StringView a_str, void* dest) const override;
 
@@ -65,10 +62,7 @@ public:
 
     void valueToLiteral(StringBuffer& a_Buf, const void* src) const override;
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the function type of the underlying function.
@@ -76,10 +70,7 @@ public:
     /// \return The function type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    FunctionType* getFunctionType() const
-    {
-        return (FunctionType*)m_pUnderlyingType;
-    }
+    FunctionType* getFunctionType() const { return (FunctionType*)m_pUnderlyingType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the ABI of the underlying function.
@@ -87,10 +78,7 @@ public:
     /// \return The ABI.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ABI getABI() const
-    {
-        return m_eABI;
-    }
+    ABI getABI() const { return m_eABI; }
 
     virtual void call(void* a_pPointer, void** a_pArgs) const;
     virtual void call(void* a_pPointer, void** a_pArgs, void* a_pReturnAddress) const;
@@ -100,7 +88,6 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    void                    onReferencedElementRemoved(LanguageElement* a_pElement) override;
     static FunctionPointer* Create(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers = 0,
                                    uint a_Flags = 0);
 

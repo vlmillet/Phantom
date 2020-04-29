@@ -35,12 +35,7 @@ public:
     using TopType = Top;
     using BuilderProxyType = PHANTOM_TYPENAME Top::_PHNTM_Proxy;
 
-    PHANTOM_DECL_OVERRIDE_DELETE_METHOD(SelfType);
-
-    EnumBuilderT(Top* a_pTop) : BaseType(a_pTop, nullptr)
-    {
-        m_pEnum = this->_PHNTM_getMeta();
-    }
+    EnumBuilderT(Top* a_pTop) : BaseType(a_pTop, nullptr) { m_pEnum = this->_PHNTM_getMeta(); }
 
     MostDerived& value(StringView a_Name, T a_Val)
     {
@@ -123,8 +118,7 @@ public:
 private:
     void _addConstant(StringView a_Nme, T a_Val)
     {
-        m_pEnum->addConstant(
-        PHANTOM_META_NEW(lang::ConstantT<T>)(m_pEnum, a_Nme, a_Val, 0, PHANTOM_R_FLAG_NATIVE));
+        m_pEnum->addConstant(m_pEnum->NewMeta<lang::ConstantT<T>>(m_pEnum, a_Nme, a_Val, 0, PHANTOM_R_FLAG_NATIVE));
     }
 
 private:
@@ -141,10 +135,7 @@ private:
         (this_()).enum_<Name>().values _PHNTM_ENUM_VALUES
 
 #define PHANTOM_ENUM_PAIRS(...)                                                                                        \
-#    __VA_ARGS__,                                                                                                      \
-    {                                                                                                                  \
-        __VA_ARGS__                                                                                                    \
-    }
+#    __VA_ARGS__, { __VA_ARGS__ }
 
 #define _PHNTM_ENUM_VALUES(...)                                                                                        \
     (PHANTOM_ENUM_PAIRS(__VA_ARGS__));                                                                                 \

@@ -75,7 +75,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .protected_()
             .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

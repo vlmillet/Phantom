@@ -39,23 +39,15 @@ public:
 
     ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask, Modifiers a_Modifiers = 0,
                 uint a_uiFlags = 0);
-    PHANTOM_DTOR ~ValueMember() override
-    {
-    }
+    PHANTOM_DTOR ~ValueMember() override {}
 
-    ValueMember* asValueMember() const override
-    {
-        return (ValueMember*)this;
-    }
+    ValueMember* asValueMember() const override { return (ValueMember*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Tests if the value is movable
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool isMovable() const
-    {
-        return true;
-    }
+    virtual bool isMovable() const { return true; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Tests if the value is writtable (for example a property which has a set function).
@@ -95,10 +87,7 @@ public:
     /// \param  a_pInputBuffer      The input buffer which contains the value.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void setValueMoved(void* a_pObject, void* a_pInputBuffer) const
-    {
-        setValue(a_pObject, a_pInputBuffer);
-    }
+    virtual void setValueMoved(void* a_pObject, void* a_pInputBuffer) const { setValue(a_pObject, a_pInputBuffer); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the value of this value member for the given object.
@@ -134,10 +123,7 @@ public:
     /// \return The value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Type* getValueType() const
-    {
-        return m_pValueType;
-    }
+    inline Type* getValueType() const { return m_pValueType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the filter mask.
@@ -145,10 +131,7 @@ public:
     /// \return The filter mask.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline uint getFilterMask() const
-    {
-        return m_uiFilterMask;
-    }
+    inline uint getFilterMask() const { return m_uiFilterMask; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the filter mask.
@@ -173,10 +156,7 @@ public:
     /// \return null if owner is not a class type, else the owner as class type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline ClassType* getOwnerClassType() const
-    {
-        return getOwner()->asClassType();
-    }
+    inline ClassType* getOwnerClassType() const { return getOwner()->asClassType(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the owner class, if exists.
@@ -184,10 +164,7 @@ public:
     /// \return null if owner is not a class, else the owner as class.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Class* getOwnerClass() const
-    {
-        return getOwner()->asClass();
-    }
+    inline Class* getOwnerClass() const { return getOwner()->asClass(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the address of the value for the given object, if possible.
@@ -203,9 +180,6 @@ public:
     void setDefaultExpression(const char* a_pExpression);
 
     Expression* getDefaultExpression() const;
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     Type*               m_pValueType{};

@@ -12,7 +12,6 @@ HAUNT_STOP;
 
 #include "registration.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/traits/IsTypeDefined.h>
 #include <phantom/utils/StringView.h>
 

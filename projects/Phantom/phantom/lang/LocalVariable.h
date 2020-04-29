@@ -36,14 +36,9 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers modifiers = 0, uint a_uiFlags = 0);
-    ~LocalVariable() override
-    {
-    }
+    ~LocalVariable() override {}
 
-    LocalVariable* asLocalVariable() const override
-    {
-        return (LocalVariable*)this;
-    }
+    LocalVariable* asLocalVariable() const override { return (LocalVariable*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets value type of this local variable.
@@ -51,10 +46,7 @@ public:
     /// \return null if it fails, else the value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    lang::Type* getValueType() const
-    {
-        return m_pValueType;
-    }
+    lang::Type* getValueType() const { return m_pValueType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this local variable is a member function 'this'.
@@ -113,10 +105,7 @@ public:
     /// \return The frame offset.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ptrdiff_t getEvalFrameOffset() const
-    {
-        return m_iEvalFrameOffset;
-    }
+    ptrdiff_t getEvalFrameOffset() const { return m_iEvalFrameOffset; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the offset where to find the local variable from the native stack frame base
@@ -125,10 +114,7 @@ public:
     /// \return The frame offset.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ptrdiff_t getNativeFrameOffset() const
-    {
-        return m_iNativeFrameOffset;
-    }
+    ptrdiff_t getNativeFrameOffset() const { return m_iNativeFrameOffset; }
 
     LocalVariable* clone() const;
 
@@ -139,9 +125,6 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
     void setValueType(Type* a_pType);
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     Type*     m_pValueType = nullptr;

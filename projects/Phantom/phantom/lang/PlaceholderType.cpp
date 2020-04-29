@@ -11,7 +11,6 @@
 #include "PlaceholderClassType.h"
 #include "TemplateSpecialization.h"
 
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

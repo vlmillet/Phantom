@@ -28,9 +28,8 @@ class PHANTOM_EXPORT_PHANTOM Template : public Symbol
     friend struct TemplateRegistrer;
 
 public:
-    static Template* Parse(StringView a_strTemplateTypes, StringView a_strTemplateParam,
-                           StringView a_strName, LanguageElement* a_pContextScope,
-                           Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/);
+    static Template* Parse(StringView a_strTemplateTypes, StringView a_strTemplateParam, StringView a_strName,
+                           LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an anonymous empty template.
@@ -43,8 +42,7 @@ public:
     /// template).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Template(TemplateSignature* a_pSignature, StringView a_strName, Modifiers a_Modifiers = 0,
-             uint a_uiFlags = 0);
+    Template(TemplateSignature* a_pSignature, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an empty template (D language like template group).
@@ -62,10 +60,7 @@ public:
     /// \return the template specialization list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecializations const& getTemplateSpecializations() const
-    {
-        return m_TemplateSpecializations;
-    }
+    TemplateSpecializations const& getTemplateSpecializations() const { return m_TemplateSpecializations; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template parameters.
@@ -181,9 +176,8 @@ public:
     /// \return The PHANTOM_NEW(template) specialization.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization*
-    createTemplateSpecialization(LanguageElement* a_pArgument, ClassType* a_pBody = nullptr,
-                                 TemplateSignature* a_pTemplateSignature = nullptr)
+    TemplateSpecialization* createTemplateSpecialization(LanguageElement* a_pArgument, ClassType* a_pBody = nullptr,
+                                                         TemplateSignature* a_pTemplateSignature = nullptr)
     {
         LanguageElements args{a_pArgument};
         return createTemplateSpecialization(args, a_pBody, a_pTemplateSignature);
@@ -240,8 +234,7 @@ public:
     /// specialization.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization*
-    getTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization) const;
+    TemplateSpecialization* getTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the empty template specialization (template as is, every argument is a
@@ -284,13 +277,9 @@ public:
 
     bool isVariadic() const;
 
-    Template* asTemplate() const override
-    {
-        return const_cast<Template*>(this);
-    }
+    Template* asTemplate() const override { return const_cast<Template*>(this); }
 
-    void setNativeDefaultArgumentStrings(const char**     a_ppArgs,
-                                         LanguageElement* a_pScope /*= nullptr*/);
+    void setNativeDefaultArgumentStrings(const char** a_ppArgs, LanguageElement* a_pScope /*= nullptr*/);
 
 protected: // native constructor
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,17 +291,11 @@ protected: // native constructor
     void addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization);
 
 protected:
-    bool canBeDestroyed() const override
-    {
-        return m_TemplateSpecializations.empty() && Symbol::canBeDestroyed();
-    }
-    void onAncestorChanged(LanguageElement* a_pOwner) override;
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    bool canBeDestroyed() const override { return m_TemplateSpecializations.empty() && Symbol::canBeDestroyed(); }
 
 private:
-    TemplateSpecialization*
-         createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature, Symbol* a_pBody);
-    void createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature);
+    TemplateSpecialization* createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature, Symbol* a_pBody);
+    void                    createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature);
 
 protected:
     TemplateSpecializations m_TemplateSpecializations;

@@ -6,7 +6,6 @@
 
 #include "CppSymbolParser.h"
 
-#include <phantom/utils/OptionalArrayView.h>
 #include "Alias.h"
 #include "Array.h"
 #include "ConstType.h"
@@ -34,7 +33,7 @@
 #include "VolatileType.h"
 
 #include <inttypes.h>
-#include <phantom/detail/new.h>
+#include <phantom/utils/OptionalArrayView.h>
 #include <phantom/utils/ScopeExit.h>
 #include <phantom/utils/SmallString.h>
 #include <phantom/utils/StringView.h>

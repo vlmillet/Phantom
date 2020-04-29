@@ -19,7 +19,6 @@
 #include "TemplateSpecialization.h"
 
 #include <phantom/detail/core_internal.h>
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

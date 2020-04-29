@@ -53,15 +53,9 @@ public:
     {
     }
 
-    bool isWrittable() const override
-    {
-        return m_setter;
-    }
+    bool isWrittable() const override { return m_setter; }
 
-    bool isReadable() const override
-    {
-        return m_getter;
-    }
+    bool isReadable() const override { return m_getter; }
 
     void getValue(void const* a_pObject, void* dest) const override
     {
@@ -76,16 +70,14 @@ public:
         (reinterpret_cast<t_Ty*>(dest)->*m_setter)((reinterpret_cast<t_Ty const*>(src)->*m_getter)());
     }
 
-    void onAncestorChanged(LanguageElement* a_pElement) override
+private:
+    void onAttachedToClass(ClassType* a_pClass) override final
     {
-        if (getOwner() == a_pElement)
-        {
-            this->setSet(getOwnerClassType()->getMethodByPtr(&m_setter));
-            this->setGet(getOwnerClassType()->getMethodByPtr(&m_getter));
-            auto pSignal = getOwnerClassType()->getMethodByPtr(&m_signal);
-            if (pSignal && pSignal->asSignal())
-                this->setSignal((Signal*)(pSignal));
-        }
+        this->setSet(a_pClass->getMethodByPtr(&m_setter));
+        this->setGet(a_pClass->getMethodByPtr(&m_getter));
+        auto pSignal = a_pClass->getMethodByPtr(&m_signal);
+        if (pSignal && pSignal->asSignal())
+            this->setSignal((Signal*)(pSignal));
     }
 
 private:

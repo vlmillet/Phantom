@@ -709,76 +709,6 @@ public:
 
     TypeRelation getRelationWith(Type* a_pType) const override;
 
-    void addMethod(Method* a_pMethod) override;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a signal.
-    ///
-    /// \param [in,out] a_pSignal   The signal to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void addSignal(Signal* a_pSignal);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a signal .
-    ///
-    /// \param [in,out] a_pSignal   The signal to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeSignal(Signal* a_pSignal);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the signals of this class.
-    ///
-    /// \param  a_strSignatureName   The signature name.
-    ///
-    /// \return null if it fails, else the signal.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signals const& getSignals() const { return *m_Signals; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a signal by its signature name.
-    ///
-    /// \param  a_strSignatureName   The signature name.
-    ///
-    /// \return null if it fails, else the signal.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signal* getSignal(StringView a_strIdentifierString) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a signal by its signature name, recursively through all the base classes (stop
-    /// at first occurence found by deep search).
-    ///
-    /// \param  a_strSignatureName   The signature name.
-    ///
-    /// \return null if it fails, else the signal cascade.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signal* getSignalCascade(StringView a_strIdentifierString) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a slot by its signature name.
-    ///
-    /// \param  a_strSignatureName   The signature name.
-    ///
-    /// \return null if it fails, else the slot.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Method* getSlot(StringView a_strIdentifierString) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a slot by its signature name, recursively through all the base classes (stop at
-    /// first occurence found by deep search).
-    ///
-    /// \param  a_strSignatureName   The signature name.
-    ///
-    /// \return null if it fails, else the slot cascade.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Method* getSlotCascade(StringView a_strIdentifierString) const;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Overrides the default value of a base class value members.
     ///
@@ -1061,13 +991,9 @@ public:
     InstanceCache* getOrCreateInstanceCache();
 
 protected:
-    void         onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void         onElementAdded(LanguageElement* a_pElement) override;
-    void         onElementRemoved(LanguageElement* a_pElement) override;
     bool         canBeDestroyed() const override;
     Strings      getBaseClasseNames() const;
     virtual void setBaseClasseNames(Strings table);
-    virtual void setMethods(Methods list);
 
 private:
     Type* getCommonBaseAncestor(Type* a_pType) const override;
@@ -1099,9 +1025,6 @@ private:
     size_t                               m_InstanceCount = 0;
     SmallMap<ValueMember*, Expression*>* m_pOverriddenDefaultExpressions = nullptr;
     mutable VirtualMethodTables          m_VirtualMethodTables;
-    typedef Members<Signals>             SignalList;
-    SignalList                           m_Signals;
-    Members<Fields>                      m_FieldsWithRAII;
     void*                                m_pSingleton = nullptr;
     mutable Optional<Subroutine*>        m_OpEquals;
 };

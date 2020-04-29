@@ -74,10 +74,7 @@ public:
     /// \return The value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getFunctionsType() const
-    {
-        return m_pFunctionsType;
-    }
+    Type* getFunctionsType() const { return m_pFunctionsType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the effective value type (without const and ref qualifiers).
@@ -85,10 +82,7 @@ public:
     /// \return The effective value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Property* asProperty() const override
-    {
-        return const_cast<Property*>(this);
-    }
+    Property* asProperty() const override { return const_cast<Property*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the 'set' member function.
@@ -96,10 +90,7 @@ public:
     /// \return The 'set' member function.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Method* getSet() const
-    {
-        return m_pSet;
-    }
+    Method* getSet() const { return m_pSet; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add the 'set' member function with an optional custom name.
@@ -140,20 +131,14 @@ public:
     /// \return The 'get' member function
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Method* getGet() const
-    {
-        return m_pGet;
-    }
+    Method* getGet() const { return m_pGet; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the change notification signal function.
     ///
     /// \return The change notification signal function
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    Signal* getSignal() const
-    {
-        return m_pSignal;
-    }
+    Signal* getSignal() const { return m_pSignal; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the 'set' method.
@@ -173,19 +158,11 @@ public:
 
     void setSignal(Signal* a_pFunc);
 
-    bool isWrittable() const override
-    {
-        return m_pSet != nullptr;
-    }
-    bool isReadable() const override
-    {
-        return m_pGet != nullptr;
-    }
+    bool isWrittable() const override { return m_pSet != nullptr; }
+    bool isReadable() const override { return m_pGet != nullptr; }
 
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
-    void onAncestorChanged(LanguageElement* a_pOwner) override;
+private:
+    virtual void onAttachedToClass(ClassType*) {}
 
 private:
     Type*   m_pFunctionsType = nullptr;

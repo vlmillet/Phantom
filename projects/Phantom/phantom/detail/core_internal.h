@@ -11,7 +11,6 @@
 HAUNT_STOP;
 
 #include "ModuleRegistrationInfo.h"
-#include "new.h"
 
 #include <phantom/lang/Class.h>
 #include <phantom/lang/Package.h>
@@ -38,8 +37,8 @@ public:
     static void StaticGlobalsRelease();
 
     DynamicCppInitializerH();
-    void                            init();
-    void                            release();
+    void                      init();
+    void                      release();
     phantom::lang::Namespace* parseNamespace(StringView a_strNamespace) const;
 
     struct DeferredInstallationInfo
@@ -52,30 +51,30 @@ public:
     void stepTypeInstallation(TypeInstallationStep step);
 
     SmallVector<lang::ModuleRegistrationInfo, 64> m_ModuleRegistrationInfos;
-    RecursiveMutex                                      m_DeferredInstallationsMutex;
-    SmallVector<DeferredInstallationInfo>               m_DeferredInstallations;
-    int                                                 m_iActive;
-    StringView                                          m_source;
-    StringView                                          m_package;
-    bool                                                m_bAutoRegistrationLocked;
-    bool                                                m_bPhantomInstalled;
+    RecursiveMutex                                m_DeferredInstallationsMutex;
+    SmallVector<DeferredInstallationInfo>         m_DeferredInstallations;
+    int                                           m_iActive;
+    StringView                                    m_source;
+    StringView                                    m_package;
+    bool                                          m_bAutoRegistrationLocked;
+    bool                                          m_bPhantomInstalled;
 
     inline lang::Type* registeredTypeByHash(size_t a_ModuleHandle, hash64 a_Hash)
     {
         return moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash);
     }
     lang::Package* package(lang::Module* a_pModule, StringView a_strName, bool* a_pNew = nullptr);
-    size_t               findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
+    size_t         findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
     lang::Module*  findSourceInModules(StringView a_strFilePath, Strings& words);
     lang::Source*  nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
-    void                 pushSource(StringView a_strSource)
+    void           pushSource(StringView a_strSource)
     {
         PHANTOM_ASSERT(m_source.empty());
         m_source = a_strSource;
         PHANTOM_ASSERT_DEBUG(lang::Package::IsValidName(a_strSource),
                              "invalid source name, only [a-z0-9_] characters (lower case) separated with "
                              "'.' are allowed");
-        PHANTOM_ASSERT_DEBUG(m_package.size() ||(a_strSource.find_first_of('.') != StringView::npos),
+        PHANTOM_ASSERT_DEBUG(m_package.size() || (a_strSource.find_first_of('.') != StringView::npos),
                              "missing package name in source qualified name (or enclose your "
                              "PHANTOM_R_SOURCE/PHANTOM_R_END scope in a PHANTOM_R_PACKAGE/PHANTOM_R_END scope)");
     }
@@ -110,11 +109,11 @@ public:
         PHANTOM_ASSERT(m_iActive);
         m_iActive--;
     }
-    void                                installModules();
+    void                          installModules();
     lang::ModuleRegistrationInfo* getModuleRegistrationInfo(StringView name);
     lang::ModuleRegistrationInfo* getModuleRegistrationInfo(size_t a_ModuleHandle);
     lang::ModuleRegistrationInfo* moduleRegistrationInfo(size_t a_ModuleHandle);
-    void                                setAutoRegistrationLocked(bool a_bLocked)
+    void                          setAutoRegistrationLocked(bool a_bLocked)
     {
         PHANTOM_ASSERT(a_bLocked == !m_bAutoRegistrationLocked);
         m_bAutoRegistrationLocked = a_bLocked;
@@ -230,7 +229,9 @@ HAUNT_RESUME;
 
 #define TYPE_REGISTRATION_KEY_DEBUG_ENABLED (PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL)
 
-#define PHANTOM_DEFERRED_NEW(...) phantom::detail::DeferredNewH() * new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
+#define PHANTOM_DEFERRED_NEW(...)                                                                                      \
+    phantom::detail::DeferredNewH() *                                                                                  \
+    new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
 #define PHANTOM_DEFERRED_PLACEMENT_NEW(instance) phantom::detail::DeferredNewH() * instance
 
 #define PHANTOM_DEFERRED_DELETE(...) phantom::detail::DeferredDeleteH<__VA_ARGS__>()*

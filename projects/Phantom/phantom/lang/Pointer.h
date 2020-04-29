@@ -134,9 +134,6 @@ public:
     void             getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
     hash64           computeLocalHash() const override;
     LanguageElement* getNamingScope() const override { return getUnderlyingType()->getNamingScope(); }
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 };
 
 } // namespace lang

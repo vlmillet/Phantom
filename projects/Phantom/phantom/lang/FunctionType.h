@@ -26,53 +26,6 @@ class PHANTOM_EXPORT_PHANTOM FunctionType : public Type
     PHANTOM_DECLARE_META_CLASS(FunctionType);
 
 public:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Construction helper.
-    ///
-    /// \param  a_Modifiers   (optional) The modifiers.
-    ///
-    /// \return null if it fails, else.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    static FunctionType* Create(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Construction helper.
-    ///
-    /// \param  a_pReturnType   The return type.
-    /// \param  a_Modifiers       (optional) The modifiers.
-    ///
-    /// \return null if it fails, else.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    static FunctionType* Create(Type* a_pReturnType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Construction helper.
-    ///
-    /// \param  a_pReturnType           The return type.
-    /// \param  a_pSingleParameterType  The single parameter type.
-    /// \param  a_Modifiers               (optional) The modifiers.
-    ///
-    /// \return null if it fails, else.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    static FunctionType* Create(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0,
-                                uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Construction helper.
-    ///
-    /// \param  a_pReturnType           The return type.
-    /// \param  a_ParameterTypes        The parameter types.
-    /// \param  a_Modifiers             (optional) The modifiers.
-    ///
-    /// \return null if it fails, else.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    static FunctionType* Create(Type* a_pReturnType, TypesView a_ParameterTypes, Modifiers a_Modifiers = 0,
-                                uint a_uiFlags = 0);
-
     enum EState
     {
         eState_Virgin = 0,
@@ -285,10 +238,6 @@ public:
 private:
     bool separateParameters(StringView a_strText, Strings& a_OutParameters);
     bool parseParameterTypeList(StringView a_strText, Types& a_OutParameterTypes, LanguageElement* a_pContextScope);
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     Type* m_pReturnType;

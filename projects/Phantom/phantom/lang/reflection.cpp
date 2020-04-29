@@ -92,7 +92,7 @@ void BuiltInTypes::Register()
     PHANTOM_ASSERT(Class::metaClass);
     detail::popInstallation();
 
-#define _PHNTM_BLD_FUND_META(_var_, _type_) _var_ = PHANTOM_META_NEW(MetaTypeOf<_type_>::type)(#_type_);
+#define _PHNTM_BLD_FUND_META(_var_, _type_) _var_ = Application::Get()->NewMeta<MetaTypeOf<_type_>::type>(#_type_);
 
     detail::pushInstallation();
     _PHNTM_BLD_FUND_META(TYPE_VOID, void);

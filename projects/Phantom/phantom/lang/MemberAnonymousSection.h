@@ -29,10 +29,7 @@ public:
     {
         return const_cast<MemberAnonymousSection*>(this);
     }
-    DataElement* asDataElement() const override
-    {
-        return const_cast<MemberAnonymousSection*>(this);
-    }
+    DataElement* asDataElement() const override { return const_cast<MemberAnonymousSection*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the first data member accessible through this anonymous section (can be one of
@@ -68,10 +65,7 @@ public:
     /// \return the data elements list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const DataElements& getDataElements() const
-    {
-        return m_DataElements;
-    }
+    const DataElements& getDataElements() const { return m_DataElements; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the data members list.
@@ -79,10 +73,7 @@ public:
     /// \return the data members.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const Fields& getFields() const
-    {
-        return m_Fields;
-    }
+    const Fields& getFields() const { return m_Fields; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets root class type owner of the member anonymous sections' hierarchy.
@@ -92,8 +83,7 @@ public:
 
     ClassType* getRootOwner() const
     {
-        return getOwnerSection() ? getOwnerSection()->getRootOwner()
-                                 : getOwner() ? getOwner()->asClassType() : nullptr;
+        return getOwnerSection() ? getOwnerSection()->getRootOwner() : getOwner() ? getOwner()->asClassType() : nullptr;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,8 +105,7 @@ public:
 
     MemberAnonymousSection* getRootSection() const
     {
-        return getOwnerSection() ? getOwnerSection()->getRootSection()
-                                 : (MemberAnonymousSection*)this;
+        return getOwnerSection() ? getOwnerSection()->getRootSection() : (MemberAnonymousSection*)this;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,26 +151,17 @@ public:
     /// \return The member anonymous section count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getMemberAnonymousSectionCount() const
-    {
-        return m_MemberAnonymousSections.size();
-    }
+    size_t getMemberAnonymousSectionCount() const { return m_MemberAnonymousSections.size(); }
 
     size_t getSize() const override;
 
     size_t getAlignment() const override;
 
-    size_t getOffset() const override
-    {
-        return m_uiOffset;
-    }
+    size_t getOffset() const override { return m_uiOffset; }
 
     void fetchFields(Fields& a_Out) const override;
 
 protected:
-    void         onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void         onElementRemoved(LanguageElement* a_pElement) override;
-    void         onElementAdded(LanguageElement* a_pElement) override;
     void         setOffset(size_t a_uiOffset) override;
     virtual void computeSizeAndAlignment(size_t& a_uiSize, size_t& a_uiAlignment) const = 0;
 

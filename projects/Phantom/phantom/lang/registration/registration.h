@@ -11,7 +11,6 @@
 HAUNT_STOP;
 
 #include "Forward.h"
-#include <phantom/detail/VirtualDelete.h>
 
 #include <phantom/detail/core.h>
 #include <phantom/lang/Namespace.h>
@@ -154,20 +153,18 @@ using TypeInfosGetter = TypeInfos const& (*)();
 
 struct PHANTOM_EXPORT_PHANTOM PhantomBuilderBase
 {
-    PHANTOM_DECL_ABSTRACT_DELETE_METHOD(PhantomBuilderBase);
-
 public:
     using _PHNTM_Proxy = void;
 
-protected:
-    ~PhantomBuilderBase()
-    {
-        for (PhantomBuilderBase* pType : _PHNTM_SubRegistrers)
-        {
-            PHANTOM_DELETE_VIRTUAL pType;
-        }
-    }
+	virtual ~PhantomBuilderBase()
+	{
+		for (PhantomBuilderBase* pType : _PHNTM_SubRegistrers)
+		{
+			phantom::DeleteP(pType);
+		}
+	}
 
+protected:
     void addSubPhantomBuilderBase(PhantomBuilderBase* a_pSub);
 
 private:

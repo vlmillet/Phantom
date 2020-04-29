@@ -9,7 +9,6 @@
 
 #include "TemplateDependantType.h"
 
-#include <phantom/detail/new.h>
 /* *********************************************** */
 
 namespace phantom

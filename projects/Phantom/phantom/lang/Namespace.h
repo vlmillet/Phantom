@@ -40,9 +40,6 @@ public:
     Namespace* asNamespace() const override { return (Namespace*)this; }
     Namespace* toNamespace() const override { return (Namespace*)this; }
 
-    void addScopeElement(Symbol* a_pElement) override;
-    void removeScopeElement(Symbol* a_pElement) override;
-
     void addNamespace(Namespace* a_pNamespace);
     void removeNamespace(Namespace* a_pNamespace);
 
@@ -185,17 +182,6 @@ public:
 
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
-public:
-    phantom::Signal<void(Namespace*)> namespaceAdded;
-    phantom::Signal<void(Namespace*)> namespaceRemoved;
-    phantom::Signal<void(Alias*)>     namespaceAliasAdded;
-    phantom::Signal<void(Alias*)>     namespaceAliasRemoved;
-
-protected:
-    void setParentNamespace(Namespace* a_pNamespace) { m_pOwner = a_pNamespace; }
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
-
 protected:
     Namespaces m_Namespaces;
     Aliases    m_NamespaceAliases;
@@ -203,6 +189,8 @@ protected:
 private:
     Namespace* getNamespaceCascade(Strings& a_HierarchyWords) const;
     Namespace* getOrCreateNamespace(Strings* a_HierarchyWords);
+    void       onNamespaceChanging(Namespace* a_pNamespace) override final;
+    void       onNamespaceChanged(Namespace* a_pNamespace) override final;
 
 private:
     void release(Types& out_types);

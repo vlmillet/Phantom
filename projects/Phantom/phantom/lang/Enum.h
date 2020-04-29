@@ -208,14 +208,6 @@ public:
 
     void addConstant(StringView a_strCode);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a constant from that enum.
-    ///
-    /// \param  a_pConstant The constant to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeConstant(Constant* a_pConstant);
-
     PrimitiveType* asIntegralType() const override { return const_cast<Enum*>(this); }
 
     void valueFromString(StringView a_strIn, void* a_pDest) const override;
@@ -249,7 +241,9 @@ public:
 
     bool convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const override;
 
-    Constant* createConstant(void* a_pSrc, StringView a_strName = "",
+    using PrimitiveType::createConstant;
+
+    Constant* createConstant(LanguageElement* a_pOwner, void* a_pSrc, StringView a_strName = "",
                              PrimitiveType* a_pPrimitiveType = nullptr) const override;
 
     void getUniqueName(StringBuffer& a_Buf) const override { return Type::getUniqueName(a_Buf); }
@@ -266,10 +260,8 @@ public:
     using LanguageElement::getUniqueName;
 
 protected:
-    void onElementRemoved(LanguageElement* a_pElement) override;
     /// \internal
     Enum(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags);
-    void onAncestorChanged(LanguageElement* a_pOwner) override;
 
 private:
     Constants m_Constants;

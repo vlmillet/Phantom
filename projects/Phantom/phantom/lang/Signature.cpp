@@ -12,7 +12,6 @@
 #include "Source.h"
 #include "Subroutine.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/utils/StringUtil.h>
 /* *********************************************** */
 namespace phantom

@@ -55,14 +55,9 @@ protected:
                  Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
-    PHANTOM_DTOR ~FieldPointer() override
-    {
-    }
+    PHANTOM_DTOR ~FieldPointer() override {}
 
-    FieldPointer* asFieldPointer() const override
-    {
-        return (FieldPointer*)this;
-    }
+    FieldPointer* asFieldPointer() const override { return (FieldPointer*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Retrieves the Data member offset associated with the given Data member pointer.
@@ -118,13 +113,7 @@ public:
     /// \return The value type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline Type* getValueType() const
-    {
-        return m_pValueType;
-    }
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    inline Type* getValueType() const { return m_pValueType; }
 
 protected:
     Type* m_pValueType;

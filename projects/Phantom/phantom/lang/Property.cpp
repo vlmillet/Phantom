@@ -9,7 +9,6 @@
 
 #include "Parameter.h"
 #include "Signature.h"
-#include "phantom/detail/new.h"
 
 #include <phantom/lang/Signal.h>
 /* *********************************************** */
@@ -56,16 +55,9 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     {
         m_Modifiers |= Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET);
     }
-    if (m_pSignal)
-    {
-        addReferencedElement(m_pSignal);
-        m_pSignal->m_pProperty = this;
-    }
 }
 
-PHANTOM_DTOR Property::~Property()
-{
-}
+PHANTOM_DTOR Property::~Property() {}
 
 void Property::onReferencedElementRemoved(LanguageElement* a_pElement)
 {
@@ -88,12 +80,14 @@ void Property::setSet(Method* a_pFunc)
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getParameters().size() == 1);
     PHANTOM_ASSERT(
     !a_pFunc || a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers() == getValueType());
+    a_pFunc->setOwner(this);
     m_pSet = a_pFunc;
 }
 
 void Property::setGet(Method* a_pFunc)
 {
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers() == getValueType());
+    a_pFunc->setOwner(this);
     m_pGet = a_pFunc;
 }
 
@@ -104,6 +98,7 @@ void Property::setSignal(Signal* a_pFunc)
     (a_pFunc->getParameters().empty() ||
      (a_pFunc->getParameters().size() == 1 &&
       a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers() == getValueType())));
+    a_pFunc->setOwner(this);
     m_pSignal = a_pFunc;
 }
 
@@ -120,48 +115,14 @@ void Property::setValue(void* a_pObject, void const* a_pSrc) const
     m_pSet->invoke(a_pObject, args);
 }
 
-void Property::onAncestorChanged(LanguageElement* a_pOwner)
-{
-    ValueMember::onAncestorChanged(a_pOwner);
-    if (getOwner() == a_pOwner)
-    {
-        if (m_pGet && m_pGet->getOwner() == nullptr)
-        {
-            static_cast<ClassType*>(getOwner())->addMethod(m_pGet);
-        }
-        else
-        {
-            PHANTOM_ASSERT(m_pGet == nullptr || getOwner() == m_pGet->getOwner());
-        }
-        if (m_pSet && m_pSet->getOwner() == nullptr)
-        {
-            static_cast<ClassType*>(getOwner())->addMethod(m_pSet);
-        }
-        else
-        {
-            PHANTOM_ASSERT(m_pSet == nullptr || getOwner() == m_pSet->getOwner());
-        }
-        if (m_pSignal && m_pSignal->getOwner() == nullptr)
-        {
-            static_cast<ClassType*>(getOwner())->addMethod(m_pSignal);
-        }
-        else
-        {
-            PHANTOM_ASSERT(m_pSignal == nullptr || getOwner() == m_pSignal->getOwner());
-        }
-    }
-}
-
 Method* Property::addSet(StringView a_strName /*= ""*/)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(!testFlags(PHANTOM_R_FLAG_READONLY));
     PHANTOM_ASSERT(getOwner() != nullptr);
-    addReferencedElement(m_pSet =
-                         PHANTOM_NEW(Method)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_set") : a_strName,
-                                             Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
-                                             PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT));
-    getOwner()->addElement(m_pSet);
+    m_pSet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_set") : a_strName,
+                         Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
+                         PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pSet->m_pProperty = this;
     return m_pSet;
 }
@@ -170,11 +131,9 @@ Signal* Property::addSignal(StringView a_strName /*= ""*/)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(getOwner() != nullptr);
-    addReferencedElement(
-    m_pSignal = PHANTOM_NEW(Signal)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_signal") : a_strName,
-                                    Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
-                                    PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT));
-    getOwner()->addElement(m_pSignal);
+    m_pSignal = New<Signal>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_signal") : a_strName,
+                            Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
+                            PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pSignal->m_pProperty = this;
     return m_pSignal;
 }
@@ -183,11 +142,9 @@ Method* Property::addGet(StringView a_strName /*= ""*/)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(getOwner() != nullptr);
-    addReferencedElement(m_pGet =
-                         PHANTOM_NEW(Method)(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_get") : a_strName,
-                                             Signature::Create(getValueType()), PHANTOM_R_CONST,
-                                             PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT));
-    getOwner()->addElement(m_pGet);
+    m_pGet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_get") : a_strName,
+                         Signature::Create(getValueType()), PHANTOM_R_CONST,
+                         PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pGet->m_pProperty = this;
     return m_pGet;
 }

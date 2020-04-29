@@ -72,10 +72,7 @@ public:
 
     virtual Closure getClosure(void* a_pPointer) const;
 
-    MethodPointer* asMethodPointer() const override
-    {
-        return const_cast<MethodPointer*>(this);
-    }
+    MethodPointer* asMethodPointer() const override { return const_cast<MethodPointer*>(this); }
 
     void valueFromString(StringView a_str, void* dest) const override;
 
@@ -83,10 +80,7 @@ public:
 
     void valueToLiteral(StringBuffer& a_Buf, const void* src) const override;
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the member function signature.
@@ -94,10 +88,7 @@ public:
     /// \return The member function signature.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    FunctionType* getFunctionType() const
-    {
-        return m_pFunctionType;
-    }
+    FunctionType* getFunctionType() const { return m_pFunctionType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the member function return type.
@@ -159,9 +150,6 @@ public:
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     FunctionType* m_pFunctionType;

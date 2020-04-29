@@ -80,9 +80,9 @@ void Constant::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) cons
     m_pValueType->deallocate(pValue);
 }
 
-Constant* Constant::clone() const
+Constant* Constant::clone(LanguageElement* a_pOwner) const
 {
-    Constant* pC = cloneImpl();
+    Constant* pC = cloneImpl(a_pOwner);
     pC->setCodeRange(getCodeRange());
     return pC;
 }

@@ -10,9 +10,9 @@
 HAUNT_STOP;
 #include <phantom/detail/ConstructorCaller.h>
 #include <phantom/detail/core.h>
+#include <phantom/traits/CtorDtor.h>
 #include <phantom/traits/HasVirtualDestructor.h>
 #include <phantom/traits/IsDefaultConstructible.h>
-#include <phantom/traits/ProtectionHacker.h>
 
 namespace phantom
 {
@@ -63,13 +63,8 @@ template<typename t_Ty>
 struct ConstructorH<t_Ty, ConstructorSelectorId::Fundamental>
 {
 public:
-    PHANTOM_FORCEINLINE static void construct(t_Ty* a_pInstance)
-    {
-        *a_pInstance = t_Ty();
-    }
-    PHANTOM_FORCEINLINE static void destroy(t_Ty*)
-    {
-    }
+    PHANTOM_FORCEINLINE static void construct(t_Ty* a_pInstance) { *a_pInstance = t_Ty(); }
+    PHANTOM_FORCEINLINE static void destroy(t_Ty*) {}
 };
 
 template<typename t_Ty>
@@ -81,24 +76,15 @@ public:
         PHANTOM_UNUSED(a_pInstance);
         PHANTOM_ERROR(false, "type hasn't default constructor and cannot be constructed");
     }
-    PHANTOM_FORCEINLINE static void destroy(t_Ty* a_pInstance)
-    {
-        Dtor<t_Ty>::apply(a_pInstance);
-    }
+    PHANTOM_FORCEINLINE static void destroy(t_Ty* a_pInstance) { Dtor<t_Ty>::apply(a_pInstance); }
 };
 
 template<typename t_Ty>
 struct ConstructorH<t_Ty, ConstructorSelectorId::Default>
 {
 public:
-    PHANTOM_FORCEINLINE static void construct(t_Ty* a_pInstance)
-    {
-        Ctor<t_Ty>::apply(a_pInstance);
-    }
-    PHANTOM_FORCEINLINE static void destroy(t_Ty* a_pInstance)
-    {
-        Dtor<t_Ty>::apply(a_pInstance);
-    }
+    PHANTOM_FORCEINLINE static void construct(t_Ty* a_pInstance) { Ctor<t_Ty>::apply(a_pInstance); }
+    PHANTOM_FORCEINLINE static void destroy(t_Ty* a_pInstance) { Dtor<t_Ty>::apply(a_pInstance); }
 };
 
 } // namespace detail
@@ -125,14 +111,14 @@ struct Constructor : Constructor<t_Ty, ConstructorOverloadTag::Enum(t_Tag - 1)>
 template<typename t_Ty>
 struct Constructor<t_Ty, ConstructorOverloadTag::Default>
     : public detail::ConstructorH<t_Ty,
-                                  std::is_abstract<t_Ty>::value ? phantom::HasVirtualDestructor<t_Ty>::value
+                                  std::is_abstract<t_Ty>::value
+                                  ? phantom::HasVirtualDestructor<t_Ty>::value
                                   ? detail::ConstructorSelectorId::NoDefault
                                   : detail::ConstructorSelectorId::Abstract // abstract
-                                                                : std::is_class<t_Ty>::value
-                                  ? !(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
+                                  : std::is_class<t_Ty>::value ? !(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
                                   ? detail::ConstructorSelectorId::NoDefault // no default constructor
                                   : detail::ConstructorSelectorId::Default
-                                  : detail::ConstructorSelectorId::Fundamental>
+                                                               : detail::ConstructorSelectorId::Fundamental>
 {
     template<typename t_OtherTy>
     struct rebind

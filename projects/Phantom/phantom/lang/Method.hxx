@@ -103,8 +103,6 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             .method<size_t() const, virtual_>("computeNativeVirtualIndex", &_::computeNativeVirtualIndex)
-            .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
-            .method<LocalVariable*() const, virtual_>("createThis", &_::createThis)
         
         .protected_()
             .field("m_pThis", &_::m_pThis)

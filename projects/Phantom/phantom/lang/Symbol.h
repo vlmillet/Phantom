@@ -328,14 +328,6 @@ public:
     void addExtension(SymbolExtension* a_pExtension);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Remove an extension.
-    ///
-    /// \param  a_pExtension The extension to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeExtension(SymbolExtension* a_pExtension);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the doubles of this named elements (i.e. equivalent element registered in other
     /// sources from multiple template instance registration in different modules).
     ///
@@ -348,12 +340,20 @@ public:
     LanguageElement* getNamingScope() const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the namespace enclosing this symbol.
+    /// \brief  Gets the namespace scoping this symbol.
     ///
     /// \return null if it fails, else the namespace.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Namespace* getNamespace() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the namespace scoping this symbol.
+    ///
+    /// \return null if it fails, else the namespace.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setNamespace(Namespace* a_pNS);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template decoration constituted from unique names (see getUniqueName()).
@@ -449,9 +449,10 @@ protected:
         a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
     }
 
-    void         onElementRemoved(LanguageElement* a_pElement) override;
     virtual void formatAnonymousName(StringBuffer& a_Buf) const;
-    void         onAncestorChanged(LanguageElement* a_pAncestor) override;
+
+    virtual void onNamespaceChanging(Namespace*) {}
+    virtual void onNamespaceChanged(Namespace*) {}
 
 protected:
     String     m_strName;

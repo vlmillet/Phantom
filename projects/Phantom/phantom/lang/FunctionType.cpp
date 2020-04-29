@@ -14,40 +14,11 @@
 #endif
 #include "Application.h"
 
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
 namespace lang
 {
-FunctionType* FunctionType::Create(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-    return PHANTOM_DEFERRED_NEW_EX(FunctionType)(a_Modifiers, a_uiFlags);
-}
-
-FunctionType* FunctionType::Create(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-    PHANTOM_ASSERT(a_pReturnType);
-    return PHANTOM_DEFERRED_NEW_EX(FunctionType)(a_pReturnType, a_Modifiers, a_uiFlags);
-}
-
-FunctionType* FunctionType::Create(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
-                                   uint a_uiFlags /*= 0*/)
-{
-    PHANTOM_ASSERT(a_pReturnType);
-    PHANTOM_ASSERT(a_pSingleParameterType);
-    return PHANTOM_DEFERRED_NEW_EX(FunctionType)(a_pReturnType, a_pSingleParameterType, a_Modifiers, a_uiFlags);
-}
-
-FunctionType* FunctionType::Create(Type* a_pReturnType, TypesView a_ParameterTypes, Modifiers a_Modifiers /*= 0*/,
-                                   uint a_uiFlags /*= 0*/)
-{
-    PHANTOM_ASSERT(a_pReturnType);
-    for (auto param : a_ParameterTypes)
-        PHANTOM_ASSERT(param);
-    return PHANTOM_DEFERRED_NEW_EX(FunctionType)(a_pReturnType, a_ParameterTypes, a_Modifiers, a_uiFlags);
-}
-
 FunctionType::FunctionType(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS), m_pReturnType(nullptr)
 {

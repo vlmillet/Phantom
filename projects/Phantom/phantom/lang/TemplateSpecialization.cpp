@@ -13,7 +13,6 @@
 #include "TemplateParameter.h"
 #include "TemplateSignature.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/utils/SmallSet.h>
 /* *********************************************** */
 namespace phantom
@@ -23,7 +22,7 @@ namespace lang
 /// Full specialization constructor
 TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature,
                                                const LanguageElements& arguments, Symbol* a_pTemplated, uint a_Flags)
-    : Symbol(a_pTemplate->getName(), a_pTemplate->getModifiers(), a_Flags|PHANTOM_R_FLAG_PRIVATE_VIS),
+    : Symbol(a_pTemplate->getName(), a_pTemplate->getModifiers(), a_Flags | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pTemplate(a_pTemplate),
       m_pTemplateSignature(a_pSignature),
       m_pTemplated(a_pTemplated)

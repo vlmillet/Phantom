@@ -10,7 +10,6 @@
 #include "Parameter.h"
 #include "Signature.h"
 
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {

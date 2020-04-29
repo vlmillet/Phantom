@@ -99,9 +99,6 @@ public:
     bool isMoveConstructible() const override { return false; }
     bool isCopyAssignable() const override { return false; }
     bool isCopyConstructible() const override { return false; }
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
 };
 
 } // namespace lang

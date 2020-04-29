@@ -188,7 +188,6 @@ private: // Derivation constructors
     }
     void copyOnWrite();
     bool canBeDestroyed() const override;
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
     void _construct(void* a_pInstance, SmallMap<void**, size_t, 16>& a_VTableSizeAtAddress);
 
 private:

@@ -6,14 +6,23 @@
 
 /* ******************* Includes ****************** */
 #include "PrimitiveType.h"
+
+#include "Application.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace lang
 {
-Constant* PrimitiveType::createConstant(void*, StringView /*= ""*/, PrimitiveType* /*= nullptr*/) const
+Constant* PrimitiveType::createConstant(LanguageElement*, void*, StringView /*= ""*/,
+                                        PrimitiveType* /*= nullptr*/) const
 {
     return nullptr;
+}
+
+phantom::lang::Constant* PrimitiveType::createConstant(void* a_pSrc, StringView a_strName /*= ""*/,
+                                                       PrimitiveType* a_pPrimitiveType /*= nullptr*/) const
+{
+    return createConstant(Application::Get(), a_pSrc, a_strName, a_pPrimitiveType);
 }
 
 PrimitiveType::PrimitiveType(TypeKind a_eTypeKind) : Type(a_eTypeKind, "", 0, 0, PHANTOM_R_NONE, PHANTOM_R_NONE) {}

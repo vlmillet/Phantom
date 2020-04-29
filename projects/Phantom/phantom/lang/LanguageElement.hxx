@@ -287,12 +287,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(uint)>()["0"]
         
         .protected_()
-            .method<void(LanguageElement*), virtual_>("onAncestorChanged", &_::onAncestorChanged)
-            .method<void(LanguageElement*), virtual_>("onAncestorAboutToBeChanged", &_::onAncestorAboutToBeChanged)
-            .method<void(LanguageElement*), virtual_>("onElementAdded", &_::onElementAdded)
-            .method<void(LanguageElement*), virtual_>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*), virtual_>("onReferencedElementAdded", &_::onReferencedElementAdded)
-            .method<void(LanguageElement*), virtual_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<void(), virtual_>("onInvalidated", &_::onInvalidated)
             .method<void(), virtual_>("onElementsAccess", &_::onElementsAccess)
         

@@ -25,21 +25,9 @@ namespace lang
 class MethodBaseT : public Method
 {
 public:
-    MethodBaseT(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0,
-                uint a_uiFlags = 0)
+    MethodBaseT(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
         : Method(a_strName, a_pSignature, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
-    }
-
-    virtual void onAncestorChanged(LanguageElement* a_pOwner) override
-    {
-        if (a_pOwner == getOwner())
-        {
-            StringBuffer buffer;
-            conversionOperatorNameNormalizer(m_strName, buffer, getOwner());
-            m_strName.clear();
-            m_strName.append(buffer.data(), buffer.size());
-        }
     }
 };
 

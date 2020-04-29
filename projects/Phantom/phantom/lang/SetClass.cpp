@@ -8,7 +8,6 @@
 #include "SetClass.h"
 
 #include "Method.h"
-#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {

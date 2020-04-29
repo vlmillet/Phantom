@@ -28,8 +28,8 @@
 #include "FieldPointer.h"
 #include "InitializerListType.h"
 #include "MethodPointer.h"
-#include "phantom/detail/new.h"
 
+#include <phantom/detail/core_internal.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/SmallSet.h>
 /* *********************************************** */
@@ -40,31 +40,14 @@ namespace phantom
 namespace lang
 {
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this)
+    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags),
+      Scope(this),
+      LanguageElementUnitT<Source>(&m_Allocator)
 {
-}
-
-Source::Source(Package* a_pPackage, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers,
-             (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
-      Scope(this)
-{
-    // PHANTOM_ASSERT(a_strName.empty() || ((a_uiFlags&PHANTOM_R_FLAG_PRIVATE_VIS) != 0), "source
-    // name must contain only letters, numbers or underscore");
-    a_pPackage->addSource(this);
 }
 
 Source::~Source()
 {
-    if (isNative())
-    {
-        if (m_pFunctionPointers)
-            PHANTOM_DELETE(FunctionPointers) m_pFunctionPointers;
-        if (m_pFunctionTypes)
-            PHANTOM_DELETE(FunctionTypes) m_pFunctionTypes;
-        if (m_pInitializerListTypes)
-            PHANTOM_DELETE(InitializerListTypes) m_pInitializerListTypes;
-    }
     while (!m_Importings.empty())
     {
         m_Importings.back()->removeImport(this);
@@ -78,6 +61,12 @@ Source::~Source()
     {
         PHANTOM_DELETE_DYN m_pSourceStream;
     }
+}
+
+void Source::initialize()
+{
+    if (isNative())
+        setAllocator(&getModule()->m_Allocator);
 }
 
 void Source::terminate()
@@ -103,14 +92,13 @@ void Source::getQualifiedName(StringBuffer&) const
     PHANTOM_ASSERT_NO_IMPL();
 }
 
-void Source::addScopeElement(Symbol* a_pSymbol)
+void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 {
     if (!(testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)) // not an archive
         && a_pSymbol->getNamespace() == nullptr)
     {
-        getPackage()->getCounterpartNamespace()->addScopeElement(a_pSymbol);
+        a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
     }
-    addSymbol(a_pSymbol);
     if (a_pSymbol->isNative())
     {
         if (a_pSymbol->asTemplateSpecialization() == nullptr)
@@ -134,109 +122,13 @@ void Source::addScopeElement(Symbol* a_pSymbol)
     }
 }
 
-void Source::removeScopeElement(Symbol* a_pElement)
-{
-    removeElement(a_pElement);
-}
+void Source::onScopeSymbolRemoving(Symbol*) {}
 
 Source* Source::getNativeArchive() const
 {
     if (isNative())
         return (Source*)this;
     return m_pNativeArchive;
-}
-
-void Source::onElementAdded(LanguageElement* a_pElement)
-{
-    Scope::scopedElementAdded(a_pElement);
-    if (Symbol* pSymbol = a_pElement->asSymbol())
-    {
-        if (FieldPointer* pDMP = a_pElement->asFieldPointer())
-        {
-            m_FieldPointers.push_back(pDMP);
-        }
-        else if (MethodPointer* pMFPT = a_pElement->asMethodPointer())
-        {
-            m_MethodPointers.push_back(pMFPT);
-        }
-        else if (FunctionType* pFT = a_pElement->asFunctionType())
-        {
-            if (m_pFunctionTypes == nullptr)
-                m_pFunctionTypes = PHANTOM_NEW(FunctionTypes);
-            m_pFunctionTypes->push_back(pFT);
-        }
-        else if (InitializerListType* pILT = a_pElement->asInitializerListType())
-        {
-            if (m_pInitializerListTypes == nullptr)
-                m_pInitializerListTypes = PHANTOM_NEW(InitializerListTypes);
-            m_pInitializerListTypes->push_back(pILT);
-        }
-        else if (FunctionPointer* pFPT = a_pElement->asFunctionPointer())
-        {
-            if (m_pFunctionPointers == nullptr)
-                m_pFunctionPointers = PHANTOM_NEW(FunctionPointers);
-            m_pFunctionPointers->push_back(pFPT);
-        }
-    }
-}
-
-void Source::onElementRemoved(LanguageElement* a_pElement)
-{
-    Scope::scopedElementRemoved(a_pElement);
-    if (Symbol* pSymbol = a_pElement->asSymbol())
-    {
-        if (auto pNS = pSymbol->getNamespace())
-        {
-            pNS->removeScopeElement(pSymbol);
-        }
-    }
-    if (a_pElement->asType())
-    {
-        if (FieldPointer* pDMP = a_pElement->asFieldPointer())
-        {
-            m_FieldPointers.erase(std::find(m_FieldPointers.begin(), m_FieldPointers.end(), pDMP));
-        }
-        else if (MethodPointer* pMFPT = a_pElement->asMethodPointer())
-        {
-            m_MethodPointers.erase(std::find(m_MethodPointers.begin(), m_MethodPointers.end(), pMFPT));
-        }
-        else if (FunctionType* pFT = a_pElement->asFunctionType())
-        {
-            PHANTOM_ASSERT(m_pFunctionTypes);
-            m_pFunctionTypes->erase(std::find(m_pFunctionTypes->begin(), m_pFunctionTypes->end(), pFT));
-            if (m_pFunctionTypes->empty())
-            {
-                PHANTOM_DELETE(FunctionTypes) m_pFunctionTypes;
-                m_pFunctionTypes = nullptr;
-            }
-        }
-        else if (InitializerListType* pILT = a_pElement->asInitializerListType())
-        {
-            PHANTOM_ASSERT(m_pInitializerListTypes);
-            m_pInitializerListTypes->erase(
-            std::find(m_pInitializerListTypes->begin(), m_pInitializerListTypes->end(), pILT));
-            if (m_pInitializerListTypes->empty())
-            {
-                PHANTOM_DELETE(InitializerListTypes) m_pInitializerListTypes;
-                m_pInitializerListTypes = nullptr;
-            }
-        }
-        else if (FunctionPointer* pFP = a_pElement->asFunctionPointer())
-        {
-            PHANTOM_ASSERT(m_pFunctionPointers);
-            m_pFunctionPointers->erase(std::find(m_pFunctionPointers->begin(), m_pFunctionPointers->end(), pFP));
-            if (m_pFunctionPointers->empty())
-            {
-                PHANTOM_DELETE(FunctionPointers) m_pFunctionPointers;
-                m_pFunctionPointers = nullptr;
-            }
-        }
-    }
-}
-
-void Source::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Symbol::onReferencedElementRemoved(a_pElement);
 }
 
 hash64 Source::computeHash() const
@@ -272,9 +164,9 @@ MethodPointer* Source::methodPointerType(ClassType* a_pObjectType, Type* a_pRetu
         }
     }
 
-    MethodPointer* pPointer = PHANTOM_DEFERRED_NEW_EX(MethodPointer)(
+    MethodPointer* pPointer = NewDeferred<MethodPointer>(
     a_pObjectType, functionType(a_pReturnType, a_ParameterTypes, a_RefQualifiers), a_RefQualifiers, a_uiFlags);
-    addSymbol(pPointer);
+    m_MethodPointers.push_back(pPointer);
     return pPointer;
 }
 
@@ -288,9 +180,8 @@ FieldPointer* Source::fieldPointerType(ClassType* a_pObjectType, Type* a_pValueT
             return pDMP;
         }
     }
-    FieldPointer* pPointer = PHANTOM_DEFERRED_NEW_EX(FieldPointer)(a_pObjectType, a_pValueType, a_Modifiers, a_uiFlags);
+    FieldPointer* pPointer = NewDeferred<FieldPointer>(a_pObjectType, a_pValueType, a_Modifiers, a_uiFlags);
     m_FieldPointers.push_back(pPointer);
-    addSymbol(pPointer);
     return pPointer;
 }
 
@@ -309,24 +200,16 @@ void Source::setSourceStream(SourceStream* a_pStream)
 
 FunctionType* Source::functionType(Type* a_pReturnType, TypesView a_ParameterTypes, Modifiers a_Modifiers, uint a_Flags)
 {
-    if (m_pFunctionTypes)
+    for (auto pFT : m_FunctionTypes)
     {
-        for (auto it = m_pFunctionTypes->begin(); it != m_pFunctionTypes->end(); ++it)
+        if (pFT->getReturnType()->isSame(a_pReturnType) && pFT->matches(a_ParameterTypes, a_Modifiers))
         {
-            if ((*it)->getReturnType()->isSame(a_pReturnType) && (*it)->matches(a_ParameterTypes, a_Modifiers))
-            {
-                return *it;
-            }
+            return pFT;
         }
     }
-
-    if (m_pFunctionTypes == nullptr)
-    {
-        m_pFunctionTypes = PHANTOM_NEW(FunctionTypes);
-    }
-    FunctionType* pType =
-    FunctionType::Create(a_pReturnType, a_ParameterTypes, a_Modifiers, a_Flags | (isNative() * PHANTOM_R_FLAG_NATIVE));
-    addSymbol(pType);
+    FunctionType* pType = NewDeferred<FunctionType>(a_pReturnType, a_ParameterTypes, a_Modifiers,
+                                                    a_Flags | (isNative() * PHANTOM_R_FLAG_NATIVE));
+    m_FunctionTypes.push_back(pType);
     return pType;
 }
 
@@ -341,48 +224,31 @@ FunctionPointer* Source::functionPointerType(Type* a_pReturnType, ABI a_eABI, Ty
 FunctionPointer* Source::functionPointerType(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Qualifiers,
                                              uint a_Flags)
 {
-    if (m_pFunctionPointers)
+    for (auto pFP : m_FunctionPointers)
     {
-        for (auto it = m_pFunctionPointers->begin(); it != m_pFunctionPointers->end(); ++it)
-        {
-            if ((*it)->getABI() == a_eABI && (*it)->getFunctionType()->isSame(a_pFunctionType))
-            {
-                return *it;
-            }
-        }
+        if (pFP->getABI() == a_eABI && pFP->getFunctionType()->isSame(a_pFunctionType))
+            return pFP;
     }
 
-    if (m_pFunctionPointers == nullptr)
-    {
-        m_pFunctionPointers = PHANTOM_NEW(FunctionPointers);
-    }
     FunctionPointer* pPointer =
-    FunctionPointer::Create(a_pFunctionType, a_eABI, a_Qualifiers, a_Flags | (isNative() * PHANTOM_R_FLAG_NATIVE));
-    addSymbol(pPointer);
+    NewDeferred<FunctionPointer>(a_pFunctionType, a_eABI, a_Qualifiers, a_Flags | (isNative() * PHANTOM_R_FLAG_NATIVE));
+    m_FunctionPointers.push_back(pPointer);
     return pPointer;
 }
 
 InitializerListType* Source::initializerListType(TypesView a_Types)
 {
-    if (m_pInitializerListTypes)
+    for (auto pIT : m_InitializerListTypes)
     {
-        for (auto it = m_pInitializerListTypes->begin(); it != m_pInitializerListTypes->end(); ++it)
+        if (pIT->matches(a_Types))
         {
-            if ((*it)->matches(a_Types))
-            {
-                return *it;
-            }
+            return pIT;
         }
     }
-    if (m_pInitializerListTypes == nullptr)
-    {
-        m_pInitializerListTypes = PHANTOM_NEW(InitializerListTypes);
-    }
-    InitializerListType* pIT = PHANTOM_NEW(InitializerListType)(a_Types);
+    InitializerListType* pIT = New<InitializerListType>(a_Types);
     if (isNative())
         pIT->setFlag(PHANTOM_R_FLAG_NATIVE);
-    m_pInitializerListTypes->push_back(pIT);
-    addSymbol(pIT);
+    m_InitializerListTypes.push_back(pIT);
     return pIT;
 }
 
@@ -690,6 +556,38 @@ void Source::_removeDepending(Source* _source)
     auto found = std::find(m_Dependings.begin(), m_Dependings.end(), _source);
     PHANTOM_ASSERT(found != m_Dependings.end());
     m_Dependings.erase(found);
+}
+
+Module* Source::getModule() const
+{
+    return getPackage()->getModule();
+}
+
+void Source::_NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
+{
+    a_pElem->setOwner(a_pOwner);
+    a_pElem->m_pSource = this;
+    a_pElem->rtti.instance = a_pMD;
+    a_pElem->rtti.metaClass = a_pClass;
+    a_pElem->rtti.metaClass->registerInstance(a_pMD);
+}
+
+void Source::_NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+                           StringView a_QN)
+{
+    a_pElem->setOwner(a_pOwner);
+    a_pElem->m_pSource = this;
+    a_pElem->rtti.instance = a_pMD;
+    a_pElem->rtti.metaClass->registerInstance(a_pMD);
+    if (!dynamic_initializer_()->installed())
+    {
+        phantom::detail::deferInstallation(a_QN, &a_pElem->rtti);
+    }
+    else
+    {
+        PHANTOM_VERIFY(a_pElem->rtti.metaClass = a_pClass);
+        a_pElem->rtti.metaClass->registerInstance(a_pMD);
+    }
 }
 
 } // namespace lang

@@ -260,13 +260,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<InstanceCache*()>("getOrCreateInstanceCache", &_::getOrCreateInstanceCache)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementAdded", &_::onElementAdded)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
             .method<bool() const, virtual_|override_>("canBeDestroyed", &_::canBeDestroyed)
             .method<Strings() const>("getBaseClasseNames", &_::getBaseClasseNames)
             .method<void(Strings), virtual_>("setBaseClasseNames", &_::setBaseClasseNames)
-            .method<void(Methods), virtual_>("setMethods", &_::setMethods)
         
         .protected_()
             .method<void()>("_onNativeElementsAccess", &_::_onNativeElementsAccess)

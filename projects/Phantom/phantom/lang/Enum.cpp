@@ -73,7 +73,7 @@ void Enum::addConstant(Constant* a_pConstant)
         addReferencedElement(m_pUnderlyingType);
     }
     PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == getUnderlyingIntType()->getSize());
-    addElement(a_pConstant);
+    a_pConstant->setOwner(this);
     m_Constants.push_back(a_pConstant);
 }
 
@@ -122,13 +122,6 @@ void Enum::addConstants(StringView, ArrayView<Pair<StringView, int>> a_Values)
     {
         addConstant(val.first, val.second);
     }
-}
-
-void Enum::removeConstant(Constant* a_pConstant)
-{
-    PHANTOM_ASSERT(getConstant(a_pConstant->getName()) != nullptr);
-    PHANTOM_ASSERT(a_pConstant->getValueType() == this);
-    removeElement(a_pConstant);
 }
 
 Constant* Enum::getConstant(StringView a_strKey) const
@@ -213,16 +206,6 @@ void Enum::valueToString(StringBuffer& a_Buf, const void* a_pSrc) const
     }
 }
 
-void Enum::onElementRemoved(LanguageElement* a_pElement)
-{
-    PrimitiveType::onElementRemoved(a_pElement);
-    Constant* pConstant = a_pElement->asConstant();
-    if (pConstant)
-    {
-        m_Constants.erase(std::find(m_Constants.begin(), m_Constants.end(), pConstant));
-    }
-}
-
 void Enum::findConstantsWithValue(void* a_pSrc, Constants& out) const
 {
     for (auto it = m_Constants.begin(); it != m_Constants.end(); ++it)
@@ -237,20 +220,16 @@ bool Enum::convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const
     return getUnderlyingType()->convert(a_pDstType, a_pDst, a_pSrc);
 }
 
-void Enum::onAncestorChanged(LanguageElement* a_pOwner)
-{
-    Type::onAncestorChanged(a_pOwner);
-}
-
 PrimitiveType* Enum::IntType()
 {
     return (PrimitiveType*)PHANTOM_TYPEOF(int);
 }
 
-Constant* Enum::createConstant(void* a_pSrc, StringView a_strName /*= "" */,
+Constant* Enum::createConstant(LanguageElement* a_pOwner, void* a_pSrc, StringView a_strName /*= "" */,
                                PrimitiveType* a_pPrimitiveType /*= nullptr*/) const
 {
-    return getUnderlyingIntType()->createConstant(a_pSrc, a_strName, a_pPrimitiveType ? a_pPrimitiveType : (Enum*)this);
+    return getUnderlyingIntType()->createConstant(a_pOwner, a_pSrc, a_strName,
+                                                  a_pPrimitiveType ? a_pPrimitiveType : (Enum*)this);
 }
 
 } // namespace lang

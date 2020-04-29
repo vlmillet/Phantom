@@ -16,7 +16,6 @@ HAUNT_STOP;
 
 #include <locale>
 #include <phantom/detail/StaticGlobals.h>
-#include <phantom/detail/new.h>
 #include <phantom/lang/Namespace.h>
 #include <phantom/lang/Source.h>
 #include <phantom/lang/Subroutine.h>
@@ -33,8 +32,6 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
                                                  _PHNTM_RegistrerKeyWords,
                                                  ScopeBuilderT<NamespaceBuilder>
 {
-    PHANTOM_DECL_OVERRIDE_DELETE_METHOD(NamespaceBuilder);
-
     _PHNTM_REG_FRIENDS_NO_GLOBAL;
     friend struct _PHNTM_GlobalRegistrer;
 
@@ -43,10 +40,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
 
     NamespaceBuilder(_PHNTM_GlobalRegistrer* a_pRegistrer);
 
-    NamespaceBuilder& this_()
-    {
-        return *this;
-    }
+    NamespaceBuilder& this_() { return *this; }
 
     template<class R, class... Args>
     NamespaceBuilder& function(StringView a_Name, R (*a_Ptr)(Args...))
@@ -87,8 +81,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     NamespaceBuilder& function(StringView a_Name, PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type a_Ptr)
     {
         _PHNTM_REG_STATIC_ASSERT(
-        IsTypeDefined<
-        lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
+        IsTypeDefined<lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
         "missing #include <phantom/function>");
         auto pFunc =
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
@@ -105,8 +98,8 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     {
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::ConstantT<ConstantT>>::value,
                                  "missing #include <phantom/constant>");
-        auto pConst = PHANTOM_META_NEW(lang::ConstantT<ConstantT>)(a_Name, a_Val, lang::Modifier::None,
-                                                                         PHANTOM_R_FLAG_NATIVE);
+        auto pConst =
+        _PHNTM_pSource->NewMeta<lang::ConstantT<ConstantT>>(a_Name, a_Val, lang::Modifier::None, PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pNamespace->addConstant(pConst);
         _PHNTM_pSource->addConstant(pConst);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pConst);
@@ -118,7 +111,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     NamespaceBuilder& variable(StringView a_Name, T* a_pVar)
     {
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::VariableT<T>>::value, "missing #include <phantom/variable>");
-        auto pVar = PHANTOM_META_NEW(lang::VariableT<T>)(a_Name, a_pVar);
+        auto pVar = _PHNTM_pSource->NewMeta<lang::VariableT<T>>(a_Name, a_pVar);
         _PHNTM_pNamespace->addVariable(pVar);
         _PHNTM_pSource->addVariable(pVar);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pVar);
@@ -166,43 +159,26 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         return *this;
     }
 
-    lang::Namespace* _PHNTM_getMeta() const
-    {
-        return _PHNTM_pNamespace;
-    }
+    lang::Namespace* _PHNTM_getMeta() const { return _PHNTM_pNamespace; }
 
-    lang::Source* _PHNTM_getSource();
-    lang::Source* _PHNTM_getOwnerScope()
-    {
-        return _PHNTM_pSource;
-    }
-    lang::Namespace* _PHNTM_getNamingScope()
-    {
-        return _PHNTM_pNamespace;
-    }
+    lang::Source*    _PHNTM_getSource();
+    lang::Source*    _PHNTM_getOwnerScope() { return _PHNTM_pSource; }
+    lang::Namespace* _PHNTM_getNamingScope() { return _PHNTM_pNamespace; }
 
-    void end()
-    {
-    }
+    void end() {}
 
-    _PHNTM_GlobalRegistrer* _PHNTM_getRegistrer() const
-    {
-        return _PHNTM_pRegistrer;
-    }
+    _PHNTM_GlobalRegistrer* _PHNTM_getRegistrer() const { return _PHNTM_pRegistrer; }
 
 private:
-    void _PHNTM_setLastSymbol(lang::Symbol* a_pSymbol)
-    {
-        _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pSymbol);
-    }
+    void _PHNTM_setLastSymbol(lang::Symbol* a_pSymbol) { _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pSymbol); }
     NamespaceBuilder& _PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType);
 
 private:
-    lang::Namespace*           _PHNTM_pNamespace;
+    lang::Namespace*                 _PHNTM_pNamespace;
     SmallVector<PhantomBuilderBase*> _PHNTM_m_Types;
-    lang::Source*              _PHNTM_pSource;
+    lang::Source*                    _PHNTM_pSource;
     _PHNTM_GlobalRegistrer*          _PHNTM_pRegistrer;
-    lang::Symbols              m_Symbols;
+    lang::Symbols                    m_Symbols;
 };
 
 template<class T>
@@ -234,31 +210,31 @@ struct NamespaceBuilderConstructOnCall
 
 #define _PHNTM_REGISTER_X(...) _PHNTM_REGISTER_X_I(__COUNTER__, ##__VA_ARGS__)
 #define _PHNTM_REGISTER_X_I(Counter, ...) _PHNTM_REGISTER_X_II(Counter, ##__VA_ARGS__)
-#define _PHNTM_REGISTER_X_II(Counter, ...)                                                                              \
-    class _PHNTM_NSDeduce;                                                                                              \
-    namespace                                                                                                           \
-    {                                                                                                                   \
-    struct PHANTOM_PP_CAT(_PHNTM_, Counter) : phantom::lang::_PHNTM_GlobalRegistrer                               \
-    {                                                                                                                   \
-        PHANTOM_PP_CAT(_PHNTM_, Counter)                                                                                \
-        ()                                                                                                              \
-            : phantom::lang::_PHNTM_GlobalRegistrer(                                                              \
-              {PHANTOM_PP_ADD_PREFIX_EACH_NO_CAT(phantom::RegistrationStep::, __VA_ARGS__)},                            \
-              &phantom::lang::TypeInfosOf<_PHNTM_NSDeduce>::object, __FILE__, __LINE__, Counter, false),          \
-              namespace_(this)                                                                                          \
-        {                                                                                                               \
-            _PHNTM_attach();                                                                                            \
-        }                                                                                                               \
-        virtual void _PHNTM_process(phantom::RegistrationStep a_Step)                                                   \
-        {                                                                                                               \
-            _PHNTM_processUserCode(a_Step);                                                                             \
-            namespace_().end();                                                                                         \
-        }                                                                                                               \
-        inline void _PHNTM_processUserCode(phantom::RegistrationStep);                                                  \
-        phantom::lang::NamespaceBuilderConstructOnCall<phantom::lang::NamespaceBuilder> namespace_;         \
-        decltype(namespace_)&                                                                       this_ = namespace_; \
-    } PHANTOM_PP_CAT(_PHNTM_i_, Counter);                                                                               \
-    }                                                                                                                   \
+#define _PHNTM_REGISTER_X_II(Counter, ...)                                                                             \
+    class _PHNTM_NSDeduce;                                                                                             \
+    namespace                                                                                                          \
+    {                                                                                                                  \
+    struct PHANTOM_PP_CAT(_PHNTM_, Counter) : phantom::lang::_PHNTM_GlobalRegistrer                                    \
+    {                                                                                                                  \
+        PHANTOM_PP_CAT(_PHNTM_, Counter)                                                                               \
+        ()                                                                                                             \
+            : phantom::lang::_PHNTM_GlobalRegistrer(                                                                   \
+              {PHANTOM_PP_ADD_PREFIX_EACH_NO_CAT(phantom::RegistrationStep::, __VA_ARGS__)},                           \
+              &phantom::lang::TypeInfosOf<_PHNTM_NSDeduce>::object, __FILE__, __LINE__, Counter, false),               \
+              namespace_(this)                                                                                         \
+        {                                                                                                              \
+            _PHNTM_attach();                                                                                           \
+        }                                                                                                              \
+        virtual void _PHNTM_process(phantom::RegistrationStep a_Step)                                                  \
+        {                                                                                                              \
+            _PHNTM_processUserCode(a_Step);                                                                            \
+            namespace_().end();                                                                                        \
+        }                                                                                                              \
+        inline void _PHNTM_processUserCode(phantom::RegistrationStep);                                                 \
+        phantom::lang::NamespaceBuilderConstructOnCall<phantom::lang::NamespaceBuilder> namespace_;                    \
+        decltype(namespace_)&                                                           this_ = namespace_;            \
+    } PHANTOM_PP_CAT(_PHNTM_i_, Counter);                                                                              \
+    }                                                                                                                  \
     void PHANTOM_PP_CAT(_PHNTM_, Counter)::_PHNTM_processUserCode(phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
 #define _PHNTM_REGISTER_0()                                                                                            \

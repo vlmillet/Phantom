@@ -33,15 +33,15 @@ class ConstantT : public Constant
     PHANTOM_STATIC_ASSERT(phantom::IsCopyable<ValueTypeNoConst>::value, "constant value must be copyable");
 
 public:
-    ConstantT(Type* a_pValueType, StringView a_strName, t_Ty a_Value, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+    ConstantT(Type* a_pValueType, StringView a_strName, t_Ty a_Value, Modifiers a_Modifiers, uint a_uiFlags)
         : Constant(a_pValueType, a_strName, a_Modifiers, a_uiFlags), m_Value(a_Value)
     {
     }
-    ConstantT(StringView a_strName, t_Ty a_Value, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+    ConstantT(StringView a_strName, t_Ty a_Value, Modifiers a_Modifiers, uint a_uiFlags)
         : Constant(PHANTOM_TYPEOF(t_Ty), a_strName, a_Modifiers, a_uiFlags), m_Value(a_Value)
     {
     }
-    ConstantT(t_Ty a_Value, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+    ConstantT(t_Ty a_Value, Modifiers a_Modifiers, uint a_uiFlags)
         : Constant(PHANTOM_TYPEOF(t_Ty), StringView(), a_Modifiers, a_uiFlags), m_Value(a_Value)
     {
     }
@@ -84,7 +84,10 @@ public:
         return false;
     }
 
-    Constant* cloneImpl() const override { return PHANTOM_META_NEW(SelfType)(m_strName, m_Value); }
+    Constant* cloneImpl(LanguageElement* a_pOwner) const override
+    {
+        return a_pOwner->NewMeta<SelfType>(m_strName, m_Value, getModifiers(), getFlags());
+    }
 
     bool isZero() const override { return m_Value == t_Ty(0); }
 

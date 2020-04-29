@@ -38,7 +38,7 @@ class Main;
 /// modules(plugins), compiling custom source code at runtime, etc...
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PHANTOM_EXPORT_PHANTOM Application : public Symbol
+class PHANTOM_EXPORT_PHANTOM Application : public Symbol, public LanguageElementUnitT<Application>
 {
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
@@ -81,6 +81,33 @@ public:
     ~Application() override;
 
     void terminate();
+
+    template<class T, class... Args>
+    T* New(Args&&... a_Args)
+    {
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Module, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Package, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Source, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<PackageFolder, T>::value));
+        PHANTOM_ASSERT(m_pDefaultSource);
+        return _New<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
+    }
+    template<class T, class... Args>
+    T* NewDeferred(Args&&... a_Args)
+    {
+        PHANTOM_ASSERT(m_pDefaultSource);
+        return _NewDeferred<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
+    }
+    template<class T, class... Args>
+    T* NewMeta(Args&&... a_Args)
+    {
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Module, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Package, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<Source, T>::value));
+        PHANTOM_STATIC_ASSERT(!(std::is_same<PackageFolder, T>::value));
+        PHANTOM_ASSERT(m_pDefaultSource);
+        return _NewMeta<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
+    }
 
     void                setCppExpressionParser(CppExpressionParser a_Parser);
     CppExpressionParser getCppExpressionParser();
@@ -376,6 +403,14 @@ public:
     void removePlugin(Plugin* a_pPlugin);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Creates a module (do not add it yet)
+    ///
+    /// \param  a_strName   The module name.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Module* newModule(StringView a_strName);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Registers a module to the application
     ///
     /// \param  a_pModule   The module.
@@ -607,9 +642,6 @@ public:
     phantom::Signal<void(Source*)>    sourceDeleted;
 
 private:
-    void onElementRemoved(LanguageElement* a_pElement) override;
-
-private:
     void _registerBuiltInTypes();
     void _addBuiltInType(Type* a_pType);
     void _removeBuiltInType(Type* a_pType);
@@ -642,6 +674,9 @@ private:
     void _pluginLoaded(Plugin* p) { PHANTOM_EMIT pluginLoaded(p); }
     void _pluginLoadingFailed(Plugin* p) { PHANTOM_EMIT pluginLoadingFailed(p); }
     void _pluginAboutToBeUnloaded(Plugin* p) { PHANTOM_EMIT pluginAboutToBeUnloaded(p); }
+    void _NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
+    void _NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+                       StringView a_QN);
 
 protected:
     hash64 computeHash() const override { return 0; }
@@ -668,6 +703,7 @@ private:
     mutable Constant*                     m_pNullptr;
     MemoryContext                         m_MemoryContext;
     UndefinedsMap                         m_Undefineds;
+    Source*                               m_pDefaultSource = nullptr;
 };
 
 } // namespace lang

@@ -13,7 +13,6 @@
 #include "Module.h"
 #include "Namespace.h"
 #include "TemplateSpecialization.h"
-#include "phantom/detail/new.h"
 
 #include <ostream>
 #include <phantom/detail/StaticGlobals.h>
@@ -26,14 +25,8 @@ namespace lang
 {
 static StaticGlobal<LanguageElements> g_pEmptyElements;
 
-LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/)
-    : m_pOwner(nullptr),
-      m_pElements(nullptr),
-      m_pReferencingElements(nullptr),
-      m_pReferencedElements(nullptr),
-      m_uiFlags(a_uiFlags)
+LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/) : m_pOwner(nullptr), m_pElements(nullptr), m_uiFlags(a_uiFlags)
 {
-    Register(this);
 }
 
 LanguageElement::~LanguageElement()
@@ -53,29 +46,6 @@ int LanguageElement::destructionPriority() const
 void LanguageElement::terminate()
 {
     m_uiFlags |= PHANTOM_R_FLAG_TERMINATED;
-    while (m_pReferencingElements)
-    {
-        m_pReferencingElements->back()->removeReferencedElement(this);
-    }
-    while (m_pReferencedElements)
-    {
-        removeReferencedElement(m_pReferencedElements->back());
-    }
-
-    while (m_pElements)
-    {
-        LanguageElement*   pElm = m_pElements->back();
-        PHANTOM_DELETE_DYN pElm;
-    }
-
-    if (m_pOwner)
-    {
-        m_pOwner->removeElement(this);
-    }
-    m_pOwner = nullptr;
-
-    Unregister(this);
-    rtti.instance = nullptr;
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
@@ -91,6 +61,12 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
             }
         }
     }
+}
+
+void LanguageElement::Delete(LanguageElement* a_pLanguageElement)
+{
+    PHANTOM_ASSERT(a_pLanguageElement->m_pOwner == this);
+    m_pSource->Delete(a_pLanguageElement);
 }
 
 LanguageElements const& LanguageElement::getElements() const
@@ -354,42 +330,6 @@ Statement* LanguageElement::getEnclosingStatement() const
     return m_pOwner ? (m_pOwner->asStatement() ? m_pOwner->asStatement() : m_pOwner->getEnclosingStatement()) : nullptr;
 }
 
-void LanguageElement::_onAncestorChanged(LanguageElement* a_pAncestor)
-{
-    if (m_pElements)
-    {
-        LanguageElements elementsCopy(m_pElements->begin(),
-                                      m_pElements->end()); /// copy to allow element adding during recursive deep call
-        for (auto it = elementsCopy.begin(); it != elementsCopy.end(); ++it)
-        {
-            (*it)->_onAncestorChanged(a_pAncestor);
-        }
-    }
-    //             if (Source* pSource = a_pAncestor->asSource())
-    //             {
-    //                 if ((m_uiFlags & PHANTOM_R_FLAG_IMPLICIT) == 0)
-    //                 {
-    //                     pSource->markOutdated(); // we outdate the source from the moment a
-    //                     non-implicit element is added to it
-    //                 }
-    //             }
-    onAncestorChanged(a_pAncestor);
-}
-
-void LanguageElement::_onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
-{
-    if (m_pElements)
-    {
-        LanguageElements elementsCopy(m_pElements->begin(),
-                                      m_pElements->end()); /// copy to allow element adding during recursive deep call
-        for (auto it = elementsCopy.begin(); it != elementsCopy.end(); ++it)
-        {
-            (*it)->_onAncestorAboutToBeChanged(a_pOwner);
-        }
-    }
-    onAncestorAboutToBeChanged(a_pOwner);
-}
-
 void LanguageElement::_onElementsAccess()
 {
     Module* pModule;
@@ -405,28 +345,14 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     PHANTOM_ASSERT(m_pOwner != a_pOwner);
     if (m_pOwner)
     {
-        LanguageElement* pAncestor = m_pOwner;
-        while (pAncestor)
-        {
-            _onAncestorAboutToBeChanged(pAncestor);
-            pAncestor = pAncestor->m_pOwner;
-        }
+        m_pOwner->_removeElement(this);
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
-        LanguageElement* pAncestor = m_pOwner;
-        while (pAncestor)
-        {
-            _onAncestorChanged(pAncestor);
-            pAncestor = pAncestor->m_pOwner;
-        }
+        m_pOwner->_addElement(this);
     }
 }
-
-void LanguageElement::onAncestorChanged(LanguageElement*) {}
-
-void LanguageElement::onAncestorAboutToBeChanged(LanguageElement*) {}
 
 LanguageElement* LanguageElement::removeExpression() const
 {
@@ -942,16 +868,14 @@ bool LanguageElement::hasSymbol(StringView a_strName) const
     return false;
 }
 
-phantom::lang::Module* LanguageElement::getModule() const
+Module* LanguageElement::getModule() const
 {
-    Module* pModule = asModule();
-    return pModule ? pModule : (m_pOwner ? m_pOwner->getModule() : nullptr);
+    return m_pSource->getModule();
 }
 
-phantom::lang::Package* LanguageElement::getPackage() const
+Package* LanguageElement::getPackage() const
 {
-    Package* pPackage = asPackage();
-    return pPackage ? pPackage : (m_pOwner ? m_pOwner->getPackage() : nullptr);
+    return m_pSource->getPackage();
 }
 
 bool LanguageElement::isIncomplete() const
@@ -1027,9 +951,9 @@ void LanguageElement::fetchSymbols(Symbols& a_Symbols, SymbolFilter a_Filter,
     }
 }
 
-void LanguageElement::visit(phantom::lang::LanguageElementVisitor* a_pVisitor, VisitorData a_Data)
+void LanguageElement::visit(LanguageElementVisitor* a_pVisitor, VisitorData a_Data)
 {
-    static_cast<phantom::lang::LanguageElementVisitor*>(a_pVisitor)->visit(this, a_Data);
+    static_cast<LanguageElementVisitor*>(a_pVisitor)->visit(this, a_Data);
 }
 
 Symbol* LanguageElement::PublicFilter(Symbol* a_pSymbol, bool)
@@ -1069,7 +993,7 @@ void LanguageElement::setIncomplete()
     }
 }
 
-phantom::lang::Source* LanguageElement::getSource() const
+Source* LanguageElement::getSource() const
 {
     Source* pSource = asSource();
     return pSource ? pSource : (m_pOwner ? m_pOwner->getSource() : nullptr);

@@ -21,7 +21,6 @@
 #include "Variable.h"
 
 #include <phantom/detail/core_internal.h>
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -143,37 +142,37 @@ void Scope::release(Types& out_types)
 
 void Scope::addType(Type* a_pType)
 {
-    addScopeElement(a_pType);
+    onScopeSymbolAdded(a_pType);
 }
 
 void Scope::addFunction(Function* a_pFunction)
 {
-    addScopeElement(a_pFunction);
+    onScopeSymbolAdded(a_pFunction);
 }
 
 void Scope::addVariable(Variable* a_pVariable)
 {
-    addScopeElement(a_pVariable);
+    onScopeSymbolAdded(a_pVariable);
 }
 
 void Scope::addConstant(Constant* a_pConstant)
 {
-    addScopeElement(a_pConstant);
+    onScopeSymbolAdded(a_pConstant);
 }
 
 void Scope::addTemplate(Template* a_pTemplate)
 {
-    addScopeElement(a_pTemplate);
+    onScopeSymbolAdded(a_pTemplate);
 }
 
 void Scope::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization)
 {
-    addScopeElement(a_pTemplateSpecialization);
+    onScopeSymbolAdded(a_pTemplateSpecialization);
 }
 
 void Scope::addAlias(Alias* a_pAlias)
 {
-    addScopeElement(a_pAlias);
+    onScopeSymbolAdded(a_pAlias);
 }
 
 Alias* Scope::addAlias(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -248,37 +247,37 @@ LanguageElement* Scope::getAliased(StringView a_strAlias) const
 
 void Scope::removeAlias(Alias* a_pAlias)
 {
-    removeScopeElement(a_pAlias);
+    onScopeSymbolRemoving(a_pAlias);
 }
 
 void Scope::removeType(Type* a_pType)
 {
-    removeScopeElement(a_pType);
+    onScopeSymbolRemoving(a_pType);
 }
 
 void Scope::removeFunction(Function* a_pFunction)
 {
-    removeScopeElement(a_pFunction);
+    onScopeSymbolRemoving(a_pFunction);
 }
 
 void Scope::removeVariable(Variable* a_pVariable)
 {
-    removeScopeElement(a_pVariable);
+    onScopeSymbolRemoving(a_pVariable);
 }
 
 void Scope::removeConstant(Constant* a_pConstant)
 {
-    removeScopeElement(a_pConstant);
+    onScopeSymbolRemoving(a_pConstant);
 }
 
 void Scope::removeTemplate(Template* a_pTemplate)
 {
-    removeScopeElement(a_pTemplate);
+    onScopeSymbolRemoving(a_pTemplate);
 }
 
 void Scope::removeTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization)
 {
-    removeScopeElement(a_pTemplateSpecialization);
+    onScopeSymbolRemoving(a_pTemplateSpecialization);
 }
 
 PrimitiveType* Scope::getPrimitiveType(StringView a_strName) const
@@ -632,12 +631,12 @@ AnonymousSection* Scope::getAnonymousSection(size_t a_uiIndex) const
 
 void Scope::addAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
-    addScopeElement(a_pAnonymousSection);
+    onScopeSymbolAdded(a_pAnonymousSection);
 }
 
 void Scope::removeAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
-    removeScopeElement(a_pAnonymousSection);
+    onScopeSymbolRemoving(a_pAnonymousSection);
 }
 
 // ex: union(m, struct(x, y, union(z, w)))

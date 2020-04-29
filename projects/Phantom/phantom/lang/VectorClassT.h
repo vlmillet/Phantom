@@ -8,7 +8,6 @@
 
 HAUNT_STOP;
 
-#include <phantom/detail/new.h>
 #include <phantom/lang/SequentialContainerClassT.h>
 #include <phantom/lang/VectorClass.h>
 
@@ -21,7 +20,7 @@ class VectorClassT : public SequentialContainerClassT<T, Base>
 {
     using SelfType = VectorClassT<T, Base>;
     using BaseType = SequentialContainerClassT<T, Base>;
-    typedef T             ContainerType;
+    typedef T                ContainerType;
     typedef PHANTOM_TYPENAME T::value_type ContainerValueType;
 
 public:
@@ -40,7 +39,7 @@ public:
     {
         const T* pContainer = static_cast<const T*>(a_pContainer);
         return (const void*)pContainer->data();
-	}
+    }
 };
 
 } // namespace lang

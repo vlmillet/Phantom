@@ -19,7 +19,6 @@
 #include "Source.h"
 
 #include <phantom/detail/core_internal.h>
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -66,13 +65,9 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
         }
         else
         {
-            PackageFolder* pFolder;
-            m_pFolder->addPackageFolder(pFolder = PHANTOM_DEFERRED_NEW(PackageFolder)(*it));
-            m_pFolder = pFolder;
+            m_pFolder = m_pFolder->newPackageFolder(*it);
         }
     }
-    addReferencedElement(m_pFolder);
-    addReferencedElement(m_pNamespace);
     m_pFolder->_addPackage(this);
 }
 
@@ -95,79 +90,39 @@ bool Package::canBeUnloaded() const
     return true;
 }
 
-void Package::addSource(Source* a_pSource)
-{
-    PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_pSource->getName()) == nullptr);
-    PHANTOM_ASSERT(getModule());
-    PHANTOM_ASSERT(a_pSource->getOwner() == nullptr);
-    PHANTOM_ASSERT(getSource(a_pSource->getName()) == nullptr);
-    addElement(a_pSource);
-}
-
 void Package::addArchivedSource(Source* a_pSource)
 {
     PHANTOM_ASSERT(a_pSource->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS));
     PHANTOM_ASSERT(getModule());
     PHANTOM_ASSERT(getSource(a_pSource->getName()) == nullptr);
     m_ArchivedSources.push_back(a_pSource);
-    addElement(a_pSource);
+    a_pSource->setOwner(this);
 }
 
-void Package::onElementAdded(LanguageElement* a_pElement)
+void Package::removeArchivedSource(Source* a_pSource)
 {
-    if (Source* pSource = a_pElement->asSource())
-    {
-        if (std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource) == m_ArchivedSources.end())
-        {
-            m_Sources.push_back(pSource);
-            Module* pModule = getModule();
-            PHANTOM_ASSERT(pModule);
-            PHANTOM_EMIT sourceAdded(pSource);
-            Application::Get()->_sourceAdded(pSource);
-        }
-    }
-}
-
-void Package::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pFolder == a_pElement)
-        m_pFolder = nullptr;
-}
-
-void Package::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (a_pElement->asNamespace())
-    {
-        m_pNamespace = nullptr;
-    }
-    else if (Source* pSource = a_pElement->asSource())
-    {
-        auto archivedFound = std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource);
-        if (archivedFound == m_ArchivedSources.end())
-        {
-            Application::Get()->_sourceAboutToBeRemoved(pSource);
-            PHANTOM_EMIT sourceAboutToBeRemoved(pSource);
-            PHANTOM_ASSERT(pSource->getOwner() == this);
-            m_Sources.erase(std::find(m_Sources.begin(), m_Sources.end(), pSource));
-            Module* pModule = getModule();
-            PHANTOM_ASSERT(pModule);
-        }
-        else
-        {
-            m_ArchivedSources.erase(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), pSource));
-        }
-    }
-}
-
-void Package::removeSource(Source* a_pSource)
-{
-    removeElement(a_pSource);
+    auto found = std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), a_pSource);
+    PHANTOM_ASSERT(found != m_ArchivedSources.end(), "use removeArchivedSource instead");
+    a_pSource->setOwner(nullptr);
+    m_ArchivedSources.erase(found);
 }
 
 void Package::deleteSource(Source* a_pSource)
 {
+    PHANTOM_ASSERT(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), a_pSource) == m_ArchivedSources.end(),
+                   "use removeArchivedSource instead");
+
+    Application::Get()->_sourceAboutToBeRemoved(a_pSource);
+    PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
     PHANTOM_ASSERT(a_pSource->getOwner() == this);
-    PHANTOM_DELETE_DYN a_pSource;
+    a_pSource->setOwner(nullptr);
+    m_Sources.erase(std::find(m_Sources.begin(), m_Sources.end(), a_pSource));
+    phantom::Delete<Source>(a_pSource);
+}
+
+Module* Package::getModule() const
+{
+    return static_cast<Module*>(getOwner());
 }
 
 Source* Package::getSource(StringView a_strName) const
@@ -184,22 +139,25 @@ Source* Package::getOrCreateSource(StringView a_strName, bool a_bInvisible)
 {
     Source* pSource = getSource(a_strName);
     if (!pSource)
-        addSource(pSource = New<Source>(a_strName, Modifier::None, a_bInvisible ? PHANTOM_R_FLAG_PRIVATE_VIS : 0));
+        newSource(a_strName, a_bInvisible);
     return pSource;
 }
 
-void Package::setNamespace(Namespace* a_pNamespace)
+Source* Package::newSource(StringView a_strName, bool a_bInvisible)
 {
-    PHANTOM_ASSERT((m_pNamespace == nullptr) != (a_pNamespace == nullptr));
-    if (a_pNamespace == nullptr)
-    {
-        removeElement(a_pNamespace);
-    }
-    else
-    {
-        m_pNamespace = a_pNamespace;
-        addElement(m_pNamespace);
-    }
+    PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_strName) == nullptr);
+    PHANTOM_ASSERT(getModule());
+    PHANTOM_ASSERT(getSource(a_strName) == nullptr);
+    Source* pS = phantom::New<Source>(a_strName, Modifier::None, a_bInvisible ? PHANTOM_R_FLAG_PRIVATE_VIS : 0);
+    pS->rtti.instance = pS;
+    pS->setOwner(this);
+    phantom::detail::deferInstallation("phantom::lang::Source", &pS->rtti);
+    pS->initialize();
+    m_Sources.push_back(pS);
+    m_Sources.push_back(pS);
+    PHANTOM_EMIT sourceAdded(pS);
+    Application::Get()->_sourceAdded(pS);
+    return pS;
 }
 
 hash64 Package::computeHash() const
@@ -207,14 +165,6 @@ hash64 Package::computeHash() const
     StringBuffer buffer;
     getUniqueName(buffer);
     return ComputeHash(buffer.c_str(), buffer.size());
-}
-
-void Package::onAncestorChanged(LanguageElement* a_pAncestor)
-{
-    if (Module* pModule = a_pAncestor->asModule())
-    {
-        pModule->markOutdated();
-    }
 }
 
 void Package::getQualifiedName(StringBuffer& a_Buf) const

@@ -101,8 +101,7 @@ private:
                               "class is not a base class (" PHANTOM_DIAGNOSTIC_FUNCTION ")");
         PHANTOM_STATIC_ASSERT((IsTypeDefined<BaseNoForward>::value), "base class is not defined");
         lang::Class* pBaseClass = PHANTOM_CLASSOF(Base);
-        PHANTOM_ASSERT(pBaseClass,
-                       "base class lang was not found, check your lang definitions/lang files");
+        PHANTOM_ASSERT(pBaseClass, "base class lang was not found, check your lang definitions/lang files");
         BaseClass bc;
         bc.access = BaseClassAccessH<BaseWrapped>::value;
         bc.baseClass = pBaseClass;
@@ -125,8 +124,6 @@ public:
     using SelfType = ClassBuilderT<T, Top, MostDerived>;
     using BaseType = ClassTypeBuilderT<T, Top, MostDerived>;
     using TopType = Top;
-
-    PHANTOM_DECL_OVERRIDE_DELETE_METHOD(SelfType);
 
     ClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer a_Arguments)
         : BaseType(a_StartAccess, a_pTop, a_Arguments)
@@ -154,7 +151,7 @@ public:
                                  "missing #include <phantom/signal>");
         this->_addSymbol(
         m_pClass, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_SignalPtr)}, [](MemberBuilder const& a_Member) {
-            a_Member.class_()->addSignal(a_Member.apply(PHANTOM_META_NEW(phantom::lang::SignalT<T, Sign>)(
+            a_Member.class_()->addSignal(a_Member.apply(NewMeta<phantom::lang::SignalT<T, Sign>>(
             a_Member.name, lang::SignatureH<Sign>::Create(), PHANTOM_REG_MEMBER_GETBACK_ARG(0, SignalType))));
         });
         return static_cast<MostDerived&>(*this);

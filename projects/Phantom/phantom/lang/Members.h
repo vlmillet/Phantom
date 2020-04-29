@@ -7,7 +7,6 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/newImpl.h>
 #include <phantom/lang/LanguageElement.h>
 /* *********************************************** */
 
@@ -20,9 +19,7 @@ namespace lang
 class MembersBase
 {
 protected:
-    MembersBase(LanguageElement* a_pOwner) : m_pOwner(a_pOwner)
-    {
-    }
+    MembersBase(LanguageElement* a_pOwner) : m_pOwner(a_pOwner) {}
 
     inline void onAccess() const;
 
@@ -34,9 +31,7 @@ template<typename t_Container>
 class Members : public MembersBase
 {
 public:
-    Members(LanguageElement* a_pOwner) : MembersBase(a_pOwner), m_data(nullptr)
-    {
-    }
+    Members(LanguageElement* a_pOwner) : MembersBase(a_pOwner), m_data(nullptr) {}
 
     static t_Container* Empty()
     {
@@ -44,19 +39,13 @@ public:
         return &empty;
     }
 
-    ~Members()
-    {
-        phantom::Delete<t_Container>(m_data);
-    }
+    ~Members() { phantom::Delete<t_Container>(m_data); }
 
     t_Container* operator->()
     {
-        if (m_data == nullptr)
-        {
-            m_data = phantom::New<t_Container>();
-            onAccess();
-        }
-        return m_data;
+        auto c = container();
+        onAccess();
+        return c;
     }
 
     t_Container* operator->() const
@@ -90,23 +79,33 @@ public:
         return m_data ? m_data->size() : 0;
     }
 
-    void push_back(PHANTOM_TYPENAME t_Container::value_type const& a_Value)
-    {
-        if (m_data == nullptr)
-        {
-            m_data = phantom::New<t_Container>();
-        }
-        m_data->push_back(a_Value);
-    }
+    void push_back(PHANTOM_TYPENAME t_Container::value_type const& a_Value) { container()->push_back(a_Value); }
 
     void insert(PHANTOM_TYPENAME t_Container::iterator const& a_It,
                 PHANTOM_TYPENAME t_Container::value_type const& a_Value)
     {
+        container()->insert(a_It, a_Value);
+    }
+
+    PHANTOM_TYPENAME t_Container::const_iterator begin() const
+    {
+        onAccess();
+        return container()->begin();
+    }
+
+    PHANTOM_TYPENAME t_Container::const_iterator end() const
+    {
+        onAccess();
+        return container()->end();
+    }
+
+    t_Container* container() const
+    {
         if (m_data == nullptr)
         {
             m_data = phantom::New<t_Container>();
         }
-        m_data->insert(a_It, a_Value);
+        return m_data;
     }
 
     t_Container* m_data;

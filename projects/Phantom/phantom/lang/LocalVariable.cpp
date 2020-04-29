@@ -10,7 +10,6 @@
 #include "Method.h"
 #include "Signature.h"
 #include "Type.h"
-#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {

@@ -13,7 +13,6 @@
 #include "Placeholder.h"
 #include "Template.h"
 #include "TemplateSpecialization.h"
-#include "phantom/detail/new.h"
 
 #include <locale>
 #include <phantom/utils/StringHash.h>
@@ -47,30 +46,23 @@ bool Symbol::IsCppIdentifier(StringView a_Name)
 Symbol::Symbol(Modifiers a_Modifiers /* = 0*/, uint a_uiFlags /*=0*/)
     : LanguageElement(a_uiFlags), m_Modifiers(a_Modifiers)
 {
-    Register(this);
 }
 
 Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : LanguageElement(a_uiFlags), m_strName(a_strName), m_Modifiers(a_Modifiers)
 {
     PHANTOM_ASSERT(!(isProtected() && isPrivate()), "o_private_access and o_protected_access cannot co-exist");
-    Register(this);
 }
 
 Symbol::~Symbol() {}
 
 void Symbol::terminate()
 {
-    if (m_pMetaDatas != nullptr)
-    {
-        PHANTOM_DELETE(MetaDatas) m_pMetaDatas;
-        m_pMetaDatas = nullptr;
-    }
-    if (m_pAnnotations != nullptr)
-    {
-        PHANTOM_DELETE(Annotations) m_pAnnotations;
-        m_pAnnotations = nullptr;
-    }
+    setNamespace(nullptr);
+    if (m_pMetaDatas)
+        phantom::Delete<MetaDatas>(m_pMetaDatas);
+    if (m_pAnnotations)
+        phantom::Delete<Annotations>(m_pAnnotations);
     LanguageElement::terminate();
 }
 
@@ -116,33 +108,11 @@ hash64 Symbol::ComputeHash(const char* a_Str, size_t a_Len)
     return makeStringHash(StringView(a_Str, a_Len));
 }
 
-void Symbol::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pExtensions)
-    {
-        auto found = std::find(m_pExtensions->begin(), m_pExtensions->end(), a_pElement);
-        if (found != m_pExtensions->end())
-        {
-            m_pExtensions->erase(found);
-            if (m_pExtensions->empty())
-            {
-                PHANTOM_DELETE(SymbolExtensions) m_pExtensions;
-                m_pExtensions = nullptr;
-            }
-        }
-    }
-}
-
 void Symbol::formatAnonymousName(StringBuffer& a_Buf) const
 {
     char buf[64];
     snprintf(buf, 64, "__anonymous_%zx", (size_t)this);
     a_Buf += buf;
-}
-
-void Symbol::onAncestorChanged(LanguageElement* a_pAncestor)
-{
-    LanguageElement::onAncestorChanged(a_pAncestor);
 }
 
 const Variant& Symbol::getMetaData(StringView a_Name) const
@@ -235,12 +205,6 @@ void Symbol::addExtension(SymbolExtension* a_pExtension)
         m_pExtensions = PHANTOM_NEW(SymbolExtensions);
     PHANTOM_ASSERT(std::find(m_pExtensions->begin(), m_pExtensions->end(), a_pExtension) == m_pExtensions->end());
     m_pExtensions->push_back(a_pExtension);
-    addElement(a_pExtension);
-}
-
-void Symbol::removeExtension(SymbolExtension* a_pExtension)
-{
-    removeElement(a_pExtension);
 }
 
 void Symbol::setMetaData(StringWithHash a_Hash, const Variant& a_Value)
@@ -368,6 +332,15 @@ LanguageElement* Symbol::getNamingScope() const
 Namespace* Symbol::getNamespace() const
 {
     return m_pNamespace;
+}
+
+void Symbol::setNamespace(Namespace* a_pNS)
+{
+    if (m_pNamespace == a_pNS)
+        return;
+    onNamespaceChanging(a_pNS);
+    m_pNamespace = a_pNS;
+    onNamespaceChanged(a_pNS);
 }
 
 void Symbol::getDoubles(Symbols& out) const

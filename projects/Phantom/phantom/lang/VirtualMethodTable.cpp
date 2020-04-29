@@ -8,7 +8,6 @@
 #include "VirtualMethodTable.h"
 
 #include "Method.h"
-#include "phantom/detail/new.h"
 
 #include <phantom/utils/SmallMap.h>
 /* *********************************************** */

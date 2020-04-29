@@ -47,9 +47,6 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-
-protected:
     Types m_Types;
 };
 

@@ -23,7 +23,6 @@
 #include "VirtualMethodTable.h"
 #include "registration/registration.h"
 
-#include <phantom/detail/new.h>
 #include <phantom/lang/Function.h> // phantom::lang::detail::pushModule
 #include <phantom/lang/Module.h>   // phantom::lang::detail::pushModule
 #include <phantom/lang/registration/Main.h>
@@ -48,20 +47,16 @@ Class* Class::MetaClass()
     return Class::metaClass;
 }
 
-Class::Class() : ClassType(TypeKind::Class, PHANTOM_NEW(ExtraData)), m_Signals(this), m_FieldsWithRAII(this) {}
+Class::Class() : ClassType(TypeKind::Class, phantom::New<ExtraData>()) {}
 
 Class::Class(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ClassType(a_eTypeKind, PHANTOM_NEW(ExtraData), a_strName, a_Modifiers, a_uiFlags),
-      m_Signals(this),
-      m_FieldsWithRAII(this)
+    : ClassType(a_eTypeKind, phantom::New<ExtraData>(), a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
 Class::Class(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ClassType(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags),
-      m_Signals(this),
-      m_FieldsWithRAII(this)
+    : ClassType(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 
@@ -70,7 +65,7 @@ Class::~Class() {}
 void Class::terminate()
 {
     if (m_pInstanceCache)
-        PHANTOM_DELETE(InstanceCache) m_pInstanceCache;
+        phantom::Delete<InstanceCache>(m_pInstanceCache);
 
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::ClassDestroying, this, nullptr);
@@ -80,35 +75,6 @@ void Class::terminate()
         PHANTOM_LOG(Warning, "%s : %d instance(s) of this class have not been deleted",
                     getQualifiedDecoratedName().c_str(), m_InstanceCount);
     }
-    if (m_DerivedClasses.size())
-    {
-        Module* pModule = getModule();
-        bool    moduleTerminating = pModule == nullptr || (pModule->getFlags() & PHANTOM_R_FLAG_TERMINATED) != 0;
-        while (true)
-        {
-            int derivedClassIdx = int(m_DerivedClasses.size());
-            while (derivedClassIdx--)
-            {
-                Class* pDerivedClass = m_DerivedClasses[derivedClassIdx];
-                PHANTOM_ASSERT(
-                pDerivedClass->getModule() == getModule(),
-                "if in any other module, derived class must have been deleted and removed from this class before");
-                if (isNative())
-                {
-                    PHANTOM_ASSERT(moduleTerminating, "module must be in terminating mode for this to happen");
-                }
-                else
-                {
-                    if (!moduleTerminating)
-                    {
-                        PHANTOM_DELETE_DYN pDerivedClass;
-                    }
-                }
-            }
-            if (derivedClassIdx == -1)
-                break;
-        }
-    }
 
     for (auto& bc : m_BaseClasses)
     {
@@ -116,7 +82,7 @@ void Class::terminate()
     }
 
     ClassType::terminate();
-} // namespace lang
+}
 
 Class* Class_getCommonBaseClass(Class const* a_pThis, Class* a_pClass)
 {
@@ -206,77 +172,6 @@ StaticField* Class::getStaticFieldCascade(StringView a_strName) const
     return pField;
 }
 
-void Class::addMethod(Method* a_pMethod)
-{
-    ClassType::addMethod(a_pMethod);
-}
-
-void Class::setMethods(Methods list)
-{
-    for (auto it = list.begin(); it != list.end(); ++it)
-    {
-        if ((*it)->asSignal())
-        {
-            addSignal((*it)->asSignal());
-        }
-        else
-        {
-            addMethod(*it);
-        }
-    }
-}
-
-void Class::addSignal(Signal* a_pSignal)
-{
-    addMethod(a_pSignal);
-}
-
-void Class::removeSignal(Signal* a_pSignal)
-{
-    removeElement(a_pSignal);
-}
-
-Signal* Class::getSignal(StringView a_strIdentifierString) const
-{
-    Method* pMethod = getMethod(a_strIdentifierString);
-    return pMethod ? pMethod->asSignal() : nullptr;
-}
-
-Signal* Class::getSignalCascade(StringView a_strIdentifierString) const
-{
-    Signal* pSignal = getSignal(a_strIdentifierString);
-    if (pSignal != NULL)
-        return pSignal;
-    for (Class* pClass : m_BaseClasses)
-    {
-        Signal* pBaseSignal = pClass->getSignalCascade(a_strIdentifierString);
-        if (pBaseSignal != NULL)
-        {
-            if (pSignal != NULL)
-            {
-                // ambiguous access, so we return nothing
-                return NULL;
-            }
-            pSignal = pBaseSignal;
-        }
-    }
-    return pSignal;
-}
-
-Method* Class::getSlot(StringView a_strIdentifierString) const
-{
-    Method* pMethod = getMethod(a_strIdentifierString);
-    return pMethod ? pMethod->asSlot() : nullptr;
-}
-
-Method* Class::getSlotCascade(StringView a_strIdentifierString) const
-{
-    Symbol* pElement = Application::Get()->findCppSymbol(a_strIdentifierString, const_cast<Class*>(this));
-    return pElement && pElement->getOwner()->asClass() && isA(static_cast<Class*>(pElement->getOwner()))
-    ? pElement->asSlot()
-    : nullptr;
-}
-
 void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Access /*= Access::Public*/)
 {
     PHANTOM_ASSERT(a_pBaseClass);
@@ -286,10 +181,6 @@ void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Acces
     PHANTOM_ASSERT(isNative() || !(a_pBaseClass->hasStrongDependencyOnType(this)), "cyclic class strong dependency");
     m_BaseClasses.push_back(BaseClass(a_pBaseClass, a_uiOffset, a_Access));
     a_pBaseClass->addDerivedClass(const_cast<Class*>(this));
-    if (a_pBaseClass->isTemplateDependant() && a_pBaseClass->getOwner() == nullptr)
-        addElement(a_pBaseClass);
-    else
-        addReferencedElement(a_pBaseClass);
 }
 
 void Class::addBaseClass(Class* a_pClass, Access a_Access)
@@ -741,42 +632,6 @@ void Class::getValueMembersCascade(ValueMembers& out) const
 
 /* PHANTOM SPECIFIC EXTENSION */
 
-void Class::onElementAdded(LanguageElement* a_pElement)
-{
-    if (a_pElement->asSignal())
-    {
-        m_Signals.push_back(static_cast<Signal*>(a_pElement));
-        ClassType::onElementAdded(a_pElement);
-    }
-    else if (a_pElement->asVirtualMethodTable())
-    {
-        m_VirtualMethodTables.push_back(static_cast<VirtualMethodTable*>(a_pElement));
-    }
-    else if (Field* pDM = a_pElement->asField())
-    {
-        if (pDM->getValueType()->getTypeKind() == TypeKind::Class)
-        {
-            m_FieldsWithRAII.push_back(pDM);
-        }
-        ClassType::onElementAdded(a_pElement);
-    }
-    else
-        ClassType::onElementAdded(a_pElement);
-}
-
-void Class::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (auto pSignal = a_pElement->asSignal())
-    {
-        m_Signals->erase(std::find(m_Signals->begin(), m_Signals->end(), pSignal));
-    }
-    else if (auto pVM = a_pElement->asVirtualMethodTable())
-    {
-        m_VirtualMethodTables.erase(std::find(m_VirtualMethodTables.begin(), m_VirtualMethodTables.end(), pVM));
-    }
-    ClassType::onElementRemoved(a_pElement);
-}
-
 void* Class::upcast(Class* a_pBaseClass, void* a_pInstance) const
 {
     if (a_pInstance == nullptr)
@@ -971,27 +826,6 @@ void Class::getFields(AggregateFields& a_OutFields) const
     ClassType::getFields(a_OutFields);
 }
 
-void Class::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    ClassType::onReferencedElementRemoved(a_pElement);
-    auto foundDerived = std::find(m_DerivedClasses.begin(), m_DerivedClasses.end(), a_pElement);
-    if (foundDerived != m_DerivedClasses.end())
-    {
-#if PHANTOM_CUSTOM_ENABLE_DERIVED_CLASS_CACHE
-        _removeDerivedClassRecursive(static_cast<Class*>(a_pElement));
-#endif
-        m_DerivedClasses.erase(foundDerived);
-    }
-    else
-    {
-        auto foundBase = std::find(m_BaseClasses.begin(), m_BaseClasses.end(), a_pElement);
-        if (foundBase != m_BaseClasses.end())
-        {
-            m_BaseClasses.erase(foundBase);
-        }
-    }
-}
-
 void Class::_onNativeElementsAccess()
 {
     if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
@@ -1033,7 +867,7 @@ void Class::_onNativeElementsAccessImpl()
             VirtualMethodTable* pDerivedVTable = deriveVirtualMethodTable(pTable);
             pDerivedVTable->setFlag(PHANTOM_R_FLAG_NATIVE);
             pDerivedVTable->m_strName = '$' + StringUtil::ToString(m_VirtualMethodTables.size());
-            addElement(pDerivedVTable);
+            m_VirtualMethodTables.push_back(pDerivedVTable);
         }
     }
     for (auto pMethod : getMethods())
@@ -1139,7 +973,6 @@ void Class::setOverriddenDefaultExpression(ValueMember* a_pValueMember, Expressi
         PHANTOM_DELETE_DYN reinterpret_cast<LanguageElement*>(pExp);
     }
     pExp = a_pExpression;
-    addElement(reinterpret_cast<LanguageElement*>(a_pExpression));
 }
 
 Expression* Class::getOverriddenDefaultExpression(ValueMember* a_pValueMember) const
@@ -1233,7 +1066,7 @@ void Class::addNewVirtualMethodTable()
                    ((m_BaseClasses.size() == 0) || !(getBaseClass(0)->isPolymorphic()) || isNative()));
     VirtualMethodTable* pVMT = createVirtualMethodTable();
     pVMT->setFlag(getFlags() & PHANTOM_R_FLAG_NATIVE);
-    addElement(pVMT);
+    m_VirtualMethodTables.push_back(pVMT);
 }
 
 bool Class::hasNewVTable() const
@@ -1863,6 +1696,9 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
                            size_t a_MinAlign /*= 0*/)
     : m_Access(a_Access), m_MinAlign(a_MinAlign)
 {
+    if (a_pOwnerScope == nullptr)
+        a_pOwnerScope = Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default");
+
     if (a_pNamingScope == nullptr)
         a_pNamingScope = Namespace::Global();
 
@@ -1880,23 +1716,17 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
             }
             a_pNamingScope = pNS;
         }
-        m_pClass = phantom::New<lang::Class>(nameParts.back());
+        m_pClass = a_pOwnerScope->New<lang::Class>(nameParts.back());
     }
     else
     {
-        m_pClass = phantom::New<lang::Class>(StringView());
+        m_pClass = a_pOwnerScope->New<lang::Class>(StringView());
     }
     m_pClass->setDefaultAccess(a_Access);
 
     if (a_pNamingScope != a_pOwnerScope)
         a_pNamingScope->addType(m_pClass);
-    if (a_pOwnerScope)
-        a_pOwnerScope->addType(m_pClass);
-    else
-    {
-        // by default insert it in Your.Exe.default
-        Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default")->addType(m_pClass);
-    }
+    a_pOwnerScope->addType(m_pClass);
 }
 
 Scope* ClassBuilder::scope() const

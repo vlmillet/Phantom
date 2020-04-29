@@ -11,7 +11,6 @@
 #include "ExecutionContext.h"
 #include "Parameter.h"
 #include "Signature.h"
-#include "phantom/detail/new.h"
 
 #include <phantom/utils/Variant.h>
 /* *********************************************** */

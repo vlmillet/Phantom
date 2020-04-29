@@ -24,8 +24,6 @@
 #include "TemplateSpecialization.h"
 #include "Variable.h"
 #include "registration/registration.h"
-
-#include <phantom/detail/VirtualDelete.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -51,7 +49,7 @@ ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize
 
 ClassType::~ClassType()
 {
-    PHANTOM_DELETE_VIRTUAL m_pExtraData;
+    phantom::DeleteP(m_pExtraData);
 }
 
 bool ClassType::matchesTemplateArguments(const LanguageElements& a_Elements) const
@@ -70,115 +68,6 @@ Template* ClassType::getTemplate() const
 {
     TemplateSpecialization* pSpec = getTemplateSpecialization();
     return pSpec ? pSpec->getTemplate() : nullptr;
-}
-
-void ClassType::onElementAdded(LanguageElement* a_pElement)
-{
-    if (Symbol* pSym = a_pElement->asSymbol())
-    {
-        if (pSym->getAccess() == Access::Undefined)
-            pSym->setAccess(getDefaultAccess());
-    }
-    if (Field* pField = a_pElement->asField())
-    {
-        PHANTOM_ASSERT_DEBUG(getValueMember(pField->getName()) == nullptr);
-        PHANTOM_ASSERT(isNative() || m_uiSize == 0,
-                       "type sized, cannot add fields anymore or the memory consistency would be messed up");
-        PHANTOM_ASSERT((asPOD() == nullptr || (pField->getValueType()->asPOD() != nullptr)),
-                       "POD structs can only store pod types");
-        if (pField->getMemberAnonymousSection() == nullptr) // does not belong to an anonymous struct/union
-            m_DataElements.push_back(pField);
-        m_Fields.push_back(pField);
-        // FIXME : hack (create a data() function to access directly to container)
-        m_ValueMembers.push_back(nullptr);
-        m_ValueMembers.m_data->pop_back();
-        m_ValueMembers.insert(m_ValueMembers.m_data->begin() + (m_Fields.m_data->size() - 1), pField);
-        PHANTOM_ASSERT(!(pField->getValueType()->removeQualifiers()->removeArray()->hasStrongDependencyOnType(this)),
-                       "cyclic class strong dependency");
-    }
-    else if (Property* pProperty = a_pElement->asProperty())
-    {
-        PHANTOM_ASSERT_DEBUG(getValueMember(pProperty->getName()) == nullptr);
-        PHANTOM_ASSERT(isNative() || pProperty->getSignal() == nullptr || m_uiSize == 0,
-                       "type sized, cannot add property with signal anymore or the memory "
-                       "consistency would be messed up");
-        PHANTOM_ASSERT(isNative() || pProperty->getGet() == nullptr || !(pProperty->getGet()->isVirtual()) ||
-                       m_uiSize == 0,
-                       "type sized, cannot add property with virtual method or the memory "
-                       "consistency would be messed up");
-        PHANTOM_ASSERT(isNative() || pProperty->getSet() == nullptr || !(pProperty->getSet()->isVirtual()) ||
-                       m_uiSize == 0,
-                       "type sized, cannot add property with virtual method or the memory "
-                       "consistency would be messed up");
-        m_Properties.push_back(pProperty);
-        m_ValueMembers.push_back(pProperty);
-    }
-    else if (Constructor* pConstructor = a_pElement->asConstructor())
-    {
-        m_Constructors.push_back(pConstructor);
-    }
-    else if (Method* pMethod = a_pElement->asMethod())
-    {
-        PHANTOM_ASSERT(isNative() || m_uiSize == 0 || !(pMethod->isVirtual()),
-                       "type sized, cannot add virtual member functions anymore or the memory "
-                       "consistency would be messed up");
-        PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(pMethod));
-        m_Methods.push_back(pMethod);
-    }
-    else if (ValueMember* pValueMember = a_pElement->asValueMember())
-    {
-        PHANTOM_ASSERT_DEBUG(getValueMember(pValueMember->getName()) == nullptr);
-        m_ValueMembers.push_back(pValueMember);
-    }
-    else if (MemberAnonymousSection* pMemberAnonymousSection = a_pElement->asMemberAnonymousSection())
-    {
-        PHANTOM_ASSERT(isNative() || m_uiSize == 0,
-                       "type sized, cannot add anonymous types anymore or the memory consistency "
-                       "would be messed up");
-        m_MemberAnonymousSections.push_back(pMemberAnonymousSection);
-        m_DataElements.push_back(pMemberAnonymousSection);
-    }
-    else
-    {
-        Type::onElementAdded(a_pElement);
-        Scope::scopedElementAdded(a_pElement);
-    }
-}
-
-void ClassType::onElementRemoved(LanguageElement* a_pElement)
-{
-    Type::onElementRemoved(a_pElement);
-    Scope::scopedElementRemoved(a_pElement);
-    if (a_pElement->asField())
-    {
-        m_Fields->erase(std::find(m_Fields->begin(), m_Fields->end(), static_cast<Field*>(a_pElement)));
-        m_ValueMembers->erase(
-        std::find(m_ValueMembers->begin(), m_ValueMembers->end(), static_cast<Field*>(a_pElement)));
-    }
-    else if (a_pElement->asProperty())
-    {
-        m_Properties->erase(std::find(m_Properties->begin(), m_Properties->end(), static_cast<Property*>(a_pElement)));
-        m_ValueMembers->erase(
-        std::find(m_ValueMembers->begin(), m_ValueMembers->end(), static_cast<Property*>(a_pElement)));
-    }
-    else if (a_pElement->asConstructor())
-    {
-        m_Constructors->erase(
-        std::find(m_Constructors->begin(), m_Constructors->end(), static_cast<Constructor*>(a_pElement)));
-    }
-    else if (a_pElement->asMethod())
-    {
-        m_Methods->erase(std::find(m_Methods->begin(), m_Methods->end(), static_cast<Method*>(a_pElement)));
-    }
-    else if (a_pElement->asValueMember())
-    {
-        m_ValueMembers->erase(std::find(m_ValueMembers->begin(), m_ValueMembers->end(), a_pElement->asValueMember()));
-    }
-    else if (a_pElement->asMemberAnonymousSection())
-    {
-        m_MemberAnonymousSections->erase(std::find(m_MemberAnonymousSections->begin(), m_MemberAnonymousSections->end(),
-                                                   static_cast<MemberAnonymousSection*>(a_pElement)));
-    }
 }
 
 Property* ClassType::getProperty(StringView a_strName) const
@@ -466,7 +355,8 @@ ValueMember* ClassType::getValueMember(StringView a_strName) const
 
 void ClassType::addConstructor(Constructor* a_pConstructor)
 {
-    addSymbol(a_pConstructor);
+    _addSymbol(a_pConstructor);
+    m_Constructors.push_back(a_pConstructor);
 }
 
 Constructor* ClassType::addConstructor(StringView a_strParametersString)
@@ -510,12 +400,26 @@ Constructor* ClassType::addConstructor(Modifiers a_Modifiers, uint a_uiFlags)
 
 void ClassType::addValueMember(ValueMember* a_pValueMember)
 {
-    addSymbol(a_pValueMember);
+    PHANTOM_ASSERT_DEBUG(getValueMember(a_pValueMember->getName()) == nullptr);
+    _addSymbol(a_pValueMember);
+    m_ValueMembers.push_back(a_pValueMember);
 }
 
 void ClassType::addProperty(Property* a_pProperty)
 {
-    addSymbol(a_pProperty);
+    addValueMember(a_pProperty);
+    PHANTOM_ASSERT(isNative() || a_pProperty->getSignal() == nullptr || m_uiSize == 0,
+                   "type sized, cannot add property with signal anymore or the memory "
+                   "consistency would be messed up");
+    PHANTOM_ASSERT(isNative() || a_pProperty->getGet() == nullptr || !(a_pProperty->getGet()->isVirtual()) ||
+                   m_uiSize == 0,
+                   "type sized, cannot add property with virtual method or the memory "
+                   "consistency would be messed up");
+    PHANTOM_ASSERT(isNative() || a_pProperty->getSet() == nullptr || !(a_pProperty->getSet()->isVirtual()) ||
+                   m_uiSize == 0,
+                   "type sized, cannot add property with virtual method or the memory "
+                   "consistency would be messed up");
+    m_Properties.push_back(a_pProperty);
 }
 
 Property* ClassType::addProperty(StringView, uint)
@@ -526,7 +430,19 @@ Property* ClassType::addProperty(StringView, uint)
 
 void ClassType::addField(Field* a_pField)
 {
-    addSymbol(a_pField);
+    PHANTOM_ASSERT_DEBUG(getValueMember(a_pField->getName()) == nullptr);
+    PHANTOM_ASSERT(isNative() || m_uiSize == 0,
+                   "type sized, cannot add fields anymore or the memory consistency would be messed up");
+    PHANTOM_ASSERT((asPOD() == nullptr || (a_pField->getValueType()->asPOD() != nullptr)),
+                   "POD structs can only store pod types");
+    if (a_pField->getMemberAnonymousSection() == nullptr) // does not belong to an anonymous struct/union
+        m_DataElements.push_back(a_pField);
+    m_Fields.push_back(a_pField);
+    // FIXME : hack (create a data() function to access directly to container)
+    _addSymbol(a_pField);
+    m_ValueMembers.insert(m_ValueMembers.container()->begin() + (m_Fields.container()->size() - 1), a_pField);
+    PHANTOM_ASSERT(!(a_pField->getValueType()->removeQualifiers()->removeArray()->hasStrongDependencyOnType(this)),
+                   "cyclic class strong dependency");
 }
 
 Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFilterFlag, Modifiers a_Modifiers /*= 0*/,
@@ -538,14 +454,20 @@ Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFi
                     PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
         return nullptr;
     }
-    Field* pField = PHANTOM_DEFERRED_NEW_EX(Field)(a_pValueType, a_strName, a_uiFilterFlag, a_Modifiers, a_uiFlags);
+    Field* pField = NewDeferred<Field>(a_pValueType, a_strName, a_uiFilterFlag, a_Modifiers, a_uiFlags);
     addField(pField);
     return pField;
 }
 
 void ClassType::addMethod(Method* a_pMethod)
 {
-    addSymbol(a_pMethod);
+    _addSymbol(a_pMethod);
+    PHANTOM_ASSERT(isNative() || m_uiSize == 0 || !(a_pMethod->isVirtual()),
+                   "type sized, cannot add virtual member functions anymore or the memory "
+                   "consistency would be messed up");
+    PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(a_pMethod));
+    m_Methods.push_back(a_pMethod);
+    a_pMethod->_onAttachedToClass(this);
 }
 
 void ClassType::addStaticMethod(StaticMethod* a_pStaticMethod)
@@ -553,41 +475,6 @@ void ClassType::addStaticMethod(StaticMethod* a_pStaticMethod)
     PHANTOM_ASSERT(a_pStaticMethod->testModifiers(PHANTOM_R_STATIC),
                    "static member function requires 'PHANTOM_R_STATIC' modifier");
     Scope::addFunction(a_pStaticMethod);
-}
-
-void ClassType::removeConstructor(Constructor* a_pConstructor)
-{
-    removeElement(a_pConstructor);
-}
-
-void ClassType::removeValueMember(ValueMember* a_pValueMember)
-{
-    removeElement(a_pValueMember);
-}
-
-void ClassType::removeProperty(Property* a_pProperty)
-{
-    removeElement(a_pProperty);
-}
-
-void ClassType::removeField(Field* a_pField)
-{
-    removeElement(a_pField);
-}
-
-void ClassType::removeStaticField(StaticField* a_pField)
-{
-    removeElement(a_pField);
-}
-
-void ClassType::removeMethod(Method* a_pMethod)
-{
-    removeElement(a_pMethod);
-}
-
-void ClassType::removeStaticMethod(StaticMethod* a_pStaticMethod)
-{
-    removeElement(a_pStaticMethod);
 }
 
 void* ClassType::newInstance() const
@@ -988,7 +875,6 @@ void ClassType::addFriend(Symbol* a_pFriend)
     PHANTOM_ASSERT(a_pFriend);
     PHANTOM_ASSERT(!hasFriend(a_pFriend));
     m_Friends.push_back(a_pFriend);
-    addReferencedElement(a_pFriend);
 }
 
 bool ClassType::hasFriend(Symbol* a_pFriend) const
@@ -1003,148 +889,12 @@ void ClassType::addStaticField(StaticField* a_pField)
 
 void ClassType::addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
 {
-    addSymbol(a_pMemberAnonymousSection);
-}
-
-void ClassType::removeMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
-{
-    removeElement(a_pMemberAnonymousSection);
-}
-
-// ex: union(m, struct(x, y, union(z, w)))
-MemberAnonymousSection* ClassType::addMemberAnonymousSection(StringView a_strCode, Modifiers /*= 0*/, uint /*= 0*/)
-{
-    String str = a_strCode;
-    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-    str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
-    str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-    str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
-    enum state
-    {
-        state_union_or_struct,
-        state_list,
-        state_ended,
-    };
-    state                   s = state_union_or_struct;
-    String                  word;
-    MemberAnonymousSections sections;
-    MemberAnonymousSection* pSection = nullptr;
-    for (auto it = str.begin(); it != str.end(); ++it)
-    {
-        char c = *it;
-        switch (s)
-        {
-        case state_union_or_struct:
-            if (PHANTOM_CHAR_IS_CPP_IDENTIFIER(c))
-            {
-                word += c;
-            }
-            else if (c == '(')
-            {
-                if (word == "union")
-                {
-                    sections.push_back(PHANTOM_DEFERRED_NEW_EX(MemberAnonymousUnion));
-                }
-                else if (word == "struct")
-                {
-                    sections.push_back(PHANTOM_NEW(MemberAnonymousStruct));
-                }
-                else
-                {
-                    PHANTOM_DELETE_DYN(sections.front());
-                    return nullptr;
-                }
-                s = state_list;
-                word.clear();
-            }
-            else
-            {
-                PHANTOM_DELETE_DYN(sections.front());
-                return nullptr;
-            }
-            break;
-
-        case state_list:
-            if (PHANTOM_CHAR_IS_CPP_IDENTIFIER(c))
-            {
-                word += c;
-            }
-            else if (c == '(')
-            {
-                if (word == "union")
-                {
-                    sections.push_back(PHANTOM_NEW(MemberAnonymousUnion));
-                }
-                else if (word == "struct")
-                {
-                    sections.push_back(PHANTOM_NEW(MemberAnonymousStruct));
-                }
-                else
-                {
-                    if (sections.size())
-                    {
-                        PHANTOM_DELETE_DYN(sections.front());
-                    }
-                    return nullptr;
-                }
-                word.clear();
-            }
-            else if (c == ',')
-            {
-                if (word.size())
-                {
-                    if (sections.empty())
-                        return nullptr;
-                    Field* pElement = getField(word);
-                    if (pElement == nullptr)
-                    {
-                        if (sections.size())
-                        {
-                            PHANTOM_DELETE_DYN(sections.front());
-                        }
-                        return nullptr;
-                    }
-                    sections.back()->addField(pElement);
-                }
-                // data member
-                word.clear();
-            }
-            else if (c == ')')
-            {
-                if (sections.empty())
-                    return nullptr;
-                pSection = sections.back();
-                sections.pop_back();
-                if (sections.empty())
-                {
-                    addMemberAnonymousSection(pSection);
-                    s = state_ended;
-                }
-                else
-                {
-                    sections.back()->addMemberAnonymousSection(pSection);
-                    s = state_list;
-                }
-            }
-            else
-            {
-                if (sections.size())
-                {
-                    PHANTOM_DELETE_DYN(sections.front());
-                }
-                return nullptr;
-            }
-            break;
-
-        case state_ended:
-            if (sections.size())
-            {
-                PHANTOM_DELETE_DYN(sections.front());
-            }
-            return nullptr;
-        }
-    }
-    return pSection;
+    PHANTOM_ASSERT(isNative() || m_uiSize == 0,
+                   "type sized, cannot add anonymous types anymore or the memory consistency "
+                   "would be messed up");
+    _addSymbol(a_pMemberAnonymousSection);
+    m_MemberAnonymousSections.push_back(a_pMemberAnonymousSection);
+    m_DataElements.push_back(a_pMemberAnonymousSection);
 }
 
 bool ClassType::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, TypesView a_Types, Modifiers a_Modifiers,

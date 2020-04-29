@@ -47,6 +47,9 @@ public:
 
     void const* as(lang::Class* a_pClass) const;
     void*       as(lang::Class* a_pClass);
+
+    virtual ~Object() {}
+    virtual void terminate() {} // a dtor-like called before real dtor (this allows group destruction more safe)
 };
 
 template<class T>

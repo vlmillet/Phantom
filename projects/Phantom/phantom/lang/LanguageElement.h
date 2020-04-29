@@ -9,10 +9,10 @@
 /* ****************** Includes ******************* */
 #include <phantom/detail/Constructor.h>
 #include <phantom/detail/core.h>
-#include <phantom/detail/newImpl.h>
 #include <phantom/lang/CodeLocation.h>
 #include <phantom/lang/LanguageElementVisitor.h>
 #include <phantom/lang/reflection.h>
+#include <phantom/utils/Object.h>
 #include <phantom/utils/SmallVector.h>
 #include <phantom/utils/StringBuffer.h>
 /* *********************************************** */
@@ -74,11 +74,43 @@ public:
     static Symbol* PublicFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
     static Symbol* PublicIfUnamedSubSymbolFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
 
+    void initialize() {} // pseudo polymorphic call (not virtual but used in the system 'as if')
+    void terminate() override;
     virtual ~LanguageElement();
 
-    void terminate();
-
 public:
+    struct Owner
+    {
+        explicit Owner(LanguageElement* a_pElem) : this_(a_pElem) {}
+        LanguageElement* this_;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  scope accessible new-like for language element creation.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    template<class T, class... Args>
+    T* New(Args&&... a_Args)
+    {
+        return m_pSource->_New<T>(Owner(this), std::forward<Args>(a_Args)...);
+    }
+    template<class T, class... Args>
+    T* NewDeferred(Args&&... a_Args)
+    {
+        return m_pSource->_NewDeferred<T>(Owner(this), std::forward<Args>(a_Args)...);
+    }
+    template<class T, class... Args>
+    T* NewMeta(Args&&... a_Args)
+    {
+        return m_pSource->_NewMeta<T>(Owner(this), std::forward<Args>(a_Args)...);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  scope accessible delete-like for language element destruction.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void Delete(LanguageElement* a_pLanguageElement);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets elements owned by this one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,7 +397,7 @@ public:
     /// \return The source holding this element or this if it is a source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getSource() const;
+    Source* getSource() const { return m_pSource; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if this element can be destroyed safely.
@@ -485,49 +517,6 @@ public:
                                 PlaceholderMap& a_Deductions) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a referenced element.
-    ///
-    /// \param a_pElement  The referenced element to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addReferencedElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a referenced element but assert in case of element already referenced.
-    ///
-    /// \param a_pElement  The referenced element to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addUniquelyReferencedElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a referenced element.
-    ///
-    /// \param a_pElement  The referenced element to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeReferencedElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \internal
-    /// \brief  Adds a scoped element (allows to add an element partially only for scope
-    /// resolution).
-    ///
-    /// \param a_pElement  The element to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addScopedElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \internal
-    /// \brief  Removes a scoped element.
-    ///
-    /// \param a_pElement  The element to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeScopedElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Fetches modules referenced inside this element (i.e. modules managing elements
     /// referenced by this element).
     ///
@@ -596,30 +585,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void getElementsDeep(LanguageElements& a_Elements) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a sub element.
-    ///
-    /// \param a_pElement  The element to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addElement(LanguageElement* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a named sub element.
-    ///
-    /// \param a_pElement  The element to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addSymbol(Symbol* a_pElement);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a sub element.
-    ///
-    /// \param a_pElement  The element to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeElement(LanguageElement* a_pElement);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a unique element with the given name and modifiers. If multiple elements are
@@ -906,16 +871,12 @@ public:
 
     virtual int destructionPriority() const;
 
+    void setOwner(LanguageElement* a_pOwner);
+
 protected:
     LanguageElement(uint a_uiFlags = 0);
 
 protected:
-    virtual void onAncestorChanged(LanguageElement* a_pOwner);
-    virtual void onAncestorAboutToBeChanged(LanguageElement* a_pOwner);
-    virtual void onElementAdded(LanguageElement* a_pElement);
-    virtual void onElementRemoved(LanguageElement* a_pElement);
-    virtual void onReferencedElementAdded(LanguageElement* a_pElement);
-    virtual void onReferencedElementRemoved(LanguageElement* a_pElement);
     virtual void onInvalidated();
     virtual void onElementsAccess() {}
 
@@ -927,28 +888,19 @@ protected:
     void _onElementsAccess();
 
 private:
-    void setOwner(LanguageElement* a_pOwner);
-    void _onAncestorChanged(LanguageElement* a_pAncestor);
-    void _onAncestorAboutToBeChanged(LanguageElement* a_pOwner);
     void replaceElement(LanguageElement* a_pOld, LanguageElement* a_pNew);
     void registerReferencingElement(LanguageElement* a_pElement);
     void unregisterReferencingElement(LanguageElement* a_pElement);
     void _nativeDetachElementsFromModule();
 
 private:
-    LanguageElement* m_pOwner; /// Owner represents the real container of the element, not the
-                               /// naming scope (both can still be equal). For example a global
-                               /// function is owned by its source, not by the global namespace
-    LanguageElements* m_pElements;
-    LanguageElements* m_pReferencingElements;
-    LanguageElements* m_pReferencedElements;
+    LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the
+                                 /// naming scope (both can still be equal). For example a global
+                                 /// function is owned by its source, not by the global namespace
+    LanguageElements* m_pElements{};
+    Source*           m_pSource{};
     CodeRange         m_CodeRange;
-    uint              m_uiFlags;
-
-private:
-    static void             Register(LanguageElement*);
-    static void             Unregister(LanguageElement*);
-    static LanguageElements sm_Elements;
+    uint              m_uiFlags{};
 };
 
 } // namespace lang

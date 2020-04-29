@@ -157,7 +157,6 @@ public:
 
 protected:
     size_t getElementCount() const { return m_uiCount; } // just to check compile error, must be removed !!
-    void   onReferencedElementRemoved(LanguageElement* a_pItem) override;
 
 protected:
     size_t m_uiCount;

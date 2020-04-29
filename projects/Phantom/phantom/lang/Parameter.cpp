@@ -9,7 +9,6 @@
 
 #include "Application.h"
 #include "TypeOf.h"
-#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {

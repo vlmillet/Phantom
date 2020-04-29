@@ -14,7 +14,6 @@
 #include "RValueReference.h"
 #include "Signature.h"
 #include "VirtualMethodTable.h"
-#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -216,11 +215,21 @@ Type* Method::getImplicitObjectParameterType() const
     return pImplicitObjectParameterType->makeLValueReference();
 }
 
-LocalVariable* Method::createThis() const
+void Method::_onAttachedToClass(ClassType* a_pClass)
 {
-    return PHANTOM_NEW(LocalVariable)(isConst() ? getEnclosingClassType()->makeConst()->makePointer()->makeConst()
-                                                : getEnclosingClassType()->makePointer()->makeConst(),
-                                      "this");
+    // create this
+    PHANTOM_ASSERT(m_pThis == nullptr); // ASSERT_DEBUG
+    m_pThis = New<LocalVariable>(
+    isConst() ? a_pClass->makeConst()->makePointer()->makeConst() : a_pClass->makePointer()->makeConst(), "this");
+
+    // normalize conversion function name (only if native)
+    if (isNative())
+    {
+        StringBuffer buffer;
+        conversionOperatorNameNormalizer(m_strName, buffer, a_pClass);
+        m_strName.clear();
+        m_strName.append(buffer.data(), buffer.size());
+    }
 }
 
 LocalVariable* Method::getThis() const
@@ -261,21 +270,6 @@ OpaqueDelegate Method::getOpaqueDelegate() const
         return *reinterpret_cast<OpaqueDelegate*>(&s); // empty by default
     }
     return OpaqueDelegate();
-}
-
-void Method::onAncestorChanged(LanguageElement* a_pAncestor)
-{
-    Subroutine::onAncestorChanged(a_pAncestor);
-    if (a_pAncestor == getOwner())
-    {
-        if (!(isNative()))
-        {
-            if (getAccess() == Access::Undefined)
-                setAccess(static_cast<ClassType*>(a_pAncestor)->getDefaultAccess());
-            m_pThis = createThis();
-            addElement(m_pThis);
-        }
-    }
 }
 
 typedef SmallVector<void*, 7> TempArgs;

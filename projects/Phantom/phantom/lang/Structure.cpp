@@ -8,14 +8,13 @@
 #include "Structure.h"
 
 #include "ValueMember.h"
-#include "phantom/detail/new.h"
 /* *********************************************** */
 namespace phantom
 {
 namespace lang
 {
 Structure::Structure(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ClassType(TypeKind::Structure, PHANTOM_NEW(ExtraData), a_strName, a_Modifiers, a_uiFlags)
+    : ClassType(TypeKind::Structure, phantom::New<ExtraData>(), a_strName, a_Modifiers, a_uiFlags)
 {
 }
 

@@ -108,9 +108,9 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
         MODULEINFO modInfo{};
         PHANTOM_VERIFY(
         GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));
-        info->setModule(PHANTOM_DEFERRED_NEW(Module)(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
-                                                     info->m_BinaryFileName, info->m_Source,
-                                                     info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
+        info->setModule(phantom::New<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
+                                             info->m_BinaryFileName, info->m_Source,
+                                             info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
@@ -556,21 +556,9 @@ void Application::removeModule(Module* a_pModule)
 
 void Application::_removeModule(Module* a_pModule)
 {
-    removeElement(a_pModule);
-}
-
-void Application::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (Module* pModule = a_pElement->asModule())
-    {
-        PHANTOM_EMIT moduleAboutToBeRemoved(pModule);
-        m_Modules.erase(std::find(m_Modules.begin(), m_Modules.end(),
-                                  static_cast<Module*>(pModule))); // Remove dependencies reference of this module
-    }
-    else if (a_pElement->asNamespace())
-    {
-        PHANTOM_ASSERT(a_pElement->isInvalid() || Namespace::Global() == a_pElement);
-    }
+    PHANTOM_EMIT moduleAboutToBeRemoved(a_pModule);
+    m_Modules.erase(std::find(m_Modules.begin(), m_Modules.end(),
+                              static_cast<Module*>(a_pModule))); // Remove dependencies reference of this module
 }
 
 void Application::_registerBuiltInTypes()
@@ -579,10 +567,8 @@ void Application::_registerBuiltInTypes()
     phantom::lang::BuiltInTypes::Register();
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
-    for (auto pType : m_BuiltInTypes)
-        pPhantomModule->addElement(pType);
-    Alias* pUnsignedAlias = PHANTOM_DEFERRED_NEW(Alias)(PHANTOM_TYPEOF(unsigned), "unsigned", 0, PHANTOM_R_FLAG_NATIVE);
-    pPhantomModule->addSymbol(pUnsignedAlias);
+    Alias* pUnsignedAlias = NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", 0, PHANTOM_R_FLAG_NATIVE);
+    pPhantomModule->addSymbol();
     Namespace::Global()->addReferencedElement(pUnsignedAlias);
 
     Namespace* pGlobal = Namespace::Global();
@@ -699,6 +685,7 @@ void Application::_addBuiltInType(Type* a_pType)
 {
     PHANTOM_ASSERT(getBuiltInType(a_pType->getDecoratedName()) == nullptr);
     m_BuiltInTypes.push_back(a_pType);
+    a_pType->setOwner(this);
 }
 
 void Application::_removeBuiltInType(Type*) {}
@@ -1023,14 +1010,31 @@ void Application::removePlugin(Plugin* a_pPlugin)
     m_Plugins.erase(std::find(m_Plugins.begin(), m_Plugins.end(), a_pPlugin));
 }
 
+Module* Application::newModule(StringView a_strName)
+{
+    PHANTOM_ASSERT(dynamic_initializer_()->installed(), "cannot be called before main()");
+    Module* pMod = phantom::New<Module>(a_strName);
+    pMod->rtti.instance = pMod;
+    pMod->rtti.metaClass = PHANTOM_CLASSOF(Module);
+    pMod->setOwner(this);
+    pMod->initialize();
+    pMod->rtti.metaClass->registerInstance(pMod);
+    return pMod;
+}
+
 void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
 {
     if (m_pRootPackageFolder == nullptr)
     {
-        const_cast<Application*>(this)->m_pRootPackageFolder = PHANTOM_DEFERRED_NEW(PackageFolder);
-        const_cast<Application*>(this)->addElement(m_pRootPackageFolder);
+        PackageFolder* pPF = phantom::New<PackageFolder>();
+        pPF->rtti.instance = pPF;
+        pPF->setOwner(const_cast<Application*>(this));
+        phantom::detail::deferInstallation("phantom::lang::PackageFolder",
+                                           &const_cast<Application*>(this)->m_pRootPackageFolder->rtti);
+        pPF->initialize();
+        const_cast<Application*>(this)->m_pRootPackageFolder = pPF;
     }
     return m_pRootPackageFolder;
 }
@@ -1554,6 +1558,35 @@ void Application::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullpt
     for (auto p : m_Modules)
     {
         p->findClasses(a_Classes, a_pBaseClass, a_bDefaultInstanciable);
+    }
+}
+
+void Application::_NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
+{
+    PHANTOM_ASSERT(m_pDefaultSource);
+    a_pElem->setOwner(a_pOwner);
+    a_pElem->m_pSource = m_pDefaultSource;
+    a_pElem->rtti.instance = a_pMD;
+    a_pElem->rtti.metaClass = a_pClass;
+    a_pElem->rtti.metaClass->registerInstance(a_pMD);
+}
+
+void Application::_NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+                                StringView a_QN)
+{
+    PHANTOM_ASSERT(m_pDefaultSource);
+    a_pElem->setOwner(a_pOwner);
+    a_pElem->m_pSource = m_pDefaultSource;
+    a_pElem->rtti.instance = a_pMD;
+    a_pElem->rtti.metaClass->registerInstance(a_pMD);
+    if (!dynamic_initializer_()->installed())
+    {
+        phantom::detail::deferInstallation(a_QN, &a_pElem->rtti);
+    }
+    else
+    {
+        PHANTOM_VERIFY(a_pElem->rtti.metaClass = a_pClass);
+        a_pElem->rtti.metaClass->registerInstance(a_pMD);
     }
 }
 

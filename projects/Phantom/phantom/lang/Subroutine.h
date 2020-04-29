@@ -878,8 +878,6 @@ protected:
     /// \internal
     void placementApply(void** a_pArgs, size_t a_uiCount) const;
 
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-
     uint64_t getUniqueID() const override { return uint64_t(this); }
 
 protected:

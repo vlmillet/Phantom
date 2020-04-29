@@ -42,6 +42,68 @@ public:
 
     void terminate();
 
+    // source level new (we use custom allocator here and plug owner)
+    template<class T, class... Args>
+    T* New(Owner a_Owner, Args&&... a_Args)
+    {
+        PHANTOM_STATIC_ASSERT(std::is_base_of<LanguageElement, T>::value);
+        T* ptr = new (m_Allocator.allocate(sizeof(T))) T{std::forward<Args>(a_Args)...};
+        _NewH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr);
+        ptr->initialize();
+        return ptr;
+    }
+
+    // source is owner of the newed element
+    template<class T, class... Args>
+    T* New(Args&&... a_Args)
+    {
+        return New(Owner(this), std::forward<Args>(a_Args)...);
+    }
+
+    // source is owner of the newed element
+    template<class T, class... Args>
+    T* NewDeferred(Args&&... a_Args)
+    {
+        return NewDeferred(Owner(this), std::forward<Args>(a_Args)...);
+    }
+
+    template<class T, class... Args>
+    T* NewDeferred(Owner a_Owner, Args&&... a_Args)
+    {
+        PHANTOM_STATIC_ASSERT(std::is_base_of<LanguageElement, T>::value);
+        T* ptr = new (m_Allocator.allocate(sizeof(T))) T{std::forward<Args>(a_Args)...};
+        _NewDeferredH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr,
+                      lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
+        ptr->initialize();
+        return ptr;
+    }
+
+    void Delete(LanguageElement* a_pElem);
+
+    template<typename T>
+    struct DeleteMetaH
+    {
+        template<typename _Tyy>
+        PHANTOM_FORCEINLINE void operator>>(_Tyy* a_pInstance)
+        {
+            auto pMetaClass = T::MetaClass();
+            pMetaClass->unregisterInstance(a_pInstance);
+            PHANTOM_ASSERT(a_pInstance->rtti.instance == a_pInstance);
+            PHANTOM_ASSERT(a_pInstance->rtti.dtor == &DynamicDeleteMetaHelper<T>::dynamicDelete);
+            PHANTOM_ASSERT(a_pInstance->rtti.metaClass == pMetaClass);
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"
+#endif
+            Constructor<T>::destroy(static_cast<T*>(a_pInstance));
+
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
+#    pragma clang diagnostic pop
+#endif
+            phantom::deallocate(a_pInstance);
+        }
+    };
+
     Module* asModule() const override { return (Module*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,9 +363,6 @@ protected:
     hash64 computeHash() const override;
 
 private:
-    void onElementAdded(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a module from a name and a source path.
     ///
@@ -331,6 +390,7 @@ private:
     FuncT                   m_OnLoad = nullptr;
     FuncT                   m_OnUnload = nullptr;
     MemoryContext           m_MemoryContext;
+    ForwardHeapSequence     m_Allocator{65536};
     bool                    m_bOutdated = false;
 };
 

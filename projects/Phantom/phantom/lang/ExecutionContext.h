@@ -7,7 +7,6 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/detail/VirtualDelete.h>
 #include <phantom/lang/reflection.h>
 #include <phantom/utils/SmallVector.h>
 /* **************** Declarations ***************** */
@@ -20,14 +19,12 @@ namespace lang
 class PHANTOM_EXPORT_PHANTOM ExecutionContext
 {
 public:
-    PHANTOM_DECL_ABSTRACT_DELETE_METHOD(ExecutionContext);
-
     static void              Push(ExecutionContext* a_pExecutionContext);
     static void              Pop();
     static ExecutionContext* Current();
 
     ExecutionContext() { m_resultPointers[0] = nullptr; }
-    ~ExecutionContext();
+    virtual ~ExecutionContext();
     enum
     {
         e_max_calls = 1024

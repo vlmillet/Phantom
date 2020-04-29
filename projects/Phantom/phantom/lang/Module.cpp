@@ -14,7 +14,6 @@
 #include "SourceStream.h"
 #include "TemplateSpecialization.h"
 #include "phantom/detail/core_internal.h"
-#include "phantom/detail/new.h"
 
 #include <fstream>
 #include <phantom/utils/Path.h>

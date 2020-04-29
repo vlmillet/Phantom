@@ -6,16 +6,12 @@
 
 /* ******************* Includes ****************** */
 #include "Alias.h"
-
-#include <phantom/detail/new.h>
 /* *********************************************** */
 namespace phantom
 {
 namespace lang
 {
-Alias::Alias(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/) : Symbol("", a_Modifiers, a_uiFlags)
-{
-}
+Alias::Alias(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/) : Symbol("", a_Modifiers, a_uiFlags) {}
 
 Alias::Alias(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags)
@@ -25,39 +21,7 @@ Alias::Alias(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags
 Alias::Alias(Symbol* a_pSymbol, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pAliasedSymbol(a_pSymbol)
 {
-    if (m_pAliasedSymbol)
-    {
-        addReferencedElement(m_pAliasedSymbol);
-    }
-    else
-        setInvalid();
-}
-
-void Alias::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pAliasedSymbol == a_pElement)
-        m_pAliasedSymbol = nullptr;
-}
-
-void Alias::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pAliases)
-    {
-        for (auto it = m_pAliases->begin(); it != m_pAliases->end(); ++it)
-        {
-            if ((*it) == a_pElement)
-            {
-                m_pAliases->erase(it);
-                if (m_pAliases->empty())
-                {
-                    PHANTOM_DELETE(Aliases) m_pAliases;
-                    m_pAliases = nullptr;
-                    break;
-                }
-            }
-        }
-    }
-    Symbol::onElementRemoved(a_pElement);
+    PHANTOM_ASSERT(m_pAliasedSymbol);
 }
 
 void Alias::addAlias(Alias* a_pAlias)
@@ -65,17 +29,17 @@ void Alias::addAlias(Alias* a_pAlias)
     if (m_pAliases == nullptr)
         m_pAliases = PHANTOM_NEW(Aliases);
     m_pAliases->push_back(a_pAlias);
-    addElement(a_pAlias);
+    a_pAlias->setOwner(this);
 }
 
 Alias* Alias::getAlias(StringView a_strName) const
 {
     if (m_pAliases)
     {
-        for (auto it = m_pAliases->begin(); it != m_pAliases->end(); ++it)
+        for (auto pSA : *m_pAliases)
         {
-            if ((*it)->getName() == a_strName)
-                return *it;
+            if (pSA->getName() == a_strName)
+                return pSA;
         }
     }
     return nullptr;
@@ -88,7 +52,7 @@ void Alias::fetchAccessibleSymbols(Symbols&, bool) const
 
 Alias* Alias::Create(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers, uint a_uiFlags)
 {
-    return PHANTOM_DEFERRED_NEW_EX(Alias)(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
+    return New<Alias>(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
 }
 
 } // namespace lang

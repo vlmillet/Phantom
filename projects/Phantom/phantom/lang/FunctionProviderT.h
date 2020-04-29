@@ -31,27 +31,18 @@ struct StaticMethodPointerSimplifier<R(Ps...)>
 {
     typedef R (*SourcePtr)(Ps...);
     typedef SimplifiedTypeT<SourcePtr> SimplifiedPtr;
-    static SimplifiedPtr               Simplify(SourcePtr p)
-    {
-        return (SimplifiedPtr)p;
-    }
+    static SimplifiedPtr               Simplify(SourcePtr p) { return (SimplifiedPtr)p; }
 
 #if PHANTOM_HAS_STDCALL
     typedef R(PHANTOM_CALLCONV(stdcall) * StdCallSourcePtr)(Ps...);
     typedef SimplifiedTypeT<StdCallSourcePtr> StdCallSimplifiedPtr;
-    static StdCallSimplifiedPtr               Simplify(StdCallSourcePtr p)
-    {
-        return (StdCallSimplifiedPtr)p;
-    }
+    static StdCallSimplifiedPtr               Simplify(StdCallSourcePtr p) { return (StdCallSimplifiedPtr)p; }
 #endif
 
 #if PHANTOM_HAS_FASTCALL
     typedef R(PHANTOM_CALLCONV(fastcall) * FastCallSourcePtr)(Ps...);
     typedef SimplifiedTypeT<FastCallSourcePtr> FastCallSimplifiedPtr;
-    static FastCallSimplifiedPtr               Simplify(FastCallSourcePtr p)
-    {
-        return (FastCallSimplifiedPtr)p;
-    }
+    static FastCallSimplifiedPtr               Simplify(FastCallSourcePtr p) { return (FastCallSimplifiedPtr)p; }
 #endif
 };
 
@@ -60,10 +51,7 @@ struct StaticMethodPointerSimplifier<R(Ps..., ...)>
 {
     typedef R (*SourcePtr)(Ps..., ...);
     typedef SimplifiedTypeT<SourcePtr> SimplifiedPtr;
-    static SimplifiedPtr               Simplify(SourcePtr p)
-    {
-        return (SimplifiedPtr)p;
-    }
+    static SimplifiedPtr               Simplify(SourcePtr p) { return (SimplifiedPtr)p; }
 };
 
 #if defined(cdecl)
@@ -80,29 +68,29 @@ class FunctionProviderT<t_ReturnType (*)(v_Params...)> final
 {
 public:
 #if PHANTOM_HAS_STDCALL
-    static Function* CreateFunction(StringView a_strName, Signature* a_pSignature,
+    static Function* CreateFunction(LanguageElement* a_pOwner, StringView a_strName, Signature* a_pSignature,
                                     t_ReturnType(PHANTOM_CALLCONV(stdcall) * a_pFunc)(v_Params...),
                                     Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
     {
         auto sptr = StaticMethodPointerSimplifier<t_ReturnType(v_Params...)>::Simplify(a_pFunc);
-        return PHANTOM_META_NEW(FunctionT<decltype(sptr)>)(a_strName, a_pSignature, sptr,
-                                                           a_Modifiers | PHANTOM_R_STATIC, a_uiFlags);
+        return a_pOwner->NewMeta<FunctionT<decltype(sptr)>>(a_strName, a_pSignature, sptr,
+                                                            a_Modifiers | PHANTOM_R_STATIC, a_uiFlags);
     }
 #endif
-    static Function* CreateFunction(StringView a_strName, Signature* a_pSignature,
+    static Function* CreateFunction(LanguageElement* a_pOwner, StringView a_strName, Signature* a_pSignature,
                                     t_ReturnType(PHANTOM_CALLCONV(cdecl) * a_pFunc)(v_Params...),
                                     Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
     {
         auto sptr = StaticMethodPointerSimplifier<t_ReturnType(v_Params...)>::Simplify(a_pFunc);
-        return PHANTOM_META_NEW(FunctionT<decltype(sptr)>)(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
+        return a_pOwner->NewMeta<FunctionT<decltype(sptr)>>(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
     }
 #if PHANTOM_HAS_FASTCALL
-    static Function* CreateFunction(StringView a_strName, Signature* a_pSignature,
+    static Function* CreateFunction(LanguageElement* a_pOwner, StringView a_strName, Signature* a_pSignature,
                                     t_ReturnType(PHANTOM_CALLCONV(fastcall) * a_pFunc)(v_Params...),
                                     Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
     {
         auto sptr = StaticMethodPointerSimplifier<t_ReturnType(v_Params...)>::Simplify(a_pFunc);
-        return PHANTOM_META_NEW(FunctionT<decltype(sptr)>)(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
+        return a_pOwner->NewMeta<FunctionT<decltype(sptr)>>(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
     }
 #endif
 };
@@ -111,12 +99,12 @@ template<typename t_ReturnType, class... v_Params>
 class FunctionProviderT<t_ReturnType (*)(v_Params..., ...)> final
 {
 public:
-    static Function* CreateFunction(StringView a_strName, Signature*                     a_pSignature,
+    static Function* CreateFunction(LanguageElement* a_pOwner, StringView a_strName, Signature* a_pSignature,
                                     t_ReturnType (*a_pFunc)(v_Params..., ...), Modifiers a_Modifiers = 0,
                                     uint a_uiFlags = 0)
     {
         auto sptr = StaticMethodPointerSimplifier<t_ReturnType(v_Params..., ...)>::Simplify(a_pFunc);
-        return PHANTOM_META_NEW(FunctionT<decltype(sptr)>)(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
+        return a_pOwner->NewMeta<FunctionT<decltype(sptr)>>(a_strName, a_pSignature, sptr, a_Modifiers, a_uiFlags);
     }
 };
 

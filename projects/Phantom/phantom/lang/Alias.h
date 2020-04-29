@@ -52,20 +52,11 @@ public:
 
     Alias(Symbol* a_pSymbol, StringView a_strName = "", Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    Type* toType() const override
-    {
-        return m_pAliasedSymbol ? m_pAliasedSymbol->toType() : nullptr;
-    }
+    Type* toType() const override { return m_pAliasedSymbol ? m_pAliasedSymbol->toType() : nullptr; }
 
-    Namespace* toNamespace() const override
-    {
-        return m_pAliasedSymbol ? m_pAliasedSymbol->toNamespace() : nullptr;
-    }
+    Namespace* toNamespace() const override { return m_pAliasedSymbol ? m_pAliasedSymbol->toNamespace() : nullptr; }
 
-    Alias* asAlias() const override
-    {
-        return (Alias*)this;
-    }
+    Alias* asAlias() const override { return (Alias*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets aliased symbol.
@@ -73,10 +64,7 @@ public:
     /// \return null if it fails, else the aliased symbol.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Symbol* getAliasedSymbol() const
-    {
-        return m_pAliasedSymbol;
-    }
+    Symbol* getAliasedSymbol() const { return m_pAliasedSymbol; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets aliased element.
@@ -84,10 +72,7 @@ public:
     /// \param [in,out] a_pElement  If non-null, the element.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setAliasedSymbol(Symbol* a_pElement)
-    {
-        m_pAliasedSymbol = a_pElement;
-    }
+    void setAliasedSymbol(Symbol* a_pElement) { m_pAliasedSymbol = a_pElement; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a sub alias to this alias.
@@ -108,10 +93,6 @@ public:
     Alias* getAlias(StringView a_strName) const;
 
     virtual void fetchAccessibleSymbols(Symbols& a_Symbols, bool a_bIncludeUnamedSubSymbols = true) const;
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
 
 private:
     Symbol*  m_pAliasedSymbol = nullptr;

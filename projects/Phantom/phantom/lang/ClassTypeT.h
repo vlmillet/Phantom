@@ -34,7 +34,7 @@ struct DefaultCtorProviderH
     {
         if (a_pType->getDefaultConstructor() == nullptr)
         {
-            auto pCtor = PHANTOM_META_NEW(ConstructorT<t_Ty, void()>)(
+            auto pCtor = a_pType->NewMeta<ConstructorT<t_Ty, void()>>(
             a_strName, Signature::Create(PHANTOM_TYPEOF(void), PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE), PHANTOM_R_NONE,
             PHANTOM_R_FLAG_IMPLICIT);
             pCtor->setAccess(Access::Public);
@@ -60,7 +60,7 @@ struct DefaultCopyCtorProviderH
     {
         if (a_pType->getCopyConstructor() == nullptr)
         {
-            auto pCtor = PHANTOM_META_NEW(ConstructorT<t_Ty, void(const t_Ty&)>)(
+            auto pCtor = NewMeta<ConstructorT<t_Ty, void(const t_Ty&)>>(
             a_strName,
             Signature::Create(PHANTOM_TYPEOF(void), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
                               PHANTOM_R_FLAG_NATIVE),
@@ -89,7 +89,7 @@ struct DefaultCopyAssignOpProviderH
     {
         if (a_pType->getCopyAssignmentOperator() == nullptr)
         {
-            auto pFunc = PHANTOM_META_NEW(MethodT<t_Ty, t_Ty& (t_Ty::*)(const t_Ty&)>)(
+            auto pFunc = NewMeta<MethodT<t_Ty, t_Ty& (t_Ty::*)(const t_Ty&)>>(
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
                               PHANTOM_R_FLAG_NATIVE),
@@ -108,7 +108,7 @@ struct DefaultCopyAssignOpProviderH
         t_Ty& (t_Ty::*mf)(const t_Ty&) = &t_Ty::operator=;
         if (a_pType->getCopyAssignmentOperator() == nullptr)
         {
-            auto pFunc = PHANTOM_META_NEW(MethodT<int& (DummyClass::*)(int&)>)(
+            auto pFunc = NewMeta<MethodT<int& (DummyClass::*)(int&)>>(
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
                               PHANTOM_R_FLAG_NATIVE),
@@ -137,7 +137,7 @@ struct DefaultMoveCtorProviderH
     {
         if (a_pType->getMoveConstructor() == nullptr)
         {
-            auto pCtor = PHANTOM_META_NEW(ConstructorT<t_Ty, void(t_Ty &&)>)(
+            auto pCtor = NewMeta<ConstructorT<t_Ty, void(t_Ty &&)>>(
             a_strName,
             Signature::Create(PHANTOM_TYPEOF(void), a_pType->addRValueReference(), Modifiers(0), PHANTOM_R_FLAG_NATIVE),
             PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
@@ -169,7 +169,7 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
         PHANTOM_ASSERT(a_pType->getMoveAssignmentOperator() == nullptr, _PHNTM_do_not_declare_trivials_text);
         if (a_pType->getMoveAssignmentOperator() == nullptr)
         {
-            auto pFunc = PHANTOM_META_NEW(MethodT<t_Ty, t_Ty& (t_Ty::*)(t_Ty &&)>)(
+            auto pFunc = NewMeta<MethodT<t_Ty, t_Ty& (t_Ty::*)(t_Ty &&)>>(
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addRValueReference(), PHANTOM_R_NONE,
                               PHANTOM_R_FLAG_NATIVE),
@@ -188,7 +188,7 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
         t_Ty& (t_Ty::*mf)(t_Ty &&) = &t_Ty::operator=;
         if (a_pType->getMoveAssignmentOperator() == nullptr)
         {
-            auto pFunc = PHANTOM_META_NEW(MethodT<int& (DummyClass::*)(int&)>)(
+            auto pFunc = NewMeta<MethodT<int& (DummyClass::*)(int&)>>(
             "operator=",
             Signature::Create(a_pType->addLValueReference(), a_pType->addRValueReference(), Modifiers(0),
                               PHANTOM_R_FLAG_NATIVE),
@@ -216,7 +216,7 @@ struct DtorProviderH
     static void apply(ClassType* a_pType, StringView a_strName)
     {
         PHANTOM_ASSERT(a_pType->getDestructor() == nullptr, _PHNTM_do_not_declare_trivials_text);
-        auto pDtor = PHANTOM_META_NEW(DestructorT<t_Ty>)(a_strName);
+        auto pDtor = NewMeta<DestructorT<t_Ty>>(a_strName);
         pDtor->setAccess(Access::Public);
         a_pType->addMethod(pDtor);
     }
@@ -340,13 +340,13 @@ public:
 };
 
 template<typename t_Ty, typename t_Base>
-struct TypeOf<ClassTypeT<t_Ty, t_Base> >
+struct TypeOf<ClassTypeT<t_Ty, t_Base>>
 {
     static Type* object() { return Class::metaClass; }
 };
 
 template<typename t_Ty, typename t_Base>
-struct MetaTypeOf<ClassTypeT<t_Ty, t_Base> >
+struct MetaTypeOf<ClassTypeT<t_Ty, t_Base>>
 {
     typedef MetaTypeOf<Class>::type type;
 };

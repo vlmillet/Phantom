@@ -21,7 +21,6 @@ AnonymousSection::AnonymousSection(Modifiers modifiers /*= 0*/, uint a_uiFlags /
 void AnonymousSection::addVariable(Variable* a_pVariable)
 {
     PHANTOM_ASSERT(a_pVariable);
-    addReferencedElement(a_pVariable);
     m_Variables.push_back(a_pVariable);
     m_DataElements.push_back(a_pVariable);
     PHANTOM_ASSERT(a_pVariable->m_pAnonymousSection == nullptr);
@@ -30,39 +29,14 @@ void AnonymousSection::addVariable(Variable* a_pVariable)
 
 void AnonymousSection::addAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
-    PHANTOM_ASSERT(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), a_pAnonymousSection) ==
-                   m_AnonymousSections.end());
-    addElement(a_pAnonymousSection);
+    m_AnonymousSections.push_back(a_pAnonymousSection);
+    m_DataElements.push_back(a_pAnonymousSection);
 }
 
 void AnonymousSection::removeAnonymousSection(AnonymousSection* a_pAnonymousSection)
 {
     m_AnonymousSections.erase(std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), a_pAnonymousSection));
-    removeElement(a_pAnonymousSection);
-}
-
-void AnonymousSection::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    auto found = std::find(m_Variables.begin(), m_Variables.end(), a_pElement);
-    if (found != m_Variables.end())
-    {
-        m_Variables.erase(found);
-        PHANTOM_ASSERT(a_pElement->asVariable());
-        static_cast<Variable*>(a_pElement)->m_pAnonymousSection = nullptr;
-    }
-}
-
-void AnonymousSection::onElementAdded(LanguageElement* a_pElement)
-{
-    m_AnonymousSections.push_back(static_cast<AnonymousSection*>(a_pElement));
-    m_DataElements.push_back(a_pElement);
-}
-
-void AnonymousSection::onElementRemoved(LanguageElement* a_pElement)
-{
-    m_AnonymousSections.erase(
-    std::find(m_AnonymousSections.begin(), m_AnonymousSections.end(), static_cast<AnonymousSection*>(a_pElement)));
-    m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), a_pElement));
+    m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), a_pAnonymousSection));
 }
 
 } // namespace lang

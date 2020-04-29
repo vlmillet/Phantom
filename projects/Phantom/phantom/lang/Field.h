@@ -41,8 +41,8 @@ public:
     /// \param  a_uiModifiers           (optional) the Data member's modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Field(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask = ~0u,
-          Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Field(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask = ~0u, Modifiers a_Modifiers = 0,
+          uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the offset from base address.
@@ -50,10 +50,7 @@ public:
     /// \return The offset from base address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline size_t getOffset() const override
-    {
-        return m_uiOffset;
-    }
+    inline size_t getOffset() const override { return m_uiOffset; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  adjusts address of the given instance to this field's address.
@@ -63,10 +60,7 @@ public:
     /// \return The adjusted address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void* getAddress(void const* a_pInstance) const override
-    {
-        return (byte*)a_pInstance + m_uiOffset;
-    }
+    void* getAddress(void const* a_pInstance) const override { return (byte*)a_pInstance + m_uiOffset; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  adjusts address of the given instance to this field's address and cast to 'T*'.
@@ -89,10 +83,7 @@ public:
     /// \return null if it doesn't have associated anonymous section , else the anonymous section.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MemberAnonymousSection* getMemberAnonymousSection() const
-    {
-        return m_pMemberAnonymousSection;
-    }
+    MemberAnonymousSection* getMemberAnonymousSection() const { return m_pMemberAnonymousSection; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the first anonymous union embedding this Data member.
@@ -117,14 +108,8 @@ public:
 
     // reimplemented from ValueMember
 
-    bool isWrittable() const override
-    {
-        return true;
-    }
-    bool isReadable() const override
-    {
-        return true;
-    }
+    bool isWrittable() const override { return true; }
+    bool isReadable() const override { return true; }
 
     size_t getAlignment() const override;
     size_t getSize() const override;
@@ -133,24 +118,14 @@ public:
     void setValue(void* a_pObject, void const* a_pSrc) const override;
     void setValueMoved(void* a_pObject, void* src) const override;
 
-    Field* asField() const override
-    {
-        return const_cast<Field*>(this);
-    }
-    DataElement* asDataElement() const override
-    {
-        return const_cast<Field*>(this);
-    }
-    void fetchFields(Fields& a_Out) const override;
+    Field*       asField() const override { return const_cast<Field*>(this); }
+    DataElement* asDataElement() const override { return const_cast<Field*>(this); }
+    void         fetchFields(Fields& a_Out) const override;
 
 protected:
-    Field(Type* a_pValueType, StringView a_strName, size_t a_uiOffset, uint a_uiFilterMask,
-          Modifiers a_Modifiers, uint a_uiFlags);
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void setOffset(size_t a_uiOffset) override
-    {
-        m_uiOffset = a_uiOffset;
-    }
+    Field(Type* a_pValueType, StringView a_strName, size_t a_uiOffset, uint a_uiFilterMask, Modifiers a_Modifiers,
+          uint a_uiFlags);
+    void setOffset(size_t a_uiOffset) override { m_uiOffset = a_uiOffset; }
 
 protected:
     size_t                  m_uiOffset;

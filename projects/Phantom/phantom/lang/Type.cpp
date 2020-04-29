@@ -19,7 +19,6 @@
 #include "TemplateSpecialization.h"
 
 #include <phantom/detail/core_internal.h>
-#include <phantom/detail/new.h>
 #include <phantom/utils/Delegate.h>
 #include <phantom/utils/crc64.h>
 /* *********************************************** */
@@ -682,36 +681,32 @@ void Type::onReferencedElementRemoved(LanguageElement* a_pElement)
     LanguageElement::onReferencedElementRemoved(a_pElement);
 }
 
-void Type::onAncestorAboutToBeChanged(LanguageElement* a_pOwner)
+void Type::onNamespaceChanging(Namespace* a_pNamespace)
 {
-    Symbol::onAncestorAboutToBeChanged(a_pOwner);
+    PHANTOM_ASSERT(getOwner()); // ASSERT_DEBUG
     if (!isNative())
     {
-        if (a_pOwner == getModule() &&
-            (getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
              getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
             ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
             !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
-            static_cast<Module*>(a_pOwner)->_unregisterType(m_Hash, this);
+            getModule()->_unregisterType(m_Hash, this);
         }
     }
 }
 
-void Type::onAncestorChanged(LanguageElement* a_pOwner)
+void Type::onNamespaceChanged(Namespace* a_pNamespace)
 {
-    Symbol::onAncestorChanged(a_pOwner);
+    PHANTOM_ASSERT(getOwner()); // ASSERT_DEBUG
     if (!isNative())
     {
-        if (a_pOwner == getModule() &&
-            (getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
              getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
             ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
             !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
         {
-            auto nscope = getNamingScope();
-            PHANTOM_ASSERT(nscope, "naming scope (namespace or class type) must be defined before inserting to module");
-            static_cast<Module*>(a_pOwner)->_registerType(getHash(), this);
+            getModule()->_registerType(getHash(), this);
         }
     }
 }

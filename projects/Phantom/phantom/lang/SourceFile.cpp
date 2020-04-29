@@ -15,7 +15,6 @@
 #    include <fstream>
 #    include <phantom/utils/Path.h>
 #endif
-#include "phantom/detail/new.h"
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_LINUX
 #    include <sys/stat.h>
 #endif

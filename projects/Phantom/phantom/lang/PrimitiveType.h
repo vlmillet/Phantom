@@ -52,8 +52,10 @@ public:
     /// \return The PHANTOM_NEW(constant).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Constant* createConstant(void* a_pSrc, StringView a_strName = "",
+    virtual Constant* createConstant(LanguageElement* a_pOwner, void* a_pSrc, StringView a_strName = "",
                                      PrimitiveType* a_pPrimitiveType = nullptr) const;
+
+    Constant* createConstant(void* a_pSrc, StringView a_strName = "", PrimitiveType* a_pPrimitiveType = nullptr) const;
 
 protected:
     /// \internal

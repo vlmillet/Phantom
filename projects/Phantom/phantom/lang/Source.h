@@ -7,8 +7,11 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Scope.h>
-#include <phantom/lang/Symbol.h>
+#include "LanguageElementUnit.h"
+#include "Scope.h"
+#include "Symbol.h"
+
+#include <phantom/traits/TypeIdentity.h>
 #include <phantom/utils/Signal.h>
 /* **************** Declarations ***************** */
 
@@ -24,9 +27,15 @@ namespace lang
 {
 class SourceStream;
 
+template<class T>
+struct ObjectDtor
+{
+    static void apply(void* a_pBase) { PHANTOM_DELETE(T) reinterpret_cast<T*>(a_pBase); }
+};
+
 /// \brief  Represents a source code (not a source file, see phantom::lang::SourceStream for
 /// this).
-class PHANTOM_EXPORT_PHANTOM Source : public Symbol, public Scope
+class PHANTOM_EXPORT_PHANTOM Source : public Symbol, public Scope, public LanguageElementUnitT<Source>
 {
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
@@ -40,6 +49,7 @@ class PHANTOM_EXPORT_PHANTOM Source : public Symbol, public Scope
     friend class Parser;
     friend class Translator;
     friend class phantom::detail::DynamicCppInitializerH;
+    friend class LanguageElementUnitT<Source>;
 
 public:
     struct Import
@@ -63,7 +73,16 @@ public:
     /// \brief  Destructor.
     ~Source() override;
 
-    void terminate();
+    void initialize();
+    void terminate() override;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the package of this source.
+    ///
+    /// \return The package of this source.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Module* getModule() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package of this source.
@@ -346,29 +365,24 @@ public:
     using LanguageElement::getQualifiedDecoratedName;
     using LanguageElement::getUniqueName;
 
-    void addElement(LanguageElement* a_pElement) { Symbol::addElement(a_pElement); }
-    void removeElement(LanguageElement* a_pElement) { Symbol::removeElement(a_pElement); }
-
     Source* getCodeLocationSource() const override;
 
 protected:
-    Source(Package* a_pPackage, StringView a_strName, Modifiers a_Modifiers, uint a_uiFlags = 0);
-
-protected:
-    void   addScopeElement(Symbol* a_pSymbol) override;
-    void   removeScopeElement(Symbol* a_pElement) override;
-    void   onElementAdded(LanguageElement* a_pElement) override;
-    void   onElementRemoved(LanguageElement* a_pElement) override;
-    void   onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    void   onScopeSymbolAdded(Symbol* a_pSymbol) override;
+    void   onScopeSymbolRemoving(Symbol* a_pElement) override;
     hash64 computeHash() const override;
 
 private:
-    bool _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
-    void _addImporting(Source*);
-    void _removeImporting(Source*);
-    void _addDepending(Source*);
-    void _removeDepending(Source*);
-    bool _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
+    bool        _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
+    void        _addImporting(Source*);
+    void        _removeImporting(Source*);
+    void        _addDepending(Source*);
+    void        _removeDepending(Source*);
+    bool        _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
+    static bool _MustDefer();
+    void        _NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
+    void        _NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+                              StringView a_QN);
 
 public:
     phantom::Signal<void(SourceStream*)> sourceStreamChanged;
@@ -379,15 +393,18 @@ protected:
     Source*       m_pNativeArchive = nullptr;
 
 private:
-    FunctionPointers*     m_pFunctionPointers = nullptr;
-    InitializerListTypes* m_pInitializerListTypes = nullptr;
-    FunctionTypes*        m_pFunctionTypes = nullptr;
-    MethodPointers        m_MethodPointers;
-    FieldPointers         m_FieldPointers;
-    Imports               m_Imports;
-    Sources               m_Importings;
-    Sources               m_Dependencies;
-    Sources               m_Dependings;
+    FunctionPointers     m_FunctionPointers;
+    InitializerListTypes m_InitializerListTypes;
+    FunctionTypes        m_FunctionTypes;
+    MethodPointers       m_MethodPointers;
+    FieldPointers        m_FieldPointers;
+    Imports              m_Imports;
+    Sources              m_Importings;
+    Sources              m_Dependencies;
+    Sources              m_Dependings;
+    // this is a forward allocator which never deallocates until being destroyed (optimized chunks because source are
+    // generally all-or-nothing)
+    ForwardHeapSequence m_Allocator{65536};
 };
 
 } // namespace lang

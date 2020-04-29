@@ -81,6 +81,8 @@ PHANTOM_FORCEINLINE size_t currentModuleHandle()
 
 #endif // DOXYGEN
 
+#include <phantom/traits/TypeIdentity.h>
+
 namespace phantom
 {
 enum class RegistrationStep
@@ -131,13 +133,42 @@ enum class MessageType
 
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
                                                                          const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                       const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                     const char* format, ...);
-PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
-                                                                   const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool warning   PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                         const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool error     PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                         const char* format, ...);
+PHANTOM_EXPORT_PHANTOM void log       PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
+                                                                         const char* format, ...);
 
 PHANTOM_EXPORT_PHANTOM bool isMainThread();
+
+HAUNT_STOP;
+
+template<class T, class... Args>
+T* New(Args&&... a_Args)
+{
+    return new (allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+}
+
+template<class T, class... Args>
+T* PlacementNew(T* a_pObj, Args&&... a_Args)
+{
+    return new (a_pObj) T(std::forward<Args>(a_Args)...);
+}
+
+template<class T>
+void Delete(TypeIndentityT<T*> a_pPtr)
+{
+    a_pPtr->~T();
+    deallocate(a_pPtr);
+}
+
+template<class T>
+void DeleteP(T* a_pPtr)
+{
+    PHANTOM_STATIC_ASSERT(std::has_virtual_destructor<T>::value);
+    a_pPtr->~T();
+    deallocate(a_pPtr);
+}
 
 } // namespace phantom

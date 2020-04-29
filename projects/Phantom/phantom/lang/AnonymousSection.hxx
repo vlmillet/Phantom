@@ -57,11 +57,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<size_t() const>("getAnonymousSectionCount", &_::getAnonymousSectionCount)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onElementAdded", &_::onElementAdded)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-        
-        .protected_()
             .field("m_Variables", &_::m_Variables)
             .field("m_AnonymousSections", &_::m_AnonymousSections)
             .field("m_DataElements", &_::m_DataElements)

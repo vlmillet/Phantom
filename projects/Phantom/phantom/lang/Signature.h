@@ -188,10 +188,7 @@ public:
     Signature(Type* a_pType, TypesView a_Types, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     PHANTOM_DTOR ~Signature() override;
 
-    Signature* asSignature() const override
-    {
-        return (Signature*)this;
-    }
+    Signature* asSignature() const override { return (Signature*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this signature is candidate for Return Value Optimization.
@@ -207,10 +204,7 @@ public:
     /// \return true if has variadic arguments, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isVariadic() const
-    {
-        return m_bVariadic;
-    }
+    bool isVariadic() const { return m_bVariadic; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the parenthesized list of parameter types as a String using unique names.
@@ -256,10 +250,7 @@ public:
     /// \return true if it matches, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool matches(Signature* a_pOther) const
-    {
-        return matches(a_pOther->getParameterTypes(), a_pOther->getModifiers());
-    }
+    bool matches(Signature* a_pOther) const { return matches(a_pOther->getParameterTypes(), a_pOther->getModifiers()); }
 
     Signature* clone() const;
 
@@ -289,10 +280,7 @@ public:
     /// \return The parameter at given index position.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Parameter* getParameter(size_t i) const
-    {
-        return m_Parameters[i];
-    }
+    Parameter* getParameter(size_t i) const { return m_Parameters[i]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the parameter matching the given name.
@@ -347,10 +335,7 @@ public:
     /// \return The parameters' list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Parameters const& getParameters() const
-    {
-        return m_Parameters;
-    }
+    Parameters const& getParameters() const { return m_Parameters; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the name of the parameter at given index position.
@@ -449,10 +434,6 @@ public:
 private:
     bool separateParameters(StringView a_strText, Strings& a_OutParameters);
     bool parseParameterTypeList(StringView a_strText, LanguageElement* a_pContextScope);
-
-protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
 
 protected:
     Type*      m_pReturnType;

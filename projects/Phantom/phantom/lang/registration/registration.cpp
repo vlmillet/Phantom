@@ -874,3 +874,8 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
 
 } // namespace lang
 } // namespace phantom
+
+PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement()
+{
+    return phantom::lang::Application::Get();
+}

@@ -137,7 +137,7 @@ public:
     /// \param  a_pConstructor  The constructor.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addConstructor(Constructor* a_pConstructor);
+    void addConstructor(Constructor* a_pConstructor);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a PHANTOM_NEW(constructor) instantiated from given parameters String. example :
@@ -151,7 +151,7 @@ public:
     /// \return null if it fails, else the instantiated constructor.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Constructor* addConstructor(StringView a_strParametersString);
+    Constructor* addConstructor(StringView a_strParametersString);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a PHANTOM_NEW(constructor) instantiated from given parameters and modifiers.
@@ -201,7 +201,7 @@ public:
     /// \param [in,out] a_pValueMember  The value member.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addValueMember(ValueMember* a_pValueMember);
+    void addValueMember(ValueMember* a_pValueMember);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a static Data member.
@@ -209,7 +209,7 @@ public:
     /// \param [in,out] a_pField   The Data member.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addStaticField(StaticField* a_pField);
+    void addStaticField(StaticField* a_pField);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a static Data member.
@@ -217,7 +217,7 @@ public:
     /// \param [in,out] a_pField   The static Data member.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addField(StaticField* a_pField) { addStaticField(a_pField); }
+    void addField(StaticField* a_pField) { addStaticField(a_pField); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a Data member.
@@ -225,7 +225,7 @@ public:
     /// \param [in,out] a_pField   The Data member.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addField(Field* a_pField);
+    void addField(Field* a_pField);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a Data member from a value type, a name and optionals modifiers and flags.
@@ -247,7 +247,7 @@ public:
     /// \param [in,out] a_pProperty The property.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addProperty(Property* a_pProperty);
+    void addProperty(Property* a_pProperty);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a new property instantiated from name and database mask.
@@ -258,7 +258,7 @@ public:
     /// \return null if it fails, else the instantiated property.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Property* addProperty(StringView a_strName, uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
+    Property* addProperty(StringView a_strName, uint a_uiFilterMask = PHANTOM_R_FILTER_PROPERTY);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a new functor property based on two functors.
@@ -283,7 +283,7 @@ public:
     /// \param [in,out] a_pMethod   The member function.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addMethod(Method* a_pMethod);
+    void addMethod(Method* a_pMethod);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a static member function.
@@ -299,7 +299,7 @@ public:
     /// \param [in,out] a_pStaticMethod The static member function.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addStaticMethod(StaticMethod* a_pStaticMethod);
+    void addStaticMethod(StaticMethod* a_pStaticMethod);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a subroutine.
@@ -308,62 +308,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void addSubroutine(Subroutine* a_pSubroutine) override;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a constructor.
-    ///
-    /// \param  a_pConstructor  The constructor.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeConstructor(Constructor* a_pConstructor);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a value member.
-    ///
-    /// \param [in,out] a_pValueMember  The value member.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeValueMember(ValueMember* a_pValueMember);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a static Data member.
-    ///
-    /// \param [in,out] a_pField   The Data member.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeStaticField(StaticField* a_pField);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a Data member.
-    ///
-    /// \param [in,out] a_pField   The Data member.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeField(Field* a_pField);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a property.
-    ///
-    /// \param [in,out] a_pProperty The property.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeProperty(Property* a_pProperty);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a member function.
-    ///
-    /// \param [in,out] a_pMethod    The member function.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeMethod(Method* a_pMethod);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a static member function.
-    ///
-    /// \param [in,out] a_pMethod    The member function.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeStaticMethod(StaticMethod* a_pStaticMethod);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the default constructor if matching the given modifiers.
@@ -801,27 +745,7 @@ public:
     /// \param a_pMemberAnonymousSection   If non-null, the member anonymous section.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a member anonymous section to 'a_Modifiers'.
-    ///
-    /// \param  a_strCode   The C++ code to parse and generate anonymous structs and unions.
-    /// \param  a_Modifiers (optional) the modifiers.
-    ///
-    /// \return null if it fails, else.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual MemberAnonymousSection* addMemberAnonymousSection(StringView a_strCode, Modifiers a_Modifiers = 0,
-                                                              uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes the given member anonymous section.
-    ///
-    /// \param [in,out] a_pMemberAnonymousSection   If non-null, the member anonymous section.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    virtual void removeMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection);
+    void addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the member anonymous sections of this class type.
@@ -980,20 +904,20 @@ public:
     void getFlattenedAggregateFields(AggregateFields& _aggregateFields) const override;
 
 protected:
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-
     bool canBeDestroyed() const override;
-    void onElementAdded(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
 
-    void addScopeElement(Symbol* a_pElement) override { addElement(a_pElement); }
-    void removeScopeElement(Symbol* a_pElement) override { removeElement(a_pElement); }
     void onElementsAccess() override;
 
-protected:
+private:
     friend class ModuleRegistrationInfo;
-    void _onNativeElementsAccess();     ///< @off
-    void _onNativeElementsAccessImpl(); ///< @off
+    void        _onNativeElementsAccess();
+    void        _onNativeElementsAccessImpl();
+    inline void _addSymbol(Symbol* a_pSymbol)
+    {
+        a_pSymbol->setOwner(this);
+        if (a_pSymbol->getAccess() == Access::Undefined)
+            a_pSymbol->setAccess(m_DefaultAccess);
+    }
 
 private:
     typedef Members<ValueMembers>            ValueMembersList;

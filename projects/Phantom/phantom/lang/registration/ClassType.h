@@ -18,7 +18,6 @@ HAUNT_STOP;
 #include <locale>
 #include <phantom/detail/ClassOfFwd.h>
 #include <phantom/detail/StaticGlobals.h>
-#include <phantom/detail/new.h>
 #include <phantom/lang/ClassTypeT.h>
 #include <phantom/lang/ConstantT.h>
 #include <phantom/lang/MetaNewDelete.h>
@@ -112,19 +111,17 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     using ScopeBuilderT<MostDerived>::struct_;
     using ScopeBuilderT<MostDerived>::union_;
 
-    PHANTOM_DECL_ABSTRACT_DELETE_METHOD(SelfType);
-
     ClassTypeBuilderT(lang::Access a_StartAccess, Top* a_pTop, TemplateSpecArgumentRegistrer a_TplArguments)
         : BaseType(a_pTop, a_TplArguments), m_CurrentAccess(a_StartAccess)
     {
         m_pClassType = this->_PHNTM_getMeta();
     }
 
-    ~ClassTypeBuilderT()
+    virtual ~ClassTypeBuilderT()
     {
         for (auto pSec : m_MASections)
         {
-            PHANTOM_DELETE_VIRTUAL pSec;
+            phantom::DeleteP(pSec);
         }
     }
 
@@ -135,7 +132,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                                  "missing #include <phantom/constant>");
         this->_addSymbol(m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Val)},
                          [](MemberBuilder const& a_Member) {
-                             auto pConst = PHANTOM_META_NEW(lang::ConstantT<ConstantT>)(
+                             auto pConst = a_Member.classType()->NewMeta<lang::ConstantT<ConstantT>>(
                              a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, ConstantT), 0, PHANTOM_R_FLAG_NATIVE);
                              a_Member.classType()->addConstant(pConst);
                          });
@@ -148,13 +145,13 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         using NoFwdT = RemoveForwardT<StaticFieldTForward>;
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::VariableT<NoFwdT>>::value,
                                  "missing #include <phantom/static_field>");
-        this->_addSymbol(
-        m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_pVar)}, [](MemberBuilder const& a_Member) {
-            auto pVar = PHANTOM_META_NEW(lang::VariableT<NoFwdT>)(PHANTOM_TYPEOF(StaticFieldTForward), a_Member.name,
-                                                                  PHANTOM_REG_MEMBER_GETBACK_ARG(0, NoFwdT*),
-                                                                  lang::Modifiers(Modifiers));
-            a_Member.classType()->addVariable(pVar);
-        });
+        this->_addSymbol(m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_pVar)},
+                         [](MemberBuilder const& a_Member) {
+                             auto pVar = a_Member.classType()->NewMeta<lang::VariableT<NoFwdT>>(
+                             PHANTOM_TYPEOF(StaticFieldTForward), a_Member.name,
+                             PHANTOM_REG_MEMBER_GETBACK_ARG(0, NoFwdT*), lang::Modifiers(Modifiers));
+                             a_Member.classType()->addVariable(pVar);
+                         });
         return static_cast<MostDerived&>(*this);
     }
 
@@ -164,13 +161,13 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         using NoFwdT = RemoveForwardT<StaticFieldT>;
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::VariableT<StaticFieldT>>::value,
                                  "missing #include <phantom/static_field>");
-        this->_addSymbol(
-        m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_pVar)}, [](MemberBuilder const& a_Member) {
-            auto pVar = PHANTOM_META_NEW(lang::VariableT<NoFwdT>)(PHANTOM_TYPEOF(StaticFieldT), a_Member.name,
-                                                                  PHANTOM_REG_MEMBER_GETBACK_ARG(0, StaticFieldT*),
-                                                                  lang::Modifiers(Modifiers));
-            a_Member.classType()->addVariable(pVar);
-        });
+        this->_addSymbol(m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_pVar)},
+                         [](MemberBuilder const& a_Member) {
+                             auto pVar = a_Member.classType()->NewMeta<lang::VariableT<NoFwdT>>(
+                             PHANTOM_TYPEOF(StaticFieldT), a_Member.name,
+                             PHANTOM_REG_MEMBER_GETBACK_ARG(0, StaticFieldT*), lang::Modifiers(Modifiers));
+                             a_Member.classType()->addVariable(pVar);
+                         });
         return static_cast<MostDerived&>(*this);
     }
 
@@ -214,7 +211,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<phantom::lang::SignatureH<Sign>>::value),
                                  "missing #include <phantom/constructor>");
         this->_addCtor(m_pClassType, [](MemberBuilder const& a_Member) {
-            auto pConstructor = a_Member.apply(PHANTOM_META_NEW(CtorNoFwd)(
+            auto pConstructor = a_Member.apply(a_Member.classType()->NewMeta<CtorNoFwd>(
             a_Member.classType()->getName(), phantom::lang::SignatureH<Sign>::Create(), lang::Modifiers(Modifiers)));
             a_Member.classType()->addConstructor(pConstructor);
         });
@@ -488,7 +485,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         using SimplifiedType = decltype(simplified);
         this->_addMethod(
         m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(simplified), [](MemberBuilder const& a_Member) {
-            auto pMethod = PHANTOM_META_NEW(::phantom::lang::MethodT<SimplifiedType>)(
+            auto pMethod = a_Member.classType()->NewMeta<::phantom::lang::MethodT<SimplifiedType>>(
             a_Member.name, lang::SignatureH<Sign>::Create(), PHANTOM_REG_MEMBER_GETBACK_ARG(0, SimplifiedType),
             lang::Modifiers(Modifiers & (lang::Modifier::Virtual | lang::Modifier::Override | lang::Modifier::Final)),
             PHANTOM_R_FLAG_NONE);
@@ -543,7 +540,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         this->_addField(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_FPtr), a_FilterMask,
                         [](MemberBuilder const& a_Member) {
                             static_cast<lang::ClassType*>(a_Member.owner)
-                            ->addField(a_Member.apply(PHANTOM_META_NEW(lang::FieldT<NoFwdT(T::*)>)(
+                            ->addField(a_Member.apply(a_Member.classType()->NewMeta<lang::FieldT<NoFwdT(T::*)>>(
                             PHANTOM_TYPEOF(ValueTypeFwd), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, PtrType),
                             a_Member.filter, lang::Modifiers(Modifiers))));
                         });
@@ -559,7 +556,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         this->_addField(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_FPtr), a_FilterMask,
                         [](MemberBuilder const& a_Member) {
                             static_cast<lang::ClassType*>(a_Member.owner)
-                            ->addField(a_Member.apply(PHANTOM_META_NEW(lang::FieldT<ValueType(T::*)>)(
+                            ->addField(a_Member.apply(a_Member.classType()->NewMeta<lang::FieldT<ValueType(T::*)>>(
                             PHANTOM_TYPEOF(ValueType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, PtrType),
                             a_Member.filter, lang::Modifiers(Modifiers))));
                         });
@@ -651,7 +648,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                            {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Get), PHANTOM_REG_MEMBER_FORWARD_ARG(a_Set),
                             PHANTOM_REG_MEMBER_FORWARD_ARG(a_Signal)},
                            a_FilterMask, [](MemberBuilder const& a_Member) {
-                               auto pProp = PHANTOM_META_NEW(_Prop<T, ReturnType, ParamType, SignalSign>)(
+                               auto pProp = a_Member.classType()->NewMeta<_Prop<T, ReturnType, ParamType, SignalSign>>(
                                PHANTOM_TYPEOF(ParamType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, GetType),
                                PHANTOM_REG_MEMBER_GETBACK_ARG(1, SetType),
                                PHANTOM_REG_MEMBER_GETBACK_ARG(2, SignalType), a_Member.filter,
@@ -680,7 +677,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         this->_addProperty(
         m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Get), PHANTOM_REG_MEMBER_FORWARD_ARG(a_Set)},
         a_FilterMask, [](MemberBuilder const& a_Member) {
-            auto pProp = PHANTOM_META_NEW(_Prop<T, ReturnType, ParamType>)(
+            auto pProp = a_Member.classType()->NewMeta<_Prop<T, ReturnType, ParamType>>(
             PHANTOM_TYPEOF(ParamType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, GetType),
             PHANTOM_REG_MEMBER_GETBACK_ARG(1, SetType), nullptr, a_Member.filter, lang::Modifiers(Modifiers));
             a_Member.classType()->addProperty(a_Member.apply(pProp));
@@ -703,13 +700,13 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         _PHNTM_PROPERTY_STATIC_CHECKS_RET;
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<_Prop<T, ReturnType>>::value),
                                  "missing #include <phantom/property>");
-        this->_addProperty(
-        m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Get)}, a_FilterMask, [](MemberBuilder const& a_Member) {
-            auto pProp = PHANTOM_META_NEW(_Prop<T, ReturnType>)(PHANTOM_TYPEOF(ReturnType), a_Member.name,
-                                                                PHANTOM_REG_MEMBER_GETBACK_ARG(0, GetType), nullptr,
-                                                                nullptr, a_Member.filter, lang::Modifiers(Modifiers));
-            a_Member.classType()->addProperty(a_Member.apply(pProp));
-        });
+        this->_addProperty(m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Get)}, a_FilterMask,
+                           [](MemberBuilder const& a_Member) {
+                               auto pProp = a_Member.classType()->NewMeta<_Prop<T, ReturnType>>(
+                               PHANTOM_TYPEOF(ReturnType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, GetType),
+                               nullptr, nullptr, a_Member.filter, lang::Modifiers(Modifiers));
+                               a_Member.classType()->addProperty(a_Member.apply(pProp));
+                           });
         return static_cast<MostDerived&>(*this);
     }
 
@@ -737,9 +734,9 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                                  "missing #include <phantom/property>");
         this->_addProperty(
         m_pClassType, a_Name, {PHANTOM_REG_MEMBER_FORWARD_ARG(a_Set)}, a_FilterMask, [](MemberBuilder const& a_Member) {
-            auto pProp = PHANTOM_META_NEW(_Prop<T, ParamType>)(PHANTOM_TYPEOF(ParamType), a_Member.name, nullptr,
-                                                               PHANTOM_REG_MEMBER_GETBACK_ARG(0, SetType), nullptr,
-                                                               a_Member.filter, lang::Modifiers(Modifiers));
+            auto pProp = a_Member.classType()->NewMeta<_Prop<T, ParamType>>(
+            PHANTOM_TYPEOF(ParamType), a_Member.name, nullptr, PHANTOM_REG_MEMBER_GETBACK_ARG(0, SetType), nullptr,
+            a_Member.filter, lang::Modifiers(Modifiers));
             a_Member.classType()->addProperty(a_Member.apply(pProp));
         });
         return static_cast<MostDerived&>(*this);
@@ -785,7 +782,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         _PHNTM_REG_STATIC_ASSERT((std::is_base_of<PhantomBuilderBase, AddOnType<T, MostDerived>>::value),
                                  "AddOnType must derived from PhantomBuilderBase");
         auto pType =
-        PHANTOM_NEW(AddOnType<T, MostDerived>)(static_cast<MostDerived*>(this), std::forward<Args>(a_Args)...);
+        phantom::New<AddOnType<T, MostDerived>>(static_cast<MostDerived*>(this), std::forward<Args>(a_Args)...);
         this->addSubPhantomBuilderBase(pType);
         return *pType;
     }
@@ -805,7 +802,7 @@ struct TemplateParamValueH
     template<class T>
     auto operator*(T c)
     {
-        return PHANTOM_META_NEW(lang::ConstantT<T>)(c, 0, PHANTOM_R_FLAG_NATIVE);
+        return a_Member.classType()->NewMeta<lang::ConstantT<T>>(c, 0, PHANTOM_R_FLAG_NATIVE);
     }
 };
 struct TemplateParamValueUnsignedH
@@ -813,8 +810,8 @@ struct TemplateParamValueUnsignedH
     template<class T>
     auto operator*(T c)
     {
-        return PHANTOM_META_NEW(lang::ConstantT<std::make_unsigned_t<T>>)((std::make_unsigned_t<T>)c, 0,
-                                                                          PHANTOM_R_FLAG_NATIVE);
+        return a_Member.classType()->NewMeta<lang::ConstantT<std::make_unsigned_t<T>>>((std::make_unsigned_t<T>)c, 0,
+                                                                                       PHANTOM_R_FLAG_NATIVE);
     }
 };
 
@@ -1138,19 +1135,24 @@ auto _PHTNM_TemplateTypeOfH()
 #define _PHNTM_TemplateParamValue_size_t(V) phantom::lang::TemplateParamValueH() * V
 #define _PHNTM_TemplateParamValue_ptrdiff_t(V) phantom::lang::TemplateParamValueH() * V
 
+PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement();
+
 namespace _PHNTM_TemplateParamValue_std
 {
 inline phantom::lang::LanguageElement* size_t(std::size_t v)
 {
-    return PHANTOM_META_NEW(phantom::lang::ConstantT<std::size_t>)(v, 0, PHANTOM_R_FLAG_NATIVE);
+    return __PHNTM_ApplicationAsElement()->NewMeta<phantom::lang::ConstantT<std::size_t>>(v, PHANTOM_R_NONE,
+                                                                                          PHANTOM_R_FLAG_NATIVE);
 }
 inline phantom::lang::LanguageElement* ptrdiff_t(std::ptrdiff_t v)
 {
-    return PHANTOM_META_NEW(phantom::lang::ConstantT<std::ptrdiff_t>)(v, 0, PHANTOM_R_FLAG_NATIVE);
+    return __PHNTM_ApplicationAsElement()->NewMeta<phantom::lang::ConstantT<std::ptrdiff_t>>(v, PHANTOM_R_NONE,
+                                                                                             PHANTOM_R_FLAG_NATIVE);
 }
 inline phantom::lang::LanguageElement* intptr_t(std::intptr_t v)
 {
-    return PHANTOM_META_NEW(phantom::lang::ConstantT<std::intptr_t>)(v, 0, PHANTOM_R_FLAG_NATIVE);
+    return __PHNTM_ApplicationAsElement()->NewMeta<phantom::lang::ConstantT<std::intptr_t>>(v, PHANTOM_R_NONE,
+                                                                                            PHANTOM_R_FLAG_NATIVE);
 }
 } // namespace _PHNTM_TemplateParamValue_std
 namespace _PHNTM_TemplateParamValue_phantom
@@ -1158,7 +1160,8 @@ namespace _PHNTM_TemplateParamValue_phantom
 #define _PHNTM_TemplateParamValue_phantom_x(Type)                                                                      \
     inline phantom::lang::LanguageElement* Type(phantom::Type v)                                                       \
     {                                                                                                                  \
-        return PHANTOM_META_NEW(phantom::lang::ConstantT<phantom::Type>)(v, 0, PHANTOM_R_FLAG_NATIVE);                 \
+        return __PHNTM_ApplicationAsElement()->NewMeta<phantom::lang::ConstantT<phantom::Type>>(                       \
+        v, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);                                                                     \
     }
 
 _PHNTM_TemplateParamValue_phantom_x(size_t);

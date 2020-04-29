@@ -41,6 +41,16 @@ public:
     Package* asPackage() const override { return const_cast<Package*>(this); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the module of this package.
+    ///
+    /// \param  a_strSourceName   The source name.
+    ///
+    /// \return null if it fails, else the source.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Module* getModule() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the source with given name.
     ///
     /// \param  a_strSourceName   The source name.
@@ -54,7 +64,8 @@ public:
     /// \brief  Gets the source with given name or creates and add it if it doesn't exist yet.
     ///
     /// \param  a_strName   The source name.
-    /// \param  a_bInvisible  If true this source won't be visible through any hash or name lookup (use this to build temporary sources).
+    /// \param  a_bInvisible  If true this source won't be visible through any hash or name lookup (use this to build
+    /// temporary sources).
     ///
     /// \return the found or new source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +95,9 @@ public:
     /// \param  The source to add.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void addSource(Source* a_pSource);
+    Source* newSource(StringView a_Name, bool a_bInvisible = false);
+
+    void deleteSource(Source* a_pSource);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the counterpart namespace of this package (the namespace with qualified name
@@ -138,14 +151,8 @@ public:
 
 private:
     void   addArchivedSource(Source* a_pSource);
-    void   deleteSource(Source* a_pSource);
-    void   removeSource(Source* a_pSource);
-    void   onElementAdded(LanguageElement* a_pElement) override;
-    void   onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void   onElementRemoved(LanguageElement* a_pElement) override;
-    void   setNamespace(Namespace* a_pNamespace);
+    void   removeArchivedSource(Source* a_pSource);
     hash64 computeHash() const override;
-    void   onAncestorChanged(LanguageElement* a_pAncestor) override;
 
 protected:
     Namespace*     m_pNamespace;

@@ -14,7 +14,6 @@
 #include "TemplateParameter.h"
 #include "TemplateSignature.h"
 #include "TemplateSpecialization.h"
-#include "phantom/detail/new.h"
 #include "phantom/detail/core_internal.h"
 
 /* *********************************************** */
@@ -53,9 +52,7 @@ Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_u
 {
 }
 
-Template::~Template()
-{
-}
+Template::~Template() {}
 
 Scope* Template::getScope() const
 {
@@ -214,11 +211,6 @@ TemplateSpecialization* Template::createTemplateSpecialization(const LanguageEle
     return pSpec;
 }
 
-void Template::onAncestorChanged(LanguageElement* a_pOwner)
-{
-    Symbol::onAncestorChanged(a_pOwner);
-}
-
 bool Template::acceptsArguments(const LanguageElements& a_Arguments) const
 {
     return getTemplateSignature()->acceptsArguments(a_Arguments);
@@ -250,10 +242,10 @@ bool Template::isVariadic() const
 static String Template_removeParens(const char* arg)
 {
     char c;
-    while ((c = *arg) == ' ' ||(c == '\t') ||(c == '('))
+    while ((c = *arg) == ' ' || (c == '\t') || (c == '('))
         arg++;
     String str = arg;
-    while ((c = str.back()) == ' ' ||(c == '\t') ||(c == ')'))
+    while ((c = str.back()) == ' ' || (c == '\t') || (c == ')'))
         str.pop_back();
     return str;
 }
@@ -280,7 +272,7 @@ static String Template_catSplittedTemplate(const char* arg, const char**& a_rpNe
                 break;
             }
         }
-    } while (templateLevel &&(arg = *a_rpNext++));
+    } while (templateLevel && (arg = *a_rpNext++));
     return str;
 }
 

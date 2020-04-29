@@ -27,8 +27,8 @@ protected:
 public:
     virtual Scope* asScope() const = 0;
 
-    virtual void addScopeElement(Symbol* a_pElement) = 0;
-    virtual void removeScopeElement(Symbol* a_pElement) = 0;
+    virtual void onScopeSymbolAdded(Symbol* a_pElement) = 0;
+    virtual void onScopeSymbolRemoving(Symbol* a_pElement) = 0;
 
     PHANTOM_FORCEINLINE LanguageElement* asLanguageElement() const { return m_pThisElement; }
 

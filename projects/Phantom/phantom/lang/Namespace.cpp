@@ -133,20 +133,20 @@ void Namespace::release(Types& out_types)
     }
 }
 
-void Namespace::addNamespace(Namespace* a_pNamespace)
+void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
 {
     PHANTOM_ASSERT_NOT(getNamespace(a_pNamespace->getName()));
-    m_Namespaces.push_back(a_pNamespace);
-    addSymbol(a_pNamespace);
-    if (Application::Get()->getModules().size())
-    {
-        PHANTOM_EMIT namespaceAdded(a_pNamespace);
-    }
+    a_pNamespace->m_Namespaces.push_back(a_pNamespace);
+    setOwner(a_pNamespace);
 }
 
-void Namespace::removeNamespace(Namespace* a_pNamespace)
+void Namespace::onNamespaceChanging(Namespace* a_pNamespace)
 {
-    removeElement(a_pNamespace);
+    setOwner(nullptr);
+    PHANTOM_ASSERT(a_pNamespace->getParentNamespace() == this, "This namespace is attached to another Namespace");
+    auto found = std::find(a_pNamespace->m_Namespaces.begin(), a_pNamespace->m_Namespaces.end(), a_pNamespace);
+    PHANTOM_ASSERT(found != a_pNamespace->m_Namespaces.end(), "Namespace not found");
+    a_pNamespace->m_Namespaces.erase(found);
 }
 
 Namespace* Namespace::getRootNamespace() const
@@ -175,15 +175,8 @@ Alias* Namespace::addNamespaceAlias(StringView a_strAlias, Namespace* a_pNamespa
 
 void Namespace::removeNamespaceAlias(StringView a_strAlias)
 {
-    for (auto it = m_NamespaceAliases.begin(); it != m_NamespaceAliases.end(); ++it)
-    {
-        if ((*it)->getName() == a_strAlias)
-        {
-            removeElement(*it);
-            return;
-        }
-    }
-    PHANTOM_ASSERT(false, "namespace alias not found");
+    m_NamespaceAliases.erase_unsorted(std::find_if(m_NamespaceAliases.begin(), m_NamespaceAliases.end(),
+                                                   [=](Alias* a) { return a->getName() == a_strAlias; }));
 }
 
 Namespace* Namespace::getNamespaceCascade(StringView a_strQualifiedName, const char* a_SeparatorList) const
@@ -192,60 +185,6 @@ Namespace* Namespace::getNamespaceCascade(StringView a_strQualifiedName, const c
     StringUtil::Split(words, a_strQualifiedName,
                       a_SeparatorList); // SplitVec == { "hello abc","ABC","aBc goodbye" }
     return getNamespaceCascade(words);
-}
-
-void Namespace::onElementRemoved(LanguageElement* a_pElement)
-{
-    LanguageElement::onElementRemoved(a_pElement);
-    if (a_pElement->asNamespace())
-    {
-        Namespace* pNamespace = static_cast<Namespace*>(a_pElement);
-        PHANTOM_ASSERT(pNamespace->getParentNamespace() == this, "This namespace is attached to another Namespace");
-        Namespaces::iterator found = std::find(m_Namespaces.begin(), m_Namespaces.end(), pNamespace);
-        PHANTOM_ASSERT(found != m_Namespaces.end(), "Namespace not found");
-        m_Namespaces.erase(found);
-        if (Application::Get()->getModules().size())
-        {
-            PHANTOM_EMIT namespaceRemoved(pNamespace);
-        }
-    }
-}
-
-void Namespace::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Scope::scopedElementRemoved(a_pElement);
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-    if (Symbol* pSymbol = a_pElement->asSymbol())
-    {
-        if (pSymbol->m_pNamespace == this)
-            pSymbol->m_pNamespace = nullptr;
-    }
-    if (a_pElement->asNamespace())
-        for (auto it = m_Namespaces.begin(); it != m_Namespaces.end(); ++it)
-        {
-            if (*it == a_pElement)
-            {
-                m_Namespaces.erase(it);
-                if (Application::Get()->getModules().size())
-                {
-                    PHANTOM_EMIT namespaceRemoved(*it);
-                }
-                return;
-            }
-        }
-    else if (a_pElement->asAlias())
-        for (auto it = m_NamespaceAliases.begin(); it != m_NamespaceAliases.end(); ++it)
-        {
-            if (*it == a_pElement)
-            {
-                m_NamespaceAliases.erase(it);
-                if (Application::Get()->getModules().size())
-                {
-                    PHANTOM_EMIT namespaceAliasRemoved(*it);
-                }
-                return;
-            }
-        }
 }
 
 Namespace* Namespace::getNamespaceAliased(StringView a_strAlias) const

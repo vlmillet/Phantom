@@ -35,10 +35,7 @@ public:
     /// \return this instance.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    AnonymousSection* asAnonymousSection() const override
-    {
-        return (AnonymousSection*)this;
-    }
+    AnonymousSection* asAnonymousSection() const override { return (AnonymousSection*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a variable to the section.
@@ -56,10 +53,7 @@ public:
     /// \return null if it fails, else the variable.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Variable* getVariable(size_t a_uiIndex) const
-    {
-        return m_Variables[a_uiIndex];
-    }
+    Variable* getVariable(size_t a_uiIndex) const { return m_Variables[a_uiIndex]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets variable count.
@@ -67,28 +61,19 @@ public:
     /// \return The variable count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getVariableCount() const
-    {
-        return m_Variables.size();
-    }
+    size_t getVariableCount() const { return m_Variables.size(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get the list of data elements of this section
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LanguageElements const& getDataElements() const
-    {
-        return m_DataElements;
-    }
+    LanguageElements const& getDataElements() const { return m_DataElements; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get the list of variables of this section
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Variables const& getVariables() const
-    {
-        return m_Variables;
-    }
+    Variables const& getVariables() const { return m_Variables; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the first ascendant not being an anonymous section.
@@ -98,8 +83,7 @@ public:
 
     ClassType* getRootOwner() const
     {
-        return getOwnerSection() ? getOwnerSection()->getRootOwner()
-                                 : getOwner() ? getOwner()->asClassType() : nullptr;
+        return getOwnerSection() ? getOwnerSection()->getRootOwner() : getOwner() ? getOwner()->asClassType() : nullptr;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +92,7 @@ public:
     /// \return null if owner is not an anonymous section, else the owner section.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    AnonymousSection* getOwnerSection() const
-    {
-        return getOwner() ? getOwner()->asAnonymousSection() : nullptr;
-    }
+    AnonymousSection* getOwnerSection() const { return getOwner() ? getOwner()->asAnonymousSection() : nullptr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the top level section.
@@ -148,10 +129,7 @@ public:
     /// \return The requested nested anonymous section.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    AnonymousSection* getAnonymousSection(size_t a_uiIndex) const
-    {
-        return m_AnonymousSections[a_uiIndex];
-    }
+    AnonymousSection* getAnonymousSection(size_t a_uiIndex) const { return m_AnonymousSections[a_uiIndex]; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the total count of nested anonymous sections.
@@ -159,15 +137,7 @@ public:
     /// \return The total count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getAnonymousSectionCount() const
-    {
-        return m_AnonymousSections.size();
-    }
-
-protected:
-    void onElementAdded(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
+    size_t getAnonymousSectionCount() const { return m_AnonymousSections.size(); }
 
 protected:
     Variables         m_Variables;

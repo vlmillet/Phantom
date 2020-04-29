@@ -292,15 +292,14 @@ protected:
         return ~size_t(0);
     }
 
-    void onAncestorChanged(LanguageElement* a_pAncestor) override;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Reimplements this function to provide your own version of the 'this' local variable.
     ///
     /// \return The newly created 'this' local variable.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual LocalVariable* createThis() const;
+private:
+    void _onAttachedToClass(ClassType* a_pClass);
 
 protected:
     LocalVariable*           m_pThis;

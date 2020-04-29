@@ -24,7 +24,8 @@ class PHANTOM_EXPORT_PHANTOM Constant : public Symbol
 
 public:
     template<typename t_Ty>
-    static inline Constant* Create(t_Ty a_Constant, StringView name = "", Type* a_pType = nullptr);
+    static inline Constant* Create(LanguageElement* a_pOwner, t_Ty a_Constant, StringView name = "",
+                                   Type* a_pType = nullptr);
 
 public:
     Constant(Type* a_pValueType, Modifiers modifiers = 0, uint a_uiFlags = 0);
@@ -49,8 +50,8 @@ public:
     using LanguageElement::getRelativeDecoratedName;
     using LanguageElement::getRelativeName;
 
-    Constant*         clone() const;
-    virtual Constant* cloneImpl() const = 0;
+    Constant*         clone(LanguageElement* a_pOwner) const;
+    virtual Constant* cloneImpl(LanguageElement* a_pOwner) const = 0;
 
     virtual bool isIntegral() const { return getValueType()->asIntegralType() != nullptr; }
     virtual bool isZero() const = 0;
@@ -77,11 +78,11 @@ namespace phantom
 namespace lang
 {
 template<typename t_Ty>
-inline Constant* Constant::Create(t_Ty a_Constant, StringView name, Type* a_pType)
+inline Constant* Constant::Create(LanguageElement* a_pOwner, t_Ty a_Constant, StringView name, Type* a_pType)
 {
     if (a_pType)
-        return PHANTOM_META_NEW(ConstantT<t_Ty>)(a_pType, name, a_Constant);
-    return PHANTOM_META_NEW(ConstantT<t_Ty>)(name, a_Constant);
+        return a_pOwner->NewMeta<ConstantT<t_Ty>>(a_pType, name, a_Constant);
+    return a_pOwner->NewMeta<ConstantT<t_Ty>>(name, a_Constant);
 }
 
 } // namespace lang

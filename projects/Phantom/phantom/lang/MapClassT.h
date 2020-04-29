@@ -8,7 +8,6 @@
 
 HAUNT_STOP;
 
-#include <phantom/detail/new.h>
 #include <phantom/lang/ContainerClassT.h>
 #include <phantom/lang/MapClass.h>
 
@@ -56,8 +55,8 @@ public:
 
     virtual void* referenceAt(void* a_pContainer, size_t a_uiIndex) const override
     {
-        T* container = static_cast<T*>(a_pContainer);
-        auto  it = container->begin();
+        T*   container = static_cast<T*>(a_pContainer);
+        auto it = container->begin();
         while (a_uiIndex--)
             ++it;
         return &*it;
@@ -66,7 +65,7 @@ public:
     virtual void const* referenceAt(void const* a_pContainer, size_t a_uiIndex) const override
     {
         T const* container = static_cast<T const*>(a_pContainer);
-        auto        it = container->begin();
+        auto     it = container->begin();
         while (a_uiIndex--)
             ++it;
         return &*it;
@@ -75,42 +74,39 @@ public:
     virtual void find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const override
     {
         container_key_type const* pKey = static_cast<container_key_type const*>(a_pKey);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         *(ContainerIterator*)a_pOutIt = pContainer->find(*pKey);
     }
 
     virtual void find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const override
     {
         container_key_type const* pKey = static_cast<container_key_type const*>(a_pKey);
-        T const*               pContainer = static_cast<T const*>(a_pContainer);
+        T const*                  pContainer = static_cast<T const*>(a_pContainer);
         *(ContainerConstIterator*)a_pOutIt = pContainer->find(*pKey);
     }
 
     virtual void map(void* a_pContainer, void const* a_pKey, void* a_pDest) const override
     {
         container_key_type const* pKey = static_cast<container_key_type const*>(a_pKey);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         *(void**)a_pDest = (void*)&(*pContainer)[*pKey];
     }
 
     virtual void eraseKey(void* a_pContainer, void const* a_pKey) const override
     {
         container_key_type const* pKey = static_cast<container_key_type const*>(a_pKey);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         pContainer->erase(pContainer->find(*pKey));
     }
 
     virtual void insert(void* a_pContainer, void const* a_pPair) const override
     {
         ContainerValueType const* pPair = static_cast<ContainerValueType const*>(a_pPair);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         pContainer->insert(*pPair);
     }
 
-    virtual void clear(void* a_pContainer) const override
-    {
-        static_cast<T*>(a_pContainer)->clear();
-    }
+    virtual void clear(void* a_pContainer) const override { static_cast<T*>(a_pContainer)->clear(); }
 };
 
 } // namespace lang

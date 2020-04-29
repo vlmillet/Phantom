@@ -1501,7 +1501,6 @@ public:
     virtual bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const;
 
 protected:
-    void               onElementRemoved(LanguageElement* a_pElement) override;
     Type*              createPointer() const;
     LValueReference*   createLValueReference() const;
     RValueReference*   createRValueReference() const;
@@ -1510,10 +1509,8 @@ protected:
     VolatileType*      createVolatileType() const;
     ConstVolatileType* createConstVolatileType() const;
     void               removeExtendedType(Type* a_pType);
-
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onAncestorChanged(LanguageElement* a_pOwner) override;
-    void onAncestorAboutToBeChanged(LanguageElement* a_pOwner) override;
+    void               onNamespaceChanging(Namespace* a_pNamespace) override;
+    void               onNamespaceChanged(Namespace* a_pNamespace) override;
 
 #if PHANTOM_CUSTOM_ENABLE_INSTANTIATION_SIGNALS
 public:

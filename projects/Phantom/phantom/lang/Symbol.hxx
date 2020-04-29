@@ -177,7 +177,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<void(hash64&, hash64)>("CombineHash", &_::CombineHash)
             .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
             .method<void(StringBuffer&) const, virtual_>("formatAnonymousName", &_::formatAnonymousName)
-            .method<void(LanguageElement*), virtual_|override_>("onAncestorChanged", &_::onAncestorChanged)
         
         .protected_()
             .field("m_strName", &_::m_strName)

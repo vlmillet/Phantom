@@ -8,9 +8,8 @@
 
 HAUNT_STOP;
 
-#include <phantom/detail/new.h>
-#include <phantom/lang/VectorClassT.h>
 #include <phantom/lang/StringClass.h>
+#include <phantom/lang/VectorClassT.h>
 
 namespace phantom
 {
@@ -42,11 +41,11 @@ public:
         pContainer->assign((const CharType*)a_pChars, a_Len);
     }
 
-	void append(void* a_pString, const void* a_pChars) const override
-	{
-		T* pContainer = static_cast<T*>(a_pString);
-		pContainer->append((const CharType*)a_pChars);
-	}
+    void append(void* a_pString, const void* a_pChars) const override
+    {
+        T* pContainer = static_cast<T*>(a_pString);
+        pContainer->append((const CharType*)a_pChars);
+    }
 };
 
 } // namespace lang

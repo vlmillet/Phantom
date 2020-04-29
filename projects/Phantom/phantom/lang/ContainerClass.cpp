@@ -28,7 +28,7 @@ ContainerClass::ContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modif
 
 ContainerClass::~ContainerClass()
 {
-    PHANTOM_DELETE(RTData) m_Data;
+    Delete<RTData>(m_Data);
 }
 
 void ContainerClass::setValueType(Type* a_pValueType)
@@ -257,8 +257,8 @@ Property* ContainerClass::createSizeProperty() const
     auto      pGetMethod = getMethod("size() const");
     if (pGetMethod)
     {
-        pProp = PHANTOM_NEW(Property)(PHANTOM_TYPEOF(size_t), "Size", PHANTOM_R_FILTER_PROPERTY, PHANTOM_R_NONE,
-                                      isNative() * PHANTOM_R_FLAG_NATIVE);
+        pProp = New<Property>(PHANTOM_TYPEOF(size_t), "Size", PHANTOM_R_FILTER_PROPERTY, PHANTOM_R_NONE,
+                              isNative() * PHANTOM_R_FLAG_NATIVE);
         pProp->setGet(pGetMethod);
         if (auto pSetMethod = getMethod("resize(size_t)"))
             pProp->setSet(pSetMethod);

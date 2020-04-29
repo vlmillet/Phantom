@@ -31,7 +31,7 @@ Class* PlaceholderClassType::toClass() const
 
 Placeholder* PlaceholderClassType::clone(uint a_Flags) const
 {
-    return PHANTOM_NEW(PlaceholderClassType)(getName(), getModifiers(), a_Flags);
+    return New<PlaceholderClassType>(getName(), getModifiers(), a_Flags);
 }
 
 } // namespace lang

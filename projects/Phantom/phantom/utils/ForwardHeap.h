@@ -48,6 +48,14 @@ class ForwardHeapSequence
 public:
     ForwardHeapSequence(size_t a_HeapSize) : m_HeapSize(a_HeapSize) { m_Heaps.emplace_back(a_HeapSize); }
 
+    void swap(ForwardHeapSequence& a_Other)
+    {
+        size_t size = m_HeapSize;
+        m_HeapSize = a_Other.m_HeapSize;
+        a_Other.m_HeapSize = size;
+        m_Heaps.swap(a_Other.m_Heaps);
+    }
+
     void* allocate(size_t _s)
     {
         if (void* ptr = m_Heaps.back().allocate(_s))

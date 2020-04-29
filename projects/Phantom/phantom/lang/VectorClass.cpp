@@ -39,7 +39,7 @@ VectorClass::VectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_
 
 VectorClass::~VectorClass()
 {
-    PHANTOM_DELETE(RTData) m_pData;
+    Delete<RTData>(m_pData);
 }
 
 void const* VectorClass::data(void const* a_pContainer) const

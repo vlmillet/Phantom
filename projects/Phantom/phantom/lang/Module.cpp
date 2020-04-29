@@ -81,7 +81,7 @@ void Module::terminate()
                     continue;
                 if (allElements[allElementCount]->isNative())
                     allElements[allElementCount]->_nativeDetachElementsFromModule();
-                PHANTOM_DELETE_DYN allElements[allElementCount];
+                Delete(allElements)[allElementCount];
             }
 
             allElements.clear();
@@ -96,7 +96,7 @@ void Module::terminate()
                     continue;
                 if (allElements[allElementCount]->isNative())
                     allElements[allElementCount]->_nativeDetachElementsFromModule();
-                PHANTOM_DELETE_DYN allElements[allElementCount];
+                Delete(allElements)[allElementCount];
             }
 
             // second pass we skip only the "master" meta class (the meta class of Class)
@@ -111,7 +111,7 @@ void Module::terminate()
                     continue;
                 if (allElements[allElementCount]->isNative())
                     allElements[allElementCount]->_nativeDetachElementsFromModule();
-                PHANTOM_DELETE_DYN allElements[allElementCount];
+                Delete(allElements)[allElementCount];
             }
 
             // then we check we removed every body

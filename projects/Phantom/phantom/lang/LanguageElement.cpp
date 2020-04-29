@@ -23,16 +23,10 @@ namespace phantom
 {
 namespace lang
 {
-static StaticGlobal<LanguageElements> g_pEmptyElements;
-
-LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/) : m_pOwner(nullptr), m_pElements(nullptr), m_uiFlags(a_uiFlags)
-{
-}
+LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/) : m_pOwner(nullptr), m_uiFlags(a_uiFlags) {}
 
 LanguageElement::~LanguageElement()
 {
-    PHANTOM_ASSERT(!rtti.instance);
-    PHANTOM_ASSERT(isNative() || m_pElements == nullptr);
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
 }
 
@@ -51,203 +45,55 @@ void LanguageElement::terminate()
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
+    for (auto& m_pElement : m_Elements)
     {
-        for (auto& m_pElement : *m_pElements)
+        if (a_pClass == nullptr || m_pElement->as(a_pClass))
         {
-            if (a_pClass == nullptr || m_pElement->as(a_pClass))
-            {
-                out.push_back(m_pElement);
-            }
+            out.push_back(m_pElement);
         }
     }
 }
 
-void LanguageElement::Delete(LanguageElement* a_pLanguageElement)
+void LanguageElement::Delete(LanguageElement* a_pElem)
 {
-    PHANTOM_ASSERT(a_pLanguageElement->m_pOwner == this);
-    m_pSource->Delete(a_pLanguageElement);
+    PHANTOM_ASSERT(a_pElem->m_pOwner == this);
+    a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
+    a_pElem->terminate();
+    a_pElem->~LanguageElement();
+    // --free(...)-- we never deallocate individually
+    // (we always deallocate per-source(script) or per-module(c++) chunks for speed)
 }
 
-LanguageElements const& LanguageElement::getElements() const
+LanguageElementsView LanguageElement::getElements() const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    return m_pElements ? *m_pElements : *g_pEmptyElements;
-}
-
-LanguageElements const& LanguageElement::getReferencedElements() const
-{
-    return m_pReferencedElements ? *m_pReferencedElements : *g_pEmptyElements;
-}
-
-LanguageElements const& LanguageElement::getReferencingElements() const
-{
-    return m_pReferencingElements ? *m_pReferencingElements : *g_pEmptyElements;
+    return m_Elements;
 }
 
 void LanguageElement::fetchElementsDeep(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
 {
     fetchElements(out, a_pClass);
-    if (m_pElements)
+    for (size_t i = 0; i < m_Elements.size(); ++i)
     {
-        for (size_t i = 0; i < m_pElements->size(); ++i)
-        {
-            (*m_pElements)[i]->fetchElementsDeep(out, a_pClass);
-        }
-    }
-}
-
-void LanguageElement::addElement(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement);
-    PHANTOM_ASSERT(a_pElement != this, "element added to itself");
-    PHANTOM_ASSERT(a_pElement->m_pOwner == nullptr, "element already added to this or another element");
-    if (m_pElements == nullptr)
-    {
-        m_pElements = PHANTOM_NEW(LanguageElements);
-    }
-    m_pElements->push_back(a_pElement);
-    a_pElement->setOwner(this);
-    onElementAdded(a_pElement);
-    if (a_pElement->isIncomplete())
-    {
-        setIncomplete();
-    }
-    if (a_pElement->isTemplateDependant() && asEvaluable())
-    {
-        setTemplateDependant();
-    }
-}
-
-void LanguageElement::removeElement(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->m_pOwner == this);
-    onElementRemoved(a_pElement);
-    m_pElements->erase(std::find(m_pElements->begin(), m_pElements->end(), a_pElement));
-    if (m_pElements->size() == 0)
-    {
-        PHANTOM_DELETE(LanguageElements) m_pElements;
-        m_pElements = nullptr;
-    }
-    a_pElement->setOwner(nullptr);
-}
-
-void LanguageElement::addReferencedElement(LanguageElement* a_pElement)
-{
-    if (m_pReferencedElements == nullptr)
-    {
-        m_pReferencedElements = PHANTOM_NEW(LanguageElements);
-    }
-    // Allows call of this function even if already referenced, because it often happens
-    // that the same element is used in both different place in the same referencer element
-    // example : a type referenced as function return type and function parameter type
-    if (std::find(m_pReferencedElements->begin(), m_pReferencedElements->end(), a_pElement) ==
-        m_pReferencedElements->end())
-    {
-        m_pReferencedElements->push_back(a_pElement);
-        a_pElement->registerReferencingElement(this);
-        onReferencedElementAdded(a_pElement);
-    }
-    if (a_pElement->isTemplateDependant())
-    {
-#if defined(LanguageElement_FindWhyIPut_asEvaluable_as_a_supplement_test_here_hashtag_forgotten_bugs)
-        static SmallSet<Class*> tdclasses;
-        if (a_pElement->rtti.metaClass && tdclasses.insert(a_pElement->rtti.metaClass).second)
-            printf("TD : %.*s\n", PHANTOM_STRING_AS_PRINTF_ARG(a_pElement->rtti.metaClass->getName()));
-#endif
-        setTemplateDependant();
-    }
-}
-
-void LanguageElement::addUniquelyReferencedElement(LanguageElement* a_pElement)
-{
-    if (m_pReferencedElements == nullptr)
-    {
-        m_pReferencedElements = PHANTOM_NEW(LanguageElements);
-    }
-    // Allows call of this function even if already referenced, because it often happens
-    // that the same element is used in both different place in the same referencer element
-    // example : a type referenced as function return type and function parameter type
-    PHANTOM_ASSERT(std::find(m_pReferencedElements->begin(), m_pReferencedElements->end(), a_pElement) ==
-                   m_pReferencedElements->end(),
-                   "Element already referenced");
-#if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-    auto foundWithDecName =
-    std::find_if(m_pReferencedElements->begin(), m_pReferencedElements->end(), [&](LanguageElement* a_pElem) {
-        return a_pElement->getDecoratedName() == a_pElem->getDecoratedName() && a_pElem->getModule() &&
-        a_pElem->getModule() == a_pElement->getModule();
-    });
-    PHANTOM_ASSERT_DEBUG(foundWithDecName == m_pReferencedElements->end(),
-                         "element already registered with same name inside same module");
-#endif
-    m_pReferencedElements->push_back(a_pElement);
-    a_pElement->registerReferencingElement(this);
-    onReferencedElementAdded(a_pElement);
-    if (a_pElement->isTemplateDependant() && asEvaluable())
-    {
-        setTemplateDependant();
-    }
-}
-
-void LanguageElement::removeReferencedElement(LanguageElement* a_pElement)
-{
-    m_pReferencedElements->erase(std::find(m_pReferencedElements->begin(), m_pReferencedElements->end(), a_pElement));
-    if (m_pReferencedElements->empty())
-    {
-        PHANTOM_DELETE(LanguageElements) m_pReferencedElements;
-        m_pReferencedElements = nullptr;
-    }
-    a_pElement->unregisterReferencingElement(this);
-    onReferencedElementRemoved(a_pElement);
-}
-
-void LanguageElement::onReferencedElementAdded(LanguageElement*) {}
-
-void LanguageElement::onReferencedElementRemoved(LanguageElement*) {}
-
-void LanguageElement::registerReferencingElement(LanguageElement* a_pElement)
-{
-    if (m_pReferencingElements == nullptr)
-    {
-        m_pReferencingElements = PHANTOM_NEW(LanguageElements);
-    }
-    m_pReferencingElements->push_back(a_pElement);
-}
-
-void LanguageElement::unregisterReferencingElement(LanguageElement* a_pElement)
-{
-    m_pReferencingElements->erase(
-    std::find(m_pReferencingElements->begin(), m_pReferencingElements->end(), a_pElement));
-    if (m_pReferencingElements->empty())
-    {
-        PHANTOM_DELETE(LanguageElements) m_pReferencingElements;
-        m_pReferencingElements = nullptr;
+        (m_Elements)[i]->fetchElementsDeep(out, a_pClass);
     }
 }
 
 void LanguageElement::_nativeDetachElementsFromModule()
 {
     PHANTOM_ASSERT(isNative());
-    if (m_pElements)
-    {
-        for (auto elem : *m_pElements)
-            elem->m_pOwner = nullptr;
-        PHANTOM_DELETE(LanguageElements) m_pElements;
-        m_pElements = nullptr;
-    }
+    for (auto elem : m_Elements)
+        elem->m_pOwner = nullptr;
 }
 
 bool LanguageElement::canBeDestroyed() const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
+    for (auto pElem : getElements())
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
+        if (!(pElem->canBeDestroyed()))
         {
-            if (!((*it)->canBeDestroyed()))
-            {
-                return false;
-            }
+            return false;
         }
     }
     return true;
@@ -262,24 +108,22 @@ bool LanguageElement::canBeUnloaded() const
 
     if (!isNative())
     {
-        if (m_pReferencingElements)
-        {
-            for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
-            {
-                if (!((*it)->getModule() != pModule))
-                {
-                    return false; /// An element referencing this one belongs to a different module
-                                  /// => cannot unload
-                }
-            }
-        }
+        //         if (m_pReferencingElements)
+        //         {
+        //             for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
+        //             {
+        //                 if (!((*it)->getModule() != pModule))
+        //                 {
+        //                     return false; /// An element referencing this one belongs to a different module
+        //                                   /// => cannot unload
+        //                 }
+        //             }
+        //         }
     }
     return true;
 }
 
 void LanguageElement::checkCompleteness() const {}
-
-void LanguageElement::onElementRemoved(LanguageElement*) {}
 
 Block* LanguageElement::getEnclosingBlock() const
 {
@@ -342,15 +186,46 @@ void LanguageElement::_onElementsAccess()
 
 void LanguageElement::setOwner(LanguageElement* a_pOwner)
 {
-    PHANTOM_ASSERT(m_pOwner != a_pOwner);
+    if (m_pOwner == a_pOwner)
+        return;
+
     if (m_pOwner)
     {
-        m_pOwner->_removeElement(this);
+        m_pOwner->onElementsAccess();
+        m_pOwner->m_Elements.erase_unsorted(std::find(m_Elements.begin(), m_Elements.end(), this));
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
-        m_pOwner->_addElement(this);
+        m_pOwner->onElementsAccess();
+        m_pOwner->m_Elements.push_back(this);
+        if (isTemplateDependant() && m_pOwner->asEvaluable())
+        {
+            m_pOwner->m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT;
+        }
+
+#if PHANTOM_DEBUG_LEVEL != PHANTOM_DEBUG_LEVEL_FULL
+        if (!m_pOwner->isNative())
+#endif
+        {
+            /// If native => check doubles only in debug version and assert if needed
+            if (!getName().empty() && asSymbol()) /// we accept anonymous doubles
+            {
+                for (auto pElm : m_pOwner->getElements())
+                {
+                    if (pElm == this)
+                        continue;
+                    Symbol* pSymbol = pElm->asSymbol();
+                    (void)pSymbol;
+                    PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
+                                         testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
+                                         pSymbol->getDecoratedName() != getDecoratedName(),
+                                         "equal element already added : be careful not having "
+                                         "duplicate member declarations in your class, or check not "
+                                         "registering not two type with same name in the same source");
+                };
+            }
+        }
     }
 }
 
@@ -369,7 +244,7 @@ LanguageElement* LanguageElement::hatchExpression()
     LanguageElement* pLanguageElement = removeExpression();
     if (pLanguageElement == this)
         return this;
-    PHANTOM_DELETE_DYN this;
+    Delete(this);
     return pLanguageElement;
 }
 
@@ -396,97 +271,26 @@ bool LanguageElement::isSame(LanguageElement* a_pOther) const
     return (this == a_pOther) && m_uiFlags == a_pOther->m_uiFlags;
 }
 
-void LanguageElement::addScopedElement(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->m_pOwner == nullptr);
-    a_pElement->m_pOwner = this;
-    addReferencedElement(a_pElement);
-}
-
-void LanguageElement::removeScopedElement(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->m_pOwner == this);
-    a_pElement->m_pOwner = nullptr;
-    removeReferencedElement(a_pElement);
-}
-
 void LanguageElement::replaceElement(LanguageElement* a_pOldElement, LanguageElement* a_pNewElement)
 {
-    *std::find(m_pElements->begin(), m_pElements->end(), a_pOldElement) = a_pNewElement;
-}
-
-void LanguageElement::fetchReferencedModules(SmallSet<Module*>& a_Modules) const
-{
-    if (m_pReferencedElements)
-    {
-        for (auto it = m_pReferencedElements->begin(); it != m_pReferencedElements->end(); ++it)
-        {
-            a_Modules.insert((*it)->getModule());
-        }
-    }
-}
-
-void LanguageElement::fetchReferencingModules(SmallSet<Module*>& a_Modules) const
-{
-    if (m_pReferencingElements)
-    {
-        for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
-        {
-            if ((*it)->getModule())
-            {
-                a_Modules.insert((*it)->getModule());
-            }
-        }
-    }
-}
-
-void LanguageElement::fetchReferencedModulesDeep(SmallSet<Module*>& a_Modules) const
-{
-    fetchReferencedModules(a_Modules);
-    const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
-    {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
-        {
-            (*it)->fetchReferencedModulesDeep(a_Modules);
-        }
-    }
-}
-
-void LanguageElement::fetchReferencingModulesDeep(SmallSet<Module*>& a_Modules) const
-{
-    fetchReferencingModules(a_Modules);
-    const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
-    {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
-        {
-            (*it)->fetchReferencingModulesDeep(a_Modules);
-        }
-    }
+    *std::find(m_Elements.begin(), m_Elements.end(), a_pOldElement) = a_pNewElement;
 }
 
 void LanguageElement::getElements(LanguageElements& a_Elements) const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
-    {
-        a_Elements.insert(a_Elements.end(), m_pElements->begin(), m_pElements->end());
-    }
+    a_Elements.insert(a_Elements.end(), m_Elements.begin(), m_Elements.end());
 }
 
 void LanguageElement::fetchSymbols(Symbols& a_Symbols) const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
+    for (auto pElem : m_Elements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
+        Symbol* pSymbol = pElem->asSymbol();
+        if (pSymbol)
         {
-            Symbol* pSymbol = (*it)->asSymbol();
-            if (pSymbol)
-            {
-                a_Symbols.push_back(pSymbol);
-            }
+            a_Symbols.push_back(pSymbol);
         }
     }
 }
@@ -494,62 +298,50 @@ void LanguageElement::fetchSymbols(Symbols& a_Symbols) const
 void LanguageElement::getElementsDeep(LanguageElements& a_Elements) const
 {
     getElements(a_Elements);
-    if (m_pElements)
+    for (size_t i = 0; i < m_Elements.size(); ++i)
     {
-        for (size_t i = 0; i < m_pElements->size(); ++i)
-        {
-            (*m_pElements)[i]->getElementsDeep(a_Elements);
-        }
+        (m_Elements)[i]->getElementsDeep(a_Elements);
     }
 }
 
 bool LanguageElement::hasReferencedElement(LanguageElement* a_pLanguageElement) const
 {
-    if (m_pReferencedElements)
-    {
-        for (auto it = m_pReferencedElements->begin(); it != m_pReferencedElements->end(); ++it)
-        {
-            if (*it == a_pLanguageElement)
-                return true;
-        }
-    }
+    // 	for (auto it = m_pReferencedElements->begin(); it != m_pReferencedElements->end(); ++it)
+    // 	{
+    // 		if (*it == a_pLanguageElement)
+    // 			return true;
+    // 	}
     return false;
 }
 
 bool LanguageElement::hasReferencingElement(LanguageElement* a_pLanguageElement) const
 {
-    if (m_pReferencingElements)
-    {
-        for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
-        {
-            if (*it == a_pLanguageElement)
-                return true;
-        }
-    }
+    //     if (m_pReferencingElements)
+    //     {
+    //         for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
+    //         {
+    //             if (*it == a_pLanguageElement)
+    //                 return true;
+    //         }
+    //     }
     return false;
 }
 
 void LanguageElement::dumpElementList(std::basic_ostream<char>& out) const
 {
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
+    for (auto pElem : m_Elements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
-        {
-            out << (*it)->getUniqueName() << std::endl;
-        }
+        out << pElem->getUniqueName() << std::endl;
     }
 }
 
 void LanguageElement::dumpElementListCascade(std::basic_ostream<char>& out) const
 {
     dumpElementList(out);
-    if (m_pElements)
+    for (auto pElem : m_Elements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
-        {
-            (*it)->dumpElementListCascade(out);
-        }
+        pElem->dumpElementListCascade(out);
     }
 }
 
@@ -558,97 +350,25 @@ bool LanguageElement::hasFriendCascade(Symbol* a_pElement) const
     return hasFriend(a_pElement) || (m_pOwner && m_pOwner->hasFriendCascade(a_pElement));
 }
 
-void LanguageElement::addSymbol(Symbol* a_pElement)
-{
-#if PHANTOM_DEBUG_LEVEL != PHANTOM_DEBUG_LEVEL_FULL
-    if (!isNative())
-#endif
-    {
-        /// If native => check doubles only in debug version and assert if needed
-        if (a_pElement->getName().size()) /// we accept anonymous doubles
-        {
-            for (auto pElm : getElements())
-            {
-                if (pElm == a_pElement)
-                    continue;
-                Symbol* pSymbol = pElm->asSymbol();
-                (void)pSymbol;
-                PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
-                                     a_pElement->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
-                                     pSymbol->getDecoratedName() != a_pElement->getDecoratedName(),
-                                     "equal element already added : be careful not having "
-                                     "duplicate member declarations in your class, or check not "
-                                     "registering not two type with same name in the same source");
-            };
-        }
-    }
-    // first add the element
-    addElement(a_pElement);
-}
-
 bool LanguageElement::isTemplateElement() const
 {
     TemplateSpecialization* pSpec = getEnclosingTemplateSpecialization();
     return pSpec && (!(pSpec->isFull()) || pSpec->isTemplateElement());
 }
 
-LanguageElements LanguageElement::sm_Elements; // TODO remove
-
-// void setElementMap(element_map a_element_map)
-// {
-//     uint guid;
-//     element_container::iterator it = g_elements->begin();
-//     element_container::iterator end = g_elements->end();
-//     for (; it != end; it++)
-//     {
-//         guid = a_element_map[(*it)->getQualifiedDecoratedName()];
-//         (*it)->setGuid(guid);
-//     }
-// }
-
-//
-// element_map getElementMap()
-// {
-//     element_map element_map;
-//     element_container::iterator it = g_elements->begin();
-//     element_container::iterator end = g_elements->end();
-//     for (; it != end; it++)
-//     {
-//         element_map[(*it)->getQualifiedDecoratedName()] = (*it)->getGuid();
-//     }
-//
-//     return element_map;
-// }
-//
-// void Phantom::updateLanguageElementGuid()
-// {
-//     static uint s_uitransientGuid = 0;
-//
-//     element_container::iterator it = g_elements->begin();
-//     element_container::iterator end = g_elements->end();
-//     for (; it != end; it++)
-//     {
-//         s_uitransientGuid++;
-//         (*it)->setGuid(s_uitransientGuid);
-//     }
-// }
-
 Symbol* LanguageElement::getUniqueElement(StringView name, Modifiers modifiers /*= 0*/, uint /*= 0*/) const
 {
     Symbol* pElement = nullptr;
     const_cast<LanguageElement*>(this)->_onElementsAccess();
-    if (m_pElements)
+    for (auto pElem : m_Elements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
+        Symbol* pSymbol = pElem->asSymbol();
+        if (pSymbol && pSymbol->getName() == name && pSymbol->testModifiers(modifiers))
         {
-            Symbol* pSymbol = (*it)->asSymbol();
-            if (pSymbol && pSymbol->getName() == name && pSymbol->testModifiers(modifiers))
-            {
-                if (pElement)
-                    return nullptr;
-                else
-                    pElement = pSymbol;
-            }
+            if (pElement)
+                return nullptr;
+            else
+                pElement = pSymbol;
         }
     }
     return pElement;
@@ -656,14 +376,11 @@ Symbol* LanguageElement::getUniqueElement(StringView name, Modifiers modifiers /
 
 size_t LanguageElement::getElementIndex(LanguageElement* a_pElement) const
 {
-    if (m_pElements)
+    size_t count = m_Elements.size();
+    for (size_t i = 0; i < count; ++i)
     {
-        size_t count = m_pElements->size();
-        for (size_t i = 0; i < count; ++i)
-        {
-            if ((*m_pElements)[i] == a_pElement)
-                return i;
-        }
+        if ((m_Elements)[i] == a_pElement)
+            return i;
     }
     return ~size_t(0);
 }
@@ -674,15 +391,11 @@ bool LanguageElement::hasNamingScopeCascade(LanguageElement* a_pScope) const
     return (pScope != nullptr) && ((pScope == a_pScope) || pScope->hasNamingScopeCascade(a_pScope));
 }
 
-void LanguageElement::onElementAdded(LanguageElement*) {}
-
 void LanguageElement::clear()
 {
-    while (m_pElements)
+    while (!m_Elements.empty())
     {
-        LanguageElement* pElement = m_pElements->back();
-        removeElement(pElement);
-        PHANTOM_DELETE_DYN pElement;
+        m_Elements.back()->setOwner(nullptr);
     }
 }
 
@@ -695,14 +408,14 @@ void LanguageElement::steal(LanguageElement*)
     //     // remove this elements
     //     while (m_pElements)
     //     {
-    //         LanguageElement* pElement = m_pElements->front();
+    //         LanguageElement* pElement = m_Elements.front();
     //         removeElement(pElement);
     //     }
     //
     //     // steal input elements while removing to it
     //     while (a_pInput->m_pElements)
     //     {
-    //         LanguageElement* pElement = a_pInput->m_pElements->front();
+    //         LanguageElement* pElement = a_pInput->m_Elements.front();
     //         a_pInput->removeElement(pElement);
     //         addElement(pElement);
     //     }
@@ -986,7 +699,7 @@ void LanguageElement::setIncomplete()
         m_pOwner->setIncomplete();
     if (m_pElements)
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
+        for (auto it = m_Elements.begin(); it != m_Elements.end(); ++it)
         {
             (*it)->setIncomplete();
         }

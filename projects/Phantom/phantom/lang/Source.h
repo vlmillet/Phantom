@@ -30,7 +30,7 @@ class SourceStream;
 template<class T>
 struct ObjectDtor
 {
-    static void apply(void* a_pBase) { PHANTOM_DELETE(T) reinterpret_cast<T*>(a_pBase); }
+    static void apply(void* a_pBase) { Delete<T>(reinterpret_cast)<T*>(a_pBase); }
 };
 
 /// \brief  Represents a source code (not a source file, see phantom::lang::SourceStream for

@@ -117,19 +117,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .using_("LanguageElement::getQualifiedName")
             .using_("LanguageElement::getQualifiedDecoratedName")
             .using_("LanguageElement::getUniqueName")
-            .method<void(LanguageElement*)>("addElement", &_::addElement)
-            .method<void(LanguageElement*)>("removeElement", &_::removeElement)
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
         
         .protected_()
             .constructor<void(Package*, StringView, Modifiers, uint)>()["0"]
         
         .protected_()
-            .method<void(Symbol*), virtual_|override_>("addScopeElement", &_::addScopeElement)
-            .method<void(Symbol*), virtual_|override_>("removeScopeElement", &_::removeScopeElement)
-            .method<void(LanguageElement*), virtual_|override_>("onElementAdded", &_::onElementAdded)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)
         
         .public_()

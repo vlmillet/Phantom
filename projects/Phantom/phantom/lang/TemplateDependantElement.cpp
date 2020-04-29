@@ -21,8 +21,8 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
                                                    Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pLeft(a_pLeft),
-      m_pTemplateArguments(a_pTemplateArguments ? PHANTOM_NEW(LanguageElements)(*a_pTemplateArguments) : nullptr),
-      m_pFunctionArguments(a_pFunctionArguments ? PHANTOM_NEW(LanguageElements)(*a_pFunctionArguments) : nullptr)
+      m_pTemplateArguments(a_pTemplateArguments ? New<LanguageElements>(*a_pTemplateArguments) : nullptr),
+      m_pFunctionArguments(a_pFunctionArguments ? New<LanguageElements>(*a_pFunctionArguments) : nullptr)
 {
     if (m_pLeft)
     {
@@ -67,13 +67,13 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
 
 TemplateDependantElement::~TemplateDependantElement()
 {
-    PHANTOM_DELETE(LanguageElements) m_pTemplateArguments;
-    PHANTOM_DELETE(LanguageElements) m_pFunctionArguments;
+    Delete<LanguageElements>(m_pTemplateArguments);
+    Delete<LanguageElements>(m_pFunctionArguments);
 }
 
 Type* TemplateDependantElement::toType() const
 {
-    return PHANTOM_NEW(TemplateDependantType)((TemplateDependantElement*)this);
+    return New<TemplateDependantType>((TemplateDependantElement*)this);
 }
 
 void TemplateDependantElement::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const

@@ -27,7 +27,7 @@ SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringV
 
 SequentialContainerClass::~SequentialContainerClass()
 {
-    PHANTOM_DELETE(RTData) m_Data;
+    Delete<RTData>(m_Data);
 }
 
 void SequentialContainerClass::push_back(void* a_pContainer, void const* a_pValue) const

@@ -23,7 +23,7 @@ bool PlaceholderTemplate::accepts(LanguageElement* a_pLanguageElement) const
 
 Placeholder* PlaceholderTemplate::clone(uint a_Flags /*= 0*/) const
 {
-    return PHANTOM_NEW(PlaceholderTemplate)(getName(), getTemplateSignature()->clone(a_Flags));
+    return New<PlaceholderTemplate>(getName(), getTemplateSignature()->clone(a_Flags));
 }
 
 } // namespace lang

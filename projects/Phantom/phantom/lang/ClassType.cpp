@@ -31,7 +31,7 @@ namespace lang
 {
 ClassType::ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, Modifiers a_Modifiers /*= 0*/,
                      uint a_uiFlags /*= 0*/)
-    : Type(a_eTypeKind, a_Modifiers, a_uiFlags), Scope(this), Aggregate(this), m_pExtraData(a_pExtraData)
+    : Type(a_eTypeKind, a_Modifiers, a_uiFlags), Scope(this, this), Aggregate(this), m_pExtraData(a_pExtraData)
 {
 }
 
@@ -366,7 +366,7 @@ Constructor* ClassType::addConstructor(StringView a_strParametersString)
     pSignature->parse((String("void(") + a_strParametersString + ")").c_str(), this);
     if (pSignature == nullptr)
         return nullptr;
-    Constructor* pConstructor = PHANTOM_NEW(Constructor)(getName(), pSignature, 0);
+    Constructor* pConstructor = New<Constructor>(getName(), pSignature, 0);
     addConstructor(pConstructor);
     return pConstructor;
 }
@@ -374,8 +374,8 @@ Constructor* ClassType::addConstructor(StringView a_strParametersString)
 Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0*/,
                                        uint a_uiFlags /*= 0*/)
 {
-    Signature*   pSignature = PHANTOM_NEW(Signature)(PHANTOM_TYPEOF(void), a_Parameters);
-    Constructor* pConstructor = PHANTOM_NEW(Constructor)(getName(), pSignature, a_Modifiers, a_uiFlags);
+    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), a_Parameters);
+    Constructor* pConstructor = New<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
     pConstructor->setAccess(getDefaultAccess());
     addConstructor(pConstructor);
     return pConstructor;
@@ -1108,7 +1108,7 @@ Method* ClassType::addDestructor(Modifiers a_Modifiers /*= 0 */, uint a_uiFlags 
     PHANTOM_ASSERT(!isNative(), "cannot add manually destructor to native types");
     PHANTOM_ASSERT(!getDestructor(), "destructor already added");
     Destructor* pDestructor =
-    PHANTOM_NEW(Destructor)('~' + getName(), Signature::Create(PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
+    New<Destructor>('~' + getName(), Signature::Create(PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
     addMethod(pDestructor);
     pDestructor->setAccess(m_pExtraData ? getDefaultAccess() : Access::Public);
     return pDestructor;
@@ -1116,7 +1116,7 @@ Method* ClassType::addDestructor(Modifiers a_Modifiers /*= 0 */, uint a_uiFlags 
 
 void ClassType::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
 {
-    PHANTOM_DELETE(ExtraData) this;
+    Delete<ExtraData>(this);
 }
 
 } // namespace lang

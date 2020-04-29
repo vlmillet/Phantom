@@ -22,7 +22,7 @@ namespace lang
 class PHANTOM_EXPORT_PHANTOM Scope
 {
 protected:
-    Scope(LanguageElement* a_pThisElement);
+    Scope(LanguageElement* a_pThisElement, LanguageElement* a_pUnit);
 
 public:
     virtual Scope* asScope() const = 0;
@@ -685,6 +685,7 @@ protected:
 
 protected:
     LanguageElement*                 m_pThisElement;
+    LanguageElement*                 m_pUnit;
     Members<Functions>               m_Functions;
     Members<Variables>               m_Variables;
     Members<Constants>               m_Constants;

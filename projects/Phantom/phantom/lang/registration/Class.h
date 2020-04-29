@@ -160,9 +160,8 @@ public:
     template<class UserDataT, class... Args>
     MostDerived& userData(Args... a_Args)
     {
-        m_pClass->setUserData(UserData(PHANTOM_NEW(UserDataT)(std::forward<Args>(a_Args)...), [](void* ptr) {
-            PHANTOM_DELETE(UserDataT) reinterpret_cast<UserDataT*>(ptr);
-        }));
+        m_pClass->setUserData(UserData(New<UserDataT>(std::forward<Args>(a_Args)...),
+                                       [](void* ptr) { Delete<UserDataT>(reinterpret_cast)<UserDataT*>(ptr); }));
         return static_cast<MostDerived&>(*this);
     }
 

@@ -31,7 +31,7 @@ Parameter::Parameter(Type* a_pType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlag
 
 Parameter* Parameter::cloneImpl() const
 {
-    return PHANTOM_NEW(Parameter)(m_pValueType, m_strName, m_Modifiers);
+    return New<Parameter>(m_pValueType, m_strName, m_Modifiers);
 }
 
 bool Parameter::isEllipsis() const

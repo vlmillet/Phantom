@@ -25,7 +25,7 @@ SetClass::SetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_u
 
 SetClass::~SetClass()
 {
-    PHANTOM_DELETE(RTData) m_Data;
+    Delete<RTData>(m_Data);
 }
 
 void SetClass::eraseKey(void* a_pContainer, void const* a_pKey) const

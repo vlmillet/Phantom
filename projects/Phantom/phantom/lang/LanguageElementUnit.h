@@ -8,14 +8,8 @@ namespace phantom
 {
 namespace lang
 {
-class PHANTOM_EXPORT_PHANTOM LanguageElementUnit
-{
-public:
-    void Delete(LanguageElement* a_pElem);
-};
-
 template<class Derived>
-class LanguageElementUnitT : public LanguageElementUnit
+class LanguageElementUnitT
 {
     friend class LanguageElement;
 

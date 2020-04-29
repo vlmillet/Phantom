@@ -26,8 +26,6 @@ Alias::Alias(Symbol* a_pSymbol, StringView a_strName, Modifiers a_Modifiers /*= 
 
 void Alias::addAlias(Alias* a_pAlias)
 {
-    if (m_pAliases == nullptr)
-        m_pAliases = PHANTOM_NEW(Aliases);
     m_pAliases->push_back(a_pAlias);
     a_pAlias->setOwner(this);
 }

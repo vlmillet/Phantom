@@ -79,9 +79,9 @@ void Subroutine::terminate()
     {
         for (auto pIns : *m_pInstructions)
         {
-            PHANTOM_DELETE(Instruction) pIns;
+            Delete<Instruction>(pIns);
         }
-        PHANTOM_DELETE(Instructions) m_pInstructions;
+        Delete<Instructions>(m_pInstructions);
         m_pInstructions = nullptr;
     }
     Symbol::terminate();
@@ -152,7 +152,7 @@ Instruction* Subroutine::createInstruction(int a_iOpCode, const CodeRangeLocatio
     {
         m_pInstructions = PHANTOM_NEW(Instructions);
     }
-    Instruction* pNewInst = PHANTOM_NEW(Instruction)(a_iOpCode, a_Location.range, a_MemoryLocation, a_pUserData);
+    Instruction* pNewInst = New<Instruction>(a_iOpCode, a_Location.range, a_MemoryLocation, a_pUserData);
     m_pInstructions->push_back(pNewInst);
     pNewInst->m_pSubroutine = this;
     return pNewInst;
@@ -160,7 +160,7 @@ Instruction* Subroutine::createInstruction(int a_iOpCode, const CodeRangeLocatio
 
 void Subroutine::deleteInstruction(Instruction* a_pInst)
 {
-    PHANTOM_DELETE(Instruction) a_pInst;
+    Delete<Instruction>(a_pInst);
 }
 
 Instructions const& Subroutine::getInstructions() const

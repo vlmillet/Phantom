@@ -164,7 +164,7 @@ bool Symbol::removeAnnotation(StringView a_strName)
     {
         if (m_pAnnotations->empty())
         {
-            PHANTOM_DELETE(Annotations) m_pAnnotations;
+            Delete<Annotations>(m_pAnnotations);
             m_pAnnotations = nullptr;
         }
         return true;
@@ -252,7 +252,7 @@ void Symbol::removeMetaData(StringWithHash a_NameHash)
     m_pMetaDatas->erase(found);
     if (m_pMetaDatas->empty())
     {
-        PHANTOM_DELETE(MetaDatas) m_pMetaDatas;
+        Delete<MetaDatas>(m_pMetaDatas);
         m_pMetaDatas = nullptr;
     }
 }
@@ -379,7 +379,7 @@ void Symbol::setMetaDatas(MetaDatas&& a_MetaDatas)
         return;
     if (m_pMetaDatas == nullptr)
     {
-        m_pMetaDatas = PHANTOM_NEW(MetaDatas)(std::move(a_MetaDatas));
+        m_pMetaDatas = New<MetaDatas>(std::move(a_MetaDatas));
     }
     else
     {
@@ -393,7 +393,7 @@ void Symbol::setMetaDatas(const MetaDatas& a_MetaDatas)
         return;
     if (m_pMetaDatas == nullptr)
     {
-        m_pMetaDatas = PHANTOM_NEW(MetaDatas)(a_MetaDatas);
+        m_pMetaDatas = New<MetaDatas>(a_MetaDatas);
     }
     else
     {

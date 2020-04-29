@@ -47,7 +47,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     using BuilderProxyType = PHANTOM_TYPENAME Top::_PHNTM_Proxy;
 
     MemberAnonymousSectionBuilderT(Top* a_pTop)
-        : m_pMeta(PHANTOM_NEW(Meta)(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)), m_pTop(a_pTop)
+        : m_pMeta(New<Meta>(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)), m_pTop(a_pTop)
     {
         m_pTop->_PHNTM_getOwnerScope()->addMemberAnonymousSection(m_pMeta);
     }

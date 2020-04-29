@@ -87,6 +87,7 @@ Application* Application::Get()
 
 Application::Application()
     : Symbol("", PHANTOM_R_NONE, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_FLAG_NATIVE),
+      LanguageElementUnitT<Application>(&m_Allocator),
       m_pMainModule(nullptr),
       m_OperationCounter(1) /// operation counter initialized to 1 to be able to handle C++ dyanmic
                             /// Initializer and auto loaded dlls before user make manual operations,
@@ -98,6 +99,8 @@ Application::Application()
 }
 
 Application::~Application() {}
+
+void Application::initialize() {}
 
 void Application::_createNativeModule(ModuleRegistrationInfo* info)
 {
@@ -115,6 +118,11 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
                        "use Application::loadLibrary/unloadlibrary");
+
+        if (m_Modules.empty()) // first module ever is the phantom's one
+        {
+            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default");
+        }
         _addModule(info->m_pModule);
         info->m_pModule->setOnLoadFunc(info->m_OnLoad);
         info->m_pModule->setOnUnloadFunc(info->m_OnUnload);
@@ -163,7 +171,7 @@ void Application::_uninstallNativeModule(Module* a_pModule)
     }
     else
     {
-        PHANTOM_DELETE(Module) a_pModule;
+        Delete<Module>(a_pModule);
         PHANTOM_ASSERT(m_pElements == nullptr ||
                        std::find(m_pElements->begin(), m_pElements->end(), a_pModule) == m_pElements->end());
     }
@@ -188,7 +196,7 @@ void Application::terminate()
         {
             LanguageElement* pElem = elements[i];
             if (pElem != m_Modules.back()) // != "Phantom" module
-                PHANTOM_DELETE_DYN pElem;
+                Delete(pElem);
         }
         PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
     }
@@ -197,7 +205,7 @@ void Application::terminate()
 
     _uninstallNativeModule(m_Modules.back());
 
-    PHANTOM_DELETE_DYN Class::MetaClass();
+    Delete(Class::MetaClass());
 
     Symbol::terminate();
 }
@@ -270,7 +278,7 @@ void Application::_prefetchPlugins(StringView a_strPath)
                 }
                 else
                 {
-                    addPlugin(PHANTOM_NEW(Plugin)(entry.path().genericString()));
+                    addPlugin(New<Plugin>(entry.path().genericString()));
                 }
             }
         }
@@ -380,7 +388,7 @@ void Application::_unloadMain()
             if (!pModule->isNative())
             {
                 // destroying runtime/script modules
-                PHANTOM_DELETE(Module) pModule;
+                Delete<Module>(pModule);
                 break;
             }
         }
@@ -414,7 +422,7 @@ void Application::_unloadMain()
                                 "a Phantom Plugin .dll is still in use while releasing Application; we manually force "
                                 "release of the reflection Module elements ; ensure your .dll is unloaded before to "
                                 "avoid undefined behavior.");
-                    PHANTOM_DELETE(Module) pModule;
+                    Delete<Module>(pModule);
                 }
                 break;
             }
@@ -568,16 +576,15 @@ void Application::_registerBuiltInTypes()
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
     Alias* pUnsignedAlias = NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", 0, PHANTOM_R_FLAG_NATIVE);
-    pPhantomModule->addSymbol();
-    Namespace::Global()->addReferencedElement(pUnsignedAlias);
+    pUnsignedAlias->setNamespace(Namespace::Global());
 
     Namespace* pGlobal = Namespace::Global();
     Namespace* pPhantom = pGlobal->getOrCreateNamespace("phantom");
 
-#define _PHNTM_FUND_TD(t) pPhantomModule->addElement(pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE))
+#define _PHNTM_FUND_TD(t) pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
 
 #define _PHNTM_FUND_TD_PHNTM(t)                                                                                        \
-    pPhantomModule->addElement(pPhantom->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE))
+    Application::Get()->getDefaultSource()->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
 
     // #if defined(_M_IA64) || defined(_M_X64) || defined(_M_AMD64)
     //     _PHNTM_FUND_TD(int128);
@@ -607,7 +614,7 @@ void Application::_registerBuiltInTypes()
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
     /// workaround for clang va_list built-in type
-    pPhantomModule->addElement(pGlobal->addAlias(PHANTOM_TYPEOF(char), "__va_list_tag", 0, PHANTOM_R_FLAG_NATIVE));
+    pPhantomModule->addElement();
 #endif
     _PHNTM_FUND_TD(size_t);
 
@@ -1217,7 +1224,7 @@ static void Application_clearClonedConstants(const Symbols& a_Symbols)
     {
         Symbol* pSym = *it;
         if (pSym && pSym->asConstant() && pSym->getOwner() == nullptr)
-            PHANTOM_DELETE_DYN pSym;
+            Delete(pSym);
     }
 }
 

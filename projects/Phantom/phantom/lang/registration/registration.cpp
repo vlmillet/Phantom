@@ -163,7 +163,7 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
                 for (auto arg : args)
                 {
                     if (arg->getOwner() == nullptr)
-                        PHANTOM_DELETE_DYN arg;
+                        Delete(arg);
                 }
             }
         }

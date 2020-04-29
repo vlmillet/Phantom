@@ -115,19 +115,7 @@ public:
     /// \brief  Gets elements owned by this one.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    LanguageElements const& getElements() const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets elements referenced by this one.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    LanguageElements const& getReferencedElements() const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets elements referencing this one.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    LanguageElements const& getReferencingElements() const;
+    LanguageElementsView getElements() const;
 
     bool isTemplateElement() const;
 
@@ -517,39 +505,6 @@ public:
                                 PlaceholderMap& a_Deductions) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Fetches modules referenced inside this element (i.e. modules managing elements
-    /// referenced by this element).
-    ///
-    /// \param a_Modules   The output modules.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void fetchReferencedModules(ModuleSet& a_Modules) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Fetches modules referencing this element.
-    ///
-    /// \param a_Modules   The output modules.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void fetchReferencingModules(ModuleSet& a_Modules) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Fetches modules referenced inside this element or any sub element, recursively.
-    ///
-    /// \param a_Modules   The output modules.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void fetchReferencedModulesDeep(ModuleSet& a_Modules) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Fetches modules referencing this element or any sub element, recursively.
-    ///
-    /// \param a_Modules   The output modules.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void fetchReferencingModulesDeep(ModuleSet& a_Modules) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Fetches the elements contained in this element.
     ///
     /// \param a_Elements  The elements.
@@ -873,6 +828,13 @@ public:
 
     void setOwner(LanguageElement* a_pOwner);
 
+    inline void addReferencedElement(LanguageElement*)
+    { /*no impl for now*/
+    }
+    inline void removeReferencedElement(LanguageElement*)
+    { /*no impl for now*/
+    }
+
 protected:
     LanguageElement(uint a_uiFlags = 0);
 
@@ -897,10 +859,10 @@ private:
     LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the
                                  /// naming scope (both can still be equal). For example a global
                                  /// function is owned by its source, not by the global namespace
-    LanguageElements* m_pElements{};
-    Source*           m_pSource{};
-    CodeRange         m_CodeRange;
-    uint              m_uiFlags{};
+    SmallVector<LanguageElement*, 4> m_Elements;
+    Source*                          m_pSource{};
+    CodeRange                        m_CodeRange;
+    uint                             m_uiFlags{};
 };
 
 } // namespace lang

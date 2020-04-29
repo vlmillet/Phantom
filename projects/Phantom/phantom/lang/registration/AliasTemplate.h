@@ -42,7 +42,7 @@ void SolveAliasTemplate(RegistrationStep a_Step, Template*& a_rpTemplate, T& a_B
         PHANTOM_ASSERT(pTS, "cannot resolved template signature %.*s %.*s",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateTypes), PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateParams));
 
-        a_rpTemplate = PHANTOM_NEW(Template)(pTS, a_Name, 0, PHANTOM_R_FLAG_NATIVE);
+        a_rpTemplate = New<Template>(pTS, a_Name, 0, PHANTOM_R_FLAG_NATIVE);
 
         a_Builder._PHNTM_getMeta()->addTemplate(a_rpTemplate);
         a_Builder._PHNTM_getSource()->addTemplate(a_rpTemplate);

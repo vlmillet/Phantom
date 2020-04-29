@@ -217,7 +217,7 @@ PHANTOM_EXPORT_PHANTOM void initializeSystem()
 }
 PHANTOM_EXPORT_PHANTOM void releaseSystem()
 {
-    PHANTOM_DELETE(RecursiveMutex) reinterpret_cast<RecursiveMutex*>(write_mutex().m_private);
+    Delete<RecursiveMutex>(reinterpret_cast)<RecursiveMutex*>(write_mutex().m_private);
 }
 
 #if PHANTOM_CUSTOM_THREAD_SAFE

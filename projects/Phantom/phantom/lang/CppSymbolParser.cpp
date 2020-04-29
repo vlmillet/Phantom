@@ -311,7 +311,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
     auto scopeExit = makeScopeExit([&]() {
         for (auto pElem : tempOrNotTemps)
             if (pElem->getOwner() == nullptr)
-                PHANTOM_DELETE_DYN pElem;
+                Delete(pElem);
     });
 
     struct Context

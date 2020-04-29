@@ -202,7 +202,7 @@ TemplateSpecialization* Template::createTemplateSpecialization(const LanguageEle
                                                                TemplateSignature*      a_pTemplateSignature)
 {
     if (a_pTemplateSignature == nullptr)
-        a_pTemplateSignature = PHANTOM_NEW(TemplateSignature)(isNative() * PHANTOM_R_FLAG_NATIVE);
+        a_pTemplateSignature = New<TemplateSignature>(isNative() * PHANTOM_R_FLAG_NATIVE);
     TemplateSpecialization* pSpec = a_pTemplated
     ? PHANTOM_DEFERRED_NEW(TemplateSpecialization)(this, a_pTemplateSignature, arguments, a_pTemplated,
                                                    getFlags() & PHANTOM_R_FLAG_NATIVE)

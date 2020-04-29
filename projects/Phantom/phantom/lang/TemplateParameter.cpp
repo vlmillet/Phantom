@@ -30,14 +30,14 @@ TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElemen
 
 TemplateParameter* TemplateParameter::clone() const
 {
-    TemplateParameter* pTP = PHANTOM_NEW(TemplateParameter)(m_pPlaceholder, m_pDefaultArgument);
+    TemplateParameter* pTP = New<TemplateParameter>(m_pPlaceholder, m_pDefaultArgument);
     pTP->setCodeRange(getCodeRange());
     return pTP;
 }
 
 TemplateParameter* TemplateParameter::clone(uint a_Flags /*= 0*/) const
 {
-    return PHANTOM_NEW(TemplateParameter)(getPlaceholder()->clone(), m_pDefaultArgument, a_Flags);
+    return New<TemplateParameter>(getPlaceholder()->clone(), m_pDefaultArgument, a_Flags);
 }
 
 TemplateSignature* TemplateParameter::getTemplateSignature() const

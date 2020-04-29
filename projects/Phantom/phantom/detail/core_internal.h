@@ -30,6 +30,8 @@ PHANTOM_EXPORT_PHANTOM class detail::DynamicCppInitializerH* dynamic_initializer
 
 namespace detail
 {
+PHANTOM_EXPORT_PHANTOM bool installed();
+
 class PHANTOM_EXPORT_PHANTOM DynamicCppInitializerH
 {
 public:
@@ -210,7 +212,7 @@ struct DeferredDeleteH
     {
         if (dynamic_initializer_()->installed())
         {
-            PHANTOM_DELETE(T) a_pInstance;
+            Delete<T>(a_pInstance);
         }
         else
         {

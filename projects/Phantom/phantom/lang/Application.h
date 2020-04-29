@@ -80,6 +80,7 @@ public:
     Application();
     ~Application() override;
 
+    void initialize();
     void terminate();
 
     template<class T, class... Args>
@@ -704,6 +705,7 @@ private:
     MemoryContext                         m_MemoryContext;
     UndefinedsMap                         m_Undefineds;
     Source*                               m_pDefaultSource = nullptr;
+    ForwardHeapSequence                   m_Allocator{1024};
 };
 
 } // namespace lang

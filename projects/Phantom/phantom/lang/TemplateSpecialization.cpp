@@ -123,7 +123,7 @@ TemplateSpecialization::~TemplateSpecialization()
     if (isNative())
     {
         if (m_pDefaultArguments)
-            PHANTOM_DELETE(LanguageElements) m_pDefaultArguments;
+            Delete<LanguageElements>(m_pDefaultArguments);
     }
 }
 
@@ -477,7 +477,7 @@ TemplateSpecialization* TemplateSpecialization::clone(uint a_Flags) const
             arguments[i] = m_Arguments[i];
         }
     }
-    return PHANTOM_NEW(TemplateSpecialization)(m_pTemplate, pSign, arguments, a_Flags);
+    return New<TemplateSpecialization>(m_pTemplate, pSign, arguments, a_Flags);
 }
 
 void TemplateSpecialization::setExtendedSpecialization(TemplateSpecialization* a_pExtended)

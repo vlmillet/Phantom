@@ -123,14 +123,14 @@ TemplateSpecialization* TemplateSignature::getTemplateSpecialization() const
 
 TemplateParameter* TemplateSignature::addTemplateValueParameter(Type* a_pType, StringView a_Name)
 {
-    TemplateParameter* pParam = PHANTOM_NEW(TemplateParameter)(PHANTOM_NEW(PlaceholderConstant)(a_pType, a_Name));
+    TemplateParameter* pParam = New<TemplateParameter>(New<PlaceholderConstant>(a_pType, a_Name));
     addTemplateParameter(pParam);
     return pParam;
 }
 
 TemplateParameter* TemplateSignature::addTemplateTypeParameter(StringView a_Name)
 {
-    TemplateParameter* pParam = PHANTOM_NEW(TemplateParameter)(PHANTOM_NEW(PlaceholderType)(a_Name));
+    TemplateParameter* pParam = New<TemplateParameter>(New<PlaceholderType>(a_Name));
     addTemplateParameter(pParam);
     return pParam;
 }
@@ -138,8 +138,7 @@ TemplateParameter* TemplateSignature::addTemplateTypeParameter(StringView a_Name
 TemplateParameter* TemplateSignature::addTemplateTemplateParameter(TemplateSignature* a_pTemplateSignature,
                                                                    StringView         a_Name)
 {
-    TemplateParameter* pParam =
-    PHANTOM_NEW(TemplateParameter)(PHANTOM_NEW(PlaceholderTemplate)(a_Name, a_pTemplateSignature));
+    TemplateParameter* pParam = New<TemplateParameter>(New<PlaceholderTemplate>(a_Name, a_pTemplateSignature));
     addTemplateParameter(pParam);
     return pParam;
 }
@@ -294,7 +293,7 @@ TemplateSignature* TemplateSignature::clone(uint a_Flags) const
     {
         params[i] = m_TemplateParameters[i]->clone(a_Flags);
     }
-    return PHANTOM_NEW(TemplateSignature)(params, isVariadic(), a_Flags);
+    return New<TemplateSignature>(params, isVariadic(), a_Flags);
 }
 
 void TemplateSignature::getName(StringBuffer& a_Buf) const

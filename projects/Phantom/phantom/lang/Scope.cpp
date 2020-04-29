@@ -35,8 +35,9 @@ static TemplateSpecializations m_EmptyTemplateSpecializations;
 static Aliases                 m_EmptyAliases;
 static AnonymousSections       m_EmptyAnonymousSections;
 
-Scope::Scope(LanguageElement* a_pThisElement)
+Scope::Scope(LanguageElement* a_pThisElement, LanguageElement* a_pUnit)
     : m_pThisElement(a_pThisElement),
+      m_pUnit(a_pUnit),
       m_Functions(a_pThisElement),
       m_Variables(a_pThisElement),
       m_Constants(a_pThisElement),
@@ -178,6 +179,7 @@ void Scope::addAlias(Alias* a_pAlias)
 Alias* Scope::addAlias(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
     PHANTOM_ASSERT(a_pSymbol);
+    PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
     Alias* pAlias = PHANTOM_DEFERRED_NEW(Alias)(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
     addAlias(pAlias);
     return pAlias;
@@ -187,20 +189,17 @@ Template* Scope::addAliasTemplate(TemplateSignature* a_pSignature, StringView a_
                                   StringView a_TemplateDependantType, Modifiers a_Modifiers /*= 0*/,
                                   uint a_uiFlags /*= 0*/)
 {
-    m_pThisElement->addScopedElement(a_pSignature);
+    PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
+
+    a_pSignature->setOwner(m_pUnit);
     Type* pType = Application::Get()->findCppType(a_TemplateDependantType, a_pSignature);
-    m_pThisElement->removeScopedElement(a_pSignature);
+    a_pSignature->setOwner(nullptr);
     if (pType == nullptr)
-    {
         return nullptr;
-    }
-    Template* pTemplate = PHANTOM_DEFERRED_NEW(Template)(a_pSignature, a_strAliasName, a_Modifiers, a_uiFlags);
+    Template* pTemplate = m_pUnit->New<Template>(a_pSignature, a_strAliasName, a_Modifiers, a_uiFlags);
     Alias*    pAlias = Alias::Create(pType, a_strAliasName, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE);
     pTemplate->getEmptyTemplateSpecialization()->setTemplated(pAlias);
-    if (pType->getOwner() == nullptr) // template dependant
-    {
-        pAlias->addElement(pType);
-    }
+    PHANTOM_ASSERT(pType->getOwner()); // template dependant
     addTemplate(pTemplate);
     return pTemplate;
 }
@@ -598,7 +597,7 @@ Alias* Scope::getTypedef(StringView a_strTypedef) const
 
 void Scope::addUsing(Symbol* a_pElement)
 {
-    addAlias(PHANTOM_NEW(Alias)(a_pElement, a_pElement->getName()));
+    addAlias(New<Alias>(a_pElement, a_pElement->getName()));
 }
 
 void Scope::fetchTypesCascade(Types& a_Types) const
@@ -821,7 +820,7 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization = PHANTOM_NEW(TemplateSpecialization)(
+    addTemplateSpecialization(pTemplateSpecialization = New<TemplateSpecialization>(
                               a_pTemplate, a_pTemplateSignature, a_Arguments,
                               PHANTOM_R_FLAG_PRIVATE_VIS | (PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative())));
     return pTemplateSpecialization;
@@ -841,7 +840,7 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization = PHANTOM_NEW(TemplateSpecialization)(
+    addTemplateSpecialization(pTemplateSpecialization = New<TemplateSpecialization>(
                               a_pInstantiationSpecialization, a_Arguments, a_PartialSpecializationParameterDeductions));
     // pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE*m_pThisElement->isNative());
     return pTemplateSpecialization;

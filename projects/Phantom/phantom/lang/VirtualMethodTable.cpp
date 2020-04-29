@@ -71,7 +71,7 @@ VirtualMethodTable::VirtualMethodTable()
 {
 }
 VirtualMethodTable::VirtualMethodTable(size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)())
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>())
 {
     m_pMethods->resize(a_uiSize);
 }
@@ -87,7 +87,7 @@ VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)()), m_pBaseTable(a_pBaseTable)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>()), m_pBaseTable(a_pBaseTable)
 {
     PHANTOM_ASSERT(a_uiSize >= a_pBaseTable->getMethodCount(),
                    "a derived vtable must have equal or greater size than base");
@@ -101,7 +101,7 @@ VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t 
 }
 
 VirtualMethodTable::VirtualMethodTable(void** a_ppClosures, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods)()), m_ppClosures(a_ppClosures)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>()), m_ppClosures(a_ppClosures)
 {
     m_pMethods->resize(a_uiSize);
 }
@@ -112,7 +112,7 @@ PHANTOM_DTOR VirtualMethodTable::~VirtualMethodTable()
         m_pBaseTable->m_DerivedTables.erase(
         std::find(m_pBaseTable->m_DerivedTables.begin(), m_pBaseTable->m_DerivedTables.end(), this));
     if (!(sharesMethods()))
-        PHANTOM_DELETE(Methods) m_pMethods;
+        Delete<Methods>(m_pMethods);
     if (m_ppClosures)
         PHANTOM_FREE(m_ppClosures - 1);
 }

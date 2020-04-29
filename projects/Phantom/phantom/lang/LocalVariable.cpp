@@ -83,7 +83,7 @@ LocalVariable* LocalVariable::clone() const
 
 LocalVariable* LocalVariable::cloneImpl() const
 {
-    return PHANTOM_NEW(LocalVariable)(m_pValueType, m_strName, m_Modifiers);
+    return New<LocalVariable>(m_pValueType, m_strName, m_Modifiers);
 }
 
 void LocalVariable::getQualifiedName(StringBuffer& a_Buf) const

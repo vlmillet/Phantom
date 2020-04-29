@@ -34,8 +34,7 @@ public:
     /// \param  a_Modifiers     (optional) the modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Variable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers = 0,
-             uint a_uiFlags = 0);
+    Variable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an anonymous variable with given allocated memory address, value type,
@@ -60,8 +59,7 @@ public:
     /// \param  a_Modifiers     (optional) the modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Variable(Type* a_pValueType, StringView a_strName, void* a_pAddress, Modifiers a_Modifiers = 0,
-             uint a_uiFlags = 0);
+    Variable(Type* a_pValueType, StringView a_strName, void* a_pAddress, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
     PHANTOM_DTOR ~Variable() override;
@@ -72,10 +70,7 @@ public:
     /// \return The address of this variable.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void* getAddress() const
-    {
-        return m_pAddress;
-    }
+    void* getAddress() const { return m_pAddress; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the value type of this variable.
@@ -83,10 +78,7 @@ public:
     /// \return The value type of this variable.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* getValueType() const
-    {
-        return m_pValueType;
-    }
+    Type* getValueType() const { return m_pValueType; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the value of this variable.
@@ -104,10 +96,7 @@ public:
 
     void getValue(void* a_pOutputBuffer) const;
 
-    Variable* asVariable() const override
-    {
-        return (Variable*)this;
-    }
+    Variable* asVariable() const override { return (Variable*)this; }
 
     StaticField* asStaticField() const override;
 
@@ -115,10 +104,7 @@ public:
 
     void setInitializationExpression(Expression* a_pExpression);
 
-    Expression* getInitializationExpression() const
-    {
-        return m_pInitializationExpression;
-    }
+    Expression* getInitializationExpression() const { return m_pInitializationExpression; }
 
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,13 +113,9 @@ protected:
     /// \param a_pAddress  The address.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setAddress(void* a_pAddress)
-    {
-        m_pAddress = a_pAddress;
-    }
+    void setAddress(void* a_pAddress) { m_pAddress = a_pAddress; }
 
 protected:
-    void         onReferencedElementRemoved(LanguageElement* a_pElement) override;
     virtual void finalize();
 
 protected:

@@ -59,7 +59,7 @@ Source::~Source()
     }
     if (m_pSourceStream)
     {
-        PHANTOM_DELETE_DYN m_pSourceStream;
+        Delete(m_pSourceStream);
     }
 }
 
@@ -277,9 +277,8 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 pAlias = getAlias((*it)->getName());
                 if (pAlias == nullptr)
                 {
-                    pAlias =
-                    PHANTOM_NEW(Alias)((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                       (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT);
+                    pAlias = New<Alias>((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
+                                        (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT);
                     addAlias(pAlias);
                 }
             }
@@ -288,13 +287,13 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 auto pSubAlias = pAlias->getAlias((*it)->getName());
                 if (pSubAlias == nullptr)
                 {
-                    pSubAlias = PHANTOM_NEW(Alias)((*it)->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
+                    pSubAlias = New<Alias>((*it)->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
                     pAlias->addAlias(pSubAlias);
                 }
                 pAlias = pSubAlias;
             }
         }
-        auto pLastNamedAlias = PHANTOM_NEW(Alias)(a_pSymbol, a_pSymbol->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
+        auto pLastNamedAlias = New<Alias>(a_pSymbol, a_pSymbol->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
         if (pAlias)
             pAlias->addAlias(pLastNamedAlias);
         else
@@ -302,8 +301,8 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     }
     else
     {
-        addAlias(pAlias = PHANTOM_NEW(Alias)(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                             (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT));
+        addAlias(pAlias = New<Alias>(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
+                                     (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT));
     }
     i.alias = pAlias;
     m_Imports.push_back(i);
@@ -318,7 +317,7 @@ void Source::removeImport(Symbol* a_pSource)
     {
         if (it->symbol == a_pSource)
         {
-            PHANTOM_DELETE(Alias) it->alias;
+            Delete<Alias>(it)->alias;
             if (Source* pSource = it->symbol->asSource())
                 pSource->_removeImporting(this);
             m_Imports.erase(it);

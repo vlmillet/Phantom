@@ -970,7 +970,7 @@ void Class::setOverriddenDefaultExpression(ValueMember* a_pValueMember, Expressi
     auto& pExp = (*m_pOverriddenDefaultExpressions)[a_pValueMember];
     if (pExp)
     {
-        PHANTOM_DELETE_DYN reinterpret_cast<LanguageElement*>(pExp);
+        Delete(reinterpret_cast)<LanguageElement*>(pExp);
     }
     pExp = a_pExpression;
 }
@@ -1465,15 +1465,14 @@ bool Class::canHaveImplicitMoveAssignmentOperator() const
 
 VirtualMethodTable* Class::CreateVirtualMethodTable(void** a_ppAddr, size_t a_MethodCount)
 {
-    return PHANTOM_NEW(VirtualMethodTable)(a_ppAddr, a_MethodCount);
+    return New<VirtualMethodTable>(a_ppAddr, a_MethodCount);
 }
 
 void Class::addImplicitDefaultConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = PHANTOM_NEW(Signature)(PHANTOM_TYPEOF(void));
-    Constructor* pConstructor =
-    PHANTOM_NEW(Constructor)(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void));
+    Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -1481,9 +1480,8 @@ void Class::addImplicitDefaultConstructor()
 void Class::addImplicitCopyConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = PHANTOM_NEW(Signature)(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
-    Constructor* pConstructor =
-    PHANTOM_NEW(Constructor)(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
+    Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -1491,8 +1489,8 @@ void Class::addImplicitCopyConstructor()
 void Class::addImplicitCopyAssignmentOperator()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature* pSignature = PHANTOM_NEW(Signature)(makeLValueReference(), makeConst()->makeLValueReference());
-    Method*    pMethod = PHANTOM_NEW(Method)("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature* pSignature = New<Signature>(makeLValueReference(), makeConst()->makeLValueReference());
+    Method*    pMethod = New<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pMethod->setAccess(Access::Public);
     addMethod(pMethod);
 }
@@ -1500,9 +1498,8 @@ void Class::addImplicitCopyAssignmentOperator()
 void Class::addImplicitMoveConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = PHANTOM_NEW(Signature)(PHANTOM_TYPEOF(void), makeRValueReference());
-    Constructor* pConstructor =
-    PHANTOM_NEW(Constructor)(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), makeRValueReference());
+    Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -1510,8 +1507,8 @@ void Class::addImplicitMoveConstructor()
 void Class::addImplicitMoveAssignmentOperator()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature* pSignature = PHANTOM_NEW(Signature)(makeLValueReference(), makeRValueReference());
-    Method*    pMethod = PHANTOM_NEW(Method)("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature* pSignature = New<Signature>(makeLValueReference(), makeRValueReference());
+    Method*    pMethod = New<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pMethod->setAccess(Access::Public);
     addMethod(pMethod);
 }
@@ -1624,7 +1621,7 @@ InstanceCache* Class::getOrCreateInstanceCache()
 {
     if (m_pInstanceCache)
         return m_pInstanceCache;
-    return m_pInstanceCache = PHANTOM_NEW(InstanceCache)(this);
+    return m_pInstanceCache = New<InstanceCache>(this);
 }
 
 Type* Class::getCommonBaseAncestor(Type* a_pType) const
@@ -1684,7 +1681,7 @@ bool Class::isMoveConstructible() const
 
 void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
 {
-    PHANTOM_DELETE(ExtraData) this;
+    Delete<ExtraData>(this);
 }
 
 namespace

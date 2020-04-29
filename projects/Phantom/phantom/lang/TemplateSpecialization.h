@@ -183,11 +183,6 @@ public:
 
     Source* getCodeLocationSource() const override;
 
-protected:
-    void onReferencedElementAdded(LanguageElement* a_pElement) override;
-    void onReferencedElementRemoved(LanguageElement* a_pElement) override;
-    void onElementRemoved(LanguageElement* a_pElement) override;
-
 private:
     void _updateName();
 

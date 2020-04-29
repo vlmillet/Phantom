@@ -36,14 +36,14 @@ Namespace* Namespace::Global()
 
 Namespace::Namespace(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
     : Symbol("", a_Modifiers, (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
-      Scope(this)
+      Scope(this, nullptr)
 {
 }
 
 Namespace::Namespace(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers,
              (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
-      Scope(this)
+      Scope(this, nullptr)
 {
 }
 
@@ -129,7 +129,7 @@ void Namespace::release(Types& out_types)
         Namespace* pNamespace = m_Namespaces.back();
         pNamespace->release(out_types);
         removeNamespace(pNamespace);
-        PHANTOM_DELETE_DYN pNamespace;
+        Delete(pNamespace);
     }
 }
 

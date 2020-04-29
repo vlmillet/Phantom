@@ -80,7 +80,7 @@ void Type::terminate()
     if (m_pExtendedTypes)
     {
         PHANTOM_ASSERT(g_ReleasingPhantomModule);
-        PHANTOM_DELETE(Types) m_pExtendedTypes;
+        Delete<Types>(m_pExtendedTypes);
         m_pExtendedTypes = nullptr;
     }
 }
@@ -303,7 +303,7 @@ void Type::onElementRemoved(LanguageElement* a_pElement)
             m_pExtendedTypes->erase(found);
             if (m_pExtendedTypes->empty())
             {
-                PHANTOM_DELETE(Types) m_pExtendedTypes;
+                Delete<Types>(m_pExtendedTypes);
                 m_pExtendedTypes = nullptr;
             }
         }
@@ -775,7 +775,7 @@ void Type::removeExtendedType(Type* a_pType)
     m_pExtendedTypes->erase(std::find(m_pExtendedTypes->begin(), m_pExtendedTypes->end(), a_pType));
     if (m_pExtendedTypes->empty())
     {
-        PHANTOM_DELETE(Types) m_pExtendedTypes;
+        Delete<Types>(m_pExtendedTypes);
         m_pExtendedTypes = nullptr;
     }
 }

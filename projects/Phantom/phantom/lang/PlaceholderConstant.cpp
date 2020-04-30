@@ -16,7 +16,7 @@ bool PlaceholderConstant::accepts(LanguageElement* a_pLanguageElement) const
     return a_pLanguageElement->removeExpression()->asConstant() != nullptr;
 }
 
-Constant* PlaceholderConstant::cloneImpl() const
+Constant* PlaceholderConstant::cloneImpl(LanguageElement* a_pOwner) const
 {
     return New<PlaceholderConstant>(getValueType(), getName(), getModifiers(), 0);
 }

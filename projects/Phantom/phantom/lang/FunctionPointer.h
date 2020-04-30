@@ -87,10 +87,6 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    static FunctionPointer* Create(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers = 0,
-                                   uint a_Flags = 0);
-
-protected:
     ABI m_eABI;
 };
 

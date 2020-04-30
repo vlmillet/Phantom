@@ -30,27 +30,13 @@ public:
     {
         PHANTOM_ASSERT(m_pBegin <= m_pEnd);
     }
+    ArrayView(T const& a_Single) : m_pBegin(&a_Single), m_pEnd(&a_Single + 1) { PHANTOM_ASSERT(m_pBegin <= m_pEnd); }
 
-    const T* begin() const
-    {
-        return m_pBegin;
-    }
-    const T* end() const
-    {
-        return m_pEnd;
-    }
-    const T* data() const
-    {
-        return m_pBegin;
-    }
-    size_t size() const
-    {
-        return m_pEnd - m_pBegin;
-    }
-    bool empty() const
-    {
-        return m_pEnd == m_pBegin;
-    }
+    const T* begin() const { return m_pBegin; }
+    const T* end() const { return m_pEnd; }
+    const T* data() const { return m_pBegin; }
+    size_t   size() const { return m_pEnd - m_pBegin; }
+    bool     empty() const { return m_pEnd == m_pBegin; }
 
     T const& front() const
     {

@@ -63,7 +63,7 @@ public:
     virtual void getRelativeName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
 
 private:
-    Constant* cloneImpl() const override;
+    Constant* cloneImpl(LanguageElement* a_pOwner) const override;
 };
 
 } // namespace lang

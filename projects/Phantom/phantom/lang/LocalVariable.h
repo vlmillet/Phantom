@@ -116,9 +116,9 @@ public:
 
     ptrdiff_t getNativeFrameOffset() const { return m_iNativeFrameOffset; }
 
-    LocalVariable* clone() const;
+    LocalVariable* clone(LanguageElement* a_pOwner) const;
 
-    virtual LocalVariable* cloneImpl() const;
+    virtual LocalVariable* cloneImpl(LanguageElement* a_pOwner) const;
 
     void getQualifiedName(StringBuffer& a_Buf) const override;
 

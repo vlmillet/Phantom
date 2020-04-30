@@ -520,7 +520,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                             if (templateArgs.size() <= pTemplate->getTemplateParameters().size())
                             {
                                 TemplateDependantTemplateInstance* pInst =
-                                PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
+                                NewDeferred<TemplateDependantTemplateInstance>(
                                 pTemplate, templateArgs,
                                 phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE : PHANTOM_R_FLAG_NONE);
                                 a_Symbols.push_back(pInst);
@@ -587,8 +587,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                                 }
                                                 else
                                                 {
-                                                    a_Symbols.push_back(
-                                                    PHANTOM_DEFERRED_NEW_EX(TemplateDependantTemplateInstance)(
+                                                    a_Symbols.push_back(NewDeferred<TemplateDependantTemplateInstance>(
                                                     pTemplate, finalArgs,
                                                     phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
                                                                                            : PHANTOM_R_FLAG_NONE));

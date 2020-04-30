@@ -535,8 +535,7 @@ TemplateSpecialization* TemplateSpecialization::Create(Template* a_pTemplate, Te
                                                        const LanguageElements& a_Arguments, Symbol* a_pTemplated,
                                                        uint a_Flags)
 {
-    return PHANTOM_DEFERRED_NEW_EX(TemplateSpecialization)(a_pTemplate, a_pTemplateSignature, a_Arguments, a_pTemplated,
-                                                           a_Flags);
+    return NewDeferred<TemplateSpecialization>(a_pTemplate, a_pTemplateSignature, a_Arguments, a_pTemplated, a_Flags);
 }
 
 } // namespace lang

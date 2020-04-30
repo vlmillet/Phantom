@@ -18,6 +18,17 @@ namespace phantom
 {
 namespace lang
 {
+Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs,
+                             Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+{
+    Parameters params;
+    for (auto p : a_ParamTs)
+    {
+        params.push_back(a_pOwner->NewDeferred<Parameter>(p));
+    }
+    return a_pOwner->NewDeferred<Signature>(a_pRet, params, a_Modifiers, a_uiFlags);
+}
+
 Signature::Signature(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pReturnType(nullptr),
@@ -36,18 +47,6 @@ Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_
     setReturnType(a_pReturnType);
 }
 
-Signature::Signature(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
-                     uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
-{
-    PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    setReturnType(a_pReturnType);
-    addParameter(
-    PHANTOM_DEFERRED_NEW_EX(Parameter)(a_pSingleParameterType, Modifier::None, a_uiFlags & PHANTOM_R_FLAG_NATIVE));
-}
-
 Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0 */,
                      uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
@@ -62,72 +61,9 @@ Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_
     }
 }
 
-Signature::Signature(Type* a_pType, TypesView a_Types, Modifiers a_Modifiers /*= 0 */, uint a_uiFlags /*=0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
-{
-    PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    setReturnType(a_pType);
-    for (auto pType : a_Types)
-    {
-        addParameter(PHANTOM_DEFERRED_NEW_EX(Parameter)(pType, Modifier::None, a_uiFlags & PHANTOM_R_FLAG_NATIVE));
-    }
-}
-
-Signature::Signature(StringView a_strCode, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0 */,
-                     uint a_uiFlags /*=0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
-{
-    PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    a_pContextScope->addScopedElement(this);
-    parse(a_strCode, this);
-    a_pContextScope->removeScopedElement(this);
-}
-
-void Signature::parse(StringView a_strSignature, LanguageElement* a_pContextScope)
-{
-    size_t i = 0;
-    size_t length = a_strSignature.size();
-    String returnType;
-    char   prevChar = '0';
-    for (; i < length; ++i)
-    {
-        char c = a_strSignature[i];
-        if (c == '(')
-        {
-            PHANTOM_ASSERT(!(returnType.empty()), "no return type specified in the signature String");
-            Type* pReturnType = m_pReturnType;
-            if (pReturnType == nullptr)
-            {
-                pReturnType = Application::Get()->findCppType(returnType, a_pContextScope);
-            }
-            PHANTOM_ASSERT(pReturnType, "invalid return type %s", returnType.c_str());
-            setReturnType(pReturnType);
-            PHANTOM_VERIFY(parseParameterTypeList(a_strSignature.substr(i), a_pContextScope),
-                           "signature parsing failed '%.*s'",
-                           PHANTOM_STRING_AS_PRINTF_ARG(StringView(a_strSignature).substr(i)));
-            return;
-        }
-        else
-        {
-            if (prevChar == '>' && c == '>') /// avoid shift right / end of template ambiguity
-                returnType += ' ';
-            returnType += c;
-        }
-        prevChar = c;
-    }
-    PHANTOM_ASSERT(false, "invalid signature formating, missing '(types...)'");
-}
-
-Signature::~Signature() {}
-
 Parameter* Signature::addParameter(Type* a_pType, StringView a_strName)
 {
-    Parameter* p =
-    PHANTOM_DEFERRED_NEW_EX(Parameter)(a_pType, a_strName, Modifier::None, getFlags() & PHANTOM_R_FLAG_NATIVE);
+    Parameter* p = NewDeferred<Parameter>(a_pType, a_strName, Modifier::None, getFlags() & PHANTOM_R_FLAG_NATIVE);
     addParameter(p);
     return p;
 }
@@ -144,7 +80,7 @@ void Signature::addParameter(Parameter* a_pParameter)
     }
     PHANTOM_ASSERT(!(isVariadic()), "cannot add parameters after a variadic parameter pack");
     PHANTOM_ASSERT(a_pParameter);
-    addElement(a_pParameter);
+    a_pParameter->setOwner(this);
     m_Parameters.push_back(a_pParameter);
 }
 
@@ -156,28 +92,6 @@ void Signature::setReturnType(Type* a_pType)
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
     addReferencedElement(a_pType);
-}
-
-void Signature::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pReturnType == a_pElement)
-    {
-        m_pReturnType = nullptr;
-    }
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-}
-
-void Signature::onElementRemoved(LanguageElement* a_pElement)
-{
-    for (auto it = m_Parameters.begin(); it != m_Parameters.end(); ++it)
-    {
-        if ((*it) == a_pElement)
-        {
-            m_Parameters.erase(std::find(m_Parameters.begin(), m_Parameters.end(), a_pElement));
-            break;
-        }
-    }
-    LanguageElement::onElementRemoved(a_pElement);
 }
 
 size_t Signature::getParameterCount() const
@@ -268,7 +182,7 @@ bool Signature::parseParameterTypeList(StringView a_strText, LanguageElement* a_
         {
             if ((pType = pParamElement->toType())) // if alias, toType will unalias
             {
-                addParameter(PHANTOM_DEFERRED_NEW_EX(Parameter)(pType, name));
+                addParameter(NewDeferred<Parameter>(pType, name));
             }
             else if (pParamElement->asParameter())
             {
@@ -395,12 +309,12 @@ void Signature::getDecoratedName(StringBuffer& a_Buf) const
     }
 }
 
-Signature* Signature::clone() const
+Signature* Signature::clone(LanguageElement* a_pOwner) const
 {
-    Signature* pSignature = PHANTOM_DEFERRED_NEW_EX(Signature);
+    Signature* pSignature = a_pOwner->NewDeferred<Signature>();
     for (Parameter* pParameter : m_Parameters)
     {
-        pSignature->addParameter(static_cast<Parameter*>(pParameter->clone()));
+        pSignature->addParameter(static_cast<Parameter*>(pParameter->clone(pSignature)));
     }
     pSignature->setReturnType(m_pReturnType);
     return pSignature;

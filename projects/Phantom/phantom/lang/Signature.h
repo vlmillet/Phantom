@@ -34,6 +34,9 @@ public:
         eState_Final,
     };
 
+    static Signature* Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs = TypesView{},
+                             Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an empty signature with void return type, no parameters and optional
     /// a_Modifiers/qualifiers.
@@ -54,29 +57,6 @@ public:
     Signature(Type* a_pReturnType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs an signature from a signature name (ex : "void(int, float)") and optional
-    ///         a_Modifiers/qualifiers.
-    ///
-    /// \param  a_strCode               The signature name.
-    /// \param  a_pContextScope         (optional) The parsing context scope (for type names
-    /// resolution). \param  a_Modifiers               (optional) The modifiers.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signature(StringView a_strCode, LanguageElement* a_pContextScope = nullptr, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs an signature with a given return type, a single parameter type and
-    ///         optional a_Modifiers/qualifiers.
-    ///
-    /// \param  a_pReturnType           The return type.
-    /// \param  a_pSingleParameterType  The single parameter type.
-    /// \param  a_Modifiers               (optional) The modifiers.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signature(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an signature with a given return type, a list of parameters and
     ///         optional a_Modifiers/qualifiers.
     ///
@@ -86,18 +66,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs an signature with a given return type, parameters types and
-    ///         optional a_Modifiers/qualifiers.
-    ///
-    /// \param [in,out] a_pType The return type.
-    /// \param  a_Types         The parameters' types.
-    /// \param  a_Modifiers       (optional) The modifiers.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signature(Type* a_pType, TypesView a_Types, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-    PHANTOM_DTOR ~Signature() override;
 
     Signature* asSignature() const override { return (Signature*)this; }
 
@@ -163,17 +131,7 @@ public:
 
     bool matches(Signature* a_pOther) const { return matches(a_pOther->getParameterTypes(), a_pOther->getModifiers()); }
 
-    Signature* clone() const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Parses a signature String (ex: void(int, float)) to extract the return type and the
-    ///         parameters.
-    ///
-    /// \param  a_strSignature  The signature String.
-    /// \param  a_pContextScope  (optional) The context scope from where to solve signature types.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void parse(StringView a_strSignature, LanguageElement* a_pContextScope = nullptr);
+    Signature* clone(LanguageElement* a_pOwner) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the parameter count.

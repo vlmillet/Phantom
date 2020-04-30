@@ -392,16 +392,16 @@ Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers
 Constructor* ClassType::addConstructor(Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
                                        uint a_uiFlags /*= 0*/)
 {
-    Signature*   pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(PHANTOM_TYPEOF(void), a_pSingleParameterType);
-    Constructor* pConstructor = PHANTOM_DEFERRED_NEW_EX(Constructor)(getName(), pSignature, a_Modifiers, a_uiFlags);
+    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), a_pSingleParameterType);
+    Constructor* pConstructor = NewDeferred<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
     addConstructor(pConstructor);
     return pConstructor;
 }
 
 Constructor* ClassType::addConstructor(Modifiers a_Modifiers, uint a_uiFlags)
 {
-    Signature*   pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(PHANTOM_TYPEOF(void));
-    Constructor* pConstructor = PHANTOM_DEFERRED_NEW_EX(Constructor)(getName(), pSignature, a_Modifiers, a_uiFlags);
+    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void));
+    Constructor* pConstructor = NewDeferred<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
     addConstructor(pConstructor);
     return pConstructor;
 }
@@ -631,9 +631,9 @@ void ClassType::destroy(void* a_pInstance) const
 void ClassType::addImplicitDefaultConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature*   pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(PHANTOM_TYPEOF(void));
+    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void));
     Constructor* pConstructor =
-    PHANTOM_DEFERRED_NEW_EX(Constructor)(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -641,10 +641,9 @@ void ClassType::addImplicitDefaultConstructor()
 void ClassType::addImplicitCopyConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature* pSignature =
-    PHANTOM_DEFERRED_NEW_EX(Signature)(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
+    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
     Constructor* pConstructor =
-    PHANTOM_DEFERRED_NEW_EX(Constructor)(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -652,9 +651,8 @@ void ClassType::addImplicitCopyConstructor()
 void ClassType::addImplicitCopyAssignmentOperator()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature* pSignature =
-    PHANTOM_DEFERRED_NEW_EX(Signature)(makeLValueReference(), makeConst()->makeLValueReference());
-    Method* pFunc = PHANTOM_DEFERRED_NEW_EX(Method)("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature* pSignature = NewDeferred<Signature>(makeLValueReference(), makeConst()->makeLValueReference());
+    Method*    pFunc = NewDeferred<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pFunc->setAccess(Access::Public);
     addMethod(pFunc);
 }
@@ -662,9 +660,9 @@ void ClassType::addImplicitCopyAssignmentOperator()
 void ClassType::addImplicitMoveConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature*   pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(PHANTOM_TYPEOF(void), makeRValueReference());
+    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), makeRValueReference());
     Constructor* pConstructor =
-    PHANTOM_DEFERRED_NEW_EX(Constructor)(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
 }
@@ -672,8 +670,8 @@ void ClassType::addImplicitMoveConstructor()
 void ClassType::addImplicitMoveAssignmentOperator()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature* pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(makeLValueReference(), makeRValueReference());
-    Method* pFunc = PHANTOM_DEFERRED_NEW_EX(Method)("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+    Signature* pSignature = NewDeferred<Signature>(makeLValueReference(), makeRValueReference());
+    Method*    pFunc = NewDeferred<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pFunc->setAccess(Access::Public);
     addMethod(pFunc);
 }

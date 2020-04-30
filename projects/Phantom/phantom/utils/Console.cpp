@@ -9,7 +9,6 @@
 #include "String.h"
 
 #include <ostream>
-#include <phantom/new>
 
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 
@@ -74,10 +73,7 @@ public:
         SetColor(fgLoWhite, bgMask);
     }
 
-    CONSOLE_SCREEN_BUFFER_INFO& csbi()
-    {
-        return csbi_stack.back();
-    }
+    CONSOLE_SCREEN_BUFFER_INFO& csbi() { return csbi_stack.back(); }
 
 private:
     void GetInfo()
@@ -114,10 +110,7 @@ public:
         SetConsoleScreenBufferSize(hCon, c);
     }
 
-    void Push()
-    {
-        csbi_stack.push_back(csbi());
-    }
+    void Push() { csbi_stack.push_back(csbi()); }
 
     void Pop()
     {
@@ -695,9 +688,7 @@ std::ostream& pop(std::ostream& os)
     return os;
 }
 
-void setSize(size_t a_uiWidth, size_t height)
-{
-}
+void setSize(size_t a_uiWidth, size_t height) {}
 
 } // namespace console
 } // namespace phantom

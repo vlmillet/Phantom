@@ -65,11 +65,6 @@ Closure FunctionPointer::getClosure(void* a_pPointer) const
     return static_cast<Function*>(a_pPointer)->getClosure();
 }
 
-FunctionPointer* FunctionPointer::Create(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers, uint a_Flags)
-{
-    return PHANTOM_DEFERRED_NEW_EX(FunctionPointer)(a_pFunctionType, a_eABI, a_Modifiers, a_Flags);
-}
-
 void FunctionPointer::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 {
     FunctionType* pFunctionType = getFunctionType();

@@ -74,16 +74,16 @@ void LocalVariable::setValueType(Type* a_pType)
     addReferencedElement(m_pValueType);
 }
 
-LocalVariable* LocalVariable::clone() const
+LocalVariable* LocalVariable::clone(LanguageElement* a_pOwner) const
 {
-    LocalVariable* pLV = cloneImpl();
+    LocalVariable* pLV = cloneImpl(a_pOwner);
     pLV->setCodeRange(getCodeRange());
     return pLV;
 }
 
-LocalVariable* LocalVariable::cloneImpl() const
+LocalVariable* LocalVariable::cloneImpl(LanguageElement* a_pOwner) const
 {
-    return New<LocalVariable>(m_pValueType, m_strName, m_Modifiers);
+    return a_pOwner->New<LocalVariable>(m_pValueType, m_strName, m_Modifiers);
 }
 
 void LocalVariable::getQualifiedName(StringBuffer& a_Buf) const

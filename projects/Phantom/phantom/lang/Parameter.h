@@ -43,9 +43,7 @@ public:
     Parameter(Type* a_pType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     /// \brief  Destructor.
-    ~Parameter() override
-    {
-    }
+    ~Parameter() override {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the definition name of this parameter (by opposition to declaration name).
@@ -84,10 +82,7 @@ public:
     /// \brief  Gets the native default argument string
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    StringView getNativeDefaultArgumentString() const
-    {
-        return m_NativeDefaultArgumentStr;
-    }
+    StringView getNativeDefaultArgumentString() const { return m_NativeDefaultArgumentStr; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Is this parameter a '...' parameter ellipsis in a variadic function/method.
@@ -97,12 +92,9 @@ public:
 
     // reimplemented
 
-    Parameter* asParameter() const override
-    {
-        return (Parameter*)this;
-    }
+    Parameter* asParameter() const override { return (Parameter*)this; }
 
-    Parameter* cloneImpl() const override;
+    Parameter* cloneImpl(LanguageElement* a_pOwner) const override;
 
 private:
     void setNativeDefaultArgumentStr(StringView a_DefaultArgument);

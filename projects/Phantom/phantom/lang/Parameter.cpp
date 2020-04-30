@@ -29,9 +29,9 @@ Parameter::Parameter(Type* a_pType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlag
 {
 }
 
-Parameter* Parameter::cloneImpl() const
+Parameter* Parameter::cloneImpl(LanguageElement* a_pOwner) const
 {
-    return New<Parameter>(m_pValueType, m_strName, m_Modifiers);
+    return a_pOwner->New<Parameter>(m_pValueType, m_strName, m_Modifiers);
 }
 
 bool Parameter::isEllipsis() const
@@ -68,11 +68,11 @@ Expression* Parameter::getDefaultArgumentExpression() const
 
 void Parameter::setDefaultArgumentExpression(Expression* a_pDefaultArgumentExpression)
 {
+    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(m_pDefaultArgumentExpression)->getOwner());
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(a_pDefaultArgumentExpression && m_pDefaultArgumentExpression == nullptr);
     m_pDefaultArgumentExpression = a_pDefaultArgumentExpression;
     // temporary hack waiting for a more opaque handling of default expressions
-    addElement(reinterpret_cast<LanguageElement*>(m_pDefaultArgumentExpression));
 }
 
 } // namespace lang

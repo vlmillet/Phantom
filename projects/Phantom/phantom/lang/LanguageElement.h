@@ -106,6 +106,29 @@ public:
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  scope accessible new-like for internal content creation.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    template<class T, class... Args>
+    T* new_(Args&&... a_Args)
+    {
+        return m_pSource->_new<T>(std::forward<Args>(a_Args)...);
+    }
+    template<class T>
+    void delete_(TypeIndentityT<T*> a_p)
+    {
+        return m_pSource->_delete<T>(a_p);
+    }
+    template<class T>
+    void deleteP(T* a_p)
+    {
+        PHANTOM_STATIC_ASSERT(std::has_virtual_destructor<T>::value);
+        return m_pSource->_delete<T>(a_p);
+    }
+
+    CustomAllocator const* getAllocator() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  scope accessible delete-like for language element destruction.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -385,7 +408,7 @@ public:
     /// \return The source holding this element or this if it is a source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getSource() const { return m_pSource; }
+    inline Source* getSource() const { return m_pSource; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Determine if this element can be destroyed safely.
@@ -409,7 +432,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Hatch, i.e. if any underlying element, destroys this element and return its
-    /// underlying element (see removeExpression()).
+    /// underlying element (see removeExpression() for non destroying version).
     ///         It allows for example to extract a constant from a constant expression.
     ///
     /// \return this element if no hatched element, else the hatched element.
@@ -659,18 +682,6 @@ public:
 
     bool hasNamingScopeCascade(LanguageElement* a_pScope) const;
 
-    /// \brief  Remove all elements from this one.
-    void clear();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Steals every sub elements of the given element (useful for temporaries or proxy
-    /// elements).
-    ///
-    /// \param [in,out] a_pInput    The element to steal the sub elements from.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void steal(LanguageElement* a_pInput);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Allows easy removal of the element from its owner, Equivalent to
     /// 'owner->removeElement(this)'.
@@ -739,17 +750,12 @@ public:
     bool testFlags(uint flags) const { return (m_uiFlags & flags) == flags; }
 
     PHANTOM_FORCEINLINE bool isNative() const { return testFlags(PHANTOM_R_FLAG_NATIVE); }
-    PHANTOM_FORCEINLINE bool isInvalid() const { return testFlags(PHANTOM_R_FLAG_INVALID); }
 
     bool isTemplateDependant() const
     {
         return ((m_uiFlags & PHANTOM_R_FLAG_TEMPLATE_DEPENDANT) == PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
     }
     void setTemplateDependant() { m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; }
-
-    void setInvalid();
-    bool isIncomplete() const;
-    void setIncomplete();
 
     PHANTOM_FORCEINLINE bool isAlwaysValid() const
     {
@@ -851,9 +857,9 @@ protected:
 
 private:
     void replaceElement(LanguageElement* a_pOld, LanguageElement* a_pNew);
-    void registerReferencingElement(LanguageElement* a_pElement);
-    void unregisterReferencingElement(LanguageElement* a_pElement);
     void _nativeDetachElementsFromModule();
+    /// \brief  Detach all element ownership from this one.
+    void detachAll();
 
 private:
     LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the

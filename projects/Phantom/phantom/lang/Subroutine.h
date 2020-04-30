@@ -314,8 +314,6 @@ public:
     using ApplyPointer = void (*)(void** /*args*/, void* /*ret*/);
 
 public:
-    PHANTOM_DTOR ~Subroutine() override;
-
     void terminate();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -861,10 +859,6 @@ protected:
 
     Subroutine(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers = 0,
                uint a_uiFlags = 0);
-
-    /// \internal
-    Subroutine(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-               Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     /// \internal
     Subroutine(ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);

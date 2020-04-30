@@ -29,27 +29,35 @@ namespace phantom
 {
 namespace lang
 {
-ClassType::ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, Modifiers a_Modifiers /*= 0*/,
-                     uint a_uiFlags /*= 0*/)
-    : Type(a_eTypeKind, a_Modifiers, a_uiFlags), Scope(this, this), Aggregate(this), m_pExtraData(a_pExtraData)
+ClassType::ClassType(TypeKind a_eTypeKind, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : Type(a_eTypeKind, a_Modifiers, a_uiFlags), Scope(this, this), Aggregate(this)
 {
 }
 
-ClassType::ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
-                     uint a_uiFlags /*= 0*/)
-    : Type(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags), Scope(this), Aggregate(this), m_pExtraData(a_pExtraData)
+ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+    : Type(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags), Scope(this, this), Aggregate(this)
 {
 }
 
 ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
                      Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Type(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags), Scope(this), Aggregate(this)
+    : Type(a_eTypeKind, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags), Scope(this, this), Aggregate(this)
 {
 }
 
-ClassType::~ClassType()
+ClassType::~ClassType() {}
+
+void ClassType::initialize()
 {
-    phantom::DeleteP(m_pExtraData);
+    Symbol::initialize();
+    m_Constructors.setAllocator(getAllocator());
+    m_Friends.setAllocator(getAllocator());
+    m_Methods.setAllocator(getAllocator());
+    m_Properties.setAllocator(getAllocator());
+    m_ValueMembers.setAllocator(getAllocator());
+    m_DataElements.setAllocator(getAllocator());
+    m_Fields.setAllocator(getAllocator());
+    m_MemberAnonymousSections.setAllocator(getAllocator());
 }
 
 bool ClassType::matchesTemplateArguments(const LanguageElements& a_Elements) const
@@ -362,7 +370,7 @@ void ClassType::addConstructor(Constructor* a_pConstructor)
 Constructor* ClassType::addConstructor(StringView a_strParametersString)
 {
     // TODO add modifiers
-    Signature* pSignature = Signature::Create();
+    Signature* pSignature = NewDeferred<Signature>();
     pSignature->parse((String("void(") + a_strParametersString + ")").c_str(), this);
     if (pSignature == nullptr)
         return nullptr;
@@ -875,6 +883,7 @@ void ClassType::addFriend(Symbol* a_pFriend)
     PHANTOM_ASSERT(a_pFriend);
     PHANTOM_ASSERT(!hasFriend(a_pFriend));
     m_Friends.push_back(a_pFriend);
+    addReferencedElement(a_pFriend);
 }
 
 bool ClassType::hasFriend(Symbol* a_pFriend) const
@@ -1108,15 +1117,10 @@ Method* ClassType::addDestructor(Modifiers a_Modifiers /*= 0 */, uint a_uiFlags 
     PHANTOM_ASSERT(!isNative(), "cannot add manually destructor to native types");
     PHANTOM_ASSERT(!getDestructor(), "destructor already added");
     Destructor* pDestructor =
-    New<Destructor>('~' + getName(), Signature::Create(PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
+    New<Destructor>('~' + getName(), NewDeferred<Signature>(PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
     addMethod(pDestructor);
     pDestructor->setAccess(m_pExtraData ? getDefaultAccess() : Access::Public);
     return pDestructor;
-}
-
-void ClassType::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
-{
-    Delete<ExtraData>(this);
 }
 
 } // namespace lang

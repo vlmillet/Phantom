@@ -22,6 +22,7 @@ Alias::Alias(Symbol* a_pSymbol, StringView a_strName, Modifiers a_Modifiers /*= 
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pAliasedSymbol(a_pSymbol)
 {
     PHANTOM_ASSERT(m_pAliasedSymbol);
+    addReferencedElement(m_pAliasedSymbol);
 }
 
 void Alias::addAlias(Alias* a_pAlias)

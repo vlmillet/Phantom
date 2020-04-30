@@ -108,7 +108,7 @@ public:
     /// \return null if it fails, else the derived virtual member function table.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VirtualMethodTable* derive(size_t a_uiSize = 0) const;
+    VirtualMethodTable* derive(Class* a_pOwner, size_t a_uiSize = 0) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an instance, installing the vtable pointer.

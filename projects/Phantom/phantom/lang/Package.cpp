@@ -69,6 +69,8 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
         }
     }
     m_pFolder->_addPackage(this);
+    addReferencedElement(m_pFolder);
+    addReferencedElement(m_pNamespace);
 }
 
 Package::~Package() {}

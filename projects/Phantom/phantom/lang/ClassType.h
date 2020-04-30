@@ -46,7 +46,6 @@ class PHANTOM_EXPORT_PHANTOM ClassType : public Type, public Scope, public Aggre
 public:
     struct ExtraData
     {
-        virtual void PHANTOM_CUSTOM_VIRTUAL_DELETE();
         ExtraData() : m_uiDataTypeCount(0) {}
         Type::AlignmentComputer m_AlignmentComputer;
         size_t                  m_uiDataTypeCount;
@@ -62,7 +61,7 @@ protected:
     /// \param  a_Modifiers             (optional) the type modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    ClassType(TypeKind a_eTypeKind, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructor for custom derived class types.
@@ -73,8 +72,7 @@ protected:
     /// \param  a_Modifiers             (optional) the type modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ClassType(TypeKind a_eTypeKind, ExtraData* a_pExtraData, StringView a_strName, Modifiers a_Modifiers = 0,
-              uint a_uiFlags = 0);
+    ClassType(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructor for native derived class types. (shouldn't be called directly).
@@ -91,6 +89,8 @@ protected:
 
 public:
     PHANTOM_DTOR ~ClassType() override;
+
+    void initialize();
 
     using Type::asClass;
     using Type::asClassType;
@@ -907,6 +907,14 @@ protected:
     bool canBeDestroyed() const override;
 
     void onElementsAccess() override;
+
+    void setExtraData(ExtraData* a_pExtraData)
+    {
+        PHANTOM_ASSERT(!m_pExtraData);
+        m_pExtraData = a_pExtraData;
+    }
+
+    void onScopeSymbolAdded(Symbol* a_pSym) override { _addSymbol(a_pSym); }
 
 private:
     friend class ModuleRegistrationInfo;

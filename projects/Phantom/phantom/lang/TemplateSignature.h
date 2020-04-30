@@ -23,8 +23,6 @@ class PHANTOM_EXPORT_PHANTOM TemplateSignature : public LanguageElement
     PHANTOM_DECLARE_META_CLASS(TemplateSignature);
 
 public:
-    static TemplateSignature* Create(uint a_Flags = PHANTOM_R_NONE);
-
     /// \brief  Default constructor, creates an empty template signature.
     TemplateSignature(uint flags = PHANTOM_R_NONE);
 

@@ -104,7 +104,6 @@ public:
 public:
     struct ExtraData : ClassType::ExtraData
     {
-        void PHANTOM_CUSTOM_VIRTUAL_DELETE() override;
         ExtraData() : m_uiClassPtrOffset(0), m_uiStateMachineDataPtrOffset(0), m_bHasVTablePtr(true) {}
         size_t m_uiFieldMemoryOffset{};
         size_t m_uiClassPtrOffset;
@@ -132,6 +131,7 @@ protected: // Reserved to native class derivation
 public:
     ~Class() override;
 
+    void initialize();
     void terminate();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -959,12 +959,13 @@ public:
     bool canHaveImplicitMoveConstructor() const override;
     bool canHaveImplicitMoveAssignmentOperator() const override;
 
-    static VirtualMethodTable*  CreateVirtualMethodTable(void** a_ppAddr, size_t a_MethodCount);
-    static VirtualMethodTable*  DeriveVirtualMethodTable(VirtualMethodTable* a_pBase, size_t a_MethodCount);
-    static VirtualMethodTable*  DeriveVirtualMethodTable(VirtualMethodTable* a_pBase);
+    static VirtualMethodTable*  CreateVirtualMethodTable(Class* a_pOwner, void** a_ppAddr, size_t a_MethodCount);
+    static VirtualMethodTable*  DeriveVirtualMethodTable(Class* a_pOwner, VirtualMethodTable* a_pBase,
+                                                         size_t a_MethodCount);
+    static VirtualMethodTable*  DeriveVirtualMethodTable(Class* a_pOwner, VirtualMethodTable* a_pBase);
     static Class*               VTablePrimaryClass(VirtualMethodTable* a_pVTable);
-    virtual VirtualMethodTable* createVirtualMethodTable() const;
-    virtual VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) const;
+    virtual VirtualMethodTable* createVirtualMethodTable();
+    virtual VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get the list of extensions.

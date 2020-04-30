@@ -25,6 +25,7 @@ void AnonymousSection::addVariable(Variable* a_pVariable)
     m_DataElements.push_back(a_pVariable);
     PHANTOM_ASSERT(a_pVariable->m_pAnonymousSection == nullptr);
     a_pVariable->m_pAnonymousSection = this;
+    addReferencedElement(a_pVariable);
 }
 
 void AnonymousSection::addAnonymousSection(AnonymousSection* a_pAnonymousSection)

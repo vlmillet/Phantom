@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "typedefs.h"
+
 #include <phantom/detail/core.h>
 
 #pragma warning(disable : 4700)
@@ -21,19 +23,11 @@ struct MethodClosure
 {
     MethodClosure() = default;
 
-    void setClosurePointer(void* ptr)
-    {
-        closure.address = ptr;
-    }
+    void setClosurePointer(void* ptr) { closure.address = ptr; }
 
-    void setClosure(Closure ptr)
-    {
-        closure = ptr;
-    }
+    void setClosure(Closure ptr) { closure = ptr; }
 
-    MethodClosure(std::nullptr_t)
-    {
-    }
+    MethodClosure(std::nullptr_t) {}
 
     template<typename t_MemberPtr>
     MethodClosure(t_MemberPtr ptr)
@@ -87,23 +81,11 @@ struct MethodClosure
         un.delta = closure.offset;
         return un.mptr;
     }
-    operator Closure() const
-    {
-        return closure;
-    }
-    operator bool() const
-    {
-        return closure.address != nullptr;
-    }
+    operator Closure() const { return closure; }
+    operator bool() const { return closure.address != nullptr; }
 
-    void* getAddress() const
-    {
-        return closure.address;
-    }
-    int getOffset() const
-    {
-        return closure.offset;
-    }
+    void* getAddress() const { return closure.address; }
+    int   getOffset() const { return closure.offset; }
 
 protected:
     Closure closure;
@@ -115,10 +97,7 @@ struct MethodClosure
 {
     MethodClosure() = default;
 
-    void setClosurePointer(void* ptr)
-    {
-        funcaddress = ptr;
-    }
+    void setClosurePointer(void* ptr) { funcaddress = ptr; }
 
     void setClosure(Closure ptr)
     {
@@ -205,14 +184,8 @@ struct MethodClosure
         return cl;
     }
 
-    void* getAddress() const
-    {
-        return funcaddress;
-    }
-    int getOffset() const
-    {
-        return delta;
-    }
+    void* getAddress() const { return funcaddress; }
+    int   getOffset() const { return delta; }
 
 protected:
     struct

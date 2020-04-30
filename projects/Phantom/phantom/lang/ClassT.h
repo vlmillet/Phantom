@@ -32,23 +32,23 @@ public:
     {
     }
 
-    VirtualMethodTable* createVirtualMethodTable() const override
+    VirtualMethodTable* createVirtualMethodTable() override
     {
         void** ppNativeVTable = nullptr;
-        return Class::CreateVirtualMethodTable(ppNativeVTable, virtualMethodCountOf<t_Ty>());
+        return Class::CreateVirtualMethodTable(this, ppNativeVTable, virtualMethodCountOf<t_Ty>());
     }
 
-    VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) const override
+    VirtualMethodTable* deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) override
     {
         PHANTOM_ASSERT(this->asClass());
         size_t uiOffset = ((Class*)this)->getBaseClassOffsetCascade(Class::VTablePrimaryClass(a_pVirtualMethodTable));
         if (uiOffset == 0)
         {
-            return Class::DeriveVirtualMethodTable(a_pVirtualMethodTable, virtualMethodCountOf<t_Ty>());
+            return Class::DeriveVirtualMethodTable(this, a_pVirtualMethodTable, virtualMethodCountOf<t_Ty>());
         }
         else
         {
-            return Class::DeriveVirtualMethodTable(a_pVirtualMethodTable);
+            return Class::DeriveVirtualMethodTable(this, a_pVirtualMethodTable);
         }
     }
 

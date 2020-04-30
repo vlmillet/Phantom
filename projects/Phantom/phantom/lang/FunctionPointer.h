@@ -39,9 +39,8 @@ protected:
     /// \param  a_Modifiers             (optional) The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    FunctionPointer(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
 public:
+    FunctionPointer(FunctionType* a_pFunctionType, ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     PHANTOM_DTOR ~FunctionPointer() override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

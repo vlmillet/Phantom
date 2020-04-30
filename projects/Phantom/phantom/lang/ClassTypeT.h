@@ -35,8 +35,8 @@ struct DefaultCtorProviderH
         if (a_pType->getDefaultConstructor() == nullptr)
         {
             auto pCtor = a_pType->NewMeta<ConstructorT<t_Ty, void()>>(
-            a_strName, Signature::Create(PHANTOM_TYPEOF(void), PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE), PHANTOM_R_NONE,
-            PHANTOM_R_FLAG_IMPLICIT);
+            a_strName, a_pType->NewDeferred<Signature>(PHANTOM_TYPEOF(void), PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE),
+            PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pCtor->setAccess(Access::Public);
             a_pType->addConstructor(pCtor);
         }
@@ -62,8 +62,8 @@ struct DefaultCopyCtorProviderH
         {
             auto pCtor = NewMeta<ConstructorT<t_Ty, void(const t_Ty&)>>(
             a_strName,
-            Signature::Create(PHANTOM_TYPEOF(void), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
-                              PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(PHANTOM_TYPEOF(void), a_pType->addConst()->addLValueReference(),
+                                            PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE),
             PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             a_pType->addConstructor(pCtor);
             pCtor->setAccess(Access::Public);
@@ -91,8 +91,8 @@ struct DefaultCopyAssignOpProviderH
         {
             auto pFunc = NewMeta<MethodT<t_Ty, t_Ty& (t_Ty::*)(const t_Ty&)>>(
             "operator=",
-            Signature::Create(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
-                              PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(),
+                                            PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE),
             &t_Ty::operator=);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
@@ -110,8 +110,8 @@ struct DefaultCopyAssignOpProviderH
         {
             auto pFunc = NewMeta<MethodT<int& (DummyClass::*)(int&)>>(
             "operator=",
-            Signature::Create(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(), PHANTOM_R_NONE,
-                              PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(a_pType->addLValueReference(), a_pType->addConst()->addLValueReference(),
+                                            PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE),
             (int& (DummyClass::*)(int&))mf, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
@@ -139,7 +139,8 @@ struct DefaultMoveCtorProviderH
         {
             auto pCtor = NewMeta<ConstructorT<t_Ty, void(t_Ty &&)>>(
             a_strName,
-            Signature::Create(PHANTOM_TYPEOF(void), a_pType->addRValueReference(), Modifiers(0), PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(PHANTOM_TYPEOF(void), a_pType->addRValueReference(), Modifiers(0),
+                                            PHANTOM_R_FLAG_NATIVE),
             PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pCtor->setAccess(Access::Public);
             a_pType->addConstructor(pCtor);
@@ -171,8 +172,8 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
         {
             auto pFunc = NewMeta<MethodT<t_Ty, t_Ty& (t_Ty::*)(t_Ty &&)>>(
             "operator=",
-            Signature::Create(a_pType->addLValueReference(), a_pType->addRValueReference(), PHANTOM_R_NONE,
-                              PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(a_pType->addLValueReference(), a_pType->addRValueReference(),
+                                            PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE),
             &t_Ty::operator=);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
@@ -188,10 +189,10 @@ struct DefaultMoveAssignOpProviderH<t_Ty, true>
         t_Ty& (t_Ty::*mf)(t_Ty &&) = &t_Ty::operator=;
         if (a_pType->getMoveAssignmentOperator() == nullptr)
         {
-            auto pFunc = NewMeta<MethodT<int& (DummyClass::*)(int&)>>(
+            auto pFunc = a_pType->NewMeta<MethodT<int& (DummyClass::*)(int&)>>(
             "operator=",
-            Signature::Create(a_pType->addLValueReference(), a_pType->addRValueReference(), Modifiers(0),
-                              PHANTOM_R_FLAG_NATIVE),
+            a_pType->NewDeferred<Signature>(a_pType->addLValueReference(), a_pType->addRValueReference(), Modifiers(0),
+                                            PHANTOM_R_FLAG_NATIVE),
             (int& (DummyClass::*)(int&))mf, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
             pFunc->setAccess(Access::Public);
             a_pType->addMethod(pFunc);
@@ -216,7 +217,8 @@ struct DtorProviderH
     static void apply(ClassType* a_pType, StringView a_strName)
     {
         PHANTOM_ASSERT(a_pType->getDestructor() == nullptr, _PHNTM_do_not_declare_trivials_text);
-        auto pDtor = NewMeta<DestructorT<t_Ty>>(a_strName);
+        auto pDtor = a_pType->NewMeta<DestructorT<t_Ty>>(
+        a_strName, a_pType->NewDeferred<Signature>(PHANTOM_TYPEOF(void), PHANTOM_R_FLAG_NATIVE));
         pDtor->setAccess(Access::Public);
         a_pType->addMethod(pDtor);
     }

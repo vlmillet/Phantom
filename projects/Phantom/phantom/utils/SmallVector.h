@@ -72,10 +72,7 @@ public:
 
     SmallVector() = default;
     explicit SmallVector(size_t a_Count) { resize(a_Count); };
-    explicit SmallVector(CustomAllocator const* a_pMemTraits) : m_pMemTraits(a_pMemTraits)
-    {
-        PHANTOM_ASSERT(m_pMemTraits);
-    };
+    explicit SmallVector(CustomAllocator const* a_pMemTraits) : m_pAlloc(a_pMemTraits) { PHANTOM_ASSERT(m_pAlloc); };
     SmallVector(std::initializer_list<value_type> const& inits)
     {
         for (auto const& v : inits)
@@ -94,7 +91,7 @@ public:
     SmallVector(const SelfType& other)
     {
         reserve(other.m_size);
-        m_pMemTraits = other.m_pMemTraits;
+        m_pAlloc = other.m_pAlloc;
         m_size = other.m_size;
         auto d = m_data;
         auto od = other.m_data;
@@ -128,7 +125,7 @@ public:
         // other is dynamic
         if (temp.m_capacity > StaticAllocSize)
         {
-            if (m_pMemTraits == temp.m_pMemTraits) // same traits => classical move semantic
+            if (m_pAlloc == temp.m_pAlloc) // same traits => classical move semantic
             {
                 m_size = temp.m_size;
                 m_capacity = temp.m_capacity;
@@ -169,6 +166,14 @@ public:
         }
     }
 
+    void setAllocator(CustomAllocator const* a_pAlloc)
+    {
+        PHANTOM_ASSERT(m_capacity <= StaticAllocSize,
+                       "cannot change allocator once capacity exceeded static memory size");
+        PHANTOM_ASSERT(a_pAlloc);
+        m_pAlloc = a_pAlloc;
+    }
+
     SelfType& operator=(const SelfType& other)
     {
         reserve(other.m_capacity);
@@ -204,7 +209,7 @@ public:
             }
             else // other dynamic
             {
-                if (m_pMemTraits == temp.m_pMemTraits) // same traits => classical move semantic
+                if (m_pAlloc == temp.m_pAlloc) // same traits => classical move semantic
                 {
                     for (size_t i = 0; i < m_size; ++i) // destroy this content
                         Helper::destroy(&m_data[i]);
@@ -237,7 +242,7 @@ public:
             }
             else // other dynamic
             {
-                if (m_pMemTraits == temp.m_pMemTraits) // same traits => classical move semantic
+                if (m_pAlloc == temp.m_pAlloc) // same traits => classical move semantic
                 {
                     for (size_t i = 0; i < m_size; ++i)
                         Helper::destroy(&m_data[i]);
@@ -687,17 +692,16 @@ private:
 private:
     value_type* _alloc(size_t s)
     {
-        return reinterpret_cast<value_type*>(
-        m_pMemTraits->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type)));
+        return reinterpret_cast<value_type*>(m_pAlloc->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type)));
     }
-    void _dealloc(value_type* t) { m_pMemTraits->deallocFunc(t); }
+    void _dealloc(value_type* t) { m_pAlloc->deallocFunc(t); }
 
 private:
     size_type   m_capacity = StaticAllocSize;
     size_type   m_size = 0;
     value_type* m_data = (value_type*)&m_staticData;
     byte m_staticData[(StaticAllocSize == 0) | (sizeof(value_type) * StaticAllocSize)]; // trick to avoid 0-size array
-    CustomAllocator const* m_pMemTraits = &CustomAllocator::CurrentOrDefault();
+    CustomAllocator const* m_pAlloc = &CustomAllocator::CurrentOrDefault();
 };
 } // namespace phantom
 

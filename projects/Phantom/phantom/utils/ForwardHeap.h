@@ -31,41 +31,26 @@ public: // ForwardHeap Specific
     void Reset();
 
 public: // MemoryHeap Related
-    void* allocate(size_t _size);
+    void* allocate(size_t _size, size_t _align);
     void  deallocate(void* _ptr);
 
 private:
-    size_t         m_heapSize; /// Reserved heap size
-    unsigned char* m_current;  /// First free (usable but no necessary committed) bit  // TODO: Thread safety Atomic
-    unsigned char* m_begin;    /// First reserved byte
-    unsigned char* m_end;      /// Last (not included) byte
-    unsigned char* m_endOfLastCommittedPage; /// First byte not committed yet
-    bool           m_releaseVM;              /// True to release the reserved vm space.
+    size_t         m_heapSize;  /// Reserved heap size
+    unsigned char* m_current{}; /// First free (usable but no necessary committed) bit  // TODO: Thread safety Atomic
+    unsigned char* m_begin{};   /// First reserved byte
+    unsigned char* m_end{};     /// Last (not included) byte
 };
 
 class ForwardHeapSequence
 {
 public:
-    ForwardHeapSequence(size_t a_HeapSize) : m_HeapSize(a_HeapSize) { m_Heaps.emplace_back(a_HeapSize); }
+    ForwardHeapSequence(size_t a_HeapSize);
 
-    void swap(ForwardHeapSequence& a_Other)
-    {
-        size_t size = m_HeapSize;
-        m_HeapSize = a_Other.m_HeapSize;
-        a_Other.m_HeapSize = size;
-        m_Heaps.swap(a_Other.m_Heaps);
-    }
+    void* allocate(size_t _s, size_t _a);
+    void  deallocate(void* _ptr);
 
-    void* allocate(size_t _s)
-    {
-        if (void* ptr = m_Heaps.back().allocate(_s))
-            return ptr;
-        m_Heaps.emplace_back(std::max(_s + (_s + sizeof(void*)) % m_HeapSize, m_HeapSize));
-        return allocate(_s);
-    }
-    void deallocate(void* _ptr) { m_Heaps.back().deallocate(_ptr); }
-
-    void Reset() { m_Heaps.clear(); }
+    void reset();
+    void swap(ForwardHeapSequence& a_Other);
 
 private:
     SmallVector<ForwardHeap, 32> m_Heaps;

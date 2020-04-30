@@ -25,10 +25,8 @@ class PHANTOM_EXPORT_PHANTOM InitializerListType : public Type
 
     friend class Source;
 
-private:
-    InitializerListType(TypesView a_Types);
-
 public:
+    InitializerListType(TypesView a_Types);
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the types of the initializers expressions.
     ///

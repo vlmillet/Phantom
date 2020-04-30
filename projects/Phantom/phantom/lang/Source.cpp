@@ -41,17 +41,13 @@ namespace lang
 {
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags),
-      Scope(this),
+      Scope(this, this),
       LanguageElementUnitT<Source>(&m_Allocator)
 {
 }
 
 Source::~Source()
 {
-    while (!m_Importings.empty())
-    {
-        m_Importings.back()->removeImport(this);
-    }
     for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
     {
         if (Source* source = it->symbol->asSource())
@@ -59,13 +55,14 @@ Source::~Source()
     }
     if (m_pSourceStream)
     {
-        Delete(m_pSourceStream);
+        deleteP(m_pSourceStream);
     }
 }
 
 void Source::initialize()
 {
-    if (isNative())
+    if (isNative()) // native sources won't have any block content, to allocations will better fit at a module level in
+                    // term of space
         setAllocator(&getModule()->m_Allocator);
 }
 
@@ -76,10 +73,11 @@ void Source::terminate()
 
 bool Source::canBeUnloaded() const
 {
-    SmallSet<Module*> referencingModules;
-    fetchReferencingModulesDeep(referencingModules);
-    return referencingModules.empty() ||
-    ((referencingModules.size() == 1) && ((*referencingModules.begin()) == getModule()));
+    return true;
+    //     SmallSet<Module*> referencingModules;
+    //     fetchReferencingModulesDeep(referencingModules);
+    //     return referencingModules.empty() ||
+    //     ((referencingModules.size() == 1) && ((*referencingModules.begin()) == getModule()));
 }
 
 Package* Source::getPackage() const
@@ -121,8 +119,6 @@ void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
         }
     }
 }
-
-void Source::onScopeSymbolRemoving(Symbol*) {}
 
 Source* Source::getNativeArchive() const
 {
@@ -287,13 +283,13 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 auto pSubAlias = pAlias->getAlias((*it)->getName());
                 if (pSubAlias == nullptr)
                 {
-                    pSubAlias = New<Alias>((*it)->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
+                    pSubAlias = New<Alias>((*it)->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
                     pAlias->addAlias(pSubAlias);
                 }
                 pAlias = pSubAlias;
             }
         }
-        auto pLastNamedAlias = New<Alias>(a_pSymbol, a_pSymbol->getName(), 0, PHANTOM_R_FLAG_IMPLICIT);
+        auto pLastNamedAlias = New<Alias>(a_pSymbol, a_pSymbol->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
         if (pAlias)
             pAlias->addAlias(pLastNamedAlias);
         else
@@ -309,22 +305,6 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     if (Source* pSource = a_pSymbol->asSource())
         pSource->_addImporting(this);
     return true;
-}
-
-void Source::removeImport(Symbol* a_pSource)
-{
-    for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
-    {
-        if (it->symbol == a_pSource)
-        {
-            Delete<Alias>(it)->alias;
-            if (Source* pSource = it->symbol->asSource())
-                pSource->_removeImporting(this);
-            m_Imports.erase(it);
-            return;
-        }
-    }
-    PHANTOM_UNREACHABLE();
 }
 
 bool Source::addImport(StringView a_strName, bool a_bStatic, bool a_bPublic)
@@ -477,22 +457,6 @@ void Source::_removeImporting(Source* _source)
     m_Importings.erase(found);
 }
 
-void Source::clearImports()
-{
-    while (!m_Imports.empty())
-    {
-        removeImport(m_Imports.back().symbol);
-    }
-}
-
-void Source::clearDependencies()
-{
-    while (m_Dependencies.size())
-    {
-        removeDependency(m_Dependencies.back());
-    }
-}
-
 bool Source::hasDependencyCascade(Source* a_pSource) const
 {
     SmallSet<Source*> treated;
@@ -536,13 +500,6 @@ bool Source::addDependency(StringView a_strName)
 bool Source::hasDependency(Source* a_pSource) const
 {
     return std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pSource) != m_Dependencies.end();
-}
-
-void Source::removeDependency(Source* a_pSource)
-{
-    PHANTOM_ASSERT(hasDependency(a_pSource));
-    a_pSource->m_Dependings.erase(std::find(a_pSource->m_Dependings.begin(), a_pSource->m_Dependings.end(), this));
-    m_Dependencies.erase(std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pSource));
 }
 
 void Source::_addDepending(Source* _source)

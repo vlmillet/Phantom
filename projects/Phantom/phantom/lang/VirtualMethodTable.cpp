@@ -128,14 +128,14 @@ size_t VirtualMethodTable::getIndexOf(Method* a_pMethod) const
     return ~size_t(0);
 }
 
-VirtualMethodTable* VirtualMethodTable::derive(size_t a_uiSize /*= 0*/) const
+VirtualMethodTable* VirtualMethodTable::derive(Class* a_pOwner, size_t a_uiSize /*= 0*/) const
 {
     if (a_uiSize == 0 || a_uiSize == m_pMethods->size())
     {
-        return PHANTOM_DEFERRED_NEW_EX(VirtualMethodTable)(const_cast<VirtualMethodTable*>(this));
+        return a_pOwner->NewDeferred<VirtualMethodTable>(const_cast<VirtualMethodTable*>(this));
     }
     PHANTOM_ASSERT(a_uiSize > m_pMethods->size());
-    return PHANTOM_DEFERRED_NEW_EX(VirtualMethodTable)(const_cast<VirtualMethodTable*>(this), a_uiSize);
+    return a_pOwner->NewDeferred<VirtualMethodTable>(const_cast<VirtualMethodTable*>(this), a_uiSize);
 }
 
 size_t VirtualMethodTable::getOffset() const

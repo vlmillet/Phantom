@@ -28,7 +28,7 @@ class PHANTOM_EXPORT_PHANTOM InstanceCache
 {
     friend class Class;
 
-protected:
+public:
     InstanceCache(Class* a_pClass);
     InstanceCache(const InstanceCache& a_Cache) = delete;
     InstanceCache(InstanceCache&& a_Cache) = delete;

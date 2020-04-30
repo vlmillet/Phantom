@@ -8,8 +8,7 @@ static constexpr unsigned int HoDodoCaca = 0xCACAD0D0; // All the range committe
 static constexpr unsigned int HoCafeDede = 0xDEDEFECA; // Data available flag
 static constexpr unsigned int HoDeadBeef = 0xAFBEADDE; // Deallocated memory
 
-ForwardHeap::ForwardHeap(size_t _heapSize)
-    : m_heapSize(_heapSize), m_current(0), m_begin(0), m_end(0), m_releaseVM(false)
+ForwardHeap::ForwardHeap(size_t _heapSize) : m_heapSize(_heapSize)
 {
     m_current = (unsigned char*)PHANTOM_MALLOC(m_heapSize);
     if (m_current == nullptr)
@@ -39,10 +38,10 @@ T AlignUp(T p_value, size_t p_alignment)
     return T((size_t(p_value) + mask) & ~mask);
 }
 
-void* ForwardHeap::allocate(size_t _size)
+void* ForwardHeap::allocate(size_t _size, size_t _align)
 {
     void* ptr = m_current;
-    ptr = AlignUp(ptr, 8);
+    ptr = AlignUp(ptr, _align);
 
     // Make sure we have enough space for this allocation
     if (((unsigned char*)ptr + _size + sizeof(void*)) > m_end)
@@ -73,6 +72,36 @@ void ForwardHeap::deallocate(void* _ptr)
 void ForwardHeap::Reset()
 {
     m_current = m_begin;
+}
+
+ForwardHeapSequence::ForwardHeapSequence(size_t a_HeapSize) : m_HeapSize(a_HeapSize) {}
+
+void ForwardHeapSequence::swap(ForwardHeapSequence& a_Other)
+{
+    size_t size = m_HeapSize;
+    m_HeapSize = a_Other.m_HeapSize;
+    a_Other.m_HeapSize = size;
+    m_Heaps.swap(a_Other.m_Heaps);
+}
+
+void* ForwardHeapSequence::allocate(size_t _s, size_t _a)
+{
+    PHANTOM_ASSERT((_s % _a) == 0);
+    void* ptr;
+    if (!m_Heaps.empty() && (ptr = m_Heaps.back().allocate(_s, _a)))
+        return ptr;
+    m_Heaps.emplace_back(std::max(_s + _a + sizeof(void*), m_HeapSize));
+    return allocate(_s, _a);
+}
+
+void ForwardHeapSequence::deallocate(void* _ptr)
+{
+    m_Heaps.back().deallocate(_ptr);
+}
+
+void ForwardHeapSequence::reset()
+{
+    m_Heaps.clear();
 }
 
 } // namespace phantom

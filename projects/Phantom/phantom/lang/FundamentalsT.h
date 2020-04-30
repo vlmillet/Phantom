@@ -69,15 +69,9 @@ public:
     {
     }
 
-    PrimitiveType* asFundamentalType() const override
-    {
-        return (PrimitiveType*)this;
-    }
+    PrimitiveType* asFundamentalType() const override { return (PrimitiveType*)this; }
 
-    Type* promote() const override
-    {
-        return Promoter<t_Ty>::apply(const_cast<FundamentalTypeT<t_Ty>*>(this));
-    }
+    Type* promote() const override { return Promoter<t_Ty>::apply(const_cast<FundamentalTypeT<t_Ty>*>(this)); }
 };
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
@@ -100,119 +94,50 @@ protected:
     }
 
 public:
-    virtual bool isDefined() const
-    {
-        return true;
-    }
-    void valueFromString(StringView, void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    void valueToString(StringBuffer&, const void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    void valueToLiteral(StringBuffer&, const void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    void copyAssign(void*, void const*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-	}
-	void copyConstruct(void*, void const*) const override
-	{
-		_PHNTM_FORBIDDEN_VOID_METHOD;
-	}
+    virtual bool isDefined() const { return true; }
+    void         valueFromString(StringView, void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
+    void         valueToString(StringBuffer&, const void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
+    void         valueToLiteral(StringBuffer&, const void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
+    void         copyAssign(void*, void const*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
+    void         copyConstruct(void*, void const*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
 
     void* allocate() const override
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
         return nullptr;
     }
-    void deallocate(void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
+    void  deallocate(void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
     void* allocate(size_t) const override
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
         return nullptr;
     }
-    void deallocate(void*, size_t) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
+    void deallocate(void*, size_t) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
 
     // Construction
-    void construct(void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
-    void destroy(void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
+    void construct(void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
+    void destroy(void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
 
     void* newInstance() const override
     {
         _PHNTM_FORBIDDEN_VOID_METHOD;
         return nullptr;
     }
-    void deleteInstance(void*) const override
-    {
-        _PHNTM_FORBIDDEN_VOID_METHOD;
-    }
+    void deleteInstance(void*) const override { _PHNTM_FORBIDDEN_VOID_METHOD; }
 
-    bool isCopyable() const override
-    {
-        return false;
-    }
-    bool isCopyAssignable() const override
-    {
-        return false;
-    }
-    bool isCopyConstructible() const override
-    {
-        return false;
-    }
-    bool isMoveable() const override
-    {
-        return false;
-    }
-    bool isMoveAssignable() const override
-    {
-        return false;
-    }
-    bool isMoveConstructible() const override
-    {
-        return false;
-    }
-    bool isTriviallyMoveAssignable() const override
-    {
-        return false;
-    }
-    bool isTriviallyMoveConstructible() const override
-    {
-        return false;
-    }
-    bool isTriviallyCopyAssignable() const override
-    {
-        return false;
-    }
-    bool isTriviallyCopyConstructible() const override
-    {
-        return false;
-    }
+    bool isCopyable() const override { return false; }
+    bool isCopyAssignable() const override { return false; }
+    bool isCopyConstructible() const override { return false; }
+    bool isMoveable() const override { return false; }
+    bool isMoveAssignable() const override { return false; }
+    bool isMoveConstructible() const override { return false; }
+    bool isTriviallyMoveAssignable() const override { return false; }
+    bool isTriviallyMoveConstructible() const override { return false; }
+    bool isTriviallyCopyAssignable() const override { return false; }
+    bool isTriviallyCopyConstructible() const override { return false; }
 
-    void getQualifiedDecoratedName(StringBuffer& a_Buf) const override
-    {
-        a_Buf += "void";
-    }
-    hash64 computeHash() const override
-    {
-        return this->ComputeHash("void", 4);
-    }
+    void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override { a_Buf += "void"; }
+    hash64 computeHash() const override { return this->ComputeHash("void", 4); }
 };
 
 template<>
@@ -221,18 +146,10 @@ class FundamentalTypeT<void> : public TypeT<void, PrimitiveTypeT<void>>
     PHANTOM_DECL_TYPE;
 
 public:
-    FundamentalTypeT(StringView a_strName) : TypeT<void, PrimitiveTypeT<void>>(a_strName, 0, 0)
-    {
-    }
+    FundamentalTypeT(StringView a_strName) : TypeT<void, PrimitiveTypeT<void>>(a_strName, 0, 0) {}
 
-    PrimitiveType* asFundamentalType() const override
-    {
-        return (PrimitiveType*)this;
-    }
-    Type* promote() const override
-    {
-        return const_cast<FundamentalTypeT<void>*>(this);
-    }
+    PrimitiveType* asFundamentalType() const override { return (PrimitiveType*)this; }
+    Type*          promote() const override { return const_cast<FundamentalTypeT<void>*>(this); }
 };
 
 template<typename t_Ty>
@@ -241,19 +158,14 @@ class ArithmeticTypeT : public FundamentalTypeT<t_Ty>
     PHANTOM_DECL_TYPE;
 
 public:
-    ArithmeticTypeT(StringView a_strName) : FundamentalTypeT<t_Ty>(a_strName)
-    {
-    }
+    ArithmeticTypeT(StringView a_strName) : FundamentalTypeT<t_Ty>(a_strName) {}
 
-    PrimitiveType* asArithmeticType() const override
-    {
-        return (PrimitiveType*)this;
-    }
+    PrimitiveType* asArithmeticType() const override { return (PrimitiveType*)this; }
 
-    Constant* createConstant(void* a_pSrc, StringView a_strName = "",
+    Constant* createConstant(LanguageElement* a_pOwner, void* a_pSrc, StringView a_strName = "",
                              PrimitiveType* a_pPrimitiveType = nullptr) const override
     {
-        return lang::Constant::Create<t_Ty>(*(t_Ty*)a_pSrc, a_strName, a_pPrimitiveType);
+        return lang::Constant::Create<t_Ty>(a_pOwner, *(t_Ty*)a_pSrc, a_strName, a_pPrimitiveType);
     }
 
     bool convert(Type* a_pDstType, void* a_pDst, void const* a_pSrc) const override
@@ -289,14 +201,9 @@ class FloatingPointTypeT : public ArithmeticTypeT<t_Ty>
     PHANTOM_DECL_TYPE;
 
 public:
-    FloatingPointTypeT(StringView a_strName) : ArithmeticTypeT<t_Ty>(a_strName)
-    {
-    }
+    FloatingPointTypeT(StringView a_strName) : ArithmeticTypeT<t_Ty>(a_strName) {}
 
-    PrimitiveType* asFloatingPointType() const override
-    {
-        return (PrimitiveType*)this;
-    }
+    PrimitiveType* asFloatingPointType() const override { return (PrimitiveType*)this; }
 };
 
 template<typename t_Ty>
@@ -305,14 +212,9 @@ class IntegralTypeT : public ArithmeticTypeT<t_Ty>
     PHANTOM_DECL_TYPE;
 
 public:
-    IntegralTypeT(StringView a_strName) : ArithmeticTypeT<t_Ty>(a_strName)
-    {
-    }
+    IntegralTypeT(StringView a_strName) : ArithmeticTypeT<t_Ty>(a_strName) {}
 
-    PrimitiveType* asIntegralType() const override
-    {
-        return (PrimitiveType*)this;
-    }
+    PrimitiveType* asIntegralType() const override { return (PrimitiveType*)this; }
 };
 
 } // namespace lang

@@ -24,11 +24,6 @@ namespace phantom
 {
 namespace lang
 {
-TemplateSignature* TemplateSignature::Create(uint a_Flags)
-{
-    return PHANTOM_DEFERRED_NEW(TemplateSignature)(a_Flags);
-}
-
 TemplateSignature::TemplateSignature(uint a_uiFlags) : LanguageElement(a_uiFlags) {}
 
 TemplateSignature::TemplateSignature(const TemplateParameters& a_Parameters, bool a_bVariadic,

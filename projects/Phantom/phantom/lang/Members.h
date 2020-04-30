@@ -31,84 +31,77 @@ template<typename t_Container>
 class Members : public MembersBase
 {
 public:
-    Members(LanguageElement* a_pOwner) : MembersBase(a_pOwner), m_data(nullptr) {}
+    Members(LanguageElement* a_pOwner) : MembersBase(a_pOwner) {}
 
-    static t_Container* Empty()
-    {
-        static t_Container empty;
-        return &empty;
-    }
+    ~Members() {}
 
-    ~Members() { phantom::Delete<t_Container>(m_data); }
+    void setAllocator(CustomAllocator const* a_pAlloc) { m_container.setAllocator(a_pAlloc); }
 
     t_Container* operator->()
     {
-        auto c = container();
         onAccess();
-        return c;
+        return &m_container;
     }
 
-    t_Container* operator->() const
+    t_Container const* operator->() const
     {
         onAccess();
-        return m_data ? m_data : Empty();
+        return &m_container;
     }
 
     const t_Container& operator*() const
     {
         onAccess();
-        return m_data ? *m_data : *Empty();
+        return m_container;
     }
 
     t_Container& operator*()
     {
         onAccess();
-        return m_data ? *m_data : *Empty();
+        return m_container;
     }
 
     PHANTOM_TYPENAME t_Container::value_type const& operator[](size_t i) const
     {
         onAccess();
-        PHANTOM_ASSERT(m_data);
-        return (*m_data)[i];
+        return m_container[i];
     }
 
     size_t size() const
     {
         onAccess();
-        return m_data ? m_data->size() : 0;
+        return m_container.size();
     }
 
-    void push_back(PHANTOM_TYPENAME t_Container::value_type const& a_Value) { container()->push_back(a_Value); }
+    bool empty() const
+    {
+        onAccess();
+        return m_container.empty();
+    }
+
+    void push_back(PHANTOM_TYPENAME t_Container::value_type const& a_Value) { m_container.push_back(a_Value); }
 
     void insert(PHANTOM_TYPENAME t_Container::iterator const& a_It,
                 PHANTOM_TYPENAME t_Container::value_type const& a_Value)
     {
-        container()->insert(a_It, a_Value);
+        m_container.insert(a_It, a_Value);
     }
 
     PHANTOM_TYPENAME t_Container::const_iterator begin() const
     {
         onAccess();
-        return container()->begin();
+        return m_container.begin();
     }
 
     PHANTOM_TYPENAME t_Container::const_iterator end() const
     {
         onAccess();
-        return container()->end();
+        return m_container.end();
     }
 
-    t_Container* container() const
-    {
-        if (m_data == nullptr)
-        {
-            m_data = phantom::New<t_Container>();
-        }
-        return m_data;
-    }
+    t_Container& container() { return m_container; }
 
-    t_Container* m_data;
+    t_Container m_container;
 };
 
 inline void MembersBase::onAccess() const

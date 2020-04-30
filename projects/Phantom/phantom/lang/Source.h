@@ -242,14 +242,6 @@ public:
     bool addImport(StringView a_strName, bool a_bStatic = false, bool a_bPublic = false);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removed an imported source.
-    ///
-    /// \param  a_strName   The imported source name.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeImport(Symbol* a_pSource);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this source has the given described imported source with given modifiers
     /// and
     ///         flags.
@@ -336,20 +328,7 @@ public:
 
     bool addDependency(StringView a_strName);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Remove a dependency on the given source (real definition dependency, not declaration
-    /// only => equivalent of including a file in the .h in C++)
-    ///
-    /// \param [in,out] a_pSource   the dependency source to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeDependency(Source* a_pSource);
-
     Sources const& getDependings() const { return m_Dependings; }
-
-    void clearImports();
-
-    void clearDependencies();
 
     Source* asSource() const override { return (Source*)this; }
 
@@ -369,20 +348,18 @@ public:
 
 protected:
     void   onScopeSymbolAdded(Symbol* a_pSymbol) override;
-    void   onScopeSymbolRemoving(Symbol* a_pElement) override;
     hash64 computeHash() const override;
 
 private:
-    bool        _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
-    void        _addImporting(Source*);
-    void        _removeImporting(Source*);
-    void        _addDepending(Source*);
-    void        _removeDepending(Source*);
-    bool        _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
-    static bool _MustDefer();
-    void        _NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
-    void        _NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
-                              StringView a_QN);
+    bool _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
+    void _addImporting(Source*);
+    void _removeImporting(Source*);
+    void _addDepending(Source*);
+    void _removeDepending(Source*);
+    bool _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
+    void _NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
+    void _NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+                       StringView a_QN);
 
 public:
     phantom::Signal<void(SourceStream*)> sourceStreamChanged;

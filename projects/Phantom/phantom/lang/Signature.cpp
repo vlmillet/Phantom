@@ -18,56 +18,6 @@ namespace phantom
 {
 namespace lang
 {
-Signature* Signature::Create(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-#if defined(PHANTOM_DEV)
-#    pragma message(PHANTOM_TODO "filter PHANTOM_R_METHOD_QUAL_MASK in SignatureH, not here")
-#endif
-    return PHANTOM_DEFERRED_NEW_EX(Signature)(a_Modifiers & (PHANTOM_R_METHOD_QUAL_MASK), a_uiFlags);
-}
-
-Signature* Signature::Create(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-    return PHANTOM_DEFERRED_NEW_EX(Signature)(a_pReturnType, a_Modifiers & (PHANTOM_R_METHOD_QUAL_MASK), a_uiFlags);
-}
-
-Signature* Signature::Create(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
-                             uint a_uiFlags /*= 0*/)
-{
-    return PHANTOM_DEFERRED_NEW_EX(Signature)(a_pReturnType, a_pSingleParameterType,
-                                              a_Modifiers & (PHANTOM_R_METHOD_QUAL_MASK), a_uiFlags);
-}
-
-Signature* Signature::Create(StringView a_strCode, LanguageElement* a_pContextScope /*= nullptr*/,
-                             Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-    return PHANTOM_DEFERRED_NEW_EX(Signature)(a_strCode, a_pContextScope, a_Modifiers & (PHANTOM_R_METHOD_QUAL_MASK),
-                                              a_uiFlags);
-}
-
-Signature* Signature::Create(Type* a_pReturnType, Type* a_pFirstParameterType, Type* a_pSecondParameterType,
-                             Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-{
-    Signature* pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(a_pReturnType, a_Modifiers, a_uiFlags);
-    pSignature->addParameter(a_pFirstParameterType);
-    pSignature->addParameter(a_pSecondParameterType);
-    return pSignature;
-}
-
-Signature* Signature::Create(Type* a_pReturnType, TypesView a_ParameterTypes, Modifiers a_Modifiers /*= 0*/,
-                             uint a_uiFlags /*= 0*/)
-{
-    Signature* pSignature = PHANTOM_DEFERRED_NEW_EX(Signature)(a_pReturnType, a_Modifiers, a_uiFlags);
-    for (auto pParamT : a_ParameterTypes)
-        pSignature->addParameter(pParamT);
-    return pSignature;
-}
-
-Signature* Signature::Create(Type* a_pReturnType, uint a_uiFlags)
-{
-    return Create(a_pReturnType, Modifier::None, a_uiFlags);
-}
-
 Signature::Signature(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pReturnType(nullptr),

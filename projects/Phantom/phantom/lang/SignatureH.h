@@ -33,11 +33,11 @@ struct SignatureH<t_ReturnType(v_Params...)>
     static Signature* Create() { return _Create(); }
 
 protected:
-    static Signature* _Create(Modifiers a_Modifiers = Modifiers())
+    static Signature* _Create(LanguageElement* a_pOwner, Modifiers a_Modifiers = Modifiers())
     {
         /// Resolve first by static type resolving.
         /// If one fails, resolve via signature parsing (probably a pointer on an uncomplete class).
-        Signature* pSignature = Signature::Create(a_Modifiers, PHANTOM_R_FLAG_NATIVE);
+        Signature* pSignature = a_pOwner->NewDeferred<Signature>(a_Modifiers, PHANTOM_R_FLAG_NATIVE);
         Type*      pReturnType = PHANTOM_TYPEOF(t_ReturnType);
         PHANTOM_ASSERT(pReturnType,
                        "cannot resolve return type (in " PHANTOM_DIAGNOSTIC_FUNCTION

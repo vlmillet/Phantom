@@ -33,7 +33,6 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             this_()
         .public_()
-            .method<void(), pure_virtual>("PHANTOM_CUSTOM_VIRTUAL_DELETE", &_::PHANTOM_CUSTOM_VIRTUAL_DELETE)
             .staticMethod<void(ExecutionContext*)>("Push", &_::Push)
             .staticMethod<void()>("Pop", &_::Pop)
             .staticMethod<ExecutionContext*()>("Current", &_::Current)

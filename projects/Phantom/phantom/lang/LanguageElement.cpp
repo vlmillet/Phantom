@@ -54,6 +54,11 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
     }
 }
 
+CustomAllocator const* LanguageElement::getAllocator() const
+{
+    return m_pSource->getUnitAllocator();
+}
+
 void LanguageElement::Delete(LanguageElement* a_pElem)
 {
     PHANTOM_ASSERT(a_pElem->m_pOwner == this);
@@ -104,22 +109,22 @@ bool LanguageElement::canBeUnloaded() const
     if (!(canBeDestroyed()))
         return false;
 
-    Module* pModule = getModule();
-
-    if (!isNative())
-    {
-        //         if (m_pReferencingElements)
-        //         {
-        //             for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
-        //             {
-        //                 if (!((*it)->getModule() != pModule))
-        //                 {
-        //                     return false; /// An element referencing this one belongs to a different module
-        //                                   /// => cannot unload
-        //                 }
-        //             }
-        //         }
-    }
+    //     Module* pModule = getModule();
+    //
+    //     if (!isNative())
+    //     {
+    //         //         if (m_pReferencingElements)
+    //         //         {
+    //         //             for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
+    //         //             {
+    //         //                 if (!((*it)->getModule() != pModule))
+    //         //                 {
+    //         //                     return false; /// An element referencing this one belongs to a different module
+    //         //                                   /// => cannot unload
+    //         //                 }
+    //         //             }
+    //         //         }
+    //     }
     return true;
 }
 
@@ -304,7 +309,7 @@ void LanguageElement::getElementsDeep(LanguageElements& a_Elements) const
     }
 }
 
-bool LanguageElement::hasReferencedElement(LanguageElement* a_pLanguageElement) const
+bool LanguageElement::hasReferencedElement(LanguageElement*) const
 {
     // 	for (auto it = m_pReferencedElements->begin(); it != m_pReferencedElements->end(); ++it)
     // 	{
@@ -314,7 +319,7 @@ bool LanguageElement::hasReferencedElement(LanguageElement* a_pLanguageElement) 
     return false;
 }
 
-bool LanguageElement::hasReferencingElement(LanguageElement* a_pLanguageElement) const
+bool LanguageElement::hasReferencingElement(LanguageElement*) const
 {
     //     if (m_pReferencingElements)
     //     {
@@ -391,7 +396,7 @@ bool LanguageElement::hasNamingScopeCascade(LanguageElement* a_pScope) const
     return (pScope != nullptr) && ((pScope == a_pScope) || pScope->hasNamingScopeCascade(a_pScope));
 }
 
-void LanguageElement::clear()
+void LanguageElement::detachAll()
 {
     while (!m_Elements.empty())
     {
@@ -399,38 +404,7 @@ void LanguageElement::clear()
     }
 }
 
-void LanguageElement::steal(LanguageElement*)
-{
-    PHANTOM_ASSERT(false);
-    //     // backup this elements
-    //     LanguageElements backup = getElements();
-    //
-    //     // remove this elements
-    //     while (m_pElements)
-    //     {
-    //         LanguageElement* pElement = m_Elements.front();
-    //         removeElement(pElement);
-    //     }
-    //
-    //     // steal input elements while removing to it
-    //     while (a_pInput->m_pElements)
-    //     {
-    //         LanguageElement* pElement = a_pInput->m_Elements.front();
-    //         a_pInput->removeElement(pElement);
-    //         addElement(pElement);
-    //     }
-    //
-    //     // swap backup elements to input
-    //     for (auto pElm : backup)
-    //     {
-    //         a_pInput->addElement(pElm);
-    //     }
-}
-
-void LanguageElement::getName(StringBuffer&) const
-{
-    PHANTOM_ASSERT_NO_IMPL();
-}
+void LanguageElement::getName(StringBuffer&) const {}
 
 String LanguageElement::getName() const
 {
@@ -533,10 +507,7 @@ LanguageElement* LanguageElement::getNamingScope() const
 
 void LanguageElement::detach()
 {
-    if (m_pOwner)
-    {
-        m_pOwner->removeElement(this);
-    }
+    setOwner(nullptr);
 }
 
 bool LanguageElement::isSymbolHidden(Symbol* a_pSymbol) const
@@ -589,11 +560,6 @@ Module* LanguageElement::getModule() const
 Package* LanguageElement::getPackage() const
 {
     return m_pSource->getPackage();
-}
-
-bool LanguageElement::isIncomplete() const
-{
-    return testFlags(PHANTOM_R_INCOMPLETE);
 }
 
 void LanguageElement::setCodeRange(const CodeRange& a_CodeRange)
@@ -677,50 +643,6 @@ Symbol* LanguageElement::PublicFilter(Symbol* a_pSymbol, bool)
 Symbol* LanguageElement::PublicIfUnamedSubSymbolFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol)
 {
     return (!a_bUnamedSubSymbol || a_pSymbol->isPublic()) ? a_pSymbol : nullptr;
-}
-
-void LanguageElement::setIncomplete()
-{
-    if (testFlags(PHANTOM_R_INCOMPLETE) || testFlags(PHANTOM_R_ALWAYS_VALID))
-        return;
-    /// When an element becomes invalid, the following becomes invalid too :
-    /// - the elements who have reference to it
-    /// - its owner element
-    /// - its children elements
-    m_uiFlags |= PHANTOM_R_INCOMPLETE;
-    if (m_pReferencingElements)
-    {
-        for (auto it = m_pReferencingElements->begin(); it != m_pReferencingElements->end(); ++it)
-        {
-            (*it)->setIncomplete();
-        }
-    }
-    if (m_pOwner)
-        m_pOwner->setIncomplete();
-    if (m_pElements)
-    {
-        for (auto it = m_Elements.begin(); it != m_Elements.end(); ++it)
-        {
-            (*it)->setIncomplete();
-        }
-    }
-}
-
-Source* LanguageElement::getSource() const
-{
-    Source* pSource = asSource();
-    return pSource ? pSource : (m_pOwner ? m_pOwner->getSource() : nullptr);
-}
-
-void LanguageElement::setInvalid()
-{
-    if (isInvalid() || isAlwaysValid())
-        return;
-    PHANTOM_ASSERT(!isNative());
-    m_uiFlags |= PHANTOM_R_FLAG_INVALID;
-    onInvalidated();
-
-    setIncomplete();
 }
 
 } // namespace lang

@@ -121,7 +121,7 @@ Method* Property::addSet(StringView a_strName /*= ""*/)
     PHANTOM_ASSERT(!testFlags(PHANTOM_R_FLAG_READONLY));
     PHANTOM_ASSERT(getOwner() != nullptr);
     m_pSet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_set") : a_strName,
-                         Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
+                         NewDeferred<Signature>(PHANTOM_TYPEOF(void), getValueType()), 0,
                          PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pSet->m_pProperty = this;
     return m_pSet;
@@ -132,7 +132,7 @@ Signal* Property::addSignal(StringView a_strName /*= ""*/)
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(getOwner() != nullptr);
     m_pSignal = New<Signal>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_signal") : a_strName,
-                            Signature::Create(PHANTOM_TYPEOF(void), getValueType()), 0,
+                            NewDeferred<Signature>(PHANTOM_TYPEOF(void), getValueType()), 0,
                             PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pSignal->m_pProperty = this;
     return m_pSignal;
@@ -143,7 +143,7 @@ Method* Property::addGet(StringView a_strName /*= ""*/)
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(getOwner() != nullptr);
     m_pGet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_get") : a_strName,
-                         Signature::Create(getValueType()), PHANTOM_R_CONST,
+                         NewDeferred<Signature>(getValueType()), PHANTOM_R_CONST,
                          PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pGet->m_pProperty = this;
     return m_pGet;

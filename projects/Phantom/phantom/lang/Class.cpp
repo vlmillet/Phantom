@@ -47,10 +47,10 @@ Class* Class::MetaClass()
     return Class::metaClass;
 }
 
-Class::Class() : ClassType(TypeKind::Class, phantom::New<ExtraData>()) {}
+Class::Class() : ClassType(TypeKind::Class) {}
 
 Class::Class(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ClassType(a_eTypeKind, phantom::New<ExtraData>(), a_strName, a_Modifiers, a_uiFlags)
+    : ClassType(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
@@ -62,10 +62,17 @@ Class::Class(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t
 
 Class::~Class() {}
 
+void Class::initialize()
+{
+    ClassType::initialize();
+    setExtraData(new_<ExtraData>());
+}
+
 void Class::terminate()
 {
+    delete_<ExtraData>(static_cast<ExtraData*>(m_pExtraData));
     if (m_pInstanceCache)
-        phantom::Delete<InstanceCache>(m_pInstanceCache);
+        delete_<InstanceCache>(m_pInstanceCache);
 
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::ClassDestroying, this, nullptr);
@@ -181,6 +188,7 @@ void Class::_addBaseClass(Class* a_pBaseClass, size_t a_uiOffset, Access a_Acces
     PHANTOM_ASSERT(isNative() || !(a_pBaseClass->hasStrongDependencyOnType(this)), "cyclic class strong dependency");
     m_BaseClasses.push_back(BaseClass(a_pBaseClass, a_uiOffset, a_Access));
     a_pBaseClass->addDerivedClass(const_cast<Class*>(this));
+    addReferencedElement(a_pBaseClass);
 }
 
 void Class::addBaseClass(Class* a_pClass, Access a_Access)
@@ -965,12 +973,12 @@ void Class::setOverriddenDefaultExpression(ValueMember* a_pValueMember, Expressi
 {
     if (m_pOverriddenDefaultExpressions == nullptr)
     {
-        m_pOverriddenDefaultExpressions = PHANTOM_NEW(SmallMap<ValueMember*, Expression*>);
+        m_pOverriddenDefaultExpressions = new_<SmallMap<ValueMember*, Expression*>>();
     }
     auto& pExp = (*m_pOverriddenDefaultExpressions)[a_pValueMember];
     if (pExp)
     {
-        Delete(reinterpret_cast)<LanguageElement*>(pExp);
+        Delete(reinterpret_cast<LanguageElement*>(pExp));
     }
     pExp = a_pExpression;
 }
@@ -1013,9 +1021,9 @@ Expression* Class::getOverriddenDefaultExpressionCascade(ValueMember* a_pValueMe
     return nullptr;
 }
 
-VirtualMethodTable* Class::deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable) const
+VirtualMethodTable* Class::deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable)
 {
-    return a_pVirtualMethodTable->derive();
+    return a_pVirtualMethodTable->derive(this);
 }
 
 SymbolExtension* Class::getExtensionCascade(Class* a_pSymbolExtensionClass, size_t a_Num /*= 0*/) const
@@ -1030,14 +1038,14 @@ SymbolExtension* Class::getExtensionCascade(Class* a_pSymbolExtensionClass, size
     return nullptr;
 }
 
-VirtualMethodTable* Class::DeriveVirtualMethodTable(VirtualMethodTable* a_pBase, size_t a_MethodCount)
+VirtualMethodTable* Class::DeriveVirtualMethodTable(Class* a_pOwner, VirtualMethodTable* a_pBase, size_t a_MethodCount)
 {
-    return a_pBase->derive(a_MethodCount);
+    return a_pBase->derive(a_pOwner, a_MethodCount);
 }
 
-VirtualMethodTable* Class::DeriveVirtualMethodTable(VirtualMethodTable* a_pBase)
+VirtualMethodTable* Class::DeriveVirtualMethodTable(Class* a_pOwner, VirtualMethodTable* a_pBase)
 {
-    return a_pBase->derive();
+    return a_pBase->derive(a_pOwner);
 }
 
 Class* Class::VTablePrimaryClass(VirtualMethodTable* a_pVTable)
@@ -1045,9 +1053,9 @@ Class* Class::VTablePrimaryClass(VirtualMethodTable* a_pVTable)
     return a_pVTable->getOriginalClass();
 }
 
-VirtualMethodTable* Class::createVirtualMethodTable() const
+VirtualMethodTable* Class::createVirtualMethodTable()
 {
-    return PHANTOM_NEW(VirtualMethodTable);
+    return New<VirtualMethodTable>();
 }
 
 size_t Class::getVirtualMethodCount(size_t a_uiOffset) const
@@ -1463,9 +1471,9 @@ bool Class::canHaveImplicitMoveAssignmentOperator() const
     return true;
 }
 
-VirtualMethodTable* Class::CreateVirtualMethodTable(void** a_ppAddr, size_t a_MethodCount)
+VirtualMethodTable* Class::CreateVirtualMethodTable(Class* a_pOwner, void** a_ppAddr, size_t a_MethodCount)
 {
-    return New<VirtualMethodTable>(a_ppAddr, a_MethodCount);
+    return a_pOwner->New<VirtualMethodTable>(a_ppAddr, a_MethodCount);
 }
 
 void Class::addImplicitDefaultConstructor()
@@ -1621,7 +1629,7 @@ InstanceCache* Class::getOrCreateInstanceCache()
 {
     if (m_pInstanceCache)
         return m_pInstanceCache;
-    return m_pInstanceCache = New<InstanceCache>(this);
+    return m_pInstanceCache = new_<InstanceCache>(this);
 }
 
 Type* Class::getCommonBaseAncestor(Type* a_pType) const
@@ -1679,11 +1687,6 @@ bool Class::isMoveConstructible() const
     return !(hasMoveDisabled());
 }
 
-void Class::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE()
-{
-    Delete<ExtraData>(this);
-}
-
 namespace
 {
 const int anonymous_inc = 1;
@@ -1713,11 +1716,11 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
             }
             a_pNamingScope = pNS;
         }
-        m_pClass = a_pOwnerScope->New<lang::Class>(nameParts.back());
+        m_pClass = a_pOwnerScope->asLanguageElement()->New<lang::Class>(nameParts.back());
     }
     else
     {
-        m_pClass = a_pOwnerScope->New<lang::Class>(StringView());
+        m_pClass = a_pOwnerScope->asLanguageElement()->New<lang::Class>(StringView());
     }
     m_pClass->setDefaultAccess(a_Access);
 

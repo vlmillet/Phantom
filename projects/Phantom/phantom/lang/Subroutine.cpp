@@ -49,30 +49,6 @@ Subroutine::Subroutine(StringView a_strName, Signature* a_pSignature, ABI a_eABI
     }
 }
 
-Subroutine::Subroutine(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-                       Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, a_uiFlags),
-      m_pSignature(Signature::Create(a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK, a_uiFlags & PHANTOM_R_FLAG_NATIVE)),
-      m_eABI(a_eABI)
-{
-    PHANTOM_ASSERT(a_pScope);
-    PHANTOM_ASSERT(m_pSignature);
-    m_pSignature->setModifiers((getModifiers() & (PHANTOM_R_METHOD_QUAL_MASK)) | m_pSignature->getModifiers());
-    a_pScope->addScopedElement(this);
-    m_pSignature->parse(a_strSignature, this);
-    a_pScope->removeScopedElement(this);
-    if (m_pSignature->isShared())
-    {
-        addReferencedElement(m_pSignature);
-    }
-    else
-    {
-        addElement(m_pSignature);
-    }
-}
-
-Subroutine::~Subroutine() {}
-
 void Subroutine::terminate()
 {
     if (m_pInstructions)

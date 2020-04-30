@@ -79,7 +79,6 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .struct_<ExtraData>()
-                .method<void(), virtual_>("PHANTOM_CUSTOM_VIRTUAL_DELETE", &_::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE)
                 .constructor<void()>()
                 .field("m_AlignmentComputer", &_::ExtraData::m_AlignmentComputer)
                 .field("m_uiDataTypeCount", &_::ExtraData::m_uiDataTypeCount)

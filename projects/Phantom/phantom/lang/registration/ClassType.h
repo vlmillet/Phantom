@@ -298,8 +298,9 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<FuncProviderNoFwd>::value, "missing #include <phantom/static_method>");
         using FuncPtrT = decltype(a_Ptr);
         this->_addFunc(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_Ptr), [](MemberBuilder const& a_Member) {
-            auto pFunc = FuncProviderNoFwd::CreateFunction(a_Member.name, lang::SignatureH<Sign>::Create(),
-                                                           PHANTOM_REG_MEMBER_GETBACK_ARG(0, FuncPtrT));
+            auto pFunc =
+            FuncProviderNoFwd::CreateFunction(a_Member.classType(), a_Member.name, lang::SignatureH<Sign>::Create(),
+                                              PHANTOM_REG_MEMBER_GETBACK_ARG(0, FuncPtrT));
             a_Member.classType()->addFunction(a_Member.apply(pFunc));
         });
         return static_cast<MostDerived&>(*this);
@@ -802,7 +803,7 @@ struct TemplateParamValueH
     template<class T>
     auto operator*(T c)
     {
-        return a_Member.classType()->NewMeta<lang::ConstantT<T>>(c, 0, PHANTOM_R_FLAG_NATIVE);
+        return __PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<T>>(c, 0, PHANTOM_R_FLAG_NATIVE);
     }
 };
 struct TemplateParamValueUnsignedH
@@ -810,8 +811,8 @@ struct TemplateParamValueUnsignedH
     template<class T>
     auto operator*(T c)
     {
-        return a_Member.classType()->NewMeta<lang::ConstantT<std::make_unsigned_t<T>>>((std::make_unsigned_t<T>)c, 0,
-                                                                                       PHANTOM_R_FLAG_NATIVE);
+        return __PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<std::make_unsigned_t<T>>>(
+        (std::make_unsigned_t<T>)c, 0, PHANTOM_R_FLAG_NATIVE);
     }
 };
 

@@ -402,7 +402,6 @@ HAUNT_STOP;
 /// FLAGS
 #define PHANTOM_R_FLAG_NONE (0)
 #define PHANTOM_R_FLAG_NATIVE (0x00000001 | PHANTOM_R_ALWAYS_VALID)
-#define PHANTOM_R_FLAG_INVALID 0x00000002
 // #define o_defined                   0x00000004
 // #define o_finalized                 0x00000008
 

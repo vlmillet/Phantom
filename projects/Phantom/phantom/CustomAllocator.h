@@ -7,6 +7,7 @@
 #pragma once
 
 #include <phantom/plugin.h>
+#include <phantom/utils/Delegate.h>
 
 namespace phantom
 {
@@ -22,9 +23,9 @@ struct PHANTOM_EXPORT_PHANTOM CustomAllocator
     static void                   Init();
     static void                   Release();
 
-    typedef void* (*AllocFunc)(size_t /*size*/, size_t /*align*/);
-    typedef void* (*ReallocFunc)(void* /*memory*/, size_t /*size*/, size_t /*align*/);
-    typedef void (*DeallocFunc)(void* /*memory*/);
+    using AllocFunc = Delegate<void*(size_t /*size*/, size_t /*align*/)>;
+    using ReallocFunc = Delegate<void*(void* /*memory*/, size_t /*size*/, size_t /*align*/)>;
+    using DeallocFunc = Delegate<void(void* /*memory*/)>;
 
     AllocFunc   allocFunc;
     DeallocFunc deallocFunc;

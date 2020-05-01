@@ -26,19 +26,24 @@ namespace lang
 {
 TemplateSignature::TemplateSignature(uint a_uiFlags) : LanguageElement(a_uiFlags) {}
 
-TemplateSignature::TemplateSignature(const TemplateParameters& a_Parameters, bool a_bVariadic,
-                                     uint flags /*= PHANTOM_R_NONE*/)
-    : LanguageElement(flags)
+TemplateSignature* TemplateSignature::Create(LanguageElement* a_pOwner, const TemplateParameters& a_Parameters,
+                                             bool a_bVariadic, uint a_Flags /*= PHANTOM_R_NONE*/)
 {
-    for (auto it = a_Parameters.begin(); it != a_Parameters.end(); ++it)
+    TemplateSignature* pTS = a_pOwner->NewDeferred<TemplateSignature>(a_Flags);
+    for (auto pPrm : a_Parameters)
     {
-        addTemplateParameter(*it);
+        pTS->addTemplateParameter(pPrm);
     }
-    if (m_TemplateParameters.size())
-        m_TemplateParameters.back()->m_bPack = a_bVariadic;
+    if (!pTS->m_TemplateParameters.empty())
+        pTS->m_TemplateParameters.back()->m_bPack = a_bVariadic;
+    else
+    {
+        PHANTOM_ASSERT(!a_bVariadic);
+    }
+    return pTS;
 }
 
-TemplateSignature* TemplateSignature::Parse(StringView a_strTemplateParameterTypes,
+TemplateSignature* TemplateSignature::Parse(LanguageElement* a_pOwner, StringView a_strTemplateParameterTypes,
                                             StringView a_strTemplateParameterNames, LanguageElement* a_pContextScope,
                                             uint a_uiFlags /*= PHANTOM_R_NONE*/)
 {
@@ -92,18 +97,21 @@ TemplateSignature* TemplateSignature::Parse(StringView a_strTemplateParameterTyp
     TemplateParameters tParams;
     for (auto const& pram : parsedParams)
     {
-        tParams.push_back(PHANTOM_DEFERRED_NEW(TemplateParameter)(
-        pram.valueType ? static_cast<Placeholder*>(PHANTOM_DEFERRED_NEW(PlaceholderConstant)(
+        tParams.push_back(a_pOwner->NewDeferred<TemplateParameter>(
+        pram.valueType ? static_cast<Placeholder*>(a_pOwner->NewDeferred<PlaceholderConstant>(
                          pram.valueType, pram.name, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE))
-                       : static_cast<Placeholder*>(PHANTOM_DEFERRED_NEW(PlaceholderType)(
+                       : static_cast<Placeholder*>(a_pOwner->NewDeferred<PlaceholderType>(
                          pram.name, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE)),
         nullptr, a_uiFlags & PHANTOM_R_FLAG_NATIVE));
     }
 
-    return PHANTOM_DEFERRED_NEW(TemplateSignature)(tParams, bVariadic, a_uiFlags);
+    return Create(a_pOwner, tParams, bVariadic, a_uiFlags);
 }
 
-TemplateSignature::~TemplateSignature() {}
+void TemplateSignature::initialize()
+{
+    m_TemplateParameters.setAllocator(getAllocator());
+}
 
 Template* TemplateSignature::getTemplate() const
 {
@@ -288,7 +296,7 @@ TemplateSignature* TemplateSignature::clone(LanguageElement* a_pOwner, uint a_Fl
     {
         params[i] = m_TemplateParameters[i]->clone(a_pOwner, a_Flags);
     }
-    return a_pOwner->New<TemplateSignature>(params, isVariadic(), a_Flags);
+    return Create(a_pOwner, params, isVariadic(), a_Flags);
 }
 
 void TemplateSignature::getName(StringBuffer& a_Buf) const

@@ -35,7 +35,6 @@ void ValueMember::setDefaultExpression(Expression* a_pExpression)
 {
     PHANTOM_ASSERT(!isNative());
     m_pDefaultExpression = a_pExpression;
-    addElement(reinterpret_cast<LanguageElement*>(m_pDefaultExpression));
 }
 
 void ValueMember::setDefaultExpression(const char* a_pExpression)

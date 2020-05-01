@@ -48,6 +48,7 @@ ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize
 void ClassType::initialize()
 {
     Type::initialize();
+	Scope::initialize();
     m_Constructors.setAllocator(getAllocator());
     m_Friends.setAllocator(getAllocator());
     m_Methods.setAllocator(getAllocator());

@@ -47,7 +47,8 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     using BuilderProxyType = PHANTOM_TYPENAME Top::_PHNTM_Proxy;
 
     MemberAnonymousSectionBuilderT(Top* a_pTop)
-        : m_pMeta(New<Meta>(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)), m_pTop(a_pTop)
+        : m_pMeta(a_pTop->_PHNTM_getOwnerScope()->New<Meta>(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)),
+          m_pTop(a_pTop)
     {
         m_pTop->_PHNTM_getOwnerScope()->addMemberAnonymousSection(m_pMeta);
     }
@@ -93,13 +94,13 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
         using FieldPtrT = decltype(a_FPtr);
         _PHNTM_REG_STATIC_ASSERT(phantom::IsTypeDefined<lang::FieldT<ValueType(ReflectedType::*)>>::value,
                                  "missing #include <phantom/field>");
-        _root()->_addField(m_pMeta, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_FPtr), a_FilterMask,
-                           [](MemberBuilder const& a_Member) {
-                               static_cast<MetaType*>(a_Member.owner)
-                               ->addField(a_Member.apply(PHANTOM_META_NEW(lang::FieldT<ValueType(ReflectedType::*)>)(
-                               PHANTOM_TYPEOF(ValueType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, FieldPtrT),
-                               a_Member.filter, lang::Modifiers(Modifiers))));
-                           });
+        _root()->_addField(
+        m_pMeta, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_FPtr), a_FilterMask, [](MemberBuilder const& a_Member) {
+            static_cast<MetaType*>(a_Member.owner)
+            ->addField(a_Member.apply(a_Member.classType()->NewMeta<lang::FieldT<ValueType(ReflectedType::*)>>(
+            PHANTOM_TYPEOF(ValueType), a_Member.name, PHANTOM_REG_MEMBER_GETBACK_ARG(0, FieldPtrT), a_Member.filter,
+            lang::Modifiers(Modifiers))));
+        });
         return *this;
     }
 

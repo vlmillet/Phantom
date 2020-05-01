@@ -41,36 +41,36 @@ void SequentialContainerClass::terminate()
 
 void SequentialContainerClass::push_back(void* a_pContainer, void const* a_pValue) const
 {
-    if (!m_Data->m_pFunc_push_back)
+    if (!m_pData->m_pFunc_push_back)
     {
         _PHNTM_R_MTX_GUARD();
-        PHANTOM_VERIFY(m_Data->m_pFunc_push_back =
+        PHANTOM_VERIFY(m_pData->m_pFunc_push_back =
                        getMethod("push_back", Types{m_pValueType->addConstLValueReference()}));
     }
     void* args[] = {(void*)a_pValue};
-    m_Data->m_pFunc_push_back->invoke((void*)a_pContainer, args);
+    m_pData->m_pFunc_push_back->invoke((void*)a_pContainer, args);
 }
 
 void SequentialContainerClass::push_back(void* a_pContainer, MoveArg a_pValue) const
 {
-    if (!m_Data->m_pFunc_push_back_move)
+    if (!m_pData->m_pFunc_push_back_move)
     {
         _PHNTM_R_MTX_GUARD();
-        PHANTOM_VERIFY(m_Data->m_pFunc_push_back_move =
+        PHANTOM_VERIFY(m_pData->m_pFunc_push_back_move =
                        getMethod("push_back", Types{m_pValueType->addRValueReference()}));
     }
     void* args[] = {(void*)a_pValue};
-    m_Data->m_pFunc_push_back_move->invoke((void*)a_pContainer, args);
+    m_pData->m_pFunc_push_back_move->invoke((void*)a_pContainer, args);
 }
 
 void SequentialContainerClass::pop_back(void* a_pContainer) const
 {
-    if (!m_Data->m_pFunc_pop_back)
+    if (!m_pData->m_pFunc_pop_back)
     {
         _PHNTM_R_MTX_GUARD();
-        PHANTOM_VERIFY(m_Data->m_pFunc_pop_back = getMethod("pop_back", Types{}));
+        PHANTOM_VERIFY(m_pData->m_pFunc_pop_back = getMethod("pop_back", Types{}));
     }
-    m_Data->m_pFunc_pop_back->invoke((void*)a_pContainer, nullptr);
+    m_pData->m_pFunc_pop_back->invoke((void*)a_pContainer, nullptr);
 }
 
 } // namespace lang

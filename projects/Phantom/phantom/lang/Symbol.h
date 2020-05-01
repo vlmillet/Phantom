@@ -67,8 +67,6 @@ public:
     int destructionPriority() const override;
 
 public:
-    Symbol* asSymbol() const override { return (Symbol*)this; }
-
     Type* toType() const override { return nullptr; }
 
     virtual Namespace* toNamespace() const { return nullptr; }
@@ -89,6 +87,18 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Access getAccess() const { return m_eAccess; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the visibility during lookup of this symbol.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setVisibility(Visibility a_eVis) { m_eVisibility = a_eVis; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the visibility during lookup of this symbol.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Visibility getVisibility() const { return m_eVisibility; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the modifiers of this symbol.
@@ -459,11 +469,12 @@ protected:
     MetaDatas*        m_pMetaDatas = nullptr;
     Annotations*      m_pAnnotations = nullptr;
     SymbolExtensions* m_pExtensions = nullptr;
-    Modifiers         m_Modifiers = PHANTOM_R_NONE;
     mutable hash64    m_Hash = 0;
     mutable hash64    m_LocalHash = 0;
-    Access            m_eAccess = Access::Undefined;
     UserData          m_UserData;
+    Modifiers         m_Modifiers = PHANTOM_R_NONE;
+    Access            m_eAccess = Access::Undefined;
+    Visibility        m_eVisibility = Visibility::Private;
 };
 
 } // namespace lang

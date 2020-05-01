@@ -56,13 +56,6 @@ SourceFile* SourceFile::CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*=
     return new_<SourceFile>(Path::Absolute(a_strPath).canonical().genericString());
 }
 
-SourceFile* SourceFile::CreateOnDisk(Source* a_pSource, StringView a_Path, bool a_bOverwrite /*= false*/)
-{
-    SourceFile* pFile = CreateOnDisk(a_Path, a_bOverwrite);
-    a_pSource->setSourceStream(pFile);
-    return pFile;
-}
-
 time_t SourceFile::getLastChangeTime() const
 {
     struct stat s = {};

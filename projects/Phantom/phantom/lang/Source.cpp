@@ -51,10 +51,6 @@ Source::~Source()
         if (Source* source = it->symbol->asSource())
             source->_removeImporting(this);
     }
-    if (m_pSourceStream)
-    {
-        deleteVirtual(m_pSourceStream);
-    }
 }
 
 void Source::initialize()
@@ -67,7 +63,8 @@ void Source::initialize()
     m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
     m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
 
-    Symbol::initialize();
+	Symbol::initialize();
+	Scope::initialize();
 }
 
 void Source::terminate()
@@ -96,10 +93,14 @@ void Source::getQualifiedName(StringBuffer&) const
 
 void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 {
-    if (!(testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)) // not an archive
-        && a_pSymbol->getNamespace() == nullptr)
+    if (getVisibility() == Visibility::Public) // not an archive
     {
-        a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
+        a_pSymbol->setVisibility(Visibility::Public);
+        if (a_pSymbol->getNamespace() == nullptr)
+        {
+            a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
+        }
+        a_pSymbol->getNamespace()->_registerSymbol(a_pSymbol);
     }
     if (a_pSymbol->isNative())
     {
@@ -121,6 +122,14 @@ void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 #endif
             }
         }
+    }
+}
+
+void Source::onScopeSymbolRemoving(Symbol* a_pSymbol)
+{
+    if (getVisibility() == Visibility::Public) // not an archive
+    {
+        a_pSymbol->getNamespace()->_unregisterSymbol(a_pSymbol);
     }
 }
 
@@ -189,12 +198,7 @@ void Source::setSourceStream(SourceStream* a_pStream)
 {
     if (m_pSourceStream == a_pStream)
         return;
-    PHANTOM_ASSERT(a_pStream == nullptr || !a_pStream->m_pSource);
-    if (m_pSourceStream)
-        m_pSourceStream->m_pSource = nullptr;
     m_pSourceStream = a_pStream;
-    if (m_pSourceStream)
-        m_pSourceStream->m_pSource = this;
     PHANTOM_EMIT sourceStreamChanged(a_pStream);
 }
 
@@ -278,7 +282,8 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 if (pAlias == nullptr)
                 {
                     pAlias = New<Alias>((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                        (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT);
+                                        PHANTOM_R_FLAG_IMPLICIT);
+                    pAlias->setVisibility(a_bPublic ? Visibility::Public : Visibility::Protected);
                     addAlias(pAlias);
                 }
             }
@@ -301,8 +306,9 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     }
     else
     {
-        addAlias(pAlias = New<Alias>(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                     (a_bPublic ? 0 : PHANTOM_R_FLAG_PROTECTED_VIS) | PHANTOM_R_FLAG_IMPLICIT));
+        addAlias(pAlias =
+                 New<Alias>(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE), PHANTOM_R_FLAG_IMPLICIT));
+        pAlias->setVisibility(a_bPublic ? Visibility::Public : Visibility::Protected);
     }
     i.alias = pAlias;
     m_Imports.push_back(i);
@@ -323,7 +329,7 @@ bool Source::addImport(StringView a_strName, bool a_bStatic, bool a_bPublic)
 }
 
 void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, SmallSet<const Symbol*>& treated,
-                                 int _skipFlags)
+                                 Visibility _maxVisibility)
 {
     if (!treated.insert(a_pSymbol).second)
         return;
@@ -331,13 +337,13 @@ void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, Sm
     {
         Symbol* pSymbol = p->asSymbol();
         if (pSymbol // is a symbol && is publicly imported
-            && (pSymbol->getFlags() & _skipFlags) == 0 && pSymbol->asTemplateSpecialization() == nullptr)
+            && (pSymbol->getVisibility() <= _maxVisibility) && pSymbol->asTemplateSpecialization() == nullptr)
         {
             if (pSymbol->getName().empty())
             {
                 if (Alias* pAlias = pSymbol->asAlias())
                     pSymbol = pAlias->getAliasedSymbol();
-                Source_fetchImportedSymbols(pSymbol, a_Symbols, treated, (_skipFlags | PHANTOM_R_FLAG_PROTECTED_VIS));
+                Source_fetchImportedSymbols(pSymbol, a_Symbols, treated, Visibility::Public);
             }
             else
             {
@@ -346,10 +352,10 @@ void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, Sm
         }
     }
 }
-void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, int _skipFlags)
+void Source_fetchImportedSymbols(const Symbol* a_pSymbol, Symbols& a_Symbols, Visibility _maxVisibility)
 {
     SmallSet<const Symbol*> treated;
-    Source_fetchImportedSymbols(a_pSymbol, a_Symbols, treated, _skipFlags);
+    Source_fetchImportedSymbols(a_pSymbol, a_Symbols, treated, _maxVisibility);
 }
 
 bool Source::canImport(Symbol* a_pSymbol, Access, Modifiers a_Modifiers /*= 0*/, uint /*= 0*/,
@@ -363,8 +369,8 @@ bool Source::canImport(Symbol* a_pSymbol, Access, Modifiers a_Modifiers /*= 0*/,
         return true;
     Symbols symbols0;
     Symbols symbols1;
-    Source_fetchImportedSymbols(this, symbols0, PHANTOM_R_FLAG_PRIVATE_VIS);
-    Source_fetchImportedSymbols(a_pSymbol, symbols1, PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_PROTECTED_VIS);
+    Source_fetchImportedSymbols(this, symbols0, Visibility::Protected);
+    Source_fetchImportedSymbols(a_pSymbol, symbols1, Visibility::Public);
     bool result = true;
     for (Symbol* pSymbol0 : symbols0)
     {
@@ -523,22 +529,21 @@ Module* Source::getModule() const
     return getPackage()->getModule();
 }
 
-void Source::_NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
+void Source::_NewH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 {
-    a_pElem->setOwner(a_pOwner);
+	m_Orphans.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
     a_pElem->rtti.metaClass = a_pClass;
     a_pElem->rtti.metaClass->registerInstance(a_pMD);
 }
 
-void Source::_NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
+void Source::_NewDeferredH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
                            StringView a_QN)
 {
-    a_pElem->setOwner(a_pOwner);
-    a_pElem->m_pSource = this;
+	m_Orphans.push_back(a_pElem);
+	a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
-    a_pElem->rtti.metaClass->registerInstance(a_pMD);
     if (!dynamic_initializer_()->installed())
     {
         phantom::detail::deferInstallation(a_QN, &a_pElem->rtti);

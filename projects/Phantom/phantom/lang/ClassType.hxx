@@ -213,6 +213,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(), virtual_|override_>("onElementsAccess", &_::onElementsAccess)
             .method<void(ExtraData*)>("setExtraData", &_::setExtraData)
             .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolRemoving", &_::onScopeSymbolRemoving)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

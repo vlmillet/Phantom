@@ -210,8 +210,8 @@ PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, S
 void DynamicCppInitializerH::StaticGlobalsInit()
 {
     g_pGlobalNamespace.construct("");
+	g_pGlobalNamespace->setVisibility(lang::Visibility::Public);
     g_pApplication.construct();
-    g_pGlobalNamespace->setOwner(g_pApplication);
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
     g_pReflectionNamespace.construct("lang");
@@ -884,7 +884,8 @@ phantom::lang::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile
 
         PHANTOM_ASSERT(pPackage);
 
-        return pPackage->getOrCreateSource(sourceName, PHANTOM_R_FLAG_NATIVE);
+        pSource = pPackage->getOrCreateSource(sourceName);
+        pSource->addFlags(PHANTOM_R_FLAG_NATIVE);
     }
     return pSource;
 }

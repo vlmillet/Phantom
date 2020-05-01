@@ -140,7 +140,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<ABI() const>("getABI", &_::getABI)
-            .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Callable*() const, virtual_>("asCallable", &_::asCallable)
             .method<Subroutine*() const, virtual_|override_>("asSubroutine", &_::asSubroutine)
             .method<Signature*() const>("getSignature", &_::getSignature)

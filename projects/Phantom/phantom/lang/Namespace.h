@@ -28,6 +28,7 @@ public:
     friend class phantom::Phantom;
     friend class Type;
     friend class Symbol;
+    friend class Source;
 
 public:
     static Namespace* Global();
@@ -35,7 +36,8 @@ public:
 public:
     Namespace(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     Namespace(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-    PHANTOM_DTOR ~Namespace() override;
+
+	void initialize();
 
     Scope*     asScope() const override { return (Namespace*)this; }
     Namespace* asNamespace() const override { return (Namespace*)this; }
@@ -86,7 +88,18 @@ public:
     /// \return null if it fails, else the found or create namespace cascade.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
+	Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// \brief  Searches for a namespace recursively or create it if not found.
+	///
+	/// \param  a_strNamespaceName  Name of the namespace.
+	/// \param  separatorPattern    (optional) a pattern specifying the separator.
+	///
+	/// \return null if it fails, else the found or create namespace cascade.
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	Namespace* newNamespace(StringView a_strNamespace);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a namespace alias to this namespace.
@@ -189,13 +202,14 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    virtual void onScopeSymbolAdded(Symbol* a_pElement) override;
+    void onScopeSymbolAdded(Symbol* a_pSym) override;
+    void onScopeSymbolRemoving(Symbol* a_pSym) override;
 
 private:
-    Namespace* getNamespaceCascade(Strings& a_HierarchyWords) const;
-    Namespace* getOrCreateNamespace(Strings* a_HierarchyWords);
-    void       onNamespaceChanging(Namespace* a_pNamespace) override final;
-    void       onNamespaceChanged(Namespace* a_pNamespace) override final;
+    Namespace* getNamespaceCascade(Strings&) const;
+    Namespace* getOrCreateNamespace(Strings*);
+    void       onNamespaceChanging(Namespace*) override final;
+    void       onNamespaceChanged(Namespace*) override final;
     void       _registerSymbol(Symbol* a_pSym) { m_Symbols.push_back(a_pSym); }
     void       _unregisterSymbol(Symbol* a_pSym)
     {

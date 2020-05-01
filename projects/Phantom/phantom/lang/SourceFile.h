@@ -30,7 +30,6 @@ class PHANTOM_EXPORT_PHANTOM SourceFile : public SourceStream
 
 public:
     static SourceFile* CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*= false*/);
-    static SourceFile* CreateOnDisk(Source* a_pSource, StringView a_Path, bool a_bOverwrite /*= false*/);
 
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +42,8 @@ public:
 
     /// \brief  Destructor.
     ~SourceFile();
+
+    SourceFile* asFile() override { return this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Deletes the represented file.

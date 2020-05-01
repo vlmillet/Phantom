@@ -1696,7 +1696,7 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
     : m_Access(a_Access), m_MinAlign(a_MinAlign)
 {
     if (a_pOwnerScope == nullptr)
-        a_pOwnerScope = Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default", 0);
+        a_pOwnerScope = Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default");
 
     if (a_pNamingScope == nullptr)
         a_pNamingScope = Namespace::Global();

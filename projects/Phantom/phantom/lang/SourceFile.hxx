@@ -45,10 +45,10 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .staticMethod<SourceFile*(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
-            .staticMethod<SourceFile*(Source*, StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
         
         .public_()
             .constructor<void(StringView)>()
+            .method<SourceFile*()>("asFile", &_::asFile)
             .method<bool()>("deleteFile", &_::deleteFile)
             .method<void(String&)>("read", &_::read)
             .method<void(StringView)>("write", &_::write)

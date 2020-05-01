@@ -66,7 +66,7 @@ CustomAllocator const* LanguageElement::getAllocator() const
 
 void LanguageElement::Delete(LanguageElement* a_pElem)
 {
-    PHANTOM_ASSERT(a_pElem->m_pOwner == this);
+    setOwner(nullptr);
     a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
     a_pElem->terminate();
     a_pElem->~LanguageElement();
@@ -186,6 +186,8 @@ Statement* LanguageElement::getEnclosingStatement() const
 
 void LanguageElement::_onElementsAccess()
 {
+	if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
+		return;
     Module* pModule;
     if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule()) &&
         !(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
@@ -202,15 +204,26 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     if (m_pOwner)
     {
         m_pOwner->onElementsAccess();
+
         // we search for element in reverse order because generally we wan't to change ownership of a recently added
         // element
-        m_pOwner->m_Elements.erase_unsorted(std::find(m_Elements.rbegin(), m_Elements.rend(), this).base());
+        m_pOwner->m_Elements.erase_unsorted(
+        std::find(m_pOwner->m_Elements.rbegin(), m_pOwner->m_Elements.rend(), this).base());
         m_pOwner->m_uiFlags &= ~PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; // FIXME : add a template dependant tracking counter
+		if (m_pSource)
+			m_pSource->m_Orphans.push_back(this);
+		else
+			PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
         m_pOwner->onElementsAccess();
+		if (m_pSource)
+			m_pSource->m_Orphans.erase_unsorted(
+				std::find(m_pSource->m_Orphans.rbegin(), m_pSource->m_Orphans.rend(), this).base());
+		else
+			PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
         m_pOwner->m_Elements.push_back(this);
         if (isTemplateDependant() && m_pOwner->asEvaluable())
         {
@@ -230,8 +243,8 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
                         continue;
                     Symbol* pSymbol = pElm->asSymbol();
                     (void)pSymbol;
-                    PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
-                                         testFlags(PHANTOM_R_FLAG_PRIVATE_VIS) ||
+                    PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->getVisibility() == Visibility::Private ||
+						asSymbol()->getVisibility() == Visibility::Private ||
                                          pSymbol->getDecoratedName() != getDecoratedName(),
                                          "equal element already added : be careful not having "
                                          "duplicate member declarations in your class, or check not "
@@ -535,7 +548,7 @@ void LanguageElement::getSymbolsWithName(StringView a_strName, Symbols& a_OutSym
     for (auto p : getElements())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol && pSymbol->getName() == a_strName && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol && pSymbol->getName() == a_strName && !(pSymbol->getVisibility() == Visibility::Private))
             a_OutSymbols.push_back(pSymbol);
     }
 }

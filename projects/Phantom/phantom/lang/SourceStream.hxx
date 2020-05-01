@@ -22,7 +22,6 @@
 #include <phantom/static_method>
 #include <phantom/constructor>
 #include <phantom/field>
-#include <phantom/friend>
 
 namespace phantom {
 namespace lang {
@@ -33,20 +32,19 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(SourceStream)
         {
             this_()
-            .inherits<::phantom::Object>()
-        
         .public_()
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .staticMethod<SourceStream*(StringView)>("CreateFromUrl", &_::CreateFromUrl)
         
         .public_()
+            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
+            // .method<SourceFile*()>("asFile", &_::asFile)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<std::basic_istream<char>*(), pure_virtual>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(::std::basic_istream<char> *), pure_virtual>("destroyInputStream", &_::destroyInputStream)
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<time_t() const, pure_virtual>("getLastChangeTime", &_::getLastChangeTime)
-            .method<Source*() const>("getSource", &_::getSource)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<StringView() const>("getPath", &_::getPath)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h

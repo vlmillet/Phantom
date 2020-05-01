@@ -19,11 +19,12 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
                                                    OptionalArrayView<LanguageElement*> a_pTemplateArguments /*= 0*/,
                                                    OptionalArrayView<LanguageElement*> a_pFunctionArguments /*= 0*/,
                                                    Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pLeft(a_pLeft),
-      m_pTemplateArguments(a_pTemplateArguments ? new_<LanguageElements>(*a_pTemplateArguments) : nullptr),
-      m_pFunctionArguments(a_pFunctionArguments ? new_<LanguageElements>(*a_pFunctionArguments) : nullptr)
+    : Symbol(a_strName, modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT), m_pLeft(a_pLeft)
 {
+    if (a_pTemplateArguments)
+        m_pTemplateArguments.emplace(*a_pTemplateArguments);
+    if (a_pFunctionArguments)
+        m_pFunctionArguments.emplace(*a_pFunctionArguments);
     if (m_pLeft)
     {
         addReferencedElement(m_pLeft);
@@ -42,14 +43,6 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
             addReferencedElement(pElem);
         }
     }
-}
-
-TemplateDependantElement::~TemplateDependantElement()
-{
-    if (m_pTemplateArguments)
-        delete_<LanguageElements>(m_pTemplateArguments);
-    if (m_pFunctionArguments)
-        delete_<LanguageElements>(m_pFunctionArguments);
 }
 
 Type* TemplateDependantElement::toType() const

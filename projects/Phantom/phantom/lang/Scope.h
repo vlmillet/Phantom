@@ -105,16 +105,6 @@ public:
     Template* getTemplate(StringView a_strName) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a template at given index position.
-    ///
-    /// \param  a_uiIndex The index.
-    ///
-    /// \return The template at given index position.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Template* getTemplate(size_t a_uiIndex) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the templates declared in this scope.
     ///
     /// \return The template list.
@@ -167,16 +157,6 @@ public:
     TemplateSpecialization* addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpecialization,
                                                      const LanguageElements& a_Arguments,
                                                      const PlaceholderMap& a_PartialSpecializationParameterDeductions);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the template specialization at given index position.
-    ///
-    /// \param  a_uiIndex   The index.
-    ///
-    /// \return The template specialization at given index position.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    TemplateSpecialization* getTemplateSpecialization(size_t a_uiIndex) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template specializations declared in this scope.
@@ -513,8 +493,17 @@ public:
 
     void findClasses(Classes& a_Classes, Class* a_pBaseClass = nullptr, bool a_bDefaultInstanciable = false) const;
 
+    void removeAlias(Alias* a_pAlias);
+    void removeType(Type* a_pType);
+    void removeFunction(Function* a_pFunction);
+    void removeVariable(Variable* a_pVariable);
+    void removeConstant(Constant* a_pConstant);
+    void removeTemplate(Template* a_pTemplate);
+    void removeTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization);
+
 protected:
     virtual void onScopeSymbolAdded(Symbol* a_pElement) = 0;
+    virtual void onScopeSymbolRemoving(Symbol* a_pElement) = 0;
 
 protected:
     LanguageElement*                 m_pThisElement;

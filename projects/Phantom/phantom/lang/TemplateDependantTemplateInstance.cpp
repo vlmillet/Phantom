@@ -20,7 +20,7 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
     : Type(TypeKind::Unknown, a_pTemplateSpecialization->getTemplate()->getName(), 0, 0, 0,
-           a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
+           a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT),
       m_pTemplate(a_pTemplateSpecialization->getTemplate()),
       m_pTemplateSpecialization(a_pTemplateSpecialization),
       m_Arguments(a_Arguments)
@@ -31,28 +31,21 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
     addReferencedElement(m_pTemplateSpecialization);
     for (auto pArg : m_Arguments)
     {
-        if (pArg->getOwner())
-            addReferencedElement(pArg);
-        else
-            addElement(pArg);
+        addReferencedElement(pArg);
     }
 }
 
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(Template*               a_pTemplate,
                                                                      const LanguageElements& a_Arguments,
                                                                      uint                    a_uiFlags)
-    : Type(TypeKind::Unknown, a_pTemplate->getName(), 0, 0, 0,
-           PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS | a_uiFlags),
+    : Type(TypeKind::Unknown, a_pTemplate->getName(), 0, 0, 0, PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | a_uiFlags),
       m_pTemplate(a_pTemplate),
       m_Arguments(a_Arguments)
 {
     PHANTOM_ASSERT(m_pTemplate);
     for (auto pArg : m_Arguments)
     {
-        if (pArg->getOwner())
-            addReferencedElement(pArg);
-        else
-            addElement(pArg);
+        addReferencedElement(pArg);
     }
 }
 
@@ -174,8 +167,8 @@ hash64 TemplateDependantTemplateInstance::computeLocalHash() const
 
 Class* TemplateDependantTemplateInstance::promoteAsClass()
 {
-    m_pAsClass = New<TemplateDependantClassPromotion>(this);
-    addElement(m_pAsClass);
+    if (m_pAsClass == nullptr)
+        m_pAsClass = New<TemplateDependantClassPromotion>(this);
     return m_pAsClass;
 }
 

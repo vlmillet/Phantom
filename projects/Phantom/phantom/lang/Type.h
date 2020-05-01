@@ -1297,9 +1297,6 @@ public:
 
     Scope* getScope() const;
 
-    /// \brief  Removes this type from its scope.
-    void removeFromScope();
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the owner type of this type, if exists.
     ///

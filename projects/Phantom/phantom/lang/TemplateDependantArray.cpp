@@ -18,10 +18,9 @@ TemplateDependantArray::TemplateDependantArray(Type* a_pType, Expression* a_pSiz
     : Array(a_pType, 0), m_pItemCountExpression(a_pSize), m_pDeductibleConstant(a_pDeductibleConstant)
 {
     removeFlags(PHANTOM_R_FLAG_NATIVE);
-    addFlags(PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS);
-    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(a_pSize)
-                   ->isTemplateDependant() || reinterpret_cast<LanguageElement*>(a_pSize)
-                   ->isCompileTime());
+    addFlags(PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
+    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(a_pSize)->isTemplateDependant() ||
+                   reinterpret_cast<LanguageElement*>(a_pSize)->isCompileTime());
 }
 
 void TemplateDependantArray::getQualifiedDecoratedName(StringBuffer& a_Buf) const
@@ -57,7 +56,8 @@ bool TemplateDependantArray::isSame(Symbol* a_pOther) const
     TemplateDependantArray* pTDAT = pPH ? phantom::Object::Cast<TemplateDependantArray>(pPH->asSymbol()) : nullptr;
     if (pTDAT == nullptr)
         return false;
-    return pTDAT && reinterpret_cast<LanguageElement*>(pTDAT->m_pItemCountExpression)
+    return pTDAT &&
+    reinterpret_cast<LanguageElement*>(pTDAT->m_pItemCountExpression)
     ->isSame(reinterpret_cast<LanguageElement*>(m_pItemCountExpression));
 }
 

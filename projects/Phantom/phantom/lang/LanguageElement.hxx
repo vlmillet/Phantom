@@ -59,7 +59,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using LanguageElementsView = typedef_< phantom::lang::LanguageElementsView>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using Owner = typedef_<_::Owner>;
+            using NewCallSite = typedef_<_::NewCallSite>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
@@ -80,9 +80,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
         
         .public_()
-            .struct_<Owner>()
+            .struct_<NewCallSite>()
                 .constructor<void(LanguageElement*), explicit_>()
-                .field("this_", &_::Owner::this_)
+                .field("this_", &_::NewCallSite::this_)
             .end()
             .method<CustomAllocator const*() const, virtual_>("getAllocator", &_::getAllocator)
             .method<void(LanguageElement*)>("Delete", &_::Delete)
@@ -90,6 +90,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isTemplateElement", &_::isTemplateElement)
             .method<bool(LanguageElement*) const>("hasReferencedElement", &_::hasReferencedElement)
             .method<bool(LanguageElement*) const>("hasReferencingElement", &_::hasReferencingElement)
+            .method<Symbol*() const>("asSymbol", &_::asSymbol)
             .method<Type*() const, virtual_>("asAddressType", &_::asAddressType)
             .method<Alias*() const, virtual_>("asAlias", &_::asAlias)
             .method<AnonymousSection*() const, virtual_>("asAnonymousSection", &_::asAnonymousSection)
@@ -150,7 +151,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<MemberPointer*() const, virtual_>("asMemberPointer", &_::asMemberPointer)
             .method<Method*() const, virtual_>("asMethod", &_::asMethod)
             .method<Module*() const, virtual_>("asModule", &_::asModule)
-            .method<Symbol*() const, virtual_>("asSymbol", &_::asSymbol)
             .method<Namespace*() const, virtual_>("asNamespace", &_::asNamespace)
             .method<Type*() const, virtual_>("asNullptrType", &_::asNullptrType)
             .method<Package*() const, virtual_>("asPackage", &_::asPackage)

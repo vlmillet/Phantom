@@ -32,14 +32,9 @@ public:
 
     Union(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    PHANTOM_DTOR ~Union() override
-    {
-    }
+    void initialize();
 
-    Union* asUnion() const override
-    {
-        return (Union*)this;
-    }
+    Union* asUnion() const override { return (Union*)this; }
 
 protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,10 +46,8 @@ protected:
     /// \param  a_Modifiers     (optional) the modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Union(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
-          uint a_uiFlags)
-        : ClassType(TypeKind::Union, a_strName, a_uiSize, a_uiAlignment, a_Modifiers,
-                    a_uiFlags | PHANTOM_R_FLAG_NATIVE)
+    Union(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers, uint a_uiFlags)
+        : ClassType(TypeKind::Union, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
 };

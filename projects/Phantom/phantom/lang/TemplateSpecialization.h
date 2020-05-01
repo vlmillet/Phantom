@@ -26,10 +26,7 @@ class PHANTOM_EXPORT_PHANTOM TemplateSpecialization : public Symbol
     friend class Template;
     friend class Scope;
 
-protected:
-    static TemplateSpecialization* Create(Template* a_pTemplate, TemplateSignature* a_pTemplateSignature,
-                                          const LanguageElements& a_Arguments, Symbol* a_pTemplated, uint a_Flags);
-
+public:
     TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature, const LanguageElements& arguments,
                            uint a_Flags);
     TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature, const LanguageElements& arguments,
@@ -37,8 +34,8 @@ protected:
     TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization, const LanguageElements& arguments,
                            const PlaceholderMap& a_PlaceholderSubstitutions);
 
-public:
-    PHANTOM_DTOR ~TemplateSpecialization() override;
+    void initialize();
+    void terminate();
 
     TemplateSpecialization* asTemplateSpecialization() const override { return (TemplateSpecialization*)this; }
 
@@ -161,7 +158,7 @@ public:
     /// enrich a native template)
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* clone(uint a_Flags = 0) const;
+    TemplateSpecialization* clone(LanguageElement* a_pOwner, uint a_Flags = 0) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets an extended version of this template specialization  (for example set by a scripting language to

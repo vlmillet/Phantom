@@ -48,7 +48,7 @@ bool ConstType::isSame(Symbol* a_pOther) const
 hash64 ConstType::computeLocalHash() const
 {
     hash64 h = getUnderlyingType()->computeLocalHash();
-    CombineHash(h, 'µ');
+    CombineHash(h, hash64('µ'));
     return h;
 }
 

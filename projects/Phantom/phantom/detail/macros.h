@@ -414,6 +414,8 @@ HAUNT_STOP;
 #define PHANTOM_R_ALWAYS_VALID 0x00000200
 #define PHANTOM_R_INCOMPLETE 0x00000400
 #define PHANTOM_R_FLAG_TEMPLATE_DEPENDANT 0x00000800
+#define PHANTOM_R_INTERNAL_FLAG_SYMBOL 0x00008000
+#define PHANTOM_R_INTERNAL_FLAG_SPECIAL 0x02000000
 
 #define PHANTOM_R_FLAG_INHERITED 0x00001000 /// for inherited constructors
 #define PHANTOM_R_FLAG_IMPLICIT 0x00002000  /// for trivial member functions
@@ -427,14 +429,6 @@ HAUNT_STOP;
 // #define ?                  (0x00100000|PHANTOM_R_FLAG_PRIVATE_VIS) /// for archived sources
 
 #define PHANTOM_R_FLAG_TEMPLATE_ELEM 0x01000000
-#define PHANTOM_R_FLAG_PUBLIC_VIS                                                                                      \
-    0x02000000 /// default visibility /!\ visibility is not access ! use <phantom/public_access> for
-               /// accessibility
-#define PHANTOM_R_FLAG_PROTECTED_VIS                                                                                   \
-    0x04000000 /// allows you to hide elements from underlying scopes (anonymous elements) in scope
-               /// resolution
-#define PHANTOM_R_FLAG_PRIVATE_VIS 0x08000000 /// allows you to hide elements from scope resolution
-
 #define PHANTOM_R_FLAG_MANDATORY 0x10000000
 #define PHANTOM_R_FLAG_READONLY 0x20000000
 

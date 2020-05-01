@@ -34,7 +34,7 @@ bool g_ReleasingPhantomModule;
 #endif
 Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_strName, StringView a_LibraryFullName,
                StringView a_DeclarationCppFullName, uint a_uiFlags)
-    : Symbol(a_strName, Modifier::None, a_uiFlags | PHANTOM_R_ALWAYS_VALID),
+    : Symbol(a_strName, Modifier::None, a_uiFlags | PHANTOM_R_INTERNAL_FLAG_SPECIAL | PHANTOM_R_ALWAYS_VALID),
       m_pBaseAddress((void*)a_NativeHandle),
       m_ImageSize(a_NativeImageSize),
       m_LibraryFullName(a_LibraryFullName),
@@ -44,13 +44,13 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
     Package* pDefaultPackage = newPackage(a_strName);
     if (isNative())
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
-    m_pAnonymousSource = pDefaultPackage->newSource("default", 0);
+    m_pAnonymousSource = pDefaultPackage->newSource("default");
     if (isNative())
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
-    : Module(0, 0, a_strName, StringView(), StringView(), a_uiFlags)
+    : Module(0, 0, a_strName, StringView(), StringView(), a_uiFlags | PHANTOM_R_INTERNAL_FLAG_SPECIAL)
 {
 }
 
@@ -166,7 +166,6 @@ Package* Module::getOrCreatePackage(StringView a_strName)
 
 Package* Module::newPackage(StringView a_strName)
 {
-    PHANTOM_ASSERT(dynamic_initializer_()->installed(), "cannot be called before main()");
     Package* pPck = phantom::new_<Package>(a_strName);
     pPck->rtti.instance = pPck;
     if (dynamic_initializer_()->installed())
@@ -206,7 +205,7 @@ void Module::getSources(Sources& a_Sources) const
     {
         for (Source* s : p->getSources())
         {
-            if (!s->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
+            if (s->getVisibility() != Visibility::Private)
                 a_Sources.push_back(s);
         }
     }

@@ -32,7 +32,7 @@ public:
         using BuilderType = PHANTOM_BUILDER_TYPE(MostDerived, T);
         _PHNTM_REG_STATIC_ASSERT(std::is_class<T>::value, "class_<T> : T must be a class");
         _PHNTM_REG_STATIC_ASSERT((phantom::IsTypeDefined<BuilderType>::value), "missing #include <phantom/class>");
-        auto pType = New<BuilderType>(static_cast<MostDerived*>(this), lang::Access::Private, nullptr);
+        auto pType = new_<BuilderType>(static_cast<MostDerived*>(this), lang::Access::Private, nullptr);
         static_cast<MostDerived*>(this)->addSubPhantomBuilderBase(pType);
         static_cast<MostDerived*>(this)->_PHNTM_setLastSymbol(pType->_PHNTM_getMeta());
         return *pType;

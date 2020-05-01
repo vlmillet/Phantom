@@ -86,7 +86,7 @@ Application* Application::Get()
 }
 
 Application::Application()
-    : Symbol("", PHANTOM_R_NONE, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_FLAG_NATIVE),
+    : Symbol("", PHANTOM_R_NONE, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_FLAG_NATIVE | PHANTOM_R_INTERNAL_FLAG_SPECIAL),
       m_pMainModule(nullptr),
       m_OperationCounter(1) /// operation counter initialized to 1 to be able to handle C++ dyanmic
                             /// Initializer and auto loaded dlls before user make manual operations,
@@ -120,7 +120,7 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
 
         if (m_Modules.empty()) // first module ever is the phantom's one
         {
-            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default", 0);
+            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default");
         }
         _addModule(info->m_pModule);
         info->m_pModule->setOnLoadFunc(info->m_OnLoad);
@@ -542,7 +542,8 @@ void Application::addModule(Module* a_pModule)
 
 void Application::_addModule(Module* a_pModule)
 {
-    PHANTOM_ASSERT(a_pModule->getOwner() == this, "module with same name already loaded");
+    PHANTOM_ASSERT(a_pModule->m_pOwner == nullptr, "module already added");
+    a_pModule->m_pOwner = this;
     PHANTOM_ASSERT(getModule(a_pModule->getName()) == nullptr, "module with same name already loaded");
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
     PHANTOM_ASSERT(m_Modules.size() || a_pModule->getName() == "Phantom", "phantom must be the first loaded module");
@@ -561,6 +562,8 @@ void Application::removeModule(Module* a_pModule)
 
 void Application::_removeModule(Module* a_pModule)
 {
+    PHANTOM_ASSERT(a_pModule->m_pOwner == this, "module already added");
+    a_pModule->m_pOwner = nullptr;
     PHANTOM_EMIT moduleAboutToBeRemoved(a_pModule);
     m_Modules.erase(std::find(m_Modules.begin(), m_Modules.end(),
                               static_cast<Module*>(a_pModule))); // Remove dependencies reference of this module
@@ -573,7 +576,7 @@ void Application::_registerBuiltInTypes()
     phantom::lang::BuiltInTypes::Register();
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
-    Alias* pUnsignedAlias =
+    Alias* pUnsignedAlias = m_pDefaultSource->
     NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     pUnsignedAlias->setNamespace(Namespace::Global());
 
@@ -582,16 +585,10 @@ void Application::_registerBuiltInTypes()
     PHANTOM_ASSERT(pPhantom);
 
 #define _PHNTM_FUND_TD(t)                                                                                              \
-    _PHNTM_FUND_TD_NMS(t);                                                                                             \
-    _PHNTM_FUND_TD_SRC(t);
+	pGlobal->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
 
 #define _PHNTM_FUND_TD_PHNTM(t)                                                                                        \
-    _PHNTM_FUND_TD_NMS_PHNTM(t);                                                                                       \
-    _PHNTM_FUND_TD_SRC(t);
-
-#define _PHNTM_FUND_TD_NMS_PHNTM(t) pPhantom->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
-#define _PHNTM_FUND_TD_NMS(t) pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
-#define _PHNTM_FUND_TD_SRC(t) m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE)
+	pPhantom->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
 
     // #if defined(_M_IA64) || defined(_M_X64) || defined(_M_AMD64)
     //     _PHNTM_FUND_TD(int128);
@@ -1033,6 +1030,13 @@ Module* Application::newModule(StringView a_strName)
     return pMod;
 }
 
+void Application::deleteModule(Module* a_pMod)
+{
+    a_pMod->setOwner(nullptr);
+    a_pMod->terminate();
+    phantom::delete_<Module>(a_pMod);
+}
+
 void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
@@ -1043,7 +1047,7 @@ PackageFolder* Application::rootPackageFolder() const
         pPF->rtti.instance = pPF;
         pPF->setOwner(const_cast<Application*>(this));
         phantom::detail::deferInstallation("phantom::lang::PackageFolder",
-                                           &const_cast<Application*>(this)->m_pRootPackageFolder->rtti);
+                                           &pPF->rtti);
         pPF->initialize();
         const_cast<Application*>(this)->m_pRootPackageFolder = pPF;
     }

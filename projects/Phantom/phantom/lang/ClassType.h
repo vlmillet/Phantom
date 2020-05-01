@@ -899,6 +899,7 @@ protected:
     }
 
     void onScopeSymbolAdded(Symbol* a_pSym) override { _addSymbol(a_pSym); }
+    void onScopeSymbolRemoving(Symbol* a_pSym) override { _removeSymbol(a_pSym); }
 
 private:
     friend class ModuleRegistrationInfo;
@@ -909,6 +910,12 @@ private:
         a_pSymbol->setOwner(this);
         if (a_pSymbol->getAccess() == Access::Undefined)
             a_pSymbol->setAccess(m_DefaultAccess);
+        a_pSymbol->setVisibility(Visibility::Public); // expose to lookup
+    }
+    inline void _removeSymbol(Symbol* a_pSymbol)
+    {
+        a_pSymbol->setVisibility(Visibility::Private);                        // hide from lookup
+        a_pSymbol->setOwner(reinterpret_cast<LanguageElement*>(getSource())); // hacky but worky
     }
 
 private:

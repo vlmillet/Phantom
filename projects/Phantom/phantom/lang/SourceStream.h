@@ -20,12 +20,13 @@ namespace lang
 {
 class PHANTOM_EXPORT_PHANTOM SourceStream
 {
-    friend class Source;
-
 public:
     static SourceStream* CreateFromUrl(StringView a_Url);
+    virtual ~SourceStream() = default;
 
 public:
+    virtual SourceFile* asFile() { return nullptr; }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Create a char input stream to read the source content.
     ///
@@ -49,14 +50,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual time_t getLastChangeTime() const = 0;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the source associated with this source stream (if any).
-    ///
-    /// \return The source or nullptr.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Source* getSource() const { return m_pSource; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the path of this stream (the part following the protocol inside the url).
@@ -97,9 +90,6 @@ protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol) {}
-
-private:
-    Source* m_pSource = nullptr;
 
 protected:
     String m_Path;

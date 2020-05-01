@@ -53,6 +53,11 @@ PHANTOM_PACKAGE("phantom.lang")
             {"Private",Access::Private}});
         }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<Accesses>("Accesses"); }
+        PHANTOM_REGISTER(Enums) { this_().enum_<Visibility>().values({
+            {"Public",Visibility::Public},
+            {"Protected",Visibility::Protected},
+            {"Private",Visibility::Private}});
+        }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<SymbolExtender>("SymbolExtender"); }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<SymbolExtenders>("SymbolExtenders"); }
         PHANTOM_STRUCT(Modifier)

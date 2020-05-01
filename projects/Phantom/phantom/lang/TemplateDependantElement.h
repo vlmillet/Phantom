@@ -33,7 +33,6 @@ public:
                              OptionalArrayView<LanguageElement*> a_pTemplateArguments = NullOpt,
                              OptionalArrayView<LanguageElement*> a_pFunctionArguments = NullOpt,
                              Modifiers modifiers = 0, uint a_uiFlags = 0);
-    ~TemplateDependantElement() override;
 
     Type*            toType() const override;
     LanguageElement* getLeft() const { return m_pLeft; }
@@ -48,14 +47,14 @@ public:
     void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
 
-    LanguageElements* getTemplateArguments() const { return m_pTemplateArguments; }
-    LanguageElements* getFunctionArguments() const { return m_pFunctionArguments; }
+    Optional<LanguageElements> const& getTemplateArguments() const { return m_pTemplateArguments; }
+    Optional<LanguageElements> const& getFunctionArguments() const { return m_pFunctionArguments; }
 
 protected:
-    mutable Type*     m_pAsType = nullptr;
-    LanguageElement*  m_pLeft = nullptr;
-    LanguageElements* m_pTemplateArguments = nullptr;
-    LanguageElements* m_pFunctionArguments = nullptr;
+    mutable Type*              m_pAsType = nullptr;
+    LanguageElement*           m_pLeft = nullptr;
+    Optional<LanguageElements> m_pTemplateArguments{};
+    Optional<LanguageElements> m_pFunctionArguments{};
 };
 
 } // namespace lang

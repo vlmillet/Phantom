@@ -48,7 +48,7 @@ bool ConstVolatileType::isSame(Symbol* a_pOther) const
 hash64 ConstVolatileType::computeLocalHash() const
 {
     hash64 h = getUnderlyingType()->computeLocalHash();
-    CombineHash(h, '£');
+    CombineHash(h, hash64('£'));
     return h;
 }
 

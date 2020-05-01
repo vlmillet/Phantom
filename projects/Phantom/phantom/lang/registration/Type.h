@@ -153,7 +153,7 @@ struct TypeBuilderT : TypeBuilderBase
 
     TypeBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
         : TypeBuilderBase(a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
-                          _createMetaType(std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
+                          _createMetaType(a_pTop->_PHNTM_getOwnerScope(), std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
                           a_Arguments),
           m_pTop(a_pTop)
     {
@@ -210,9 +210,9 @@ struct TypeBuilderT : TypeBuilderBase
     }
 
 private:
-    MetaType* _createMetaType(StringView a_Name)
+    MetaType* _createMetaType(LanguageElement* a_pScope, StringView a_Name)
     {
-        return m_pType = (new (phantom::allocate(sizeof(MetaType), PHANTOM_ALIGNOF(MetaType))) MetaType(a_Name));
+        return m_pType = a_pScope->NewDeferred<MetaType>(a_Name);
     }
     void _installRtti()
     {

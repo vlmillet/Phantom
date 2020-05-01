@@ -54,13 +54,10 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
-        .protected_()
-            .staticMethod<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&, Symbol*, uint)>("Create", &_::Create)
+        .public_()
             .constructor<void(Template*, TemplateSignature*, const LanguageElements&, uint)>()
             .constructor<void(Template*, TemplateSignature*, const LanguageElements&, Symbol*, uint)>()
             .constructor<void(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>()
-        
-        .public_()
             .method<TemplateSpecialization*() const, virtual_|override_>("asTemplateSpecialization", &_::asTemplateSpecialization)
             .method<TemplateSpecialization*() const, virtual_>("getEnclosingTemplateSpecialization", &_::getEnclosingTemplateSpecialization)
             .method<LanguageElement*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
@@ -103,7 +100,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(const LanguageElements&, size_t&, PlaceholderMap&) const>("partialAccepts", &_::partialAccepts)
             .method<void(Symbol*)>("setTemplated", &_::setTemplated)
             .method<Symbol*() const>("getTemplated", &_::getTemplated)
-            .method<TemplateSpecialization*(uint) const>("clone", &_::clone)["0"]
+            .method<TemplateSpecialization*(LanguageElement*, uint) const>("clone", &_::clone)["0"]
             .method<void(TemplateSpecialization*)>("setExtendedSpecialization", &_::setExtendedSpecialization)
             .method<TemplateSpecialization*() const>("getExtendedSpecialization", &_::getExtendedSpecialization)
             .method<TemplateSpecialization*() const>("getInstantiationSpecialization", &_::getInstantiationSpecialization)

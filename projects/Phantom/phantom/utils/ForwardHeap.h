@@ -1,9 +1,11 @@
 #pragma once
 
+#include <phantom/plugin.h>
+
 namespace phantom
 {
 /// Heap that can only grows on allocation and do nothing on deallocation.
-class ForwardHeap
+class PHANTOM_EXPORT_PHANTOM ForwardHeap
 {
 public:
     ForwardHeap(size_t _heapSize);
@@ -41,7 +43,7 @@ private:
     unsigned char* m_end{};     /// Last (not included) byte
 };
 
-class ForwardHeapSequence
+class PHANTOM_EXPORT_PHANTOM ForwardHeapSequence
 {
 public:
     ForwardHeapSequence(size_t a_HeapSize);

@@ -62,6 +62,7 @@ public:
     friend class phantom::lang::TemplateSpecialization;
     friend class phantom::lang::Module;
     friend class phantom::lang::Application;
+    friend class phantom::lang::Package;
     friend class phantom::lang::Source;
     friend class phantom::lang::Namespace;
     friend class phantom::lang::Symbol;
@@ -79,9 +80,9 @@ public:
     virtual ~LanguageElement();
 
 public:
-    struct Owner
+    struct NewCallSite
     {
-        explicit Owner(LanguageElement* a_pElem) : this_(a_pElem) {}
+        explicit NewCallSite(LanguageElement* a_pElem) : this_(a_pElem) {}
         LanguageElement* this_;
     };
 
@@ -92,17 +93,17 @@ public:
     template<class T, class... Args>
     T* New(Args&&... a_Args)
     {
-        return m_pSource->_New<T>(Owner(this), std::forward<Args>(a_Args)...);
+        return m_pSource->_New<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
     }
     template<class T, class... Args>
     T* NewDeferred(Args&&... a_Args)
     {
-        return m_pSource->_NewDeferred<T>(Owner(this), std::forward<Args>(a_Args)...);
+        return m_pSource->_NewDeferred<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
     }
     template<class T, class... Args>
     T* NewMeta(Args&&... a_Args)
     {
-        return m_pSource->_NewMeta<T>(Owner(this), std::forward<Args>(a_Args)...);
+        return m_pSource->_NewMeta<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,6 +167,9 @@ public:
 
     bool hasReferencingElement(LanguageElement* a_pLanguageElement) const;
 
+    // small optim for often symbol access
+    Symbol* asSymbol() const { return (Symbol*)(size_t(this) * ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_SYMBOL) != 0)); }
+
     virtual Type*                     asAddressType() const { return nullptr; }
     virtual Alias*                    asAlias() const { return nullptr; }
     virtual AnonymousSection*         asAnonymousSection() const { return nullptr; }
@@ -222,7 +226,6 @@ public:
     virtual MemberPointer*            asMemberPointer() const { return nullptr; }
     virtual Method*                   asMethod() const { return nullptr; }
     virtual Module*                   asModule() const { return nullptr; }
-    virtual Symbol*                   asSymbol() const { return nullptr; }
     virtual Namespace*                asNamespace() const { return nullptr; }
     virtual Type*                     asNullptrType() const { return nullptr; }
     virtual Package*                  asPackage() const { return nullptr; }

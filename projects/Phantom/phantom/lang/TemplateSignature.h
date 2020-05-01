@@ -32,7 +32,8 @@ public:
     /// \param  a_Parameters    The templat parameters list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSignature(const TemplateParameters& a_Parameters, bool a_bVariadic = false, uint flags = PHANTOM_R_NONE);
+    static TemplateSignature* Create(LanguageElement* a_pOwner, const TemplateParameters& a_Parameters,
+                                     bool a_bVariadic = false, uint flags = PHANTOM_R_FLAG_NONE);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a template signature by parsing template parameter types and template
@@ -42,10 +43,11 @@ public:
     /// \param  a_strTemplateParameterParams    The template parameter names.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    static TemplateSignature* Parse(StringView a_strTemplateParameterTypes, StringView a_strTemplateParameterNames,
-                                    LanguageElement* a_pContextScope, uint a_uiFlags = PHANTOM_R_NONE);
+    static TemplateSignature* Parse(LanguageElement* a_pOwner, StringView a_strTemplateParameterTypes,
+                                    StringView a_strTemplateParameterNames, LanguageElement* a_pContextScope,
+                                    uint a_uiFlags = PHANTOM_R_NONE);
 
-    PHANTOM_DTOR ~TemplateSignature() override;
+    void initialize();
 
     TemplateSignature* asTemplateSignature() const override { return const_cast<TemplateSignature*>(this); }
 

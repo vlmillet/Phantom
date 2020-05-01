@@ -168,7 +168,7 @@ bool Type::equal(void const* a_pSrc0, void const* a_pSrc1) const
 Types& Type::_extTypes() const
 {
     if (m_pExtendedTypes == nullptr)
-        new_<Types>(getAllocator());
+		m_pExtendedTypes = new_<Types>(getAllocator());
     return *m_pExtendedTypes;
 }
 
@@ -623,30 +623,28 @@ Type* Type::makePointer(size_t a_uiPointerLevel) const
     return makePointer()->makePointer(a_uiPointerLevel - 1);
 }
 
-void Type::onNamespaceChanging(Namespace* a_pNamespace)
+void Type::onNamespaceChanging(Namespace* /*a_pNamespace*/)
 {
-    PHANTOM_ASSERT(getOwner()); // ASSERT_DEBUG
-    if (!isNative())
-    {
-        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
-             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-            ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
-            !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
-        {
-            getModule()->_unregisterType(m_Hash, this);
-        }
-    }
+	if (!isNative())
+	{
+		if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+			getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
+			((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+			!(getSource()->getVisibility() == Visibility::Private))
+		{
+			getModule()->_unregisterType(m_Hash, this);
+		}
+	}
 }
 
-void Type::onNamespaceChanged(Namespace* a_pNamespace)
+void Type::onNamespaceChanged(Namespace* /*a_pNamespace*/)
 {
-    PHANTOM_ASSERT(getOwner()); // ASSERT_DEBUG
     if (!isNative())
     {
         if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
              getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
             ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
-            !(getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+            !(getSource()->getVisibility() == Visibility::Private))
         {
             getModule()->_registerType(getHash(), this);
         }

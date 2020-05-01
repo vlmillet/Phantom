@@ -66,32 +66,26 @@ struct Microsoft
 };
 } // namespace
 
-VirtualMethodTable::VirtualMethodTable() : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS) {}
+VirtualMethodTable::VirtualMethodTable() : Symbol(Modifiers(0)) {}
 
-VirtualMethodTable::VirtualMethodTable(size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_initCount(uint16(a_uiSize))
-{
-}
+VirtualMethodTable::VirtualMethodTable(size_t a_uiSize) : Symbol(Modifiers(0)), m_initCount(uint16(a_uiSize)) {}
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pMethods(a_pBaseTable->m_pMethods),
-      m_pBaseTable(a_pBaseTable),
-      m_bShared(true)
+    : Symbol(Modifiers(0)), m_pMethods(a_pBaseTable->m_pMethods), m_pBaseTable(a_pBaseTable), m_bShared(true)
 {
     m_pBaseTable->m_DerivedTables.push_back(this);
     addReferencedElement(m_pBaseTable);
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pBaseTable(a_pBaseTable), m_initCount(uint16(a_uiSize))
+    : Symbol(Modifiers(0)), m_pBaseTable(a_pBaseTable), m_initCount(uint16(a_uiSize))
 {
     PHANTOM_ASSERT(a_uiSize >= a_pBaseTable->getMethodCount(),
                    "a derived vtable must have equal or greater size than base");
 }
 
 VirtualMethodTable::VirtualMethodTable(void** a_ppClosures, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_ppClosures(a_ppClosures), m_initCount(uint16(a_uiSize))
+    : Symbol(Modifiers(0)), m_ppClosures(a_ppClosures), m_initCount(uint16(a_uiSize))
 {
 }
 

@@ -201,8 +201,9 @@ Template* Scope::addAliasTemplate(StringView a_TemplateTypes, StringView a_Templ
                                   StringView a_TemplateDependantType, Modifiers a_Modifiers /*= 0*/,
                                   uint a_uiFlags /*= 0*/)
 {
-    TemplateSignature* pTS =
-    TemplateSignature::Parse(a_TemplateTypes, a_TemplateParams, asLanguageElement(), a_uiFlags & PHANTOM_R_FLAG_NATIVE);
+    PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
+    TemplateSignature* pTS = TemplateSignature::Parse(m_pUnit, a_TemplateTypes, a_TemplateParams, asLanguageElement(),
+                                                      a_uiFlags & PHANTOM_R_FLAG_NATIVE);
     if (pTS == nullptr)
         return nullptr;
     Template* pTemplate = addAliasTemplate(pTS, a_strAliasName, a_TemplateDependantType, a_Modifiers, a_uiFlags);
@@ -384,7 +385,7 @@ Alias* Scope::getTypedef(StringView a_strTypedef) const
 
 void Scope::addUsing(Symbol* a_pElement)
 {
-    PHANTOM_ASSERT(m_pUnit);
+    PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
     addAlias(m_pUnit->New<Alias>(a_pElement, a_pElement->getName()));
 }
 
@@ -445,9 +446,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
         PHANTOM_ASSERT(false);
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization =
-                              TemplateSpecialization::Create(a_pTemplate, a_pTemplateSignature, a_Arguments, a_pBody,
-                                                             a_pTemplate->getFlags() & PHANTOM_R_FLAG_NATIVE));
+    addTemplateSpecialization(
+    pTemplateSpecialization = m_pUnit->NewDeferred<TemplateSpecialization>(
+    a_pTemplate, a_pTemplateSignature, a_Arguments, a_pBody, a_pTemplate->getFlags() & PHANTOM_R_FLAG_NATIVE));
     pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative());
     return pTemplateSpecialization;
 }
@@ -463,9 +464,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
-                              a_pTemplate, a_pTemplateSignature, a_Arguments,
-                              PHANTOM_R_FLAG_PRIVATE_VIS | (PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative())));
+    addTemplateSpecialization(
+    pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
+    a_pTemplate, a_pTemplateSignature, a_Arguments, (PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative())));
     return pTemplateSpecialization;
 }
 
@@ -516,6 +517,50 @@ void Scope::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullptr*/,
             }
         }
     }
+}
+
+void Scope::removeAlias(Alias* a_pAlias)
+{
+    onScopeSymbolRemoving(a_pAlias);
+    m_Aliases->erase_unsorted(std::find(m_Aliases->rbegin(), m_Aliases->rend(), a_pAlias).base());
+}
+
+void Scope::removeType(Type* a_pType)
+{
+    onScopeSymbolRemoving(a_pType);
+    m_Types->erase_unsorted(std::find(m_Types->rbegin(), m_Types->rend(), a_pType).base());
+}
+
+void Scope::removeFunction(Function* a_pFunction)
+{
+    onScopeSymbolRemoving(a_pFunction);
+    m_Functions->erase_unsorted(std::find(m_Functions->rbegin(), m_Functions->rend(), a_pFunction).base());
+}
+
+void Scope::removeVariable(Variable* a_pVariable)
+{
+    onScopeSymbolRemoving(a_pVariable);
+    m_Variables->erase_unsorted(std::find(m_Variables->rbegin(), m_Variables->rend(), a_pVariable).base());
+}
+
+void Scope::removeConstant(Constant* a_pConstant)
+{
+    onScopeSymbolRemoving(a_pConstant);
+    m_Constants->erase_unsorted(std::find(m_Constants->rbegin(), m_Constants->rend(), a_pConstant).base());
+}
+
+void Scope::removeTemplate(Template* a_pTemplate)
+{
+    onScopeSymbolRemoving(a_pTemplate);
+    m_Templates->erase_unsorted(std::find(m_Templates->rbegin(), m_Templates->rend(), a_pTemplate).base());
+}
+
+void Scope::removeTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization)
+{
+    onScopeSymbolRemoving(a_pTemplateSpecialization);
+    m_TemplateSpecializations->erase_unsorted(
+    std::find(m_TemplateSpecializations->rbegin(), m_TemplateSpecializations->rend(), a_pTemplateSpecialization)
+    .base());
 }
 
 } // namespace lang

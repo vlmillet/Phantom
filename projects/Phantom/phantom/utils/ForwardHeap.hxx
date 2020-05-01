@@ -37,7 +37,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .constructor<void(ForwardHeap&&)>()
         
         .public_()
-            .method<void()>("Reset", &_::Reset)
+            .method<void()>("reset", &_::reset)
         
         .public_()
             .method<void*(size_t, size_t)>("allocate", &_::allocate)

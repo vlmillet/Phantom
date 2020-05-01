@@ -39,12 +39,14 @@ Template::Template(TemplateSignature* a_pSignature, StringView a_strName, Modifi
     createEmptyTemplateSpecialization(a_pSignature);
 }
 
-Template* Template::Parse(StringView a_strTemplateTypes, StringView a_strTemplateParam, StringView a_strName,
-                          LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
+Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTypes, StringView a_strTemplateParam,
+                          StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
+                          uint a_uiFlags /*= 0*/)
 {
-    return PHANTOM_DEFERRED_NEW(Template)(TemplateSignature::Parse(a_strTemplateTypes, a_strTemplateParam,
-                                                                   a_pContextScope, a_uiFlags & PHANTOM_R_FLAG_NATIVE),
-                                          a_strName, a_Modifiers, a_uiFlags);
+    return a_pContextScope->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes,
+                                                                           a_strTemplateParam, a_pContextScope,
+                                                                           a_uiFlags & PHANTOM_R_FLAG_NATIVE),
+                                                  a_strName, a_Modifiers, a_uiFlags);
 }
 
 Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -133,7 +135,7 @@ TemplateSpecialization* Template::getTemplateSpecialization(TemplateSpecializati
 {
     for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
     {
-        if (pSpec->getSource() && pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
+        if (pSpec->getSource() && pSpec->getSource()->getVisibility() == Visibility::Private)
             continue;
         if (pSpec->isSame(a_pTemplateSpecialization))
             return pSpec;
@@ -145,7 +147,7 @@ TemplateSpecialization* Template::getTemplateSpecialization(LanguageElementsView
 {
     for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
     {
-        if (pSpec->getSource() && pSpec->getSource()->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS))
+        if (pSpec->getSource() && pSpec->getSource()->getVisibility() == Visibility::Private)
             continue;
         if (pSpec->matches(a_Arguments))
             return pSpec;

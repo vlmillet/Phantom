@@ -87,7 +87,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Module*() const>("getModule", &_::getModule)
             .method<Package*() const>("getPackage", &_::getPackage)
             .method<Source*() const>("getNativeArchive", &_::getNativeArchive)
-            .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
             .method<FunctionType*(Type*, TypesView, Modifiers, uint)>("functionType", &_::functionType)["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<FunctionPointer*(Type*, ABI, TypesView, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
@@ -97,6 +96,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<MethodPointer*(ClassType*, Type*, TypesView, Modifiers, uint)>("methodPointerType", &_::methodPointerType)["0"]["0"]
             .method<FieldPointer*(ClassType*, Type*, Modifiers, uint)>("fieldPointerType", &_::fieldPointerType)["0"]["0"]
             .method<void(SourceStream*)>("setSourceStream", &_::setSourceStream)
+            .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
             .method<Imports const&() const>("getImports", &_::getImports)
             .method<void(Symbols&) const>("getImported", &_::getImported)
             .method<Sources const&() const>("getImportings", &_::getImportings)
@@ -125,6 +125,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolRemoving", &_::onScopeSymbolRemoving)
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)
         
         .public_()

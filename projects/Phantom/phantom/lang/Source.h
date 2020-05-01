@@ -102,14 +102,6 @@ public:
     Source* getNativeArchive() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the source file associated with this source.
-    ///
-    /// \return null if no source file associated with this source, else the source file.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SourceStream* getSourceStream() const { return m_pSourceStream; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get or create a function pointer type.
     ///
     /// \param [in,out] a_pReturnType   The function return type.
@@ -194,6 +186,14 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void setSourceStream(SourceStream* a_pStream);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the source stream associated with this source.
+    ///
+    /// \return null if no source stream associated with this source, else the source stream.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SourceStream* getSourceStream() const { return m_pSourceStream; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the imports list.
@@ -350,6 +350,7 @@ public:
 
 protected:
     void   onScopeSymbolAdded(Symbol* a_pSymbol) override;
+    void   onScopeSymbolRemoving(Symbol* a_pSymbol) override;
     hash64 computeHash() const override;
 
 private:
@@ -359,9 +360,8 @@ private:
     void _addDepending(Source*);
     void _removeDepending(Source*);
     bool _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
-    void _NewH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
-    void _NewDeferredH(LanguageElement* a_pOwner, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
-                       StringView a_QN);
+    void _NewH(NewCallSite&& a_Site, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
+    void _NewDeferredH(NewCallSite&& a_Site, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN);
 
     template<typename T>
     static void _AssertSpecialSymbols()
@@ -375,34 +375,34 @@ private:
     }
 
     template<typename T, class... Args>
-    T* _NewMeta(LanguageElement::Owner a_Owner, Args&&... a_Args)
+    T* _NewMeta(NewCallSite&& a_Site, Args&&... a_Args)
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
         T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewH(a_Owner.this_, ptr, T::MetaClass(), ptr);
+        _NewH(std::move(a_Site), ptr, T::MetaClass(), ptr);
         ptr->initialize();
         return ptr;
     }
 
     template<class T, class... Args>
-    T* _New(LanguageElement::Owner a_Owner, Args&&... a_Args)
+    T* _New(NewCallSite&& a_Site, Args&&... a_Args)
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
         T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr);
+        _NewH(std::move(a_Site), ptr, PHANTOM_CLASSOF(T), ptr);
         ptr->initialize();
         return ptr;
     }
 
     template<class T, class... Args>
-    T* _NewDeferred(LanguageElement::Owner a_Owner, Args&&... a_Args)
+    T* _NewDeferred(NewCallSite&& a_Site, Args&&... a_Args)
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
         T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewDeferredH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr,
+        _NewDeferredH(std::move(a_Site), ptr, PHANTOM_CLASSOF(T), ptr,
                       lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
         ptr->initialize();
         return ptr;
@@ -447,6 +447,7 @@ private:
     FunctionTypes        m_FunctionTypes;
     MethodPointers       m_MethodPointers;
     FieldPointers        m_FieldPointers;
+    LanguageElements     m_Orphans;
     Imports              m_Imports;
     Sources              m_Importings;
     Sources              m_Dependencies;

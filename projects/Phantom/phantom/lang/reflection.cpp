@@ -92,7 +92,9 @@ void BuiltInTypes::Register()
     PHANTOM_ASSERT(Class::metaClass);
     detail::popInstallation();
 
-#define _PHNTM_BLD_FUND_META(_var_, _type_) _var_ = Application::Get()->NewMeta<MetaTypeOf<_type_>::type>(#_type_);
+	auto pDefaultSource = Application::Get()->getDefaultSource();
+
+#define _PHNTM_BLD_FUND_META(_var_, _type_) _var_ = pDefaultSource->NewMeta<MetaTypeOf<_type_>::type>(#_type_);
 
     detail::pushInstallation();
     _PHNTM_BLD_FUND_META(TYPE_VOID, void);
@@ -162,7 +164,7 @@ void BuiltInTypes::Register()
                          PHANTOM_TYPEOF(std::nullptr_t));
     Application::Get()->_addBuiltInType(PHANTOM_TYPEOF(std::nullptr_t));
     Application::Get()->_addBuiltInType(
-    PHANTOM_DEFERRED_NEW(PlaceholderType)("auto", Modifier::None, PHANTOM_R_FLAG_NATIVE));
+		pDefaultSource->NewDeferred<PlaceholderType>("auto", Modifier::None, PHANTOM_R_FLAG_NATIVE));
     detail::popInstallation();
 }
 
@@ -213,11 +215,11 @@ Class* BuiltInTypes::TYPE_STRING = nullptr;
 
 PHANTOM_EXPORT_PHANTOM void initializeSystem()
 {
-    write_mutex().m_private = PHANTOM_NEW(RecursiveMutex);
+    write_mutex().m_private = new_<RecursiveMutex>();
 }
 PHANTOM_EXPORT_PHANTOM void releaseSystem()
 {
-    Delete<RecursiveMutex>(reinterpret_cast)<RecursiveMutex*>(write_mutex().m_private);
+    delete_<RecursiveMutex>(reinterpret_cast<RecursiveMutex*>(write_mutex().m_private));
 }
 
 #if PHANTOM_CUSTOM_THREAD_SAFE

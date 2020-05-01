@@ -54,7 +54,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<Template*(StringView, StringView, StringView, LanguageElement*, Modifiers, uint)>("Parse", &_::Parse)
+            .staticMethod<Template*(LanguageElement*, StringView, StringView, StringView, LanguageElement*, Modifiers, uint)>("Parse", &_::Parse)
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(TemplateSignature*, StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]

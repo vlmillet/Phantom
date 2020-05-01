@@ -19,9 +19,12 @@ namespace lang
 {
 PHANTOM_DEFINE_META_CLASS(PackageFolder);
 
-PackageFolder::PackageFolder() : Symbol("", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE) {}
+PackageFolder::PackageFolder() : Symbol("", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE | PHANTOM_R_INTERNAL_FLAG_SPECIAL) {}
 
-PackageFolder::PackageFolder(StringView a_strName) : Symbol(a_strName, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE) {}
+PackageFolder::PackageFolder(StringView a_strName)
+    : Symbol(a_strName, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE | PHANTOM_R_INTERNAL_FLAG_SPECIAL)
+{
+}
 
 PackageFolder* PackageFolder::newPackageFolder(String a_strName)
 {

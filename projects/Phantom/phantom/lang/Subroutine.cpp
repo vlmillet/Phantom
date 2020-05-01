@@ -177,8 +177,8 @@ void Subroutine::setBlock(Block* a_pBlock)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(!m_pBlock);
-    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(m_pBlock)->getOwner() == this);
     m_pBlock = a_pBlock;
+    reinterpret_cast<LanguageElement*>(m_pBlock)->setOwner(this);
 }
 
 bool Subroutine::containsMemoryAddress(const byte* a_pAddress)

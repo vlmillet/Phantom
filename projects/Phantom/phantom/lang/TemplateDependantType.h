@@ -25,8 +25,7 @@ class PHANTOM_EXPORT_PHANTOM TemplateDependantType : public Type
 
 public:
     TemplateDependantType()
-        : Type(TypeKind::Unknown, "", 0, 0, 0, PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
-          m_pElement(nullptr)
+        : Type(TypeKind::Unknown, "", 0, 0, 0, PHANTOM_R_FLAG_TEMPLATE_DEPENDANT), m_pElement(nullptr)
     {
     }
     TemplateDependantType(TemplateDependantElement* a_pElement);

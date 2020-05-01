@@ -85,7 +85,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         "missing #include <phantom/function>");
         auto pFunc =
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
-        a_Name, lang::SignatureH<Sign>::Create(_PHNTM_pSource), a_Ptr);
+        _PHNTM_pSource, a_Name, lang::SignatureH<Sign>::Create(_PHNTM_pSource), a_Ptr);
         _PHNTM_pNamespace->addFunction(pFunc);
         _PHNTM_pSource->addFunction(pFunc);
         m_Symbols.push_back(pFunc);

@@ -46,7 +46,7 @@ bool Package::IsValidName(StringView a_strName)
     return true;
 }
 
-Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID), m_pNamespace(nullptr)
+Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID|PHANTOM_R_INTERNAL_FLAG_SPECIAL), m_pNamespace(nullptr)
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
     String namespaceName = m_strName;
@@ -94,7 +94,7 @@ bool Package::canBeUnloaded() const
 
 void Package::addArchivedSource(Source* a_pSource)
 {
-    PHANTOM_ASSERT(a_pSource->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS));
+    PHANTOM_ASSERT(a_pSource->getVisibility() == Visibility::Private);
     PHANTOM_ASSERT(getModule());
     PHANTOM_ASSERT(getSource(a_pSource->getName()) == nullptr);
     m_ArchivedSources.push_back(a_pSource);
@@ -124,20 +124,22 @@ Source* Package::getSource(StringView a_strName) const
     return nullptr;
 }
 
-Source* Package::getOrCreateSource(StringView a_strName, uint a_Flags)
+Source* Package::getOrCreateSource(StringView a_strName, Visibility a_Visibility)
 {
-    Source* pSource = getSource(a_strName);
-    if (!pSource)
-        newSource(a_strName, a_Flags);
-    return pSource;
+	if (Source* pSource = getSource(a_strName))
+		return pSource;
+	return newSource(a_strName, a_Visibility); 
 }
 
-Source* Package::newSource(StringView a_strName, uint a_Flags)
+Source* Package::newSource(StringView a_strName, Visibility a_Visibility)
 {
     PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_strName) == nullptr);
     PHANTOM_ASSERT(getModule());
     PHANTOM_ASSERT(getSource(a_strName) == nullptr);
-    Source* pS = phantom::new_<Source>(a_strName, Modifier::None, a_Flags);
+    Source* pS = phantom::new_<Source>(a_strName);
+	pS->m_pSource = pS;
+	pS->m_Orphans.push_back(pS);
+    pS->setVisibility(a_Visibility);
     pS->rtti.instance = pS;
     if (dynamic_initializer_()->installed())
     {
@@ -147,7 +149,6 @@ Source* Package::newSource(StringView a_strName, uint a_Flags)
     {
         phantom::detail::deferInstallation("phantom::lang::Source", &pS->rtti);
     }
-    pS->setOwner(this);
     pS->initialize();
     addSource(pS);
     return pS;
@@ -165,7 +166,8 @@ void Package::deleteSource(Source* a_pSource)
 
 void Package::addSource(Source* a_pSource)
 {
-    PHANTOM_ASSERT(a_pSource->getOwner() == this);
+    PHANTOM_ASSERT(a_pSource->m_pOwner == nullptr);
+    a_pSource->m_pOwner = this;
     m_Sources.push_back(a_pSource);
     PHANTOM_EMIT sourceAdded(a_pSource);
     Application::Get()->_sourceAdded(a_pSource);
@@ -173,11 +175,12 @@ void Package::addSource(Source* a_pSource)
 
 void Package::removeSource(Source* a_pSource)
 {
+    PHANTOM_ASSERT(a_pSource->m_pOwner == this);
     Application::Get()->_sourceAboutToBeRemoved(a_pSource);
     PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
-    PHANTOM_ASSERT(a_pSource->getOwner() == this);
     a_pSource->setOwner(nullptr);
     m_Sources.erase_unsorted(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource).base());
+    a_pSource->m_pOwner = nullptr;
 }
 
 hash64 Package::computeHash() const

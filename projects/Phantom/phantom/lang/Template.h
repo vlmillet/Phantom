@@ -28,8 +28,9 @@ class PHANTOM_EXPORT_PHANTOM Template : public Symbol
     friend struct TemplateRegistrer;
 
 public:
-    static Template* Parse(StringView a_strTemplateTypes, StringView a_strTemplateParam, StringView a_strName,
-                           LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/);
+    static Template* Parse(LanguageElement* a_pOwner, StringView a_strTemplateTypes, StringView a_strTemplateParam,
+                           StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
+                           uint a_uiFlags /*= 0*/);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an anonymous empty template.

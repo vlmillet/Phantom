@@ -35,20 +35,29 @@ Namespace* Namespace::Global()
 }
 
 Namespace::Namespace(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
-    : Symbol("", a_Modifiers, (PHANTOM_R_ALWAYS_VALID | a_uiFlags)), Scope(this, nullptr)
+    : Symbol("", a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)), Scope(this, nullptr)
 {
 }
 
 Namespace::Namespace(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, (PHANTOM_R_ALWAYS_VALID | a_uiFlags)), Scope(this, nullptr)
+    : Symbol(a_strName, a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)), Scope(this, nullptr)
 {
 }
 
-Namespace::~Namespace() {}
+void Namespace::initialize()
+{
+	Symbol::initialize();
+	Scope::initialize();
+}
 
 void Namespace::onScopeSymbolAdded(Symbol* a_pSym)
 {
     a_pSym->setNamespace(this);
+}
+
+void Namespace::onScopeSymbolRemoving(Symbol* a_pSym)
+{
+    a_pSym->setNamespace(nullptr);
 }
 
 Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
@@ -78,12 +87,7 @@ Namespace* Namespace::getOrCreateNamespace(Strings* a_HierarchyWords)
     Namespace* pChildNamespace = getNamespace(str);
     if (!(pChildNamespace))
     {
-#if defined(PHANTOM_STATIC_LIB_HANDLE)
-        pChildNamespace = PHANTOM_DEFERRED_NEW(Namespace)(str);
-#else
-        pChildNamespace = PHANTOM_DEFERRED_NEW(Namespace)(str);
-#endif
-        pChildNamespace->setNamespace(this);
+        pChildNamespace = newNamespace(str);
     }
     if (a_HierarchyWords->empty())
     {
@@ -101,6 +105,24 @@ Namespace* Namespace::getOrCreateNamespace(StringView a_strNamespaceName, const 
     Strings words;
     StringUtil::Split(words, a_strNamespaceName, separatorPattern);
     return getOrCreateNamespace(&words);
+}
+
+Namespace* Namespace::newNamespace(StringView a_strName)
+{
+	Namespace* pNS = phantom::new_<Namespace>(a_strName);
+	pNS->rtti.instance = pNS;
+	if (dynamic_initializer_()->installed())
+	{
+		pNS->rtti.metaClass = PHANTOM_CLASSOF(Namespace);
+	}
+	else
+	{
+		phantom::detail::deferInstallation("phantom::lang::Namespace", &pNS->rtti);
+	}
+	pNS->setNamespace(this);
+	pNS->initialize();
+	m_Namespaces.push_back(pNS);
+	return pNS;
 }
 
 Namespace* Namespace::getNamespace(StringView a_strName) const
@@ -123,20 +145,22 @@ Alias* Namespace::getNamespaceAlias(StringView a_strName) const
     return nullptr;
 }
 
-void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
-{
-    PHANTOM_ASSERT_NOT(getNamespace(a_pNamespace->getName()));
-    a_pNamespace->m_Namespaces.push_back(a_pNamespace);
-    setOwner(a_pNamespace);
-}
-
 void Namespace::onNamespaceChanging(Namespace* a_pNamespace)
 {
-    setOwner(nullptr);
-    PHANTOM_ASSERT(a_pNamespace->getParentNamespace() == this, "This namespace is attached to another Namespace");
-    auto found = std::find(a_pNamespace->m_Namespaces.begin(), a_pNamespace->m_Namespaces.end(), a_pNamespace);
-    PHANTOM_ASSERT(found != a_pNamespace->m_Namespaces.end(), "Namespace not found");
-    a_pNamespace->m_Namespaces.erase(found);
+	Namespace* pParentNamespace = Symbol::getNamespace();
+	auto found = std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this).base();
+	PHANTOM_ASSERT(found != pParentNamespace->m_Namespaces.end(), "Namespace not found");
+	pParentNamespace->m_Namespaces.erase_unsorted(found);
+	setOwner(nullptr);
+	setVisibility(Visibility::Private);
+}
+
+void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
+{
+	setOwner(Symbol::getNamespace());
+	PHANTOM_ASSERT(Symbol::getNamespace()->getNamespace(getName()) == nullptr);
+	Symbol::getNamespace()->m_Namespaces.push_back(this);
+	setVisibility(Visibility::Public);
 }
 
 Namespace* Namespace::getRootNamespace() const
@@ -263,7 +287,7 @@ void Namespace::getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) 
     for (auto p : getSymbols())
     {
         Symbol* pSymbol = p->asSymbol();
-        if (pSymbol && pSymbol->getName() == a_Name && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))
+        if (pSymbol && pSymbol->getName() == a_Name && !(pSymbol->getVisibility() == Visibility::Private))
             a_Symbols.push_back(pSymbol);
     }
 }

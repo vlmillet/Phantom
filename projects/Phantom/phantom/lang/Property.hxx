@@ -70,8 +70,6 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<Signal*() const>("getSignal", &_::getSignal)
             .method<void(Method*)>("setSet", &_::setSet)
             .method<void(Method*)>("setGet", &_::setGet)
-            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Signal*)>("setSignal", &_::setSignal)
             .method<bool() const, virtual_|override_>("isWrittable", &_::isWrittable)
             .method<bool() const, virtual_|override_>("isReadable", &_::isReadable)
             ;

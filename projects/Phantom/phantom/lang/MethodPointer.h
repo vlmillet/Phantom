@@ -47,8 +47,6 @@ protected: // Native constructor
                   Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
-    PHANTOM_DTOR ~MethodPointer() override;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if the signature matches the given parameter types and qualifiers (const,
     /// &amp;,

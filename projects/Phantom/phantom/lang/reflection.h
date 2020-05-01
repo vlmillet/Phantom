@@ -22,7 +22,7 @@ namespace lang
 PHANTOM_EXPORT_PHANTOM void conversionOperatorNameNormalizer(StringView a_strName, StringBuffer& a_Buf,
                                                              lang::LanguageElement* a_pScope);
 
-enum class Access
+enum class Access : char
 {
     Undefined,
     Public,
@@ -30,6 +30,13 @@ enum class Access
     Private
 };
 using Accesses = SmallVector<Access, 10>;
+
+enum class Visibility : char
+{
+    Public,    // lookup can find this symbol
+    Protected, // lookup can find this symbol only from another which owns it
+    Private    // lookup cannot find this symbol
+};
 
 typedef void (*SymbolExtender)(Symbol*);
 using SymbolExtenders = SmallVector<SymbolExtender, 4>;
@@ -85,7 +92,7 @@ using SymbolExtenders = SmallVector<SymbolExtender, 4>;
 
 struct Modifier
 {
-    enum Enum
+    enum Enum : int
     {
         None = 0x0,
         Virtual = 0x1,

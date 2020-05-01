@@ -36,18 +36,14 @@ Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers 
 }
 
 Signature::Signature(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
+    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
     setReturnType(PHANTOM_TYPEOF(void));
 }
 
 Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
+    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
     setReturnType(a_pReturnType);
@@ -55,9 +51,7 @@ Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_
 
 Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0 */,
                      uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
-      m_pReturnType(nullptr),
-      m_pReturnTypeName(nullptr)
+    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
     setReturnType(a_pType);

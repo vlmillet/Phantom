@@ -21,7 +21,7 @@ TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElemen
     : Symbol(a_pPlaceholder->asSymbol()->getName(), 0, a_uiFlags), m_pPlaceholder(a_pPlaceholder)
 {
     PHANTOM_ASSERT(m_pPlaceholder);
-    PHANTOM_ASSERT(m_pPlaceholder->asSymbol()->getOwner() == this);
+    m_pPlaceholder->asSymbol()->setOwner(this);
     if (a_pDefaultArgument)
     {
         setDefaultArgument(a_pDefaultArgument);

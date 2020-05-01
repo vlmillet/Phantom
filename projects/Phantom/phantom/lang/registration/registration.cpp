@@ -163,7 +163,7 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
                 for (auto arg : args)
                 {
                     if (arg->getOwner() == nullptr)
-                        Delete(arg);
+                        arg->getOwner()->Delete(arg);
                 }
             }
         }
@@ -491,14 +491,15 @@ void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
     PHANTOM_ASSERT(pNamingScope->asScope());
     if (pNamingScope->asScope()->getTemplate(m_func(3)) == nullptr)
     {
+        auto            pSource = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
         lang::Template* pTemplate =
-        Template::Parse(m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
+        Template::Parse(pSource, m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
         // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
         pNamingScope->asScope()->addTemplate(pTemplate);
         if (pTemplate->getOwner() == nullptr)
         {
             /// At source scope
-            detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source)->addTemplate(pTemplate);
+            pSource->addTemplate(pTemplate);
             detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source)
             ->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }
@@ -590,7 +591,7 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
     }
     PHANTOM_ASSERT(a_pTemplate->isNative());
     TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(
-    a_pTemplate, phantom::lang::TemplateNewDeferred<Signature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
+    a_pTemplate, a_pTemplate->New<TemplateSignature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
     pSpec->setFlags(PHANTOM_R_FLAG_NATIVE | PHANTOM_R_FLAG_IMPLICIT |
                     pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }
@@ -606,12 +607,12 @@ PHANTOM_EXPORT_PHANTOM void installModules()
 
 PHANTOM_EXPORT_PHANTOM Enum* newAnonEnum(PrimitiveType*)
 {
-    return PHANTOM_NEW(EnumT<int64>)(Modifier::None);
+    return currentSource()->New<EnumT<int64>>(Modifier::None);
 }
 
 PHANTOM_EXPORT_PHANTOM Alias* newAlias(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers, uint a_uiFlags)
 {
-    return Alias::Create(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE);
+    return currentSource()->New<Alias>(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE);
 }
 
 PHANTOM_EXPORT_PHANTOM void pushSource(Source* a_pSource)

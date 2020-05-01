@@ -44,12 +44,12 @@ public:
     typedef phantom::Signal<t_SignalSign>(t_Ty::*SignalType);
 
 public:
+    // TODO : remove definitely Signal from Phantom
     PropertyT(Type* a_pFunctionsType, StringView a_strName, GetterType a_Getter, SetterType a_Setter,
-              SignalType a_Signal, uint a_uiFilterMask, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
+              SignalType /*a_Signal*/, uint a_uiFilterMask, Modifiers a_Modifiers = 0, uint a_uiFlags = 0)
         : Property(a_pFunctionsType, a_strName, a_uiFilterMask, a_Modifiers, PHANTOM_R_FLAG_NATIVE, 0),
           m_getter(a_Getter),
-          m_setter(a_Setter),
-          m_signal(a_Signal)
+          m_setter(a_Setter)
     {
     }
 
@@ -75,15 +75,11 @@ private:
     {
         this->setSet(a_pClass->getMethodByPtr(&m_setter));
         this->setGet(a_pClass->getMethodByPtr(&m_getter));
-        auto pSignal = a_pClass->getMethodByPtr(&m_signal);
-        if (pSignal && pSignal->asSignal())
-            this->setSignal((Signal*)(pSignal));
     }
 
 private:
     GetterType m_getter;
     SetterType m_setter;
-    SignalType m_signal;
 };
 
 template<typename t_Ty, typename t_ValueType>

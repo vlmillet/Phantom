@@ -93,6 +93,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolRemoving", &_::onScopeSymbolRemoving)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

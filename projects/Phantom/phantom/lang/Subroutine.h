@@ -324,7 +324,6 @@ public:
 
     ABI getABI() const { return m_eABI; }
 
-    Symbol*           asSymbol() const override { return const_cast<Subroutine*>(this); }
     virtual Callable* asCallable() const { return const_cast<Subroutine*>(this); }
     Subroutine*       asSubroutine() const override { return const_cast<Subroutine*>(this); }
 

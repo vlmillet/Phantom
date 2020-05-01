@@ -70,7 +70,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void*)>("setAddress", &_::setAddress)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<void(), virtual_>("finalize", &_::finalize)
         
         .protected_()

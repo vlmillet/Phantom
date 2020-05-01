@@ -91,7 +91,6 @@ public:
     virtual void visit(SequentialContainerClass* a_pInput, VisitorData a_Data);
     virtual void visit(SetClass* a_pInput, VisitorData a_Data);
     virtual void visit(VectorClass* a_pInput, VisitorData a_Data);
-    virtual void visit(Signal* a_pInput, VisitorData a_Data);
     virtual void visit(Signature* a_pInput, VisitorData a_Data);
     virtual void visit(Source* a_pInput, VisitorData a_Data);
     virtual void visit(Structure* a_pInput, VisitorData a_Data);

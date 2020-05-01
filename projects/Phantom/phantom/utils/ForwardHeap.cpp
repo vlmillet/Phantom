@@ -69,7 +69,7 @@ void ForwardHeap::deallocate(void* _ptr)
     /* Actually do nothing more */
 }
 
-void ForwardHeap::Reset()
+void ForwardHeap::reset()
 {
     m_current = m_begin;
 }

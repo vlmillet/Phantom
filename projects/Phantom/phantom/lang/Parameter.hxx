@@ -61,7 +61,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<StringView() const>("getNativeDefaultArgumentString", &_::getNativeDefaultArgumentString)
             .method<bool() const>("isEllipsis", &_::isEllipsis)
             .method<Parameter*() const, virtual_|override_>("asParameter", &_::asParameter)
-            .method<Parameter*() const, virtual_|override_>("cloneImpl", &_::cloneImpl)
+            .method<Parameter*(LanguageElement*) const, virtual_|override_>("cloneImpl", &_::cloneImpl)
         
         .protected_()
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files

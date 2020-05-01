@@ -22,6 +22,7 @@
 #include <phantom/class>
 #include <phantom/method>
 #include <phantom/static_method>
+#include <phantom/constructor>
 #include <phantom/friend>
 
 namespace phantom {
@@ -42,6 +43,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
+            .constructor<void(Type*)>()
             .method<Type*() const>("getConstedType", &_::getConstedType)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
             .method<ConstType*() const, virtual_|override_>("asConstClass", &_::asConstClass)

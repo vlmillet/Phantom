@@ -61,24 +61,16 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<Signature*(Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(Type*, uint)>("Create", &_::Create)
-            .staticMethod<Signature*(Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(Type*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(Type*, Type*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(Type*, TypesView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(StringView, LanguageElement*, Modifiers, uint)>("Create", &_::Create)["nullptr"]["0"]["0"]
             .enum_<EState>().values({
                 {"eState_Virgin",_::eState_Virgin},
                 {"eState_UnderConstruction",_::eState_UnderConstruction},
                 {"eState_Final",_::eState_Final}})
             .end()
+            .staticMethod<Signature*(LanguageElement*, Type*, TypesView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
+            .staticMethod<Signature*(LanguageElement*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, LanguageElement*, Modifiers, uint)>()["nullptr"]["0"]["0"]
-            .constructor<void(Type*, Type*, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, const Parameters&, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, TypesView, Modifiers, uint)>()["0"]["0"]
             .method<Signature*() const, virtual_|override_>("asSignature", &_::asSignature)
             .method<bool() const>("isRVOCandidate", &_::isRVOCandidate)
             .method<bool() const>("isVariadic", &_::isVariadic)
@@ -87,8 +79,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Signature*) const>("isSame", &_::isSame)
             .method<bool(TypesView, Modifiers) const>("matches", &_::matches)["Modifiers()"]
             .method<bool(Signature*) const>("matches", &_::matches)
-            .method<Signature*() const>("clone", &_::clone)
-            .method<void(StringView, LanguageElement*)>("parse", &_::parse)["nullptr"]
+            .method<Signature*(LanguageElement*) const>("clone", &_::clone)
             .method<size_t() const>("getParameterCount", &_::getParameterCount)
             .method<Parameter*(size_t) const>("getParameter", &_::getParameter)
             .method<Parameter*(StringView) const>("getParameter", &_::getParameter)
@@ -117,10 +108,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<StringViews() const>("getNativeDefaultArgumentStrings", &_::getNativeDefaultArgumentStrings)
             .method<FunctionType*() const>("getFunctionType", &_::getFunctionType)
             .method<void()>("setVariadic", &_::setVariadic)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
         
         .protected_()
             .field("m_pReturnType", &_::m_pReturnType)

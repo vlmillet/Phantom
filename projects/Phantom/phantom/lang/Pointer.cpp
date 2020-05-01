@@ -11,15 +11,6 @@ namespace phantom
 {
 namespace lang
 {
-void Pointer::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Type::onReferencedElementRemoved(a_pElement);
-    if (m_pUnderlyingType == a_pElement)
-    {
-        m_pUnderlyingType = nullptr;
-    }
-}
-
 void Pointer::valueToLiteral(StringBuffer&, const void*) const
 {
     PHANTOM_ASSERT_NO_IMPL();

@@ -26,12 +26,13 @@ PackageFolder::PackageFolder(StringView a_strName) : Symbol(a_strName, PHANTOM_R
 PackageFolder* PackageFolder::newPackageFolder(String a_strName)
 {
     PHANTOM_ASSERT(getPackageFolder(a_strName) == nullptr);
-    PackageFolder* pPF = phantom::New<PackageFolder>(a_strName);
+    PackageFolder* pPF = phantom::new_<PackageFolder>(a_strName);
     pPF->rtti.instance = pPF;
     pPF->setOwner(this);
     phantom::detail::deferInstallation("phantom::lang::PackageFolder", &pPF->rtti);
     pPF->initialize();
     m_PackageFolders.push_back(pPF);
+    return pPF;
 }
 
 PackageFolder::~PackageFolder() {}

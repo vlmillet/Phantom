@@ -32,10 +32,9 @@ class PHANTOM_EXPORT_PHANTOM ConstVolatileType : public QualifiedType
     friend class phantom::lang::Namespace;
     friend class phantom::lang::Type;
 
-private:
+public:
     ConstVolatileType(Type* a_pType);
 
-public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the type that became 'const volatile'.
     ///

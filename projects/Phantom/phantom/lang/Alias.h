@@ -23,8 +23,6 @@ public:
     PHANTOM_DECLARE_META_CLASS(Alias);
 
 public:
-    static Alias* Create(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Default Constructor.
     ///

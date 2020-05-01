@@ -54,15 +54,13 @@ Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFla
     PHANTOM_ASSERT(!(isProtected() && isPrivate()), "o_private_access and o_protected_access cannot co-exist");
 }
 
-Symbol::~Symbol() {}
-
 void Symbol::terminate()
 {
     setNamespace(nullptr);
     if (m_pMetaDatas)
-        phantom::Delete<MetaDatas>(m_pMetaDatas);
+        delete_<MetaDatas>(m_pMetaDatas);
     if (m_pAnnotations)
-        phantom::Delete<Annotations>(m_pAnnotations);
+        delete_<Annotations>(m_pAnnotations);
     LanguageElement::terminate();
 }
 
@@ -154,7 +152,7 @@ bool Symbol::hasAnnotation(StringView a_strName) const
 bool Symbol::addAnnotation(StringView a_strName)
 {
     if (m_pAnnotations == nullptr)
-        m_pAnnotations = PHANTOM_NEW(Annotations);
+        m_pAnnotations = new_<Annotations>(getAllocator());
     return m_pAnnotations->insert(a_strName).second;
 }
 
@@ -164,7 +162,7 @@ bool Symbol::removeAnnotation(StringView a_strName)
     {
         if (m_pAnnotations->empty())
         {
-            Delete<Annotations>(m_pAnnotations);
+            delete_<Annotations>(m_pAnnotations);
             m_pAnnotations = nullptr;
         }
         return true;
@@ -202,7 +200,7 @@ void Symbol::addExtensions(const SymbolExtensions& a_Extensions)
 void Symbol::addExtension(SymbolExtension* a_pExtension)
 {
     if (m_pExtensions == nullptr)
-        m_pExtensions = PHANTOM_NEW(SymbolExtensions);
+        m_pExtensions = new_<SymbolExtensions>(getAllocator());
     PHANTOM_ASSERT(std::find(m_pExtensions->begin(), m_pExtensions->end(), a_pExtension) == m_pExtensions->end());
     m_pExtensions->push_back(a_pExtension);
 }
@@ -225,7 +223,7 @@ void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
         PHANTOM_ASSERT(Symbol::IsCppIdentifier(a_Name), "meta '%.*s' is not an identifier name matching [a-zA-Z0-9_]+",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
         if (m_pMetaDatas == nullptr)
-            m_pMetaDatas = PHANTOM_NEW(MetaDatas);
+            m_pMetaDatas = new_<MetaDatas>(getAllocator());
         (*m_pMetaDatas)[StringWithHash(a_Name)] = a_Value;
     }
     else
@@ -240,7 +238,7 @@ void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
 void Symbol::setMetaData(StringView a_Name, Variant&& a_Value)
 {
     if (m_pMetaDatas == nullptr)
-        m_pMetaDatas = PHANTOM_NEW(MetaDatas);
+        m_pMetaDatas = new_<MetaDatas>(getAllocator());
     (*m_pMetaDatas)[StringWithHash(a_Name)] = (Variant &&) a_Value;
 }
 
@@ -252,7 +250,7 @@ void Symbol::removeMetaData(StringWithHash a_NameHash)
     m_pMetaDatas->erase(found);
     if (m_pMetaDatas->empty())
     {
-        Delete<MetaDatas>(m_pMetaDatas);
+        delete_<MetaDatas>(m_pMetaDatas);
         m_pMetaDatas = nullptr;
     }
 }
@@ -299,14 +297,11 @@ bool Symbol::isSame(Symbol* a_pOther) const
 
 bool Symbol::hasElementWithName(StringView a_strName) const
 {
-    if (m_pElements)
+    for (auto pElm : getElements())
     {
-        for (auto it = m_pElements->begin(); it != m_pElements->end(); ++it)
-        {
-            Symbol* pSymbol = (*it)->asSymbol();
-            if (pSymbol && pSymbol->getName() == a_strName)
-                return true;
-        }
+        Symbol* pSymbol = pElm->asSymbol();
+        if (pSymbol && pSymbol->getName() == a_strName)
+            return true;
     }
     return false;
 }
@@ -338,9 +333,13 @@ void Symbol::setNamespace(Namespace* a_pNS)
 {
     if (m_pNamespace == a_pNS)
         return;
+    if (m_pNamespace)
+        m_pNamespace->_unregisterSymbol(this);
     onNamespaceChanging(a_pNS);
     m_pNamespace = a_pNS;
     onNamespaceChanged(a_pNS);
+    if (m_pNamespace)
+        m_pNamespace->_registerSymbol(this);
 }
 
 void Symbol::getDoubles(Symbols& out) const
@@ -379,7 +378,8 @@ void Symbol::setMetaDatas(MetaDatas&& a_MetaDatas)
         return;
     if (m_pMetaDatas == nullptr)
     {
-        m_pMetaDatas = New<MetaDatas>(std::move(a_MetaDatas));
+        m_pMetaDatas = new_<MetaDatas>(std::move(a_MetaDatas));
+        m_pMetaDatas->setAllocator(getAllocator());
     }
     else
     {
@@ -393,7 +393,8 @@ void Symbol::setMetaDatas(const MetaDatas& a_MetaDatas)
         return;
     if (m_pMetaDatas == nullptr)
     {
-        m_pMetaDatas = New<MetaDatas>(a_MetaDatas);
+        m_pMetaDatas = new_<MetaDatas>(a_MetaDatas);
+        m_pMetaDatas->setAllocator(getAllocator());
     }
     else
     {

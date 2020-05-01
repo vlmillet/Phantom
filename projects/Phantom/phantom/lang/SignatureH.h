@@ -17,9 +17,15 @@ namespace phantom
 namespace lang
 {
 #define _PHNTM_SIGNH_OVERL(...)                                                                                        \
-    static Signature* Create() { return SignatureH<t_ReturnType(v_Params...)>::_Create(Modifiers(__VA_ARGS__)); }
+    static Signature* Create(LanguageElement* a_pOwner)                                                                \
+    {                                                                                                                  \
+        return SignatureH<t_ReturnType(v_Params...)>::_Create(a_pOwner, Modifiers(__VA_ARGS__));                       \
+    }
 #define _PHNTM_SIGNH_OVERL_VOID(...)                                                                                   \
-    static Signature* Create() { return SignatureH<void(v_Params...)>::_Create(Modifiers(__VA_ARGS__)); }
+    static Signature* Create(LanguageElement* a_pOwner)                                                                \
+    {                                                                                                                  \
+        return SignatureH<void(v_Params...)>::_Create(a_pOwner, Modifiers(__VA_ARGS__));                               \
+    }
 
 template<typename t_Signature>
 struct SignatureH;
@@ -30,7 +36,7 @@ struct SignatureH<t_ReturnType(v_Params...)>
     template<typename t_Signature>
     friend struct SignatureH;
 
-    static Signature* Create() { return _Create(); }
+    static Signature* Create(LanguageElement* a_pOwner) { return _Create(a_pOwner); }
 
 protected:
     static Signature* _Create(LanguageElement* a_pOwner, Modifiers a_Modifiers = Modifiers())
@@ -88,14 +94,14 @@ struct SignatureH<const volatile void(v_Params...)> : public SignatureH<void(v_P
 template<typename t_ReturnType, class... v_Params>
 struct SignatureH<t_ReturnType(v_Params..., ...)>
 {
-    static Signature* Create() { return _Create(); }
+    static Signature* Create(LanguageElement* a_pOwner) { return _Create(a_pOwner); }
 
 protected:
-    static Signature* _Create(Modifiers a_Modifiers = Modifiers())
+    static Signature* _Create(LanguageElement* a_pOwner, Modifiers a_Modifiers = Modifiers())
     {
         /// Resolve first by static type resolving.
         /// If one fails, resolve via signature parsing (probably a pointer on an uncomplete class).
-        Signature* pSign = SignatureH<t_ReturnType(v_Params...)>::_Create(a_Modifiers);
+        Signature* pSign = SignatureH<t_ReturnType(v_Params...)>::_Create(a_pOwner, a_Modifiers);
         pSign->setVariadic();
         return pSign;
     }

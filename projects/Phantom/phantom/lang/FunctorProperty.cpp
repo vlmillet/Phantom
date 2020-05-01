@@ -9,8 +9,6 @@
 
 #include "Parameter.h"
 #include "Signature.h"
-
-#include <phantom/lang/Signal.h>
 /* *********************************************** */
 
 namespace phantom

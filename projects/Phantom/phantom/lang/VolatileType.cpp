@@ -23,8 +23,6 @@ VolatileType::VolatileType(Type* a_pType)
     addReferencedElement(a_pType);
 }
 
-VolatileType::~VolatileType() {}
-
 bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const
 {
     if (a_pType->asVolatileType())

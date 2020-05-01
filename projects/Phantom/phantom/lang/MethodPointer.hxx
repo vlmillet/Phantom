@@ -87,9 +87,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .using_("LanguageElement::getQualifiedDecoratedName")
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-        
-        .protected_()
             .field("m_pFunctionType", &_::m_pFunctionType)
             ;
         }

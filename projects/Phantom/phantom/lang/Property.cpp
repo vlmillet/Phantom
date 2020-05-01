@@ -10,7 +10,6 @@
 #include "Parameter.h"
 #include "Signature.h"
 
-#include <phantom/lang/Signal.h>
 /* *********************************************** */
 
 namespace phantom
@@ -57,24 +56,6 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     }
 }
 
-PHANTOM_DTOR Property::~Property() {}
-
-void Property::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    ValueMember::onReferencedElementRemoved(a_pElement);
-}
-
-void Property::onElementRemoved(LanguageElement* a_pElement)
-{
-    ValueMember::onElementRemoved(a_pElement);
-    if (m_pSignal == a_pElement)
-        m_pSignal = nullptr;
-    else if (m_pGet == a_pElement)
-        m_pGet = nullptr;
-    else if (m_pSet == a_pElement)
-        m_pSet = nullptr;
-}
-
 void Property::setSet(Method* a_pFunc)
 {
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getParameters().size() == 1);
@@ -89,17 +70,6 @@ void Property::setGet(Method* a_pFunc)
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers() == getValueType());
     a_pFunc->setOwner(this);
     m_pGet = a_pFunc;
-}
-
-void Property::setSignal(Signal* a_pFunc)
-{
-    PHANTOM_ASSERT(
-    !a_pFunc ||
-    (a_pFunc->getParameters().empty() ||
-     (a_pFunc->getParameters().size() == 1 &&
-      a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers() == getValueType())));
-    a_pFunc->setOwner(this);
-    m_pSignal = a_pFunc;
 }
 
 void Property::getValue(void const* a_pObject, void* a_pDest) const
@@ -125,17 +95,6 @@ Method* Property::addSet(StringView a_strName /*= ""*/)
                          PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
     m_pSet->m_pProperty = this;
     return m_pSet;
-}
-
-Signal* Property::addSignal(StringView a_strName /*= ""*/)
-{
-    PHANTOM_ASSERT(!isNative());
-    PHANTOM_ASSERT(getOwner() != nullptr);
-    m_pSignal = New<Signal>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_signal") : a_strName,
-                            NewDeferred<Signature>(PHANTOM_TYPEOF(void), getValueType()), 0,
-                            PHANTOM_R_FLAG_PRIVATE_VIS | PHANTOM_R_FLAG_IMPLICIT);
-    m_pSignal->m_pProperty = this;
-    return m_pSignal;
 }
 
 Method* Property::addGet(StringView a_strName /*= ""*/)

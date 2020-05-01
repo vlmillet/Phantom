@@ -82,7 +82,6 @@ PHANTOM_PACKAGE("phantom.lang")
             using ExtraData = typedef_<_::ExtraData>;
             using Methods = typedef_< phantom::lang::Methods>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using Signals = typedef_< phantom::lang::Signals>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
             using Subroutines = typedef_< phantom::lang::Subroutines>;
@@ -181,14 +180,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Class*) const>("isA", &_::isA)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
             .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
-            .method<void(Method*), virtual_|override_>("addMethod", &_::addMethod)
-            .method<void(Signal*), virtual_>("addSignal", &_::addSignal)
-            .method<void(Signal*), virtual_>("removeSignal", &_::removeSignal)
-            .method<Signals const&() const>("getSignals", &_::getSignals)
-            .method<Signal*(StringView) const>("getSignal", &_::getSignal)
-            .method<Signal*(StringView) const>("getSignalCascade", &_::getSignalCascade)
-            .method<Method*(StringView) const>("getSlot", &_::getSlot)
-            .method<Method*(StringView) const>("getSlotCascade", &_::getSlotCascade)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(ValueMember*, Expression*)>("setOverriddenDefaultExpression", &_::setOverriddenDefaultExpression)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -247,12 +238,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("canHaveImplicitCopyAssignmentOperator", &_::canHaveImplicitCopyAssignmentOperator)
             .method<bool() const, virtual_|override_>("canHaveImplicitMoveConstructor", &_::canHaveImplicitMoveConstructor)
             .method<bool() const, virtual_|override_>("canHaveImplicitMoveAssignmentOperator", &_::canHaveImplicitMoveAssignmentOperator)
-            .staticMethod<VirtualMethodTable*(void**, size_t)>("CreateVirtualMethodTable", &_::CreateVirtualMethodTable)
-            .staticMethod<VirtualMethodTable*(VirtualMethodTable*, size_t)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
-            .staticMethod<VirtualMethodTable*(VirtualMethodTable*)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
+            .staticMethod<VirtualMethodTable*(Class*, void**, size_t)>("CreateVirtualMethodTable", &_::CreateVirtualMethodTable)
+            .staticMethod<VirtualMethodTable*(Class*, VirtualMethodTable*, size_t)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
+            .staticMethod<VirtualMethodTable*(Class*, VirtualMethodTable*)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
             .staticMethod<Class*(VirtualMethodTable*)>("VTablePrimaryClass", &_::VTablePrimaryClass)
-            .method<VirtualMethodTable*() const, virtual_>("createVirtualMethodTable", &_::createVirtualMethodTable)
-            .method<VirtualMethodTable*(VirtualMethodTable*) const, virtual_>("deriveVirtualMethodTable", &_::deriveVirtualMethodTable)
+            .method<VirtualMethodTable*(), virtual_>("createVirtualMethodTable", &_::createVirtualMethodTable)
+            .method<VirtualMethodTable*(VirtualMethodTable*), virtual_>("deriveVirtualMethodTable", &_::deriveVirtualMethodTable)
             .method<SymbolExtension*(Class*, size_t) const>("getExtensionCascade", &_::getExtensionCascade)["0"]
             .method<void(void*), virtual_>("registerInstance", &_::registerInstance)
             .method<void(void*), virtual_>("unregisterInstance", &_::unregisterInstance)

@@ -35,19 +35,21 @@ Namespace* Namespace::Global()
 }
 
 Namespace::Namespace(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
-    : Symbol("", a_Modifiers, (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
-      Scope(this, nullptr)
+    : Symbol("", a_Modifiers, (PHANTOM_R_ALWAYS_VALID | a_uiFlags)), Scope(this, nullptr)
 {
 }
 
 Namespace::Namespace(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers,
-             (a_uiFlags & PHANTOM_R_FLAG_INVALID) ? a_uiFlags : (PHANTOM_R_ALWAYS_VALID | a_uiFlags)),
-      Scope(this, nullptr)
+    : Symbol(a_strName, a_Modifiers, (PHANTOM_R_ALWAYS_VALID | a_uiFlags)), Scope(this, nullptr)
 {
 }
 
 Namespace::~Namespace() {}
+
+void Namespace::onScopeSymbolAdded(Symbol* a_pSym)
+{
+    a_pSym->setNamespace(this);
+}
 
 Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
 {
@@ -81,7 +83,7 @@ Namespace* Namespace::getOrCreateNamespace(Strings* a_HierarchyWords)
 #else
         pChildNamespace = PHANTOM_DEFERRED_NEW(Namespace)(str);
 #endif
-        addNamespace(pChildNamespace);
+        pChildNamespace->setNamespace(this);
     }
     if (a_HierarchyWords->empty())
     {
@@ -119,18 +121,6 @@ Alias* Namespace::getNamespaceAlias(StringView a_strName) const
             return pNamespaceAlias;
     }
     return nullptr;
-}
-
-void Namespace::release(Types& out_types)
-{
-    Scope::release(out_types);
-    while (!m_Namespaces.empty())
-    {
-        Namespace* pNamespace = m_Namespaces.back();
-        pNamespace->release(out_types);
-        removeNamespace(pNamespace);
-        Delete(pNamespace);
-    }
 }
 
 void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
@@ -200,38 +190,20 @@ String Namespace::asPath(char separator) const
     return prefix.empty() ? m_strName : prefix + separator + m_strName;
 }
 
-void Namespace::addScopeElement(Symbol* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->m_pNamespace == nullptr);
-    if (a_pElement->isNative())
-        m_uiFlags |= PHANTOM_R_FLAG_NATIVE; // a namespace become native once any native element is
-                                            // added to iterencedElements)
-    a_pElement->m_pNamespace = this;
-    addUniquelyReferencedElement(a_pElement);
-    Scope::scopedElementAdded(a_pElement);
-}
-
-void Namespace::removeScopeElement(Symbol* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->m_pNamespace == this);
-    removeReferencedElement(a_pElement);
-}
-
 void Namespace::getElementDoubles(Symbol* a_pElement, Symbols& out) const
 {
-    if (m_pReferencedElements)
-        for (auto it = m_pReferencedElements->begin(); it != m_pReferencedElements->end(); ++it)
+    for (auto pSym : m_Symbols)
+    {
+        // Browse namespace elements to find doubles of given element
+        if (pSym == a_pElement)
+            continue;
+        Symbol* pSymbol = a_pElement->asSymbol();
+        if (pSymbol && a_pElement->getDecoratedName() == pSymbol->getDecoratedName())
         {
-            // Browse namespace elements to find doubles of given element
-            if (*it == a_pElement)
-                continue;
-            Symbol* pSymbol = a_pElement->asSymbol();
-            if (pSymbol && a_pElement->getDecoratedName() == pSymbol->getDecoratedName())
-            {
-                PHANTOM_ASSERT(a_pElement->getModule() != pSymbol->getModule());
-                out.push_back(pSymbol);
-            }
+            PHANTOM_ASSERT(a_pElement->getModule() != pSymbol->getModule());
+            out.push_back(pSymbol);
         }
+    }
 }
 
 void Namespace::getQualifiedName(StringBuffer& a_Buf) const
@@ -271,7 +243,7 @@ bool Namespace::isSymbolHidden(Symbol* a_pSymbol) const
 {
     if (a_pSymbol->getNamespace() == this || a_pSymbol->getOwner() == this)
         return false;
-    for (auto pRef : getReferencedElements())
+    for (auto pRef : getSymbols())
     {
         if (pRef->asSymbol() && a_pSymbol->getName() == static_cast<Symbol*>(pRef)->getName())
             return true;
@@ -288,7 +260,7 @@ void Namespace::getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) 
         return;
     }
     LanguageElement::getSymbolsWithName(a_Name, a_Symbols);
-    for (auto p : getReferencedElements())
+    for (auto p : getSymbols())
     {
         Symbol* pSymbol = p->asSymbol();
         if (pSymbol && pSymbol->getName() == a_Name && !(pSymbol->testFlags(PHANTOM_R_FLAG_PRIVATE_VIS)))

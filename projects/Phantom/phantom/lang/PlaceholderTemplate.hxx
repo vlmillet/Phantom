@@ -51,7 +51,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Placeholder*() const, virtual_|override_>("asPlaceholder", &_::asPlaceholder)
             .method<PlaceholderTemplate*() const, virtual_|override_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
-            .method<Placeholder*(uint) const, virtual_|override_>("clone", &_::clone)["0"]
+            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)["0"]
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)

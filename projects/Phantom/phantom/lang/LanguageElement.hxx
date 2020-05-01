@@ -22,6 +22,7 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
+#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/friend>
 
@@ -56,7 +57,9 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(LanguageElement)
         {
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
+            using LanguageElementsView = typedef_< phantom::lang::LanguageElementsView>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Owner = typedef_<_::Owner>;
             using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
@@ -77,9 +80,13 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
         
         .public_()
-            .method<LanguageElements const&() const>("getElements", &_::getElements)
-            .method<LanguageElements const&() const>("getReferencedElements", &_::getReferencedElements)
-            .method<LanguageElements const&() const>("getReferencingElements", &_::getReferencingElements)
+            .struct_<Owner>()
+                .constructor<void(LanguageElement*), explicit_>()
+                .field("this_", &_::Owner::this_)
+            .end()
+            .method<CustomAllocator const*() const, virtual_>("getAllocator", &_::getAllocator)
+            .method<void(LanguageElement*)>("Delete", &_::Delete)
+            .method<LanguageElementsView() const>("getElements", &_::getElements)
             .method<bool() const>("isTemplateElement", &_::isTemplateElement)
             .method<bool(LanguageElement*) const>("hasReferencedElement", &_::hasReferencedElement)
             .method<bool(LanguageElement*) const>("hasReferencingElement", &_::hasReferencingElement)
@@ -108,7 +115,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<ConstType*() const, virtual_>("asConstClass", &_::asConstClass)
             .method<Pointer*() const, virtual_>("asConstClassPointer", &_::asConstClassPointer)
             .method<LValueReference*() const, virtual_>("asConstClassLValueReference", &_::asConstClassLValueReference)
-            .method<RValueReference*() const, virtual_>("asConstClassRValueReference", &_::asConstClassRValueReference)
             .method<Type*() const, virtual_>("asConstClassAddressType", &_::asConstClassAddressType)
             .method<Constructor*() const, virtual_>("asConstructor", &_::asConstructor)
             .method<ConstType*() const, virtual_>("asConstType", &_::asConstType)
@@ -160,7 +166,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Scope*() const, virtual_>("asScope", &_::asScope)
             .method<SequentialContainerClass*() const, virtual_>("asSequentialContainerClass", &_::asSequentialContainerClass)
             .method<SetClass*() const, virtual_>("asSetContainerClass", &_::asSetContainerClass)
-            .method<Signal*() const, virtual_>("asSignal", &_::asSignal)
+            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Signal*() const, virtual_>("asSignal", &_::asSignal)
             .method<Signature*() const, virtual_>("asSignature", &_::asSignature)
             .method<Method*() const, virtual_>("asSlot", &_::asSlot)
             .method<Source*() const, virtual_>("asSource", &_::asSource)
@@ -214,22 +221,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Subroutine*() const>("getEnclosingSubroutine", &_::getEnclosingSubroutine)
             .method<TemplateSpecialization*() const>("getEnclosingTemplateSpecialization", &_::getEnclosingTemplateSpecialization)
             .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
-            .method<void(LanguageElement*)>("addReferencedElement", &_::addReferencedElement)
-            .method<void(LanguageElement*)>("addUniquelyReferencedElement", &_::addUniquelyReferencedElement)
-            .method<void(LanguageElement*)>("removeReferencedElement", &_::removeReferencedElement)
-            .method<void(LanguageElement*)>("addScopedElement", &_::addScopedElement)
-            .method<void(LanguageElement*)>("removeScopedElement", &_::removeScopedElement)
-            .method<void(ModuleSet&) const>("fetchReferencedModules", &_::fetchReferencedModules)
-            .method<void(ModuleSet&) const>("fetchReferencingModules", &_::fetchReferencingModules)
-            .method<void(ModuleSet&) const>("fetchReferencedModulesDeep", &_::fetchReferencedModulesDeep)
-            .method<void(ModuleSet&) const>("fetchReferencingModulesDeep", &_::fetchReferencingModulesDeep)
             .method<void(LanguageElements&) const>("getElements", &_::getElements)
             .method<void(Symbols&) const>("fetchSymbols", &_::fetchSymbols)
             .method<void(Symbols&, SymbolFilter, bool, bool) const>("fetchSymbols", &_::fetchSymbols)["true"]["false"]
             .method<void(LanguageElements&) const>("getElementsDeep", &_::getElementsDeep)
-            .method<void(LanguageElement*)>("addElement", &_::addElement)
-            .method<void(Symbol*)>("addSymbol", &_::addSymbol)
-            .method<void(LanguageElement*)>("removeElement", &_::removeElement)
             .method<Symbol*(StringView, Modifiers, uint) const>("getUniqueElement", &_::getUniqueElement)["0"]["0"]
             .method<size_t(LanguageElement*) const>("getElementIndex", &_::getElementIndex)
             /// missing symbol(s) reflection (std::basic_ostream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
@@ -251,8 +246,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_>("getUniqueName", &_::getUniqueName)
             .method<LanguageElement*() const, virtual_>("getNamingScope", &_::getNamingScope)
             .method<bool(LanguageElement*) const>("hasNamingScopeCascade", &_::hasNamingScopeCascade)
-            .method<void()>("clear", &_::clear)
-            .method<void(LanguageElement*)>("steal", &_::steal)
             .method<void()>("detach", &_::detach)
             .method<bool(Symbol*) const, virtual_>("isSymbolHidden", &_::isSymbolHidden)
             .method<uint() const>("getFlags", &_::getFlags)
@@ -262,12 +255,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(uint)>("setFlags", &_::setFlags)
             .method<bool(uint) const>("testFlags", &_::testFlags)
             .method<bool() const>("isNative", &_::isNative)
-            .method<bool() const>("isInvalid", &_::isInvalid)
             .method<bool() const>("isTemplateDependant", &_::isTemplateDependant)
             .method<void()>("setTemplateDependant", &_::setTemplateDependant)
-            .method<void()>("setInvalid", &_::setInvalid)
-            .method<bool() const>("isIncomplete", &_::isIncomplete)
-            .method<void()>("setIncomplete", &_::setIncomplete)
             .method<bool() const>("isAlwaysValid", &_::isAlwaysValid)
             .method<bool() const, virtual_>("isTemplateInstance", &_::isTemplateInstance)
             .method<void()>("setShared", &_::setShared)
@@ -282,6 +271,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<LanguageElement*(const CodePosition&) const>("getElementAtCodePosition", &_::getElementAtCodePosition)
             .method<LanguageElement*(uint16) const>("getElementAtLine", &_::getElementAtLine)
             .method<int() const, virtual_>("destructionPriority", &_::destructionPriority)
+            .method<void(LanguageElement*)>("setOwner", &_::setOwner)
+            .method<void(LanguageElement*)>("addReferencedElement", &_::addReferencedElement)
+            .method<void(LanguageElement*)>("removeReferencedElement", &_::removeReferencedElement)
         
         .protected_()
             .constructor<void(uint)>()["0"]

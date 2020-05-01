@@ -50,14 +50,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void()>()
             .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
             .method<void(void*) const>("destroy", &_::destroy)
             .method<void(size_t, void*)>("destroy", &_::destroy)
             .method<Destructor*() const, virtual_|override_>("asDestructor", &_::asDestructor)
         
         .protected_()
-            .constructor<void(ClassType*, StringView, StringView, Modifiers, uint)>()["0"]["0"]
             .method<void**() const, virtual_>("getNativeVTablePointer", &_::getNativeVTablePointer)
             .method<size_t() const, virtual_>("getNativeVTableSize", &_::getNativeVTableSize)
             ;

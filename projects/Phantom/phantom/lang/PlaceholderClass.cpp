@@ -24,9 +24,9 @@ PlaceholderClass::PlaceholderClass(StringView a_Name, Modifiers a_Modifiers, uin
 {
 }
 
-Placeholder* PlaceholderClass::clone(uint a_Flags) const
+Placeholder* PlaceholderClass::clone(LanguageElement* a_pOwner, uint a_Flags) const
 {
-    return New<PlaceholderClass>(getName(), getModifiers(), a_Flags);
+    return a_pOwner->New<PlaceholderClass>(getName(), getModifiers(), a_Flags);
 }
 
 } // namespace lang

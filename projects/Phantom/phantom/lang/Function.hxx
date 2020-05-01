@@ -58,10 +58,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Function*() const, virtual_|override_>("asFunction", &_::asFunction)
             .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)
-        
-        .protected_()
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

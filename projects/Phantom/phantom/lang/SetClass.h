@@ -41,7 +41,8 @@ protected:
 public:
     SetClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~SetClass() override;
+    void initialize();
+    void terminate() override;
 
     Type* getKeyType() const override final { return m_pValueType; }
 
@@ -52,7 +53,7 @@ public:
 protected:
     Type*           m_pKeyType = nullptr;
     Type*           m_pMappedType = nullptr;
-    mutable RTData* m_Data = nullptr;
+    mutable RTData* m_pData = nullptr;
 };
 
 } // namespace lang

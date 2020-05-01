@@ -48,15 +48,6 @@ FunctionType::FunctionType(Type* a_pType, TypesView a_Types, Modifiers a_Modifie
     }
 }
 
-FunctionType::FunctionType(StringView a_strCode, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0 */,
-                           uint a_uiFlags /*=0*/)
-    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS), m_pReturnType(nullptr)
-{
-    a_pContextScope->addScopedElement(this);
-    parse(a_strCode, this);
-    a_pContextScope->removeScopedElement(this);
-}
-
 void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pContextScope)
 {
     size_t i = 0;
@@ -107,35 +98,11 @@ void FunctionType::addParameterType(Type* a_pType)
 
 void FunctionType::setReturnType(Type* a_pType)
 {
-    if (!(a_pType && (a_pType == PHANTOM_TYPEOF(void) || a_pType->isCopyable())))
-        setInvalid();
     m_pReturnType = a_pType;
     PHANTOM_ASSERT(m_pReturnType);
     addReferencedElement(a_pType);
     if (a_pType->isTemplateDependant())
         setTemplateDependant();
-}
-
-void FunctionType::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pReturnType == a_pElement)
-    {
-        m_pReturnType = nullptr;
-    }
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-}
-
-void FunctionType::onElementRemoved(LanguageElement* a_pElement)
-{
-    for (auto it = m_ParameterTypes.begin(); it != m_ParameterTypes.end(); ++it)
-    {
-        if ((*it) == a_pElement)
-        {
-            m_ParameterTypes.erase(std::find(m_ParameterTypes.begin(), m_ParameterTypes.end(), a_pElement));
-            break;
-        }
-    }
-    LanguageElement::onElementRemoved(a_pElement);
 }
 
 size_t FunctionType::getParameterTypeCount() const

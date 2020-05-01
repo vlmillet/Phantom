@@ -21,23 +21,23 @@ TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElemen
     : Symbol(a_pPlaceholder->asSymbol()->getName(), 0, a_uiFlags), m_pPlaceholder(a_pPlaceholder)
 {
     PHANTOM_ASSERT(m_pPlaceholder);
-    addElement(m_pPlaceholder->asSymbol());
+    PHANTOM_ASSERT(m_pPlaceholder->asSymbol()->getOwner() == this);
     if (a_pDefaultArgument)
     {
         setDefaultArgument(a_pDefaultArgument);
     }
 }
 
-TemplateParameter* TemplateParameter::clone() const
+TemplateParameter* TemplateParameter::clone(LanguageElement* a_pOwner) const
 {
-    TemplateParameter* pTP = New<TemplateParameter>(m_pPlaceholder, m_pDefaultArgument);
+    TemplateParameter* pTP = a_pOwner->New<TemplateParameter>(m_pPlaceholder, m_pDefaultArgument);
     pTP->setCodeRange(getCodeRange());
     return pTP;
 }
 
-TemplateParameter* TemplateParameter::clone(uint a_Flags /*= 0*/) const
+TemplateParameter* TemplateParameter::clone(LanguageElement* a_pOwner, uint a_Flags /*= 0*/) const
 {
-    return New<TemplateParameter>(getPlaceholder()->clone(), m_pDefaultArgument, a_Flags);
+    return a_pOwner->New<TemplateParameter>(getPlaceholder()->clone(a_pOwner), m_pDefaultArgument, a_Flags);
 }
 
 TemplateSignature* TemplateParameter::getTemplateSignature() const
@@ -65,32 +65,11 @@ void TemplateParameter::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_
     getName(a_Buf);
 }
 
-void TemplateParameter::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pDefaultArgument == a_pElement)
-        m_pDefaultArgument = nullptr;
-    LanguageElement::onElementRemoved(a_pElement);
-}
-
-void TemplateParameter::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pDefaultArgument == a_pElement)
-        m_pDefaultArgument = nullptr;
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-}
-
 void TemplateParameter::setDefaultArgument(LanguageElement* a_pElement)
 {
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(m_pDefaultArgument == nullptr, "default argument already defined");
     m_pDefaultArgument = a_pElement;
-    if (m_pDefaultArgument)
-    {
-        if (m_pDefaultArgument->getOwner())
-            addReferencedElement(m_pDefaultArgument);
-        else
-            addElement(m_pDefaultArgument);
-    }
 }
 
 bool TemplateParameter::partialAccepts(LanguageElement* a_pLanguageElement, size_t& a_Score,

@@ -23,6 +23,12 @@
 #include <phantom/field>
 #include <phantom/typedef>
 
+#include <phantom/template-only-push>
+
+#include "utils/Delegate.hxx"
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 PHANTOM_PACKAGE("phantom")
     PHANTOM_SOURCE("CustomAllocator")

@@ -74,7 +74,7 @@ public:
     static Symbol* PublicFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
     static Symbol* PublicIfUnamedSubSymbolFilter(Symbol* a_pSymbol, bool a_bUnamedSubSymbol);
 
-    void initialize() {} // pseudo polymorphic call (not virtual but used in the system 'as if')
+    void initialize(); // pseudo polymorphic call (not virtual but used in the system 'as if')
     void terminate() override;
     virtual ~LanguageElement();
 
@@ -110,23 +110,27 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     template<class T, class... Args>
-    T* new_(Args&&... a_Args)
+    T* new_(Args&&... a_Args) const
     {
+        // ensure we don't use new_ on language element except special cases ...
+        PHANTOM_STATIC_ASSERT((std::is_same<T, Module>::value || std::is_same<T, Package>::value ||
+                               std::is_same<T, Source>::value || std::is_same<T, PackageFolder>::value ||
+                               !std::is_base_of<LanguageElement, T>::value));
         return m_pSource->_new<T>(std::forward<Args>(a_Args)...);
     }
     template<class T>
-    void delete_(TypeIndentityT<T*> a_p)
+    void delete_(TypeIndentityT<T*> a_p) const
     {
         return m_pSource->_delete<T>(a_p);
     }
     template<class T>
-    void deleteP(T* a_p)
+    void deleteVirtual(T* a_p) const
     {
         PHANTOM_STATIC_ASSERT(std::has_virtual_destructor<T>::value);
         return m_pSource->_delete<T>(a_p);
     }
 
-    CustomAllocator const* getAllocator() const;
+    virtual CustomAllocator const* getAllocator() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  scope accessible delete-like for language element destruction.
@@ -185,7 +189,6 @@ public:
     virtual ConstType*                asConstClass() const { return nullptr; }
     virtual Pointer*                  asConstClassPointer() const { return nullptr; }
     virtual LValueReference*          asConstClassLValueReference() const { return nullptr; }
-    virtual RValueReference*          asConstClassRValueReference() const { return nullptr; }
     virtual Type*                     asConstClassAddressType() const { return nullptr; }
     virtual Constructor*              asConstructor() const { return nullptr; }
     virtual ConstType*                asConstType() const { return nullptr; }

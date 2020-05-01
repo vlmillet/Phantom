@@ -273,10 +273,6 @@ public:
     OpaqueDelegate getOpaqueDelegate() const override;
 
 protected:
-    Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, Modifiers a_Modifiers = 0,
-           uint a_uiFlags = 0);
-    Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-           Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

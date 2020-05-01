@@ -62,19 +62,18 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Property*() const, virtual_|override_>("asProperty", &_::asProperty)
             .method<Method*() const>("getSet", &_::getSet)
             .method<Method*(StringView)>("addSet", &_::addSet)["\"\""]
-            .method<Signal*(StringView)>("addSignal", &_::addSignal)["\"\""]
+            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Signal*(StringView)>("addSignal", &_::addSignal)["\"\""]
             .method<Method*(StringView)>("addGet", &_::addGet)["\"\""]
             .method<Method*() const>("getGet", &_::getGet)
-            .method<Signal*() const>("getSignal", &_::getSignal)
+            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Signal*() const>("getSignal", &_::getSignal)
             .method<void(Method*)>("setSet", &_::setSet)
             .method<void(Method*)>("setGet", &_::setGet)
-            .method<void(Signal*)>("setSignal", &_::setSignal)
+            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(Signal*)>("setSignal", &_::setSignal)
             .method<bool() const, virtual_|override_>("isWrittable", &_::isWrittable)
             .method<bool() const, virtual_|override_>("isReadable", &_::isReadable)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

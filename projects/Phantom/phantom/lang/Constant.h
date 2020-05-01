@@ -81,8 +81,8 @@ template<typename t_Ty>
 inline Constant* Constant::Create(LanguageElement* a_pOwner, t_Ty a_Constant, StringView name, Type* a_pType)
 {
     if (a_pType)
-        return a_pOwner->NewMeta<ConstantT<t_Ty>>(a_pType, name, a_Constant);
-    return a_pOwner->NewMeta<ConstantT<t_Ty>>(name, a_Constant);
+        return a_pOwner->NewMeta<ConstantT<t_Ty>>(a_pType, name, a_Constant, PHANTOM_R_NONE, 0);
+    return a_pOwner->NewMeta<ConstantT<t_Ty>>(name, a_Constant, PHANTOM_R_NONE, 0);
 }
 
 } // namespace lang

@@ -1500,15 +1500,15 @@ public:
     /// \internal
     virtual bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const;
 
-protected:
-    Type*              createPointer() const;
-    LValueReference*   createLValueReference() const;
-    RValueReference*   createRValueReference() const;
-    Array*             createArray(size_t a_uiCount) const;
-    ConstType*         createConstType() const;
-    VolatileType*      createVolatileType() const;
-    ConstVolatileType* createConstVolatileType() const;
-    void               removeExtendedType(Type* a_pType);
+private:
+    Types&             _extTypes() const;
+    Type*              createPointer();
+    LValueReference*   createLValueReference();
+    RValueReference*   createRValueReference();
+    Array*             createArray(size_t a_uiCount);
+    ConstType*         createConstType();
+    VolatileType*      createVolatileType();
+    ConstVolatileType* createConstVolatileType();
     void               onNamespaceChanging(Namespace* a_pNamespace) override;
     void               onNamespaceChanged(Namespace* a_pNamespace) override;
 

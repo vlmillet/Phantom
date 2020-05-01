@@ -226,8 +226,8 @@ private:
                                              /// 'Class' is the meta type of class itself)
         }
         m_pType->rtti.instance = m_pType;
-        m_pType->rtti.dtor = &DynamicDeleteMetaHelper<MetaType>::dynamicDelete;
         m_pType->rtti.metaClass = pMetaClass;
+        m_pType->initialize();
         pMetaClass->registerInstance(m_pType);
     }
 

@@ -87,7 +87,6 @@ Application* Application::Get()
 
 Application::Application()
     : Symbol("", PHANTOM_R_NONE, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_FLAG_NATIVE),
-      LanguageElementUnitT<Application>(&m_Allocator),
       m_pMainModule(nullptr),
       m_OperationCounter(1) /// operation counter initialized to 1 to be able to handle C++ dyanmic
                             /// Initializer and auto loaded dlls before user make manual operations,
@@ -111,9 +110,9 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
         MODULEINFO modInfo{};
         PHANTOM_VERIFY(
         GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));
-        info->setModule(phantom::New<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
-                                             info->m_BinaryFileName, info->m_Source,
-                                             info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
+        info->setModule(phantom::new_<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
+                                              info->m_BinaryFileName, info->m_Source,
+                                              info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
@@ -121,7 +120,7 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
 
         if (m_Modules.empty()) // first module ever is the phantom's one
         {
-            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default");
+            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default", 0);
         }
         _addModule(info->m_pModule);
         info->m_pModule->setOnLoadFunc(info->m_OnLoad);
@@ -171,9 +170,7 @@ void Application::_uninstallNativeModule(Module* a_pModule)
     }
     else
     {
-        Delete<Module>(a_pModule);
-        PHANTOM_ASSERT(m_pElements == nullptr ||
-                       std::find(m_pElements->begin(), m_pElements->end(), a_pModule) == m_pElements->end());
+        Delete(a_pModule);
     }
 }
 
@@ -278,7 +275,7 @@ void Application::_prefetchPlugins(StringView a_strPath)
                 }
                 else
                 {
-                    addPlugin(New<Plugin>(entry.path().genericString()));
+                    addPlugin(new_<Plugin>(entry.path().genericString()));
                 }
             }
         }
@@ -388,7 +385,7 @@ void Application::_unloadMain()
             if (!pModule->isNative())
             {
                 // destroying runtime/script modules
-                Delete<Module>(pModule);
+                Delete(pModule);
                 break;
             }
         }
@@ -422,7 +419,7 @@ void Application::_unloadMain()
                                 "a Phantom Plugin .dll is still in use while releasing Application; we manually force "
                                 "release of the reflection Module elements ; ensure your .dll is unloaded before to "
                                 "avoid undefined behavior.");
-                    Delete<Module>(pModule);
+                    Delete(pModule);
                 }
                 break;
             }
@@ -545,6 +542,7 @@ void Application::addModule(Module* a_pModule)
 
 void Application::_addModule(Module* a_pModule)
 {
+    PHANTOM_ASSERT(a_pModule->getOwner() == this, "module with same name already loaded");
     PHANTOM_ASSERT(getModule(a_pModule->getName()) == nullptr, "module with same name already loaded");
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
     PHANTOM_ASSERT(m_Modules.size() || a_pModule->getName() == "Phantom", "phantom must be the first loaded module");
@@ -554,7 +552,6 @@ void Application::_addModule(Module* a_pModule)
     {
         m_NativeModules.push_back(a_pModule);
     }
-    addElement(a_pModule);
 }
 
 void Application::removeModule(Module* a_pModule)
@@ -571,20 +568,30 @@ void Application::_removeModule(Module* a_pModule)
 
 void Application::_registerBuiltInTypes()
 {
+    PHANTOM_ASSERT(m_pDefaultSource);
     /// Install pre defined and convenient types
     phantom::lang::BuiltInTypes::Register();
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
-    Alias* pUnsignedAlias = NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", 0, PHANTOM_R_FLAG_NATIVE);
+    Alias* pUnsignedAlias =
+    NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     pUnsignedAlias->setNamespace(Namespace::Global());
 
     Namespace* pGlobal = Namespace::Global();
-    Namespace* pPhantom = pGlobal->getOrCreateNamespace("phantom");
+    Namespace* pPhantom = pGlobal->getNamespace("phantom");
+    PHANTOM_ASSERT(pPhantom);
 
-#define _PHNTM_FUND_TD(t) pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
+#define _PHNTM_FUND_TD(t)                                                                                              \
+    _PHNTM_FUND_TD_NMS(t);                                                                                             \
+    _PHNTM_FUND_TD_SRC(t);
 
 #define _PHNTM_FUND_TD_PHNTM(t)                                                                                        \
-    Application::Get()->getDefaultSource()->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
+    _PHNTM_FUND_TD_NMS_PHNTM(t);                                                                                       \
+    _PHNTM_FUND_TD_SRC(t);
+
+#define _PHNTM_FUND_TD_NMS_PHNTM(t) pPhantom->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
+#define _PHNTM_FUND_TD_NMS(t) pGlobal->addAlias(PHANTOM_TYPEOF(t), #t, 0, PHANTOM_R_FLAG_NATIVE)
+#define _PHNTM_FUND_TD_SRC(t) m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE)
 
     // #if defined(_M_IA64) || defined(_M_X64) || defined(_M_AMD64)
     //     _PHNTM_FUND_TD(int128);
@@ -614,7 +621,6 @@ void Application::_registerBuiltInTypes()
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
     /// workaround for clang va_list built-in type
-    pPhantomModule->addElement();
 #endif
     _PHNTM_FUND_TD(size_t);
 
@@ -648,8 +654,6 @@ void Application::_registerBuiltInTypes()
     _PHNTM_FUND_TD_PHNTM(longdouble);
     _PHNTM_FUND_TD_PHNTM(size_t);
     _PHNTM_FUND_TD_PHNTM(byte);
-
-#undef _PHNTM_FUND_TD
 }
 
 Module* Application::getMainModule() const
@@ -659,9 +663,16 @@ Module* Application::getMainModule() const
 
 Module* Application::getOrCreateModule(StringView a_name)
 {
-    Module* pMod = New<Module>(a_name);
-    addModule(pMod);
-    return pMod;
+    if (Module* pMod = getModule(a_name))
+    {
+        return pMod;
+    }
+    else
+    {
+        pMod = newModule(a_name);
+        addModule(pMod);
+        return pMod;
+    }
 }
 
 Modules Application::getNativeModules() const
@@ -677,8 +688,7 @@ Constant* Application::getNullptr() const
 {
     if (m_pNullptr == nullptr)
     {
-        m_pNullptr = Constant::Create<std::nullptr_t>(nullptr, "nullptr");
-        const_cast<Application*>(this)->addSymbol(m_pNullptr);
+        m_pNullptr = Constant::Create<std::nullptr_t>(const_cast<Application*>(this), nullptr, "nullptr");
     }
     return m_pNullptr;
 }
@@ -758,12 +768,6 @@ Module* Application::nativeModuleFromProgramCounter(const byte* epc)
         }
     }
     return pBestMatch;
-}
-
-LanguageElement* Application::invalid(LanguageElement* a_pElement)
-{
-    addElement(a_pElement);
-    return a_pElement;
 }
 
 bool Application::setDefaultPluginPath(StringView a_strPath)
@@ -1020,7 +1024,7 @@ void Application::removePlugin(Plugin* a_pPlugin)
 Module* Application::newModule(StringView a_strName)
 {
     PHANTOM_ASSERT(dynamic_initializer_()->installed(), "cannot be called before main()");
-    Module* pMod = phantom::New<Module>(a_strName);
+    Module* pMod = phantom::new_<Module>(a_strName);
     pMod->rtti.instance = pMod;
     pMod->rtti.metaClass = PHANTOM_CLASSOF(Module);
     pMod->setOwner(this);
@@ -1035,7 +1039,7 @@ PackageFolder* Application::rootPackageFolder() const
 {
     if (m_pRootPackageFolder == nullptr)
     {
-        PackageFolder* pPF = phantom::New<PackageFolder>();
+        PackageFolder* pPF = phantom::new_<PackageFolder>();
         pPF->rtti.instance = pPF;
         pPF->setOwner(const_cast<Application*>(this));
         phantom::detail::deferInstallation("phantom::lang::PackageFolder",
@@ -1183,7 +1187,7 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
                     Symbol* pUS = reinterpret_cast<LanguageElement*>(pExp)->removeExpressionAsSymbol();
                     if (pUS && pUS->asConstant())
                     {
-                        pSymbol = static_cast<Constant*>(pUS)->clone();
+                        pSymbol = static_cast<Constant*>(pUS)->clone(const_cast<Application*>(this));
                     }
                     else
                         return false;
@@ -1206,7 +1210,7 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
             Symbol* pUS = reinterpret_cast<LanguageElement*>(pExp)->removeExpressionAsSymbol();
             if (pUS && pUS->asConstant())
             {
-                pSymbol = static_cast<Constant*>(pUS)->clone();
+                pSymbol = static_cast<Constant*>(pUS)->clone(const_cast<Application*>(this));
             }
             else
                 return false;
@@ -1218,13 +1222,13 @@ bool Application::_findSymbols(StringView a_strUniqueName, Symbols& a_OutSymbols
     return true;
 }
 
-static void Application_clearClonedConstants(const Symbols& a_Symbols)
+static void Application_clearClonedConstants(Application* a_pApp, const Symbols& a_Symbols)
 {
     for (auto it = a_Symbols.begin(); it != a_Symbols.end(); ++it)
     {
         Symbol* pSym = *it;
         if (pSym && pSym->asConstant() && pSym->getOwner() == nullptr)
-            Delete(pSym);
+            a_pApp->Delete(pSym);
     }
 }
 
@@ -1290,7 +1294,7 @@ Symbol* Application::_findSymbol(const Strings& words, const Types* a_pFunctionS
                 if (pSpec)
                 {
                     pScope = pSpec->getTemplated();
-                    Application_clearClonedConstants(templateSignature);
+                    Application_clearClonedConstants(const_cast<Application*>(this), templateSignature);
                 }
                 // TODO : review template instantiation in Application::findSymbol (see code in
                 // history here for old implem)

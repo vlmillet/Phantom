@@ -58,14 +58,6 @@ Expression* ValueMember::getDefaultExpression() const
     return m_pDefaultExpression;
 }
 
-void ValueMember::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pValueType == a_pElement)
-    {
-        m_pValueType = nullptr;
-    }
-}
-
 void ValueMember::setFilterMask(uint a_Mask)
 {
     m_uiFilterMask = a_Mask;

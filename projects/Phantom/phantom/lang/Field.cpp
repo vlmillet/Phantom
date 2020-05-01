@@ -51,11 +51,6 @@ void Field::fetchFields(Fields& a_Out) const
     a_Out.push_back(const_cast<Field*>(this));
 }
 
-void Field::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    ValueMember::onReferencedElementRemoved(a_pElement);
-}
-
 MemberAnonymousUnion* Field::getEmbeddingMemberAnonymousUnion() const
 {
     if (m_pMemberAnonymousSection)

@@ -13,7 +13,7 @@ namespace phantom
 namespace lang
 {
 Union::Union(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ClassType(TypeKind::Union, phantom::New<ExtraData>(), a_strName, a_Modifiers, a_uiFlags)
+    : ClassType(TypeKind::Union, phantom::new_<ExtraData>(), a_strName, a_Modifiers, a_uiFlags)
 {
 }
 

@@ -29,9 +29,9 @@ Class* PlaceholderClassType::toClass() const
     return ((PlaceholderType*)getOwner())->toClass();
 }
 
-Placeholder* PlaceholderClassType::clone(uint a_Flags) const
+Placeholder* PlaceholderClassType::clone(LanguageElement* a_pOwner, uint a_Flags) const
 {
-    return New<PlaceholderClassType>(getName(), getModifiers(), a_Flags);
+    return a_pOwner->New<PlaceholderClassType>(getName(), getModifiers(), a_Flags);
 }
 
 } // namespace lang

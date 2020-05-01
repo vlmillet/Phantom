@@ -26,20 +26,9 @@ class PHANTOM_EXPORT_PHANTOM PackageFolder : public Symbol
     friend class Package;
     friend class phantom::Phantom;
 
-protected:
-    /// \internal
-    PackageFolder();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructor.
-    /// \internal
-    ///
-    /// \param  a_strName                   The name.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    PackageFolder(StringView a_strName);
-
 public:
+    PackageFolder();
+    PackageFolder(StringView a_strName);
     ~PackageFolder() override;
 
     void terminate();
@@ -112,6 +101,8 @@ public:
     void getQualifiedName(StringBuffer& a_Buf) const override { getUniqueName(a_Buf); }
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { getUniqueName(a_Buf); }
 
+    CustomAllocator const* getAllocator() const override { return &CustomAllocator::CurrentOrDefault(); }
+
 public:
     phantom::Signal<void(PackageFolder*)> packageFolderAdded;
     phantom::Signal<void(PackageFolder*)> packageFolderAboutToBeRemoved;
@@ -119,6 +110,11 @@ public:
 private:
     void _addPackage(Package* a_pPackage);
     void _removePackage(Package* a_pPackage);
+    using LanguageElement::New;
+    using LanguageElement::NewDeferred;
+    using LanguageElement::NewMeta;
+    using LanguageElement::new_;
+    using LanguageElement::delete_;
 
 private:
     Packages       m_Packages;

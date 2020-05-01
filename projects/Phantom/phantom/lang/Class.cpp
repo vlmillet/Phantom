@@ -60,12 +60,11 @@ Class::Class(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t
 {
 }
 
-Class::~Class() {}
-
 void Class::initialize()
 {
     ClassType::initialize();
-    setExtraData(new_<ExtraData>());
+    if (!isNative())
+        setExtraData(new_<ExtraData>());
 }
 
 void Class::terminate()
@@ -1479,7 +1478,7 @@ VirtualMethodTable* Class::CreateVirtualMethodTable(Class* a_pOwner, void** a_pp
 void Class::addImplicitDefaultConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void));
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void));
     Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
@@ -1488,7 +1487,7 @@ void Class::addImplicitDefaultConstructor()
 void Class::addImplicitCopyConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
     Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
@@ -1497,7 +1496,7 @@ void Class::addImplicitCopyConstructor()
 void Class::addImplicitCopyAssignmentOperator()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature* pSignature = New<Signature>(makeLValueReference(), makeConst()->makeLValueReference());
+    Signature* pSignature = Signature::Create(this, makeLValueReference(), makeConst()->makeLValueReference());
     Method*    pMethod = New<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pMethod->setAccess(Access::Public);
     addMethod(pMethod);
@@ -1506,7 +1505,7 @@ void Class::addImplicitCopyAssignmentOperator()
 void Class::addImplicitMoveConstructor()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), makeRValueReference());
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void), makeRValueReference());
     Constructor* pConstructor = New<Constructor>(m_strName, pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
     addConstructor(pConstructor);
@@ -1515,7 +1514,7 @@ void Class::addImplicitMoveConstructor()
 void Class::addImplicitMoveAssignmentOperator()
 {
     PHANTOM_ASSERT(!isNative());
-    Signature* pSignature = New<Signature>(makeLValueReference(), makeRValueReference());
+    Signature* pSignature = Signature::Create(this, makeLValueReference(), makeRValueReference());
     Method*    pMethod = New<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pMethod->setAccess(Access::Public);
     addMethod(pMethod);
@@ -1697,7 +1696,7 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
     : m_Access(a_Access), m_MinAlign(a_MinAlign)
 {
     if (a_pOwnerScope == nullptr)
-        a_pOwnerScope = Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default");
+        a_pOwnerScope = Application::Get()->getMainModule()->getDefaultPackage()->getOrCreateSource("default", 0);
 
     if (a_pNamingScope == nullptr)
         a_pNamingScope = Namespace::Global();

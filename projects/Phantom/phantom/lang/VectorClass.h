@@ -35,7 +35,8 @@ class PHANTOM_EXPORT_PHANTOM VectorClass : public SequentialContainerClass
 public:
     VectorClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~VectorClass() override;
+    void initialize();
+    void terminate() override;
 
     virtual void const* data(void const* a_pContainer) const;
     virtual void*       data(void* a_pContainer) const;

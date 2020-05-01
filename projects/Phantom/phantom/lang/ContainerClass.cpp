@@ -22,13 +22,21 @@ ContainerClass::ContainerClass(TypeKind a_eTypeKind, StringView a_strName, size_
 
 ContainerClass::ContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
                                uint a_uiFlags /*= 0*/)
-    : Class(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
+    : Class(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-ContainerClass::~ContainerClass()
+void ContainerClass::initialize()
 {
-    Delete<RTData>(m_Data);
+    Class::initialize();
+    if (!isNative())
+        m_pData = new_<RTData>();
+}
+
+void ContainerClass::terminate()
+{
+    if (m_pData)
+        delete_<RTData>(m_pData);
 }
 
 void ContainerClass::setValueType(Type* a_pValueType)
@@ -39,34 +47,34 @@ void ContainerClass::setValueType(Type* a_pValueType)
 
 size_t ContainerClass::size(void const* a_pContainer) const
 {
-    if (!m_Data->m_pFunc_size)
+    if (!m_pData->m_pFunc_size)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_size = getMethod("size() const"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_size = getMethod("size() const"));
     }
-    PHANTOM_ASSERT(m_Data->m_pFunc_size);
+    PHANTOM_ASSERT(m_pData->m_pFunc_size);
     size_t result;
-    m_Data->m_pFunc_size->invoke((void*)a_pContainer, nullptr, &result);
+    m_pData->m_pFunc_size->invoke((void*)a_pContainer, nullptr, &result);
     return result;
 }
 
 void ContainerClass::clear(void* a_pContainer) const
 {
-    if (!m_Data->m_pFunc_clear)
+    if (!m_pData->m_pFunc_clear)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_clear = getMethod("clear()"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_clear = getMethod("clear()"));
     }
-    m_Data->m_pFunc_clear->invoke((void*)a_pContainer, nullptr);
+    m_pData->m_pFunc_clear->invoke((void*)a_pContainer, nullptr);
 }
 
 void ContainerClass::insert(void* a_pContainer, void const* a_pIt, void const* a_pValue, void* a_pOutIt) const
 {
-    if (!m_Data->m_pFunc_insert)
+    if (!m_pData->m_pFunc_insert)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_insert =
+        PHANTOM_VERIFY(m_pData->m_pFunc_insert =
                        getMethod("insert", TypesView{getIteratorType(), getValueType()->addConstLValueReference()}));
     }
     void* args[2]{(void*)a_pIt, (void*)a_pValue};
-    return m_Data->m_pFunc_insert->invoke((void*)a_pContainer, args, a_pOutIt);
+    return m_pData->m_pFunc_insert->invoke((void*)a_pContainer, args, a_pOutIt);
 }
 
 void ContainerClass::eraseKey(void* a_pContainer, void const* a_pKey) const
@@ -77,38 +85,38 @@ void ContainerClass::eraseKey(void* a_pContainer, void const* a_pKey) const
 void ContainerClass::begin(void* a_pContainer, void* a_pOutIt) const
 {
     _initBegin();
-    m_Data->m_pFunc_begin->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
+    m_pData->m_pFunc_begin->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::begin(void const* a_pContainer, void* a_pOutIt) const
 {
     _initBeginC();
-    m_Data->m_pFunc_beginc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
+    m_pData->m_pFunc_beginc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::end(void* a_pContainer, void* a_pOutIt) const
 {
-    if (!m_Data->m_pFunc_end)
+    if (!m_pData->m_pFunc_end)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_end = getMethod("end()"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_end = getMethod("end()"));
     }
-    m_Data->m_pFunc_end->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
+    m_pData->m_pFunc_end->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 void ContainerClass::end(void const* a_pContainer, void* a_pOutIt) const
 {
-    if (!m_Data->m_pFunc_endc)
+    if (!m_pData->m_pFunc_endc)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_endc = getMethod("end() const"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_endc = getMethod("end() const"));
     }
-    m_Data->m_pFunc_endc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
+    m_pData->m_pFunc_endc->invoke((void*)a_pContainer, (void**)nullptr, a_pOutIt);
 }
 
 Property* ContainerClass::getSizeProperty() const
 {
     if (!m_pSizeProperty)
     {
-        if ((m_pSizeProperty = createSizeProperty()))
+        if ((m_pSizeProperty = const_cast<ContainerClass*>(this)->createSizeProperty()))
             const_cast<ContainerClass*>(this)->addProperty(m_pSizeProperty);
     }
     if (!m_pSizeProperty)
@@ -205,11 +213,11 @@ void* ContainerClass::referenceAt(void* a_pContainer, size_t a_uiIndex) const
 
 void ContainerClass::erase(void* a_pContainer, void const* a_pIt) const
 {
-    if (!m_Data->m_pFunc_eraseAt)
+    if (!m_pData->m_pFunc_eraseAt)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_eraseAt = getMethod("erase", Types{getIteratorType()}));
+        PHANTOM_VERIFY(m_pData->m_pFunc_eraseAt = getMethod("erase", Types{getIteratorType()}));
     }
-    m_Data->m_pFunc_eraseAt->invoke((void*)a_pContainer, (void**)&a_pIt);
+    m_pData->m_pFunc_eraseAt->invoke((void*)a_pContainer, (void**)&a_pIt);
 }
 
 void ContainerClass::eraseAt(void* a_pContainer, size_t a_uiIndex) const
@@ -225,33 +233,33 @@ void ContainerClass::eraseAt(void* a_pContainer, size_t a_uiIndex) const
 
 void ContainerClass::_initBegin() const
 {
-    if (!m_Data->m_pFunc_begin)
+    if (!m_pData->m_pFunc_begin)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_begin = getMethod("begin()"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_begin = getMethod("begin()"));
     }
 }
 
 void ContainerClass::_initBeginC() const
 {
-    if (!m_Data->m_pFunc_beginc)
+    if (!m_pData->m_pFunc_beginc)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_beginc = getMethod("begin() const"));
+        PHANTOM_VERIFY(m_pData->m_pFunc_beginc = getMethod("begin() const"));
     }
 }
 
 Type* ContainerClass::getIteratorType() const
 {
     _initBegin();
-    return m_Data->m_pFunc_begin->getReturnType();
+    return m_pData->m_pFunc_begin->getReturnType();
 }
 
 Type* ContainerClass::getConstIteratorType() const
 {
     _initBeginC();
-    return m_Data->m_pFunc_beginc->getReturnType();
+    return m_pData->m_pFunc_beginc->getReturnType();
 }
 
-Property* ContainerClass::createSizeProperty() const
+Property* ContainerClass::createSizeProperty()
 {
     Property* pProp = nullptr;
     auto      pGetMethod = getMethod("size() const");

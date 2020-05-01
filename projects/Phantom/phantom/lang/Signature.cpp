@@ -29,6 +29,12 @@ Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView 
     return a_pOwner->NewDeferred<Signature>(a_pRet, params, a_Modifiers, a_uiFlags);
 }
 
+Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers a_Modifiers /*= 0*/,
+                             uint a_uiFlags /*= 0*/)
+{
+    return a_pOwner->NewDeferred<Signature>(a_pRet, a_Modifiers, a_uiFlags);
+}
+
 Signature::Signature(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pReturnType(nullptr),

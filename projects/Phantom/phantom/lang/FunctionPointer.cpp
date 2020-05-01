@@ -24,11 +24,6 @@ FunctionPointer::FunctionPointer(FunctionType* a_pFunctionType, ABI a_eABI, Modi
 
 FunctionPointer::~FunctionPointer() {}
 
-void FunctionPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Type::onReferencedElementRemoved(a_pElement);
-}
-
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "cleanup these asserts")
 #endif

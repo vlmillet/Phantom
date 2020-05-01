@@ -52,28 +52,6 @@ Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifi
     PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
-Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature,
-               Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Subroutine(a_pScope, a_strName, a_strSignature, ABI::MethodCall, (a_Modifiers & ~PHANTOM_R_NOCONST), a_uiFlags),
-      m_pThis(nullptr),
-      m_uiVirtualTableIndex(~size_t(0)),
-      m_pVTableClosures(nullptr),
-      m_pProperty(nullptr)
-{
-    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
-}
-
-Method::Method(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-               Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Subroutine(a_pScope, a_strName, a_strSignature, a_eABI, (a_Modifiers & ~PHANTOM_R_NOCONST), a_uiFlags),
-      m_pThis(nullptr),
-      m_uiVirtualTableIndex(~size_t(0)),
-      m_pVTableClosures(nullptr),
-      m_pProperty(nullptr)
-{
-    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
-}
-
 size_t Method::getVirtualTableIndex(size_t a_uiVtableIndex) const
 {
     Class* pClass = getOwnerClass();
@@ -89,7 +67,8 @@ size_t Method::getVirtualTableIndex(size_t a_uiVtableIndex) const
 
 Method::~Method()
 {
-    PHANTOM_DELETE(SmallMap<size_t, void*>) m_pVTableClosures;
+    if (m_pVTableClosures)
+        delete_<SmallMap<size_t, void*>>(m_pVTableClosures);
 }
 
 lang::ClassType* Method::getOwnerClassType() const
@@ -147,7 +126,7 @@ void Method::setVTableClosure(size_t a_uiOffset, void* a_pClosure)
 {
     if (m_pVTableClosures == nullptr)
     {
-        m_pVTableClosures = PHANTOM_NEW(SmallMap<size_t, void*>);
+        m_pVTableClosures = new_<SmallMap<size_t, void*>>(getAllocator());
     }
     (*m_pVTableClosures)[a_uiOffset] = a_pClosure;
 }

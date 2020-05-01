@@ -89,7 +89,6 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<bool() const, virtual_|override_>("canBeDestroyed", &_::canBeDestroyed)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
         
         .protected_()
             .field("m_TemplateSpecializations", &_::m_TemplateSpecializations)

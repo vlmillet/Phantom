@@ -42,10 +42,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
         
-        .protected_()
-            .constructor<void(Type*)>()
-        
         .public_()
+            .constructor<void(Type*)>()
             .method<LValueReference*() const, virtual_|override_>("asClassLValueReference", &_::asClassLValueReference)
             .method<LValueReference*() const, virtual_|override_>("asConstClassLValueReference", &_::asConstClassLValueReference)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)

@@ -118,7 +118,8 @@ public:
 private:
     void _addConstant(StringView a_Nme, T a_Val)
     {
-        m_pEnum->addConstant(m_pEnum->NewMeta<lang::ConstantT<T>>(m_pEnum, a_Nme, a_Val, 0, PHANTOM_R_FLAG_NATIVE));
+        m_pEnum->addConstant(
+        m_pEnum->NewMeta<lang::ConstantT<T>>(m_pEnum, a_Nme, a_Val, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE));
     }
 
 private:

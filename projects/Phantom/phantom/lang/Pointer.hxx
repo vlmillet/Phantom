@@ -52,10 +52,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
         
-        .protected_()
-            .constructor<void(Type*)>()
-        
         .public_()
+            .constructor<void(Type*)>()
             .method<Type*() const>("getPointeeType", &_::getPointeeType)
             .method<Type*() const, virtual_|override_>("asClassAddressType", &_::asClassAddressType)
             .method<Pointer*() const, virtual_|override_>("asClassPointer", &_::asClassPointer)
@@ -96,9 +94,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             .method<LanguageElement*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

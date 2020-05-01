@@ -20,10 +20,7 @@ LocalVariable::LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pValueType(a_pValueType)
 {
     PHANTOM_ASSERT(m_pValueType);
-    if (m_pValueType->getOwner() == nullptr && !(m_pValueType->isNative()))
-        addElement(m_pValueType);
-    else
-        addReferencedElement(m_pValueType);
+    addReferencedElement(m_pValueType);
     if (m_pValueType->isTemplateDependant())
         setTemplateDependant();
 }
@@ -45,14 +42,6 @@ Block* LocalVariable::getBlock() const
 Subroutine* LocalVariable::getSubroutine() const
 {
     return getEnclosingSubroutine();
-}
-
-void LocalVariable::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (a_pElement == m_pValueType)
-    {
-        m_pValueType = nullptr;
-    }
 }
 
 void LocalVariable::setValueType(Type* a_pType)

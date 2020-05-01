@@ -28,7 +28,7 @@ public:
 
 public: // ForwardHeap Specific
     /// Reset the memory and deallocate pages
-    void Reset();
+    void reset();
 
 public: // MemoryHeap Related
     void* allocate(size_t _size, size_t _align);

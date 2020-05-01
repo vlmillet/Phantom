@@ -211,14 +211,14 @@ void DynamicCppInitializerH::StaticGlobalsInit()
 {
     g_pGlobalNamespace.construct("");
     g_pApplication.construct();
-    g_pApplication->addElement(g_pGlobalNamespace);
+    g_pGlobalNamespace->setOwner(g_pApplication);
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
     g_pReflectionNamespace.construct("lang");
 
-    g_pGlobalNamespace->addNamespace(g_pStdNamespace);
-    g_pGlobalNamespace->addNamespace(g_pPhantomNamespace);
-    g_pPhantomNamespace->addNamespace(g_pReflectionNamespace);
+    g_pStdNamespace->setNamespace(g_pGlobalNamespace);
+    g_pPhantomNamespace->setNamespace(g_pGlobalNamespace);
+    g_pReflectionNamespace->setNamespace(g_pPhantomNamespace);
 
     PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pGlobalNamespace);
     PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pStdNamespace);
@@ -232,11 +232,6 @@ void DynamicCppInitializerH::StaticGlobalsInit()
 void DynamicCppInitializerH::StaticGlobalsRelease()
 {
     lang::releaseSystem();
-
-    g_pPhantomNamespace->removeNamespace(g_pReflectionNamespace);
-    g_pGlobalNamespace->removeNamespace(g_pPhantomNamespace);
-    g_pGlobalNamespace->removeNamespace(g_pStdNamespace);
-    g_pApplication->removeElement(g_pGlobalNamespace);
 
     staticAllocatedDeleteEx(g_pReflectionNamespace);
     staticAllocatedDeleteEx(g_pStdNamespace);
@@ -884,26 +879,13 @@ phantom::lang::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile
                     packageName += '.';
                 packageName += *it;
             }
-            pPackage = pModule->getPackage(packageName);
-            if (pPackage == nullptr)
-            {
-                pPackage = PHANTOM_DEFERRED_NEW(lang::Package)(packageName);
-                pModule->addPackage(pPackage);
-            }
+            pPackage = pModule->getOrCreatePackage(packageName);
         }
 
         PHANTOM_ASSERT(pPackage);
 
-        pSource = pPackage->getSource(sourceName);
-        if (pSource == nullptr)
-        {
-            pSource = PHANTOM_DEFERRED_NEW(lang::Source)(sourceName, 0, PHANTOM_R_FLAG_NATIVE);
-            pPackage->addSource(pSource);
-            return pSource;
-        }
+        return pPackage->getOrCreateSource(sourceName, PHANTOM_R_FLAG_NATIVE);
     }
-    PHANTOM_ASSERT(pSource);
-
     return pSource;
 }
 
@@ -918,29 +900,6 @@ PHANTOM_EXPORT_PHANTOM bool installed()
 }
 
 } // namespace detail
-
-void lang::LanguageElement::Register(phantom::lang::LanguageElement*
-#if PHANTOM_REFLECTION_DEBUG_ENABLED
-                                     pElement
-#endif
-)
-{
-#if PHANTOM_REFLECTION_DEBUG_ENABLED
-    ::phantom::detail::g_elements->push_back(pElement);
-#endif
-}
-
-void lang::LanguageElement::Unregister(phantom::lang::LanguageElement*
-#if PHANTOM_REFLECTION_DEBUG_ENABLED
-                                       pElement
-#endif
-)
-{
-#if PHANTOM_REFLECTION_DEBUG_ENABLED
-    ::phantom::detail::g_elements->erase(
-    std::find(::phantom::detail::g_elements->begin(), ::phantom::detail::g_elements->end(), pElement));
-#endif
-}
 
 void CppTypeIdToPhantomQualifiedDecoratedName(char* a_Name, size_t& a_Length)
 {

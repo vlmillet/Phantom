@@ -26,7 +26,6 @@ class PHANTOM_EXPORT_PHANTOM VolatileType : public QualifiedType
 
 public:
     VolatileType(Type* a_pType);
-    ~VolatileType() override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the underlying volatiled type.

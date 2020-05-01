@@ -21,59 +21,40 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
                                                    Modifiers modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, modifiers, a_uiFlags | PHANTOM_R_FLAG_TEMPLATE_DEPENDANT | PHANTOM_R_FLAG_PRIVATE_VIS),
       m_pLeft(a_pLeft),
-      m_pTemplateArguments(a_pTemplateArguments ? New<LanguageElements>(*a_pTemplateArguments) : nullptr),
-      m_pFunctionArguments(a_pFunctionArguments ? New<LanguageElements>(*a_pFunctionArguments) : nullptr)
+      m_pTemplateArguments(a_pTemplateArguments ? new_<LanguageElements>(*a_pTemplateArguments) : nullptr),
+      m_pFunctionArguments(a_pFunctionArguments ? new_<LanguageElements>(*a_pFunctionArguments) : nullptr)
 {
     if (m_pLeft)
     {
-        if (m_pLeft->getOwner() == nullptr)
-        {
-            addElement(m_pLeft);
-        }
-        else
-        {
-            addReferencedElement(m_pLeft);
-        }
+        addReferencedElement(m_pLeft);
     }
     if (m_pTemplateArguments)
     {
         for (auto pElem : *m_pTemplateArguments)
         {
-            if (pElem->getOwner())
-            {
-                addReferencedElement(pElem);
-            }
-            else
-            {
-                addElement(pElem);
-            }
+            addReferencedElement(pElem);
         }
     }
     if (m_pFunctionArguments)
     {
         for (auto pElem : *m_pFunctionArguments)
         {
-            if (pElem->getOwner())
-            {
-                addReferencedElement(pElem);
-            }
-            else
-            {
-                addElement(pElem);
-            }
+            addReferencedElement(pElem);
         }
     }
 }
 
 TemplateDependantElement::~TemplateDependantElement()
 {
-    Delete<LanguageElements>(m_pTemplateArguments);
-    Delete<LanguageElements>(m_pFunctionArguments);
+    if (m_pTemplateArguments)
+        delete_<LanguageElements>(m_pTemplateArguments);
+    if (m_pFunctionArguments)
+        delete_<LanguageElements>(m_pFunctionArguments);
 }
 
 Type* TemplateDependantElement::toType() const
 {
-    return New<TemplateDependantType>((TemplateDependantElement*)this);
+    return const_cast<TemplateDependantElement*>(this)->New<TemplateDependantType>((TemplateDependantElement*)this);
 }
 
 void TemplateDependantElement::getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const

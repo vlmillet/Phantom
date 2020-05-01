@@ -28,7 +28,6 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
-#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -43,6 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using PackageFolders = typedef_< phantom::lang::PackageFolders>;
             using Packages = typedef_< phantom::lang::Packages>;
+            using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
@@ -53,19 +53,14 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
-        .protected_()
-            .staticMethod<PackageFolder*()>("Create", &_::Create)
+        .public_()
             .constructor<void()>()
             .constructor<void(StringView)>()
-            .method<void(PackageFolder*)>("addPackageFolder", &_::addPackageFolder)
-        
-        .public_()
+            .method<PackageFolder*(String)>("newPackageFolder", &_::newPackageFolder)
             .method<PackageFolder*() const, virtual_|override_>("asPackageFolder", &_::asPackageFolder)
             .method<PackageFolder*() const>("getParentFolder", &_::getParentFolder)
             .method<Packages const&() const>("getPackages", &_::getPackages)
             .method<Package*(Module*) const>("getPackage", &_::getPackage)
-            .method<PackageFolders::const_iterator() const>("beginPackageFolders", &_::beginPackageFolders)
-            .method<PackageFolders::const_iterator() const>("endPackageFolders", &_::endPackageFolders)
             .method<void(PackageFolders&) const>("getPackageFolders", &_::getPackageFolders)
             .method<PackageFolders const&() const>("getPackageFolders", &_::getPackageFolders)
             .method<PackageFolder*(StringView) const>("getPackageFolder", &_::getPackageFolder)
@@ -73,6 +68,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Source*(StringView) const>("getSource", &_::getSource)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<CustomAllocator const*() const, virtual_|override_>("getAllocator", &_::getAllocator)
         
         .public_()
             .field("packageFolderAdded", &_::packageFolderAdded)

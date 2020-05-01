@@ -77,7 +77,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(size_t, LanguageElement*)>("setArgument", &_::setArgument)
             .method<void(size_t, LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
             .method<void(StringView, LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
-            .method<void(LanguageElement*)>("removeArgument", &_::removeArgument)
             .method<TemplateParameters const&() const>("getTemplateParameters", &_::getTemplateParameters)
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
@@ -110,11 +109,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateSpecialization*() const>("getInstantiationSpecialization", &_::getInstantiationSpecialization)
             .method<PlaceholderMap const&() const>("getPlaceholderSubstitutions", &_::getPlaceholderSubstitutions)
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementAdded", &_::onReferencedElementAdded)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

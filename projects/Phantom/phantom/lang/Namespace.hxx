@@ -21,13 +21,11 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
@@ -67,10 +65,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<Namespace*() const, virtual_|override_>("asNamespace", &_::asNamespace)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)
-            .method<void(Symbol*), virtual_|override_>("addScopeElement", &_::addScopeElement)
-            .method<void(Symbol*), virtual_|override_>("removeScopeElement", &_::removeScopeElement)
-            .method<void(Namespace*)>("addNamespace", &_::addNamespace)
-            .method<void(Namespace*)>("removeNamespace", &_::removeNamespace)
             .method<Namespace*() const>("getRootNamespace", &_::getRootNamespace)
             .method<Namespace*(StringView) const>("getNamespace", &_::getNamespace)
             .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)["\":\""]
@@ -82,6 +76,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Namespace*(StringView) const>("getNamespaceAliased", &_::getNamespaceAliased)
             .method<Namespaces const&() const>("getNamespaces", &_::getNamespaces)
             .method<Aliases const&() const>("getNamespaceAliases", &_::getNamespaceAliases)
+            .method<Symbols const&() const>("getSymbols", &_::getSymbols)
             .method<String(char) const>("asPath", &_::asPath)["'/'"]
             .method<bool(Symbol*) const, virtual_|override_>("isSymbolHidden", &_::isSymbolHidden)
             .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)
@@ -96,20 +91,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
         
-        .public_()
-            .field("namespaceAdded", &_::namespaceAdded)
-            .field("namespaceRemoved", &_::namespaceRemoved)
-            .field("namespaceAliasAdded", &_::namespaceAliasAdded)
-            .field("namespaceAliasRemoved", &_::namespaceAliasRemoved)
-        
         .protected_()
-            .method<void(Namespace*)>("setParentNamespace", &_::setParentNamespace)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
-        
-        .protected_()
-            .field("m_Namespaces", &_::m_Namespaces)
-            .field("m_NamespaceAliases", &_::m_NamespaceAliases)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

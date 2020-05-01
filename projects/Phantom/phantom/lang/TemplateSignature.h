@@ -263,7 +263,7 @@ public:
     /// \brief  Helper which created a replicate of this signature with its own parameters.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSignature* clone(uint a_Flags = 0) const;
+    TemplateSignature* clone(LanguageElement* a_pOwner, uint a_Flags = 0) const;
 
     void getName(StringBuffer& a_Buf) const override;
 

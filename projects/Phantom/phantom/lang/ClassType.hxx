@@ -86,8 +86,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .end()
         
         .protected_()
-            .constructor<void(TypeKind, ExtraData*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(TypeKind, ExtraData*, StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind, StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()
         
         .public_()
@@ -105,30 +105,22 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_>("isListInitializable", &_::isListInitializable)
             .method<void(Access)>("setDefaultAccess", &_::setDefaultAccess)
             .method<Access() const>("getDefaultAccess", &_::getDefaultAccess)
-            .method<void(Constructor*), virtual_>("addConstructor", &_::addConstructor)
-            .method<Constructor*(StringView), virtual_>("addConstructor", &_::addConstructor)
+            .method<void(Constructor*)>("addConstructor", &_::addConstructor)
             .method<Constructor*(const Parameters&, Modifiers, uint)>("addConstructor", &_::addConstructor)["0"]["0"]
             .method<Constructor*(Modifiers, uint)>("addConstructor", &_::addConstructor)["0"]["0"]
             .method<Constructor*(Type*, Modifiers, uint)>("addConstructor", &_::addConstructor)["0"]
             .method<Method*(Modifiers, uint)>("addDestructor", &_::addDestructor)["0"]["0"]
-            .method<void(ValueMember*), virtual_>("addValueMember", &_::addValueMember)
-            .method<void(StaticField*), virtual_>("addStaticField", &_::addStaticField)
-            .method<void(StaticField*), virtual_>("addField", &_::addField)
-            .method<void(Field*), virtual_>("addField", &_::addField)
+            .method<void(ValueMember*)>("addValueMember", &_::addValueMember)
+            .method<void(StaticField*)>("addStaticField", &_::addStaticField)
+            .method<void(StaticField*)>("addField", &_::addField)
+            .method<void(Field*)>("addField", &_::addField)
             .method<Field*(Type*, StringView, uint, Modifiers, uint)>("addField", &_::addField)["0"]["0"]
-            .method<void(Property*), virtual_>("addProperty", &_::addProperty)
-            .method<Property*(StringView, uint), virtual_>("addProperty", &_::addProperty)["PHANTOM_R_FILTER_PROPERTY"]
-            .method<void(Method*), virtual_>("addMethod", &_::addMethod)
+            .method<void(Property*)>("addProperty", &_::addProperty)
+            .method<Property*(StringView, uint)>("addProperty", &_::addProperty)["PHANTOM_R_FILTER_PROPERTY"]
+            .method<void(Method*)>("addMethod", &_::addMethod)
             .method<void(StaticMethod*)>("addMethod", &_::addMethod)
-            .method<void(StaticMethod*), virtual_>("addStaticMethod", &_::addStaticMethod)
+            .method<void(StaticMethod*)>("addStaticMethod", &_::addStaticMethod)
             .method<void(Subroutine*), virtual_|override_>("addSubroutine", &_::addSubroutine)
-            .method<void(Constructor*), virtual_>("removeConstructor", &_::removeConstructor)
-            .method<void(ValueMember*), virtual_>("removeValueMember", &_::removeValueMember)
-            .method<void(StaticField*), virtual_>("removeStaticField", &_::removeStaticField)
-            .method<void(Field*), virtual_>("removeField", &_::removeField)
-            .method<void(Property*), virtual_>("removeProperty", &_::removeProperty)
-            .method<void(Method*), virtual_>("removeMethod", &_::removeMethod)
-            .method<void(StaticMethod*), virtual_>("removeStaticMethod", &_::removeStaticMethod)
             .method<Constructor*() const>("getDefaultConstructor", &_::getDefaultConstructor)
             .method<Constructor*() const>("getCopyConstructor", &_::getCopyConstructor)
             .method<Constructor*() const>("getMoveConstructor", &_::getMoveConstructor)
@@ -170,9 +162,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Type*, ValueMembers&) const>("findPublicValueMembersPointingValueType", &_::findPublicValueMembersPointingValueType)
             .method<const Constructors&() const>("getConstructors", &_::getConstructors)
             .method<bool(const LanguageElements&) const>("matchesTemplateArguments", &_::matchesTemplateArguments)
-            .method<void(MemberAnonymousSection*), virtual_>("addMemberAnonymousSection", &_::addMemberAnonymousSection)
-            .method<MemberAnonymousSection*(StringView, Modifiers, uint), virtual_>("addMemberAnonymousSection", &_::addMemberAnonymousSection)["0"]["0"]
-            .method<void(MemberAnonymousSection*), virtual_>("removeMemberAnonymousSection", &_::removeMemberAnonymousSection)
+            .method<void(MemberAnonymousSection*)>("addMemberAnonymousSection", &_::addMemberAnonymousSection)
             .method<MemberAnonymousSections const&() const>("getMemberAnonymousSections", &_::getMemberAnonymousSections)
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_|override_>("acceptsSubroutine", &_::acceptsSubroutine)["nullptr"]
             .method<bool(Subroutine*, Subroutines*) const>("acceptsSubroutine", &_::acceptsSubroutine)["nullptr"]
@@ -220,11 +210,9 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<bool() const, virtual_|override_>("canBeDestroyed", &_::canBeDestroyed)
-            .method<void(Symbol*), virtual_|override_>("addScopeElement", &_::addScopeElement)
-            .method<void(Symbol*), virtual_|override_>("removeScopeElement", &_::removeScopeElement)
             .method<void(), virtual_|override_>("onElementsAccess", &_::onElementsAccess)
-        
-        .protected_()
+            .method<void(ExtraData*)>("setExtraData", &_::setExtraData)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

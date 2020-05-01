@@ -106,7 +106,6 @@ public:
     void setArgument(size_t a_uiIndex, LanguageElement* a_pElement);
     void setDefaultArgument(size_t i, LanguageElement* a_pElement);
     void setDefaultArgument(StringView a_strParameterName, LanguageElement* a_pElement);
-    void removeArgument(LanguageElement* a_pElement);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template parameters.

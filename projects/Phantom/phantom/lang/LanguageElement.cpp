@@ -25,6 +25,11 @@ namespace lang
 {
 LanguageElement::LanguageElement(uint a_uiFlags /*= 0*/) : m_pOwner(nullptr), m_uiFlags(a_uiFlags) {}
 
+void LanguageElement::initialize()
+{
+    m_Elements.setAllocator(getAllocator());
+}
+
 LanguageElement::~LanguageElement()
 {
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
@@ -56,7 +61,7 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
 
 CustomAllocator const* LanguageElement::getAllocator() const
 {
-    return m_pSource->getUnitAllocator();
+    return m_pSource->Source::getAllocator();
 }
 
 void LanguageElement::Delete(LanguageElement* a_pElem)
@@ -197,7 +202,10 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     if (m_pOwner)
     {
         m_pOwner->onElementsAccess();
-        m_pOwner->m_Elements.erase_unsorted(std::find(m_Elements.begin(), m_Elements.end(), this));
+        // we search for element in reverse order because generally we wan't to change ownership of a recently added
+        // element
+        m_pOwner->m_Elements.erase_unsorted(std::find(m_Elements.rbegin(), m_Elements.rend(), this).base());
+        m_pOwner->m_uiFlags &= ~PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; // FIXME : add a template dependant tracking counter
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)

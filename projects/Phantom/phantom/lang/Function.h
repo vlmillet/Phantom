@@ -45,8 +45,7 @@ public:
     /// \param  a_Modifiers             (optional) the modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Function(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0,
-             uint a_uiFlags = 0);
+    Function(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a function with given name, signature, ABI and optional modifiers..
@@ -57,31 +56,12 @@ public:
     /// \param  a_Modifiers             (optional) The modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Function(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers = 0,
-             uint a_uiFlags = 0);
+    Function(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    Function* asFunction() const override
-    {
-        return (Function*)this;
-    }
+    Function* asFunction() const override { return (Function*)this; }
 
-    void invoke(void*, void** a_pArgs) const override
-    {
-        call(a_pArgs);
-    }
-    void invoke(void*, void** a_pArgs, void* a_pReturnAddress) const override
-    {
-        call(a_pArgs, a_pReturnAddress);
-    }
-
-protected:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \internal
-    /// \brief  Constructor.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Function(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-             Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    void invoke(void*, void** a_pArgs) const override { call(a_pArgs); }
+    void invoke(void*, void** a_pArgs, void* a_pReturnAddress) const override { call(a_pArgs, a_pReturnAddress); }
 };
 
 } // namespace lang

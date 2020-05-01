@@ -43,6 +43,12 @@ namespace lang {
 PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Source")
 
+        PHANTOM_STRUCT_T((class), (T), ObjectDtor)
+        {
+            this_()
+            .PHANTOM_T staticMethod<void(void*)>("apply", &_::apply)
+            ;
+        }
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Source)
         {
@@ -78,6 +84,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<Module*() const>("getModule", &_::getModule)
             .method<Package*() const>("getPackage", &_::getPackage)
             .method<Source*() const>("getNativeArchive", &_::getNativeArchive)
             .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
@@ -95,7 +102,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Sources const&() const>("getImportings", &_::getImportings)
             .method<bool(Symbol*, bool, bool)>("addImport", &_::addImport)["false"]["false"]
             .method<bool(StringView, bool, bool)>("addImport", &_::addImport)["false"]["false"]
-            .method<void(Symbol*)>("removeImport", &_::removeImport)
             .method<bool(Symbol*) const>("hasImport", &_::hasImport)
             .method<bool(Symbol*) const>("hasImported", &_::hasImported)
             .method<bool(Symbol*, Access, Modifiers, uint, SmallMap<Symbol*, Symbols>*) const>("canImport", &_::canImport)["Access::Public"]["0"]["0"]["nullptr"]
@@ -104,10 +110,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(Source*) const>("hasDependencyCascade", &_::hasDependencyCascade)
             .method<void(Source*)>("addDependency", &_::addDependency)
             .method<bool(StringView)>("addDependency", &_::addDependency)
-            .method<void(Source*)>("removeDependency", &_::removeDependency)
             .method<Sources const&() const>("getDependings", &_::getDependings)
-            .method<void()>("clearImports", &_::clearImports)
-            .method<void()>("clearDependencies", &_::clearDependencies)
             .method<Source*() const, virtual_|override_>("asSource", &_::asSource)
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<bool() const, virtual_|override_>("canBeUnloaded", &_::canBeUnloaded)
@@ -118,11 +121,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .using_("LanguageElement::getQualifiedDecoratedName")
             .using_("LanguageElement::getUniqueName")
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
+            .method<CustomAllocator const*() const, virtual_|override_>("getAllocator", &_::getAllocator)
         
         .protected_()
-            .constructor<void(Package*, StringView, Modifiers, uint)>()["0"]
-        
-        .protected_()
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
             .method<hash64() const, virtual_|override_>("computeHash", &_::computeHash)
         
         .public_()

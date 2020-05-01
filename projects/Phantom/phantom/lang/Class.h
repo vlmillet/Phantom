@@ -129,10 +129,8 @@ protected: // Reserved to native class derivation
     }
 
 public:
-    ~Class() override;
-
     void initialize();
-    void terminate();
+    void terminate() override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the common base class of this class and the given one.

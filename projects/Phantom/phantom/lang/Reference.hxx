@@ -77,9 +77,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)
             .method<bool() const, virtual_|override_>("isCopyAssignable", &_::isCopyAssignable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

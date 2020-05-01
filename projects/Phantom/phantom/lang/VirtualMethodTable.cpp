@@ -23,7 +23,7 @@ struct Microsoft
     {
         unsigned long hash;
         void*         spare;
-        char          name[0];
+        char          name[1];
     };
 
     struct PMD
@@ -66,14 +66,11 @@ struct Microsoft
 };
 } // namespace
 
-VirtualMethodTable::VirtualMethodTable()
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(PHANTOM_NEW(Methods))
-{
-}
+VirtualMethodTable::VirtualMethodTable() : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS) {}
+
 VirtualMethodTable::VirtualMethodTable(size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>())
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_initCount(uint16(a_uiSize))
 {
-    m_pMethods->resize(a_uiSize);
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
@@ -87,32 +84,45 @@ VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>()), m_pBaseTable(a_pBaseTable)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pBaseTable(a_pBaseTable), m_initCount(uint16(a_uiSize))
 {
     PHANTOM_ASSERT(a_uiSize >= a_pBaseTable->getMethodCount(),
                    "a derived vtable must have equal or greater size than base");
-    m_pMethods->resize(a_uiSize);
-    m_pBaseTable->m_DerivedTables.push_back(this);
-    for (size_t i = 0; i < a_pBaseTable->m_pMethods->size(); ++i)
-    {
-        (*m_pMethods)[i] = (*(a_pBaseTable->m_pMethods))[i];
-    }
-    addReferencedElement(m_pBaseTable);
 }
 
 VirtualMethodTable::VirtualMethodTable(void** a_ppClosures, size_t a_uiSize)
-    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_pMethods(New<Methods>()), m_ppClosures(a_ppClosures)
+    : Symbol(Modifiers(0), PHANTOM_R_FLAG_PRIVATE_VIS), m_ppClosures(a_ppClosures), m_initCount(uint16(a_uiSize))
 {
-    m_pMethods->resize(a_uiSize);
 }
 
-PHANTOM_DTOR VirtualMethodTable::~VirtualMethodTable()
+void VirtualMethodTable::initialize()
+{
+    if (!m_pMethods)
+    {
+        m_pMethods = new_<Methods>(getAllocator());
+        if (!m_bShared)
+        {
+            m_pMethods->resize(m_initCount);
+            if (m_pBaseTable)
+            {
+                m_pBaseTable->m_DerivedTables.push_back(this);
+                for (size_t i = 0; i < m_pBaseTable->m_pMethods->size(); ++i)
+                {
+                    (*m_pMethods)[i] = (*(m_pBaseTable->m_pMethods))[i];
+                }
+                addReferencedElement(m_pBaseTable);
+            }
+        }
+    }
+}
+
+void VirtualMethodTable::terminate()
 {
     if (m_pBaseTable)
         m_pBaseTable->m_DerivedTables.erase(
         std::find(m_pBaseTable->m_DerivedTables.begin(), m_pBaseTable->m_DerivedTables.end(), this));
     if (!(sharesMethods()))
-        Delete<Methods>(m_pMethods);
+        delete_<Methods>(m_pMethods);
     if (m_ppClosures)
         PHANTOM_FREE(m_ppClosures - 1);
 }
@@ -394,16 +404,10 @@ bool VirtualMethodTable::canBeDestroyed() const
     return LanguageElement::canBeDestroyed();
 }
 
-void VirtualMethodTable::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pBaseTable == a_pElement)
-        m_pBaseTable = nullptr;
-}
-
 void VirtualMethodTable::copyOnWrite()
 {
     PHANTOM_ASSERT(sharesMethods());
-    m_pMethods = PHANTOM_NEW(Methods);
+    m_pMethods = new_<Methods>(getAllocator());
     *m_pMethods = *(m_pBaseTable->m_pMethods);
     m_bShared = false;
 }

@@ -38,7 +38,7 @@ class Main;
 /// modules(plugins), compiling custom source code at runtime, etc...
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PHANTOM_EXPORT_PHANTOM Application : public Symbol, public LanguageElementUnitT<Application>
+class PHANTOM_EXPORT_PHANTOM Application : public Symbol
 {
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
@@ -83,32 +83,7 @@ public:
     void initialize();
     void terminate();
 
-    template<class T, class... Args>
-    T* New(Args&&... a_Args)
-    {
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Module, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Package, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Source, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<PackageFolder, T>::value));
-        PHANTOM_ASSERT(m_pDefaultSource);
-        return _New<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
-    }
-    template<class T, class... Args>
-    T* NewDeferred(Args&&... a_Args)
-    {
-        PHANTOM_ASSERT(m_pDefaultSource);
-        return _NewDeferred<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
-    }
-    template<class T, class... Args>
-    T* NewMeta(Args&&... a_Args)
-    {
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Module, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Package, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<Source, T>::value));
-        PHANTOM_STATIC_ASSERT(!(std::is_same<PackageFolder, T>::value));
-        PHANTOM_ASSERT(m_pDefaultSource);
-        return _NewMeta<T>(Owner(m_pDefaultSource), std::forward<Args>(a_Args)...);
-    }
+    Source* getDefaultSource() const { return m_pDefaultSource; }
 
     void                setCppExpressionParser(CppExpressionParser a_Parser);
     CppExpressionParser getCppExpressionParser();
@@ -321,12 +296,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Types const& getBuiltInTypes() const { return m_BuiltInTypes; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \internal
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    LanguageElement* invalid(LanguageElement* a_pElement);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets a module from its unique name.
@@ -622,6 +591,8 @@ public:
 
     MemoryContext& getMemoryContext() { return m_MemoryContext; }
 
+    CustomAllocator const* getAllocator() const override { return &CustomAllocator::CurrentOrDefault(); }
+
 public:
     phantom::Signal<void(StringView)> pluginPathAdded;
     phantom::Signal<void(StringView)> pluginPathRemoved;
@@ -682,6 +653,13 @@ private:
 protected:
     hash64 computeHash() const override { return 0; }
 
+private: // to ensure they won't be accessible
+    using LanguageElement::New;
+    using LanguageElement::NewDeferred;
+    using LanguageElement::NewMeta;
+    using LanguageElement::new_;
+    using LanguageElement::delete_;
+
 private:
     typedef SmallMap<String, Undefineds*> UndefinedsMap;
     String                                m_DefaultPluginPath;
@@ -705,7 +683,6 @@ private:
     MemoryContext                         m_MemoryContext;
     UndefinedsMap                         m_Undefineds;
     Source*                               m_pDefaultSource = nullptr;
-    ForwardHeapSequence                   m_Allocator{1024};
 };
 
 } // namespace lang

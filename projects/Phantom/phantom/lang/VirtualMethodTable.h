@@ -43,7 +43,14 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     VirtualMethodTable(void** a_ppClosures, size_t a_uiSize);
-    PHANTOM_DTOR ~VirtualMethodTable() override;
+
+    /// internal
+    VirtualMethodTable(VirtualMethodTable* a_pBaseTable);
+    /// internal
+    VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize);
+
+    void initialize();
+    void terminate() override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the member function count.
@@ -176,9 +183,6 @@ public:
     void extractNativeVTable(void* a_pInstance);
 
 private: // Derivation constructors
-    VirtualMethodTable(VirtualMethodTable* a_pBaseTable);
-    VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize);
-
     void addMethod(Method* a_pMethod);
     void setMethod(size_t a_uiIndex, Method* a_pMethod);
     bool sharesMethods() const
@@ -197,6 +201,7 @@ private:
     void*               m_pNativeRttiData{};
     void**              m_ppClosures{};
     bool                m_bShared{};
+    uint16_t            m_initCount{};
 };
 
 } // namespace lang

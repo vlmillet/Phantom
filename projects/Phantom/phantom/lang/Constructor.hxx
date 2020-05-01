@@ -57,7 +57,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Constructor*() const, virtual_|override_>("asConstructor", &_::asConstructor)
         
         .protected_()
-            .constructor<void(ClassType*, StringView, StringView, Modifiers, uint)>()["0"]["0"]
             .method<void**() const, virtual_>("getNativeVTablePointer", &_::getNativeVTablePointer)
             .method<size_t() const, virtual_>("getNativeVTableSize", &_::getNativeVTableSize)
             ;

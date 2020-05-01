@@ -60,7 +60,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<PlaceholderType*() const, virtual_|override_>("asPlaceholderType", &_::asPlaceholderType)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
-            .method<Placeholder*(uint) const, virtual_|override_>("clone", &_::clone)["0"]
+            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)["0"]
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)

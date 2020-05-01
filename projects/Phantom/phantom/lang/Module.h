@@ -38,47 +38,11 @@ public:
 
 public:
     Module(StringView a_strName, uint a_uiFlags = 0);
+    Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_strName, StringView a_LibFullName,
+           StringView a_DeclarationCppFullName, uint a_uiFlags = 0);
     ~Module() override;
 
     void terminate();
-
-    // source level new (we use custom allocator here and plug owner)
-    template<class T, class... Args>
-    T* New(Owner a_Owner, Args&&... a_Args)
-    {
-        PHANTOM_STATIC_ASSERT(std::is_base_of<LanguageElement, T>::value);
-        T* ptr = new (m_Allocator.allocate(sizeof(T))) T{std::forward<Args>(a_Args)...};
-        _NewH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr);
-        ptr->initialize();
-        return ptr;
-    }
-
-    // source is owner of the newed element
-    template<class T, class... Args>
-    T* New(Args&&... a_Args)
-    {
-        return New(Owner(this), std::forward<Args>(a_Args)...);
-    }
-
-    // source is owner of the newed element
-    template<class T, class... Args>
-    T* NewDeferred(Args&&... a_Args)
-    {
-        return NewDeferred(Owner(this), std::forward<Args>(a_Args)...);
-    }
-
-    template<class T, class... Args>
-    T* NewDeferred(Owner a_Owner, Args&&... a_Args)
-    {
-        PHANTOM_STATIC_ASSERT(std::is_base_of<LanguageElement, T>::value);
-        T* ptr = new (m_Allocator.allocate(sizeof(T))) T{std::forward<Args>(a_Args)...};
-        _NewDeferredH(a_Owner.this_, ptr, PHANTOM_CLASSOF(T), ptr,
-                      lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
-        ptr->initialize();
-        return ptr;
-    }
-
-    void Delete(LanguageElement* a_pElem);
 
     template<typename T>
     struct DeleteMetaH
@@ -240,15 +204,7 @@ public:
     /// \param [in,out] a_pPackage The package to remove.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void addPackage(Package* a_pPackage);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes the given package from this module.
-    ///
-    /// \param [in,out] a_pPackage The package to remove.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removePackage(Package* a_pPackage);
+    Package* newPackage(StringView a_strName);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the dependencies of this module.
@@ -354,6 +310,8 @@ public:
     void markOutdated() { m_bOutdated = true; }
     void markUpToDate() { m_bOutdated = false; }
 
+    CustomAllocator const* getAllocator() const override { return &CustomAllocator::CurrentOrDefault(); }
+
 public:
     phantom::Signal<void(Package*)> packageAdded;
     phantom::Signal<void(Package*)> packageAboutToBeRemoved;
@@ -370,11 +328,23 @@ private:
     /// \param  a_strSourcePath Full pathname of the sources.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_strName, StringView a_LibFullName,
-           StringView a_DeclarationCppFullName, uint a_uiFlags = 0);
-
     void _registerType(hash64 a_Hash, Type* a_pType);
     void _unregisterType(hash64 a_Hash, Type* a_pType);
+
+    void* _alloc(size_t size, size_t align) { return m_Allocator.allocate(size, align); }
+    void* _relloc(void* ptr, size_t size, size_t align)
+    {
+        m_Allocator.deallocate(ptr);
+        return m_Allocator.allocate(size, align);
+    }
+    void _dealloc(void* ptr) { m_Allocator.deallocate(ptr); }
+
+private: // to ensure they won't be accessible
+    using LanguageElement::New;
+    using LanguageElement::NewDeferred;
+    using LanguageElement::NewMeta;
+    using LanguageElement::new_;
+    using LanguageElement::delete_;
 
 private:
     Packages                m_Packages;
@@ -390,7 +360,7 @@ private:
     FuncT                   m_OnLoad = nullptr;
     FuncT                   m_OnUnload = nullptr;
     MemoryContext           m_MemoryContext;
-    ForwardHeapSequence     m_Allocator{65536};
+    ForwardHeapSequence     m_Allocator;
     bool                    m_bOutdated = false;
 };
 

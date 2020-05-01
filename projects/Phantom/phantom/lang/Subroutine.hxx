@@ -219,14 +219,11 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(ABI, Modifiers, uint)>()["0"]["0"]
             .method<void(void**, size_t, void*) const>("apply", &_::apply)
             .method<void(void**, size_t, void*) const>("placementApply", &_::placementApply)
             .method<void(void**, size_t) const>("apply", &_::apply)
             .method<void(void**, size_t) const>("placementApply", &_::placementApply)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<uint64_t() const, virtual_|override_>("getUniqueID", &_::getUniqueID)
         
         .protected_()

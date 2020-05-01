@@ -45,11 +45,9 @@ ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize
 {
 }
 
-ClassType::~ClassType() {}
-
 void ClassType::initialize()
 {
-    Symbol::initialize();
+    Type::initialize();
     m_Constructors.setAllocator(getAllocator());
     m_Friends.setAllocator(getAllocator());
     m_Methods.setAllocator(getAllocator());
@@ -367,18 +365,6 @@ void ClassType::addConstructor(Constructor* a_pConstructor)
     m_Constructors.push_back(a_pConstructor);
 }
 
-Constructor* ClassType::addConstructor(StringView a_strParametersString)
-{
-    // TODO add modifiers
-    Signature* pSignature = NewDeferred<Signature>();
-    pSignature->parse((String("void(") + a_strParametersString + ")").c_str(), this);
-    if (pSignature == nullptr)
-        return nullptr;
-    Constructor* pConstructor = New<Constructor>(getName(), pSignature, 0);
-    addConstructor(pConstructor);
-    return pConstructor;
-}
-
 Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0*/,
                                        uint a_uiFlags /*= 0*/)
 {
@@ -392,7 +378,7 @@ Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers
 Constructor* ClassType::addConstructor(Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
                                        uint a_uiFlags /*= 0*/)
 {
-    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), a_pSingleParameterType);
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void), a_pSingleParameterType);
     Constructor* pConstructor = NewDeferred<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
     addConstructor(pConstructor);
     return pConstructor;
@@ -400,7 +386,7 @@ Constructor* ClassType::addConstructor(Type* a_pSingleParameterType, Modifiers a
 
 Constructor* ClassType::addConstructor(Modifiers a_Modifiers, uint a_uiFlags)
 {
-    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void));
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void));
     Constructor* pConstructor = NewDeferred<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
     addConstructor(pConstructor);
     return pConstructor;
@@ -448,7 +434,7 @@ void ClassType::addField(Field* a_pField)
     m_Fields.push_back(a_pField);
     // FIXME : hack (create a data() function to access directly to container)
     _addSymbol(a_pField);
-    m_ValueMembers.insert(m_ValueMembers.container()->begin() + (m_Fields.container()->size() - 1), a_pField);
+    m_ValueMembers.insert(m_ValueMembers.container().begin() + (m_Fields.container().size() - 1), a_pField);
     PHANTOM_ASSERT(!(a_pField->getValueType()->removeQualifiers()->removeArray()->hasStrongDependencyOnType(this)),
                    "cyclic class strong dependency");
 }
@@ -631,7 +617,7 @@ void ClassType::destroy(void* a_pInstance) const
 void ClassType::addImplicitDefaultConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void));
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void));
     Constructor* pConstructor =
     NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
@@ -641,7 +627,7 @@ void ClassType::addImplicitDefaultConstructor()
 void ClassType::addImplicitCopyConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void), makeConst()->makeLValueReference());
     Constructor* pConstructor =
     NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
@@ -651,7 +637,7 @@ void ClassType::addImplicitCopyConstructor()
 void ClassType::addImplicitCopyAssignmentOperator()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature* pSignature = NewDeferred<Signature>(makeLValueReference(), makeConst()->makeLValueReference());
+    Signature* pSignature = Signature::Create(this, makeLValueReference(), makeConst()->makeLValueReference());
     Method*    pFunc = NewDeferred<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pFunc->setAccess(Access::Public);
     addMethod(pFunc);
@@ -660,7 +646,7 @@ void ClassType::addImplicitCopyAssignmentOperator()
 void ClassType::addImplicitMoveConstructor()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature*   pSignature = NewDeferred<Signature>(PHANTOM_TYPEOF(void), makeRValueReference());
+    Signature*   pSignature = Signature::Create(this, PHANTOM_TYPEOF(void), makeRValueReference());
     Constructor* pConstructor =
     NewDeferred<Constructor>(getName(), pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pConstructor->setAccess(Access::Public);
@@ -670,7 +656,7 @@ void ClassType::addImplicitMoveConstructor()
 void ClassType::addImplicitMoveAssignmentOperator()
 {
     PHANTOM_ASSERT(m_pExtraData);
-    Signature* pSignature = NewDeferred<Signature>(makeLValueReference(), makeRValueReference());
+    Signature* pSignature = Signature::Create(this, makeLValueReference(), makeRValueReference());
     Method*    pFunc = NewDeferred<Method>("operator=", pSignature, PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     pFunc->setAccess(Access::Public);
     addMethod(pFunc);
@@ -848,21 +834,6 @@ void ClassType::getFields(AggregateFields& _fields) const
 void ClassType::getFlattenedAggregateFields(AggregateFields& _aggregateFields) const
 {
     Aggregate::getFlattenedFields(_aggregateFields);
-}
-
-void ClassType::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Type::onReferencedElementRemoved(a_pElement);
-    auto guard = m_OnDemandMutex.autoLock();
-    if (!isNative() ||
-        m_OnDemandMembersFunc.empty()) // if not native or if native, check if member installation has been done
-    {
-        auto friendFound = std::find(m_Friends->begin(), m_Friends->end(), static_cast<Symbol*>(a_pElement));
-        if (friendFound != m_Friends->end())
-        {
-            m_Friends->erase(friendFound);
-        }
-    }
 }
 
 TemplateSpecialization* ClassType::getTemplateSpecialization() const
@@ -1115,7 +1086,7 @@ Method* ClassType::addDestructor(Modifiers a_Modifiers /*= 0 */, uint a_uiFlags 
     PHANTOM_ASSERT(!isNative(), "cannot add manually destructor to native types");
     PHANTOM_ASSERT(!getDestructor(), "destructor already added");
     Destructor* pDestructor =
-    New<Destructor>('~' + getName(), NewDeferred<Signature>(PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
+    New<Destructor>('~' + getName(), Signature::Create(this, PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
     addMethod(pDestructor);
     pDestructor->setAccess(m_pExtraData ? getDefaultAccess() : Access::Public);
     return pDestructor;

@@ -52,7 +52,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<TemplateSignature*(uint)>("Create", &_::Create)["PHANTOM_R_NONE"]
             .constructor<void(uint)>()["PHANTOM_R_NONE"]
             .constructor<void(const TemplateParameters&, bool, uint)>()["false"]["PHANTOM_R_NONE"]
             .staticMethod<TemplateSignature*(StringView, StringView, LanguageElement*, uint)>("Parse", &_::Parse)["PHANTOM_R_NONE"]
@@ -81,7 +80,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(TemplateSignature*) const>("isSame", &_::isSame)
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(bool)>("setVariadic", &_::setVariadic)
-            .method<TemplateSignature*(uint) const>("clone", &_::clone)["0"]
+            .method<TemplateSignature*(LanguageElement*, uint) const>("clone", &_::clone)["0"]
             .method<void(StringBuffer&) const, virtual_|override_>("getName", &_::getName)
             .method<hash64() const, virtual_>("computeLocalHash", &_::computeLocalHash)
             ;

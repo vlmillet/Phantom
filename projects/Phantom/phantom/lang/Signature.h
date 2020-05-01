@@ -34,8 +34,10 @@ public:
         eState_Final,
     };
 
-    static Signature* Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs = TypesView{},
-                             Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    static Signature* Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs, Modifiers a_Modifiers = 0,
+                             uint a_uiFlags = 0);
+
+    static Signature* Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an empty signature with void return type, no parameters and optional

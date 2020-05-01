@@ -22,7 +22,7 @@ class PHANTOM_EXPORT_PHANTOM MapClass : public ContainerClass
 
     PHANTOM_DECLARE_META_CLASS(MapClass);
 
-    struct Data
+    struct RTData
     {
         Method* m_pFunc_map = nullptr;
         Method* m_pFunc_insert = nullptr;
@@ -37,7 +37,8 @@ protected:
 public:
     MapClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~MapClass() override;
+    void initialize();
+    void terminate() override;
 
     Type* getKeyType() const override final { return m_pKeyType; }
     Type* getMappedType() const override final { return m_pMappedType; }
@@ -51,9 +52,9 @@ public:
     virtual void find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const;
 
 protected:
-    Type*         m_pKeyType = nullptr;
-    Type*         m_pMappedType = nullptr;
-    mutable Data* m_Data = nullptr;
+    Type*           m_pKeyType = nullptr;
+    Type*           m_pMappedType = nullptr;
+    mutable RTData* m_pData = nullptr;
 };
 
 } // namespace lang

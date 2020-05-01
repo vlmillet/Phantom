@@ -52,7 +52,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Placeholder*, LanguageElement*, uint)>()["nullptr"]["0"]
             .method<TemplateParameter*() const, virtual_|override_>("asTemplateParameter", &_::asTemplateParameter)
             .method<size_t() const>("getIndex", &_::getIndex)
-            .method<TemplateParameter*() const>("clone", &_::clone)
+            .method<TemplateParameter*(LanguageElement*) const>("clone", &_::clone)
             .method<TemplateSignature*() const>("getTemplateSignature", &_::getTemplateSignature)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)
@@ -62,13 +62,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(LanguageElement*) const>("acceptsArgument", &_::acceptsArgument)
             .method<bool() const>("isPack", &_::isPack)
-            .method<TemplateParameter*(uint) const>("clone", &_::clone)["0"]
+            .method<TemplateParameter*(LanguageElement*, uint) const>("clone", &_::clone)["0"]
             .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeName", &_::getRelativeName)
             .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
         
         .protected_()

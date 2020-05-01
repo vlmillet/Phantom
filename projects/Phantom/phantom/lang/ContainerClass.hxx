@@ -78,7 +78,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Property*() const>("getSizeProperty", &_::getSizeProperty)
         
         .protected_()
-            .method<Property*() const, virtual_>("createSizeProperty", &_::createSizeProperty)
+            .method<Property*(), virtual_>("createSizeProperty", &_::createSizeProperty)
         
         .protected_()
             .field("m_pValueType", &_::m_pValueType)

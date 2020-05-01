@@ -109,19 +109,6 @@ void Package::removeArchivedSource(Source* a_pSource)
     m_ArchivedSources.erase(found);
 }
 
-void Package::deleteSource(Source* a_pSource)
-{
-    PHANTOM_ASSERT(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), a_pSource) == m_ArchivedSources.end(),
-                   "use removeArchivedSource instead");
-
-    Application::Get()->_sourceAboutToBeRemoved(a_pSource);
-    PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
-    PHANTOM_ASSERT(a_pSource->getOwner() == this);
-    a_pSource->setOwner(nullptr);
-    m_Sources.erase(std::find(m_Sources.begin(), m_Sources.end(), a_pSource));
-    phantom::Delete<Source>(a_pSource);
-}
-
 Module* Package::getModule() const
 {
     return static_cast<Module*>(getOwner());
@@ -137,29 +124,60 @@ Source* Package::getSource(StringView a_strName) const
     return nullptr;
 }
 
-Source* Package::getOrCreateSource(StringView a_strName, bool a_bInvisible)
+Source* Package::getOrCreateSource(StringView a_strName, uint a_Flags)
 {
     Source* pSource = getSource(a_strName);
     if (!pSource)
-        newSource(a_strName, a_bInvisible);
+        newSource(a_strName, a_Flags);
     return pSource;
 }
 
-Source* Package::newSource(StringView a_strName, bool a_bInvisible)
+Source* Package::newSource(StringView a_strName, uint a_Flags)
 {
     PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_strName) == nullptr);
     PHANTOM_ASSERT(getModule());
     PHANTOM_ASSERT(getSource(a_strName) == nullptr);
-    Source* pS = phantom::New<Source>(a_strName, Modifier::None, a_bInvisible ? PHANTOM_R_FLAG_PRIVATE_VIS : 0);
+    Source* pS = phantom::new_<Source>(a_strName, Modifier::None, a_Flags);
     pS->rtti.instance = pS;
+    if (dynamic_initializer_()->installed())
+    {
+        pS->rtti.metaClass = PHANTOM_CLASSOF(Source);
+    }
+    else
+    {
+        phantom::detail::deferInstallation("phantom::lang::Source", &pS->rtti);
+    }
     pS->setOwner(this);
-    phantom::detail::deferInstallation("phantom::lang::Source", &pS->rtti);
     pS->initialize();
-    m_Sources.push_back(pS);
-    m_Sources.push_back(pS);
-    PHANTOM_EMIT sourceAdded(pS);
-    Application::Get()->_sourceAdded(pS);
+    addSource(pS);
     return pS;
+}
+
+void Package::deleteSource(Source* a_pSource)
+{
+    PHANTOM_ASSERT(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), a_pSource) == m_ArchivedSources.end(),
+                   "use removeArchivedSource instead");
+    removeSource(a_pSource);
+    PHANTOM_CLASSOF(Source)->unregisterInstance(a_pSource);
+    a_pSource->terminate();
+    phantom::delete_<Source>(a_pSource);
+}
+
+void Package::addSource(Source* a_pSource)
+{
+    PHANTOM_ASSERT(a_pSource->getOwner() == this);
+    m_Sources.push_back(a_pSource);
+    PHANTOM_EMIT sourceAdded(a_pSource);
+    Application::Get()->_sourceAdded(a_pSource);
+}
+
+void Package::removeSource(Source* a_pSource)
+{
+    Application::Get()->_sourceAboutToBeRemoved(a_pSource);
+    PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
+    PHANTOM_ASSERT(a_pSource->getOwner() == this);
+    a_pSource->setOwner(nullptr);
+    m_Sources.erase_unsorted(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource).base());
 }
 
 hash64 Package::computeHash() const

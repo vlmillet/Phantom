@@ -42,12 +42,9 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
         
-        .protected_()
-            .constructor<void(Type*)>()
-        
         .public_()
+            .constructor<void(Type*)>()
             .method<RValueReference*() const, virtual_|override_>("asClassRValueReference", &_::asClassRValueReference)
-            .method<RValueReference*() const, virtual_|override_>("asConstClassRValueReference", &_::asConstClassRValueReference)
             .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)

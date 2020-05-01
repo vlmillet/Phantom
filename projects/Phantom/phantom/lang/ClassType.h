@@ -88,8 +88,6 @@ protected:
               uint a_uiFlags);
 
 public:
-    PHANTOM_DTOR ~ClassType() override;
-
     void initialize();
 
     using Type::asClass;
@@ -138,20 +136,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void addConstructor(Constructor* a_pConstructor);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(constructor) instantiated from given parameters String. example :
-    ///
-    ///         \code{.cpp}
-    ///         addConstructor("int, size_t");
-    ///         \endcode.
-    ///
-    /// \param  a_strParametersString   The parameters String.
-    ///
-    /// \return null if it fails, else the instantiated constructor.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Constructor* addConstructor(StringView a_strParametersString);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a PHANTOM_NEW(constructor) instantiated from given parameters and modifiers.

@@ -33,15 +33,6 @@ FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, size_t 
         addReferencedElement(m_pValueType);
 }
 
-void FieldPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (m_pValueType == a_pElement)
-    {
-        m_pValueType = nullptr;
-    }
-    MemberPointer::onReferencedElementRemoved(a_pElement);
-}
-
 size_t FieldPointer::getOffset(void* a_pPointer) const
 {
     return static_cast<Field*>(a_pPointer)->getOffset();

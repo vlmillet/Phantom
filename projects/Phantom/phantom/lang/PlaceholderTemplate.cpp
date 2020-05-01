@@ -21,9 +21,9 @@ bool PlaceholderTemplate::accepts(LanguageElement* a_pLanguageElement) const
     getTemplateSignature()->acceptsArguments(pClassType->getTemplateSpecialization()->getArguments());
 }
 
-Placeholder* PlaceholderTemplate::clone(uint a_Flags /*= 0*/) const
+Placeholder* PlaceholderTemplate::clone(LanguageElement* a_pOwner, uint a_Flags /*= 0*/) const
 {
-    return New<PlaceholderTemplate>(getName(), getTemplateSignature()->clone(a_Flags));
+    return a_pOwner->New<PlaceholderTemplate>(getName(), getTemplateSignature()->clone(a_pOwner, a_Flags));
 }
 
 } // namespace lang

@@ -19,43 +19,51 @@ SetClass::SetClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, 
 }
 
 SetClass::SetClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ContainerClass(TypeKind::SetClass, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
+    : ContainerClass(TypeKind::SetClass, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-SetClass::~SetClass()
+void SetClass::initialize()
 {
-    Delete<RTData>(m_Data);
+    ContainerClass::initialize();
+    if (!isNative())
+        m_pData = new_<RTData>();
+}
+void SetClass::terminate()
+{
+    if (m_pData)
+        delete_<RTData>(m_pData);
+    ContainerClass::terminate();
 }
 
 void SetClass::eraseKey(void* a_pContainer, void const* a_pKey) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
-    if (!m_Data->m_pFunc_erase)
-        m_Data->m_pFunc_erase = getMethod("erase", {m_pKeyType->addConstLValueReference()});
+    if (!m_pData->m_pFunc_erase)
+        m_pData->m_pFunc_erase = getMethod("erase", {m_pKeyType->addConstLValueReference()});
     void* args[] = {(void*)a_pKey};
-    m_Data->m_pFunc_erase->invoke(a_pContainer, args);
+    m_pData->m_pFunc_erase->invoke(a_pContainer, args);
 }
 
 void SetClass::insert(void* a_pContainer, void const* a_pKey) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
-    if (!m_Data->m_pFunc_insert)
-        m_Data->m_pFunc_insert = getMethod("insert", {m_pKeyType->addConstLValueReference()});
+    if (!m_pData->m_pFunc_insert)
+        m_pData->m_pFunc_insert = getMethod("insert", {m_pKeyType->addConstLValueReference()});
     void* args[] = {(void*)a_pKey};
-    m_Data->m_pFunc_insert->invoke(a_pContainer, args);
+    m_pData->m_pFunc_insert->invoke(a_pContainer, args);
 }
 
 void SetClass::find(void const* a_pContainer, void const* a_pKey, void* a_pIt) const
 {
     PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
-    if (!m_Data->m_pFunc_find)
+    if (!m_pData->m_pFunc_find)
     {
-        PHANTOM_VERIFY(m_Data->m_pFunc_find =
+        PHANTOM_VERIFY(m_pData->m_pFunc_find =
                        getMethod("find", {m_pKeyType->addConstLValueReference()}, Modifier::Const));
     }
     void* args[] = {(void*)a_pKey};
-    m_Data->m_pFunc_find->invoke((void*)a_pContainer, args, a_pIt);
+    m_pData->m_pFunc_find->invoke((void*)a_pContainer, args, a_pIt);
 }
 
 } // namespace lang

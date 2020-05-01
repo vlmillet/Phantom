@@ -62,9 +62,7 @@ protected:
     Symbol(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
-    ~Symbol() override;
-
-    void terminate();
+    void terminate() override;
 
     int destructionPriority() const override;
 

@@ -45,7 +45,7 @@ public:
         for (auto const& pair : a_InitList)
             insert(pair);
     }
-    explicit SmallMap(CustomAllocator const* a_pMemTraits) : BaseType(a_pMemTraits){};
+    explicit SmallMap(CustomAllocator const* a_pAlloc) : BaseType(a_pAlloc){};
 
     V& operator[](K const& _key)
     {
@@ -56,6 +56,8 @@ public:
         }
         return this->m_storage.insert(it, value_type(_key, V()))->second;
     }
+
+    void setAllocator(CustomAllocator const* a_pAlloc) { m_storage.setAllocator(a_pAlloc); }
 
     const_iterator find(K const& _key) const
     {

@@ -214,7 +214,7 @@ void TemplateSignature::addTemplateParameter(TemplateParameter* a_pTemplateParam
     PHANTOM_ASSERT(getTemplateParameterIndex(a_pTemplateParameter->getPlaceholder()->asSymbol()->getName()) ==
                    ~size_t(0),
                    "template parameter with this name already exists in this template signature");
-    addElement(a_pTemplateParameter);
+    a_pTemplateParameter->setOwner(this);
     m_TemplateParameters.push_back(a_pTemplateParameter);
     Symbol* pPH =
     (a_pTemplateParameter->getPlaceholder()) ? a_pTemplateParameter->getPlaceholder()->asSymbol() : nullptr;
@@ -281,14 +281,14 @@ void TemplateSignature::setVariadic(bool a_bValue)
     m_TemplateParameters.back()->m_bPack = a_bValue;
 }
 
-TemplateSignature* TemplateSignature::clone(uint a_Flags) const
+TemplateSignature* TemplateSignature::clone(LanguageElement* a_pOwner, uint a_Flags) const
 {
     TemplateParameters params(m_TemplateParameters.size());
     for (size_t i = 0; i < m_TemplateParameters.size(); ++i)
     {
-        params[i] = m_TemplateParameters[i]->clone(a_Flags);
+        params[i] = m_TemplateParameters[i]->clone(a_pOwner, a_Flags);
     }
-    return New<TemplateSignature>(params, isVariadic(), a_Flags);
+    return a_pOwner->New<TemplateSignature>(params, isVariadic(), a_Flags);
 }
 
 void TemplateSignature::getName(StringBuffer& a_Buf) const

@@ -56,7 +56,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         for (auto pSec : m_MASections)
         {
-            phantom::DeleteP(pSec);
+            phantom::deleteVirtual(pSec);
         }
     }
 

@@ -73,7 +73,6 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .constructor<void(Type*, StringView, size_t, uint, Modifiers, uint)>()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             .method<void(size_t), virtual_|override_>("setOffset", &_::setOffset)
         
         .protected_()

@@ -58,9 +58,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Type*() const>("getValueType", &_::getValueType)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-        
-        .protected_()
             .field("m_pValueType", &_::m_pValueType)
             ;
         }

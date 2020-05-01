@@ -53,7 +53,7 @@ SourceFile* SourceFile::CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*=
         if (!out.is_open())
             return nullptr;
     }
-    return New<SourceFile>(Path::Absolute(a_strPath).canonical().genericString());
+    return new_<SourceFile>(Path::Absolute(a_strPath).canonical().genericString());
 }
 
 SourceFile* SourceFile::CreateOnDisk(Source* a_pSource, StringView a_Path, bool a_bOverwrite /*= false*/)
@@ -92,17 +92,17 @@ void SourceFile::write(StringView a_In)
 
 std::basic_istream<char>* SourceFile::createInputStream()
 {
-    return PHANTOM_NEW(std::ifstream)(getPath().data());
+    return phantom::new_<std::ifstream>(getPath().data());
 }
 
 void SourceFile::destroyInputStream(std::basic_istream<char>* a_pIn)
 {
-    PHANTOM_DELETE_IGNORE_CHECKS(std::ifstream) static_cast<std::ifstream*>(a_pIn);
+    phantom::delete_<std::ifstream>(static_cast<std::ifstream*>(a_pIn));
 }
 
 SourceFile* SourceFile::clone() const
 {
-    return New<SourceFile>(getPath());
+    return new_<SourceFile>(getPath());
 }
 
 } // namespace lang

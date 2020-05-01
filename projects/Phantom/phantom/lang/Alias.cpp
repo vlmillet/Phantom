@@ -49,10 +49,5 @@ void Alias::fetchAccessibleSymbols(Symbols&, bool) const
     return;
 }
 
-Alias* Alias::Create(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers, uint a_uiFlags)
-{
-    return New<Alias>(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
-}
-
 } // namespace lang
 } // namespace phantom

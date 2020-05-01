@@ -29,17 +29,12 @@ class PHANTOM_EXPORT_PHANTOM RValueReference : public Reference
 public:
     friend class Type;
 
-protected:
+public:
     RValueReference(Type* a_pReferencedType);
 
-public:
     RValueReference* asClassRValueReference() const override
     {
         return (m_pUnderlyingType && m_pUnderlyingType->asClass()) ? const_cast<RValueReference*>(this) : nullptr;
-    }
-    RValueReference* asConstClassRValueReference() const override
-    {
-        return (m_pUnderlyingType && m_pUnderlyingType->asConstClass()) ? const_cast<RValueReference*>(this) : nullptr;
     }
 
     Type* replicate(Type* a_pInput) const override;

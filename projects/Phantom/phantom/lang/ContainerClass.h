@@ -40,7 +40,8 @@ protected:
     ContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
-    ~ContainerClass() override;
+    void initialize();
+    void terminate() override;
 
     virtual Type* getKeyType() const { return PHANTOM_TYPEOF(size_t); }
     virtual Type* getMappedType() const { return m_pValueType; }
@@ -73,11 +74,11 @@ public:
     Property* getSizeProperty() const;
 
 protected:
-    virtual Property* createSizeProperty() const;
+    virtual Property* createSizeProperty();
 
 protected:
     Type*             m_pValueType = nullptr;
-    mutable RTData*   m_Data = nullptr;
+    mutable RTData*   m_pData = nullptr;
     mutable Property* m_pSizeProperty = nullptr;
 
 private:

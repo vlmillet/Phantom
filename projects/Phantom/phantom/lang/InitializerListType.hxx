@@ -20,6 +20,7 @@
 #include <phantom/class>
 #include <phantom/method>
 #include <phantom/static_method>
+#include <phantom/constructor>
 #include <phantom/field>
 #include <phantom/friend>
 
@@ -49,6 +50,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
+            .constructor<void(TypesView)>()
             .method<TypesView() const>("getTypes", &_::getTypes)
             .method<bool(TypesView) const>("matches", &_::matches)
             .method<InitializerListType*() const, virtual_|override_>("asInitializerListType", &_::asInitializerListType)
@@ -56,9 +58,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
         
         .protected_()
             .field("m_Types", &_::m_Types)

@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
         
-        .protected_()
+        .public_()
             .constructor<void(Class*)>()
         
         .public_()

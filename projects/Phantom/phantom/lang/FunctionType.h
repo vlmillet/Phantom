@@ -53,19 +53,6 @@ public:
     FunctionType(Type* a_pReturnType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs an function type from a function type name (ex : "void(int, float)") and
-    /// optional
-    ///         a_Modifiers/qualifiers.
-    ///
-    /// \param  a_strCode               The function type name.
-    /// \param  a_pContextScope         (optional) The parsing context scope (for type names
-    /// resolution). \param  a_Modifiers               (optional) The modifiers.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    FunctionType(StringView a_strCode, LanguageElement* a_pContextScope = nullptr, Modifiers a_Modifiers = 0,
-                 uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an function type with a given return type, a single parameter type and
     ///         optional a_Modifiers/qualifiers.
     ///

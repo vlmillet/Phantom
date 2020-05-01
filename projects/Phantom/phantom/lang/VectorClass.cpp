@@ -33,13 +33,22 @@ VectorClass::VectorClass(TypeKind a_TypeKind, StringView a_strName, size_t a_uiS
 
 VectorClass::VectorClass(TypeKind a_TypeKind, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
                          uint a_uiFlags /*= 0*/)
-    : SequentialContainerClass(a_TypeKind, a_strName, a_Modifiers, a_uiFlags), m_pData(PHANTOM_NEW(RTData))
+    : SequentialContainerClass(a_TypeKind, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-VectorClass::~VectorClass()
+void VectorClass::initialize()
 {
-    Delete<RTData>(m_pData);
+    SequentialContainerClass::initialize();
+    if (!isNative())
+        m_pData = new_<RTData>();
+}
+
+void VectorClass::terminate()
+{
+    if (m_pData)
+        delete_<RTData>(m_pData);
+    SequentialContainerClass::terminate();
 }
 
 void const* VectorClass::data(void const* a_pContainer) const

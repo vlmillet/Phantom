@@ -49,7 +49,7 @@ public:
 
     size_t getIndex() const;
 
-    TemplateParameter* clone() const;
+    TemplateParameter* clone(LanguageElement* a_pOwner) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template signature owning this template parameter.
@@ -126,7 +126,7 @@ public:
     /// \brief  Helper which created a replicate of this parameter with its own placeholder.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateParameter* clone(uint a_Flags = 0) const;
+    TemplateParameter* clone(LanguageElement* a_pOwner, uint a_Flags = 0) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the decorated name of this template parameter
@@ -141,8 +141,6 @@ public:
     }
 
 protected:
-    void   onElementRemoved(LanguageElement* a_pElement) override;
-    void   onReferencedElementRemoved(LanguageElement* a_pElement) override;
     hash64 computeLocalHash() const override;
 
 protected:

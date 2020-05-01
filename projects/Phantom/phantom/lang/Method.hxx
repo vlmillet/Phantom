@@ -97,9 +97,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<OpaqueDelegate() const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)
         
         .protected_()
-            .constructor<void(LanguageElement*, StringView, StringView, Modifiers, uint)>()["0"]["0"]
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(LanguageElement*, StringView, StringView, ABI, Modifiers, uint)>()["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
             .method<size_t() const, virtual_>("computeNativeVirtualIndex", &_::computeNativeVirtualIndex)

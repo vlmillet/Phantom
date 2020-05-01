@@ -39,10 +39,7 @@ public:
     /// \param [in,out] a_ppArgs    The constructor arguments given as an array of value pointers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline void construct(void* a_pAddress, void** a_ppArgs) const
-    {
-        invoke(a_pAddress, a_ppArgs);
-    }
+    inline void construct(void* a_pAddress, void** a_ppArgs) const { invoke(a_pAddress, a_ppArgs); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs N instances starting at a given place address.
@@ -61,14 +58,9 @@ public:
         }
     }
 
-    Constructor* asConstructor() const override
-    {
-        return (Constructor*)this;
-    }
+    Constructor* asConstructor() const override { return (Constructor*)this; }
 
 protected:
-    Constructor(ClassType* a_pClassType, StringView a_strName, StringView a_strSignature, Modifiers a_Modifiers = 0,
-                uint a_uiFlags = 0);
     virtual void** getNativeVTablePointer() const
     {
         PHANTOM_ASSERT_NO_IMPL();

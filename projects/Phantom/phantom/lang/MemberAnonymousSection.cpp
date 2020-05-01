@@ -32,18 +32,6 @@ void MemberAnonymousSection::addField(Field* a_pField)
     getEnclosingClassType()->addField(a_pField);
 }
 
-void MemberAnonymousSection::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    auto found = std::find(m_Fields.begin(), m_Fields.end(), a_pElement);
-    if (found != m_Fields.end())
-    {
-        m_Fields.erase(found);
-        m_DataElements.erase(std::find(m_DataElements.begin(), m_DataElements.end(), static_cast<Field*>(a_pElement)));
-        PHANTOM_ASSERT(a_pElement->asField());
-        static_cast<Field*>(a_pElement)->m_pMemberAnonymousSection = nullptr;
-    }
-}
-
 MemberAnonymousUnion* MemberAnonymousSection::getEmbeddingMemberAnonymousUnion() const
 {
     MemberAnonymousSection* pSection = getOwnerSection();
@@ -63,14 +51,8 @@ void MemberAnonymousSection::addMemberAnonymousSection(MemberAnonymousSection* a
     PHANTOM_ASSERT(std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(),
                              a_pMemberAnonymousSection) == m_MemberAnonymousSections.end());
     m_MemberAnonymousSections.push_back(a_pMemberAnonymousSection);
-    addElement(a_pMemberAnonymousSection);
-}
-
-void MemberAnonymousSection::removeMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
-{
-    m_MemberAnonymousSections.erase(
-    std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(), a_pMemberAnonymousSection));
-    removeElement(a_pMemberAnonymousSection);
+    m_DataElements.push_back(a_pMemberAnonymousSection);
+    a_pMemberAnonymousSection->setOwner(this);
 }
 
 size_t MemberAnonymousSection::getSize() const
@@ -119,21 +101,6 @@ Field* MemberAnonymousSection::getFirstField() const
         return pDM;
     }
     return static_cast<MemberAnonymousSection*>(p)->getFirstField();
-}
-
-void MemberAnonymousSection::onElementRemoved(LanguageElement* a_pElement)
-{
-    m_MemberAnonymousSections.erase(std::find(m_MemberAnonymousSections.begin(), m_MemberAnonymousSections.end(),
-                                              static_cast<MemberAnonymousSection*>(a_pElement)));
-    m_DataElements.erase(
-    std::find(m_DataElements.begin(), m_DataElements.end(), static_cast<MemberAnonymousSection*>(a_pElement)));
-}
-
-void MemberAnonymousSection::onElementAdded(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(a_pElement->asMemberAnonymousSection());
-    m_MemberAnonymousSections.push_back(static_cast<MemberAnonymousSection*>(a_pElement));
-    m_DataElements.push_back(static_cast<MemberAnonymousSection*>(a_pElement));
 }
 
 void MemberAnonymousSection::setOffset(size_t a_uiOffset)

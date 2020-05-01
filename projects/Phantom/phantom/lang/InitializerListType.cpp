@@ -81,14 +81,5 @@ void InitializerListType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
     a_Buf += '}';
 }
 
-void InitializerListType::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    auto found = std::find(m_Types.begin(), m_Types.end(), a_pElement);
-    if (found != m_Types.end())
-    {
-        m_Types.erase(found);
-    }
-}
-
 } // namespace lang
 } // namespace phantom

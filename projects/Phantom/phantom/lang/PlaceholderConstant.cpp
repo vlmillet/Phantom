@@ -18,12 +18,12 @@ bool PlaceholderConstant::accepts(LanguageElement* a_pLanguageElement) const
 
 Constant* PlaceholderConstant::cloneImpl(LanguageElement* a_pOwner) const
 {
-    return New<PlaceholderConstant>(getValueType(), getName(), getModifiers(), 0);
+    return a_pOwner->New<PlaceholderConstant>(getValueType(), getName(), getModifiers(), 0);
 }
 
-Placeholder* PlaceholderConstant::clone(uint a_Flags) const
+Placeholder* PlaceholderConstant::clone(LanguageElement* a_pOwner, uint a_Flags) const
 {
-    return New<PlaceholderConstant>(getValueType(), getName(), getModifiers(), a_Flags);
+    return a_pOwner->New<PlaceholderConstant>(getValueType(), getName(), getModifiers(), a_Flags);
 }
 
 } // namespace lang

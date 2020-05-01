@@ -312,15 +312,15 @@ void Template::setNativeDefaultArgumentStrings(const char** a_ppArgs, LanguageEl
         int       num = 0;
         if (strArg == "true")
         {
-            pC = Constant::Create(true);
+            pC = Constant::Create(this, true);
         }
         else if (strArg == "false")
         {
-            pC = Constant::Create(false);
+            pC = Constant::Create(this, false);
         }
         else if (sscanf(strArg.c_str(), "%d", &num) == 1)
         {
-            pC = Constant::Create(num);
+            pC = Constant::Create(this, num);
         }
 
         if (pC)
@@ -364,18 +364,6 @@ void Template::setNativeDefaultArgumentStrings(const char** a_ppArgs, LanguageEl
             continue;
         }
         PHANTOM_WARNING(false, "cannot solve template default argument '%s'", strArg.c_str());
-    }
-}
-
-void Template::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    for (auto it = m_TemplateSpecializations.begin(); it != m_TemplateSpecializations.end(); ++it)
-    {
-        if (*it == a_pElement)
-        {
-            m_TemplateSpecializations.erase(it);
-            return;
-        }
     }
 }
 

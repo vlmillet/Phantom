@@ -308,12 +308,6 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
 
     LanguageElements tempOrNotTemps;
 
-    auto scopeExit = makeScopeExit([&]() {
-        for (auto pElem : tempOrNotTemps)
-            if (pElem->getOwner() == nullptr)
-                Delete(pElem);
-    });
-
     struct Context
     {
         Symbol* Solve(LanguageElement* a_pScope, StringBuffer* a_LastError)
@@ -520,7 +514,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                             if (templateArgs.size() <= pTemplate->getTemplateParameters().size())
                             {
                                 TemplateDependantTemplateInstance* pInst =
-                                NewDeferred<TemplateDependantTemplateInstance>(
+                                a_pScope->NewDeferred<TemplateDependantTemplateInstance>(
                                 pTemplate, templateArgs,
                                 phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE : PHANTOM_R_FLAG_NONE);
                                 a_Symbols.push_back(pInst);
@@ -587,7 +581,8 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                                                 }
                                                 else
                                                 {
-                                                    a_Symbols.push_back(NewDeferred<TemplateDependantTemplateInstance>(
+                                                    a_Symbols.push_back(
+                                                    a_pScope->NewDeferred<TemplateDependantTemplateInstance>(
                                                     pTemplate, finalArgs,
                                                     phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE
                                                                                            : PHANTOM_R_FLAG_NONE));
@@ -789,7 +784,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                 {
                     if (funcArgs.size())
                         return false;
-                    a_Symbols.push_back(New<TemplateDependantElement>(
+                    a_Symbols.push_back(a_pScope->NewDeferred<TemplateDependantElement>(
                     scope, identifier, NullOpt,
                     templateArgs.size() ? OptionalArrayView<LanguageElement*>(templateArgs) : NullOpt));
                     return true;
@@ -880,12 +875,12 @@ symbol_post_identifier:
         {
             int64_t num;
             CPPSYMPARS_ERROR_IF(!ReadInteger(InStream, num), "expected identifier or constant");
-            pConstant = Constant::Create(int(num));
+            pConstant = Constant::Create(a_pScope, int(num));
             tempOrNotTemps.push_back(pConstant);
         }
         else
         {
-            pConstant = Constant::Create(CPPSYMPARS_IDENTIFIER[0] == 't'); // true / false
+            pConstant = Constant::Create(a_pScope, CPPSYMPARS_IDENTIFIER[0] == 't'); // true / false
         }
         if (phantom::lang::detail::currentModule())
             pConstant->addFlags(PHANTOM_R_FLAG_NATIVE);

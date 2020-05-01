@@ -281,37 +281,12 @@ LanguageElement* TemplateSpecialization::getDefaultArgument(StringView a_strPara
     return (*m_pDefaultArguments)[index];
 }
 
-void TemplateSpecialization::removeArgument(LanguageElement* a_pElement)
-{
-    if (a_pElement->getOwner() != this)
-        removeReferencedElement(a_pElement);
-    else
-        removeElement(a_pElement);
-}
-
 phantom::lang::TemplateParameters const& TemplateSpecialization::getTemplateParameters() const
 {
     return m_pTemplateSignature->getTemplateParameters();
 }
 
 void TemplateSpecialization::_updateName() {}
-
-void TemplateSpecialization::onReferencedElementAdded(LanguageElement*) {}
-
-void TemplateSpecialization::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    if (a_pElement == m_pExtendedSpecialization)
-        m_pExtendedSpecialization = nullptr;
-    for (auto it = m_Arguments.begin(); it != m_Arguments.end();)
-    {
-        if (*it == a_pElement)
-        {
-            it = m_Arguments.erase(it);
-        }
-        else
-            ++it;
-    }
-}
 
 #if 0
 template<class T0, class T1, class T2>

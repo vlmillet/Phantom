@@ -113,7 +113,7 @@ void Enum::addConstant(StringView a_strCode)
 
 void Enum::addConstant(StringView a_Name, int a_Value)
 {
-    addConstant(Constant::Create<int>(a_Value, a_Name, this));
+    addConstant(Constant::Create<int>(this, a_Value, a_Name, this));
 }
 
 void Enum::addConstants(StringView, ArrayView<Pair<StringView, int>> a_Values)

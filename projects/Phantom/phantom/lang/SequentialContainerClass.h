@@ -38,8 +38,8 @@ protected:
     SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
-    ~SequentialContainerClass() override;
-
+    void                      initialize();
+    void                      terminate() override;
     SequentialContainerClass* asSequentialContainerClass() const override
     {
         return const_cast<SequentialContainerClass*>(this);
@@ -50,7 +50,7 @@ public:
     virtual void pop_back(void* a_pContainer) const;
 
 private:
-    mutable RTData* m_Data = nullptr;
+    mutable RTData* m_pData = nullptr;
 };
 
 } // namespace lang

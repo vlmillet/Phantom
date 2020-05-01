@@ -70,7 +70,7 @@ public:
     /// \return the found or new source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getOrCreateSource(StringView a_strName, bool a_bInvisible = false);
+    Source* getOrCreateSource(StringView a_strName, uint a_Flags);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package folder associated with this package
@@ -95,7 +95,11 @@ public:
     /// \param  The source to add.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* newSource(StringView a_Name, bool a_bInvisible = false);
+    Source* newSource(StringView a_Name, uint a_Flags);
+
+    void addSource(Source* a_pSource);
+
+    void removeSource(Source* a_pSource);
 
     void deleteSource(Source* a_pSource);
 
@@ -133,6 +137,8 @@ public:
 
     void getPackageFolders(PackageFolders& a_Folders) const;
 
+    CustomAllocator const* getAllocator() const override { return &CustomAllocator::CurrentOrDefault(); }
+
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \fn Package::sourceAdded(Source*)
@@ -153,6 +159,13 @@ private:
     void   addArchivedSource(Source* a_pSource);
     void   removeArchivedSource(Source* a_pSource);
     hash64 computeHash() const override;
+
+private: // to ensure they won't be accessible
+    using LanguageElement::New;
+    using LanguageElement::NewDeferred;
+    using LanguageElement::NewMeta;
+    using LanguageElement::new_;
+    using LanguageElement::delete_;
 
 protected:
     Namespace*     m_pNamespace;

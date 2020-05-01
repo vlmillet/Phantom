@@ -124,35 +124,6 @@ public:
 
     void addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Removes a sub member anonymous section.
-    ///
-    /// \param [in,out] a_pMemberAnonymousSection   The member anonymous section.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void removeMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the member anonymous section at given index position.
-    ///
-    /// \param  a_uiIndex   The index.
-    ///
-    /// \return null if it fails, else the member anonymous section.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    MemberAnonymousSection* getMemberAnonymousSection(size_t a_uiIndex) const
-    {
-        return m_MemberAnonymousSections[a_uiIndex];
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the member anonymous section count.
-    ///
-    /// \return The member anonymous section count.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    size_t getMemberAnonymousSectionCount() const { return m_MemberAnonymousSections.size(); }
-
     size_t getSize() const override;
 
     size_t getAlignment() const override;

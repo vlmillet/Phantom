@@ -59,7 +59,6 @@
 #include "Scope.h"
 #include "SequentialContainerClass.h"
 #include "SetClass.h"
-#include "Signal.h"
 #include "Signature.h"
 #include "Source.h"
 #include "Structure.h"
@@ -285,10 +284,6 @@ void LanguageElementVisitor::visit(SetClass* a_pInput, VisitorData a_Data)
 void LanguageElementVisitor::visit(VectorClass* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<SequentialContainerClass*>(a_pInput), a_Data);
-}
-void LanguageElementVisitor::visit(Signal* a_pInput, VisitorData a_Data)
-{
-    visit(static_cast<Method*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(Signature* a_pInput, VisitorData a_Data)
 {

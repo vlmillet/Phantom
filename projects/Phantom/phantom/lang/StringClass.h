@@ -29,12 +29,10 @@ protected:
 public:
     StringClass(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    ~StringClass() override {}
-
     virtual void const* c_str(void const* a_pString) const = 0;
 
     virtual void assign(void* a_pString, const void* a_pChars, size_t a_Len) const = 0;
-	virtual void append(void* a_pString, const void* a_pChars) const = 0;
+    virtual void append(void* a_pString, const void* a_pChars) const = 0;
 };
 
 } // namespace lang

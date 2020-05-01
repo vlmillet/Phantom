@@ -71,9 +71,6 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<Expression*() const>("getDefaultExpression", &_::getDefaultExpression)
         
         .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-        
-        .protected_()
             .field("m_pValueType", &_::m_pValueType)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .field("m_pDefaultExpression", &_::m_pDefaultExpression)

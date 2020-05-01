@@ -62,13 +62,6 @@ Variable::~Variable()
     }
 }
 
-void Variable::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-    if (m_pValueType == a_pElement)
-        m_pValueType = nullptr;
-}
-
 void Variable::setValue(void const* a_pInputBuffer) const
 {
     m_pValueType->copyConstruct(m_pAddress, a_pInputBuffer);

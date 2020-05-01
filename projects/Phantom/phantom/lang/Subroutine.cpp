@@ -20,8 +20,6 @@ namespace lang
 {
 static Instructions m_EmptyInstructions;
 
-Subroutine::Subroutine() {}
-
 Subroutine::Subroutine(ABI a_eABI, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers, a_uiFlags), m_eABI(a_eABI)
 {
@@ -39,14 +37,6 @@ Subroutine::Subroutine(StringView a_strName, Signature* a_pSignature, ABI a_eABI
     PHANTOM_ASSERT(m_pSignature);
     m_pSignature->setModifiers((getModifiers() & PHANTOM_R_METHOD_QUAL_MASK) | m_pSignature->getModifiers());
     setModifiers((m_pSignature->getModifiers() & PHANTOM_R_METHOD_QUAL_MASK) | getModifiers());
-    if (m_pSignature->isShared())
-    {
-        addReferencedElement(a_pSignature);
-    }
-    else
-    {
-        addElement(m_pSignature);
-    }
 }
 
 void Subroutine::terminate()
@@ -55,9 +45,9 @@ void Subroutine::terminate()
     {
         for (auto pIns : *m_pInstructions)
         {
-            Delete<Instruction>(pIns);
+            delete_<Instruction>(pIns);
         }
-        Delete<Instructions>(m_pInstructions);
+        delete_<Instructions>(m_pInstructions);
         m_pInstructions = nullptr;
     }
     Symbol::terminate();
@@ -126,9 +116,9 @@ Instruction* Subroutine::createInstruction(int a_iOpCode, const CodeRangeLocatio
 {
     if (m_pInstructions == nullptr)
     {
-        m_pInstructions = PHANTOM_NEW(Instructions);
+        m_pInstructions = new_<Instructions>();
     }
-    Instruction* pNewInst = New<Instruction>(a_iOpCode, a_Location.range, a_MemoryLocation, a_pUserData);
+    Instruction* pNewInst = new_<Instruction>(a_iOpCode, a_Location.range, a_MemoryLocation, a_pUserData);
     m_pInstructions->push_back(pNewInst);
     pNewInst->m_pSubroutine = this;
     return pNewInst;
@@ -136,7 +126,7 @@ Instruction* Subroutine::createInstruction(int a_iOpCode, const CodeRangeLocatio
 
 void Subroutine::deleteInstruction(Instruction* a_pInst)
 {
-    Delete<Instruction>(a_pInst);
+    delete_<Instruction>(a_pInst);
 }
 
 Instructions const& Subroutine::getInstructions() const
@@ -187,25 +177,13 @@ void Subroutine::setBlock(Block* a_pBlock)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(!m_pBlock);
+    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(m_pBlock)->getOwner() == this);
     m_pBlock = a_pBlock;
-    if (m_pBlock)
-    {
-        addElement(reinterpret_cast<LanguageElement*>(m_pBlock));
-    }
 }
 
 bool Subroutine::containsMemoryAddress(const byte* a_pAddress)
 {
     return m_MemoryLocation.containsMemoryAddress(a_pAddress);
-}
-
-void Subroutine::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    LanguageElement::onReferencedElementRemoved(a_pElement);
-    if (reinterpret_cast<LanguageElement*>(m_pBlock) == a_pElement)
-        m_pBlock = nullptr;
-    else if (m_pSignature == a_pElement)
-        m_pSignature = nullptr;
 }
 
 bool Subroutine::matches(StringView a_strName, TypesView a_FunctionSignature, Modifiers a_Modifiers) const

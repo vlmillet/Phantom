@@ -41,23 +41,6 @@ MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunction
         setTemplateDependant();
 }
 
-MethodPointer::~MethodPointer()
-{
-}
-
-void MethodPointer::onReferencedElementRemoved(LanguageElement* a_pElement)
-{
-    Type::onReferencedElementRemoved(a_pElement);
-    if (m_pObjectType == a_pElement)
-    {
-        m_pObjectType = nullptr;
-    }
-    if (m_pFunctionType == a_pElement)
-    {
-        m_pFunctionType = nullptr;
-    }
-}
-
 void MethodPointer::valueToLiteral(StringBuffer& a_Buf, const void* src) const
 {
     MemberPointer::valueToLiteral(a_Buf, src);
@@ -141,13 +124,13 @@ bool MethodPointer::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifie
     PHANTOM_ASSERT((a_CallerQualifiers & (~(PHANTOM_R_REFQUAL_MASK | PHANTOM_R_CONST))) == 0);
     PHANTOM_ASSERT(((a_CallerQualifiers & PHANTOM_R_LVALUEREF) == PHANTOM_R_LVALUEREF) ^
                    ((a_CallerQualifiers & PHANTOM_R_RVALUEREF) == PHANTOM_R_RVALUEREF));
-    return (
-    ((a_CallerQualifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST) <=
-    ((m_Modifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
-                                                          // function (every one can call a const member function but a
-                                                          // const cannot call a non const member function)
-    &&(((m_Modifiers & (PHANTOM_R_REFQUAL_MASK)) == 0)
-        ||(m_Modifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
+    return (((a_CallerQualifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST) <=
+            ((m_Modifiers & PHANTOM_R_CONST) ==
+             PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
+                               // function (every one can call a const member function but a
+                               // const cannot call a non const member function)
+    && (((m_Modifiers & (PHANTOM_R_REFQUAL_MASK)) == 0) ||
+        (m_Modifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
 }
 
 Type* MethodPointer::getImplicitObjectParameterType() const

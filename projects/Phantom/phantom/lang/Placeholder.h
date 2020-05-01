@@ -53,7 +53,7 @@ public:
     /// \brief  Clones this placeholder.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    virtual Placeholder* clone(uint a_Flags = 0) const = 0;
+    virtual Placeholder* clone(LanguageElement* a_pElem, uint a_Flags = 0) const = 0;
 };
 
 } // namespace lang

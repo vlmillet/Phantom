@@ -145,27 +145,31 @@ PHANTOM_EXPORT_PHANTOM bool isMainThread();
 HAUNT_STOP;
 
 template<class T, class... Args>
-T* New(Args&&... a_Args)
+T* new_(Args&&... a_Args)
 {
+    PHANTOM_STATIC_ASSERT(!(std::is_same<lang::LanguageElement, T>::value));
     return new (allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
 }
 
 template<class T, class... Args>
-T* PlacementNew(T* a_pObj, Args&&... a_Args)
+T* pnew_(T* a_pObj, Args&&... a_Args)
 {
+    PHANTOM_STATIC_ASSERT(!(std::is_same<lang::LanguageElement, T>::value));
     return new (a_pObj) T(std::forward<Args>(a_Args)...);
 }
 
 template<class T>
-void Delete(TypeIndentityT<T*> a_pPtr)
+void delete_(TypeIndentityT<T*> a_pPtr)
 {
+    PHANTOM_STATIC_ASSERT(!(std::is_same<lang::LanguageElement, T>::value));
     a_pPtr->~T();
     deallocate(a_pPtr);
 }
 
 template<class T>
-void DeleteP(T* a_pPtr)
+void deleteVirtual(T* a_pPtr)
 {
+    PHANTOM_STATIC_ASSERT(!(std::is_same<lang::LanguageElement, T>::value));
     PHANTOM_STATIC_ASSERT(std::has_virtual_destructor<T>::value);
     a_pPtr->~T();
     deallocate(a_pPtr);

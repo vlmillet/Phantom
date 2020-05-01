@@ -53,10 +53,10 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
         
         .protected_()
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(FunctionType*, ABI, Modifiers, uint)>()["0"]["0"]
         
         .public_()
+            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .constructor<void(FunctionType*, ABI, Modifiers, uint)>()["0"]["0"]
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
             .method<FunctionPointer*() const, virtual_|override_>("asFunctionPointer", &_::asFunctionPointer)
@@ -72,11 +72,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .staticMethod<FunctionPointer*(FunctionType*, ABI, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
         
         .protected_()
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files

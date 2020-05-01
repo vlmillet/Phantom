@@ -59,7 +59,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<Constant*(void*, StringView, PrimitiveType*) const, virtual_>("createConstant", &_::createConstant)["\"\""]["nullptr"]
+            .method<Constant*(LanguageElement*, void*, StringView, PrimitiveType*) const, virtual_>("createConstant", &_::createConstant)["\"\""]["nullptr"]
+            .method<Constant*(void*, StringView, PrimitiveType*) const>("createConstant", &_::createConstant)["\"\""]["nullptr"]
         
         .protected_()
             .constructor<void(TypeKind)>()

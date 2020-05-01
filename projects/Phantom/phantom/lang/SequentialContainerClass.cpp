@@ -21,13 +21,22 @@ SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringV
 
 SequentialContainerClass::SequentialContainerClass(TypeKind a_eTypeKind, StringView a_strName,
                                                    Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : ContainerClass(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags), m_Data(PHANTOM_NEW(RTData))
+    : ContainerClass(a_eTypeKind, a_strName, a_Modifiers, a_uiFlags)
 {
 }
 
-SequentialContainerClass::~SequentialContainerClass()
+void SequentialContainerClass::initialize()
 {
-    Delete<RTData>(m_Data);
+    ContainerClass::initialize();
+    if (!isNative())
+        m_pData = new_<RTData>();
+}
+
+void SequentialContainerClass::terminate()
+{
+    if (m_pData)
+        delete_<RTData>(m_pData);
+    ContainerClass::terminate();
 }
 
 void SequentialContainerClass::push_back(void* a_pContainer, void const* a_pValue) const

@@ -52,15 +52,6 @@ void Array::moveAssign(void* a_pDest, void* a_pSrc) const
     }
 }
 
-void Array::onReferencedElementRemoved(LanguageElement* a_pItem)
-{
-    Type::onReferencedElementRemoved(a_pItem);
-    if (m_pUnderlyingType == a_pItem)
-    {
-        m_pUnderlyingType = nullptr;
-    }
-}
-
 void Array::construct(void* a_pBuffer) const
 {
     byte*  pBuffer = (byte*)a_pBuffer;

@@ -45,28 +45,14 @@ protected:
 
 public:
     Structure(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-    PHANTOM_DTOR ~Structure() override
-    {
-    }
+    void initialize();
 
-    Type* asPOD() const override
-    {
-        return (Structure*)this;
-    }
-    Structure* asStructure() const override
-    {
-        return (Structure*)this;
-    }
+    Type*      asPOD() const override { return (Structure*)this; }
+    Structure* asStructure() const override { return (Structure*)this; }
 
-    bool isCopyable() const override
-    {
-        return true;
-    }
+    bool isCopyable() const override { return true; }
 
-    void copyConstruct(void* a_pDest, void const* a_pSrc) const override
-    {
-        memcpy(a_pDest, a_pSrc, m_uiSize);
-    }
+    void copyConstruct(void* a_pDest, void const* a_pSrc) const override { memcpy(a_pDest, a_pSrc, m_uiSize); }
 };
 
 } // namespace lang

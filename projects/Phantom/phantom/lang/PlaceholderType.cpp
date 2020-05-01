@@ -27,8 +27,7 @@ Class* PlaceholderType::toClass() const
 {
     if (m_pAsClass == nullptr)
     {
-        m_pAsClass = New<PlaceholderClass>((PlaceholderType*)this);
-        ((PlaceholderType*)this)->addElement(m_pAsClass);
+        m_pAsClass = const_cast<PlaceholderType*>(this)->New<PlaceholderClass>((PlaceholderType*)this);
     }
     return m_pAsClass;
 }
@@ -37,15 +36,14 @@ ClassType* PlaceholderType::toClassType() const
 {
     if (m_pAsClassType == nullptr)
     {
-        m_pAsClassType = New<PlaceholderClassType>((PlaceholderType*)this);
-        ((PlaceholderType*)this)->addElement(m_pAsClassType);
+        m_pAsClassType = const_cast<PlaceholderType*>(this)->New<PlaceholderClassType>((PlaceholderType*)this);
     }
     return m_pAsClassType;
 }
 
-Placeholder* PlaceholderType::clone(uint) const
+Placeholder* PlaceholderType::clone(LanguageElement* a_pOwner, uint) const
 {
-    return New<PlaceholderType>(getName(), getModifiers(), 0);
+    return a_pOwner->New<PlaceholderType>(getName(), getModifiers(), 0);
 }
 
 } // namespace lang

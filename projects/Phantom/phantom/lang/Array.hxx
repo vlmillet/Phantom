@@ -43,8 +43,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-        
-        .protected_()
             .constructor<void(Type*, size_t)>()
         
         .public_()
@@ -82,7 +80,6 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .protected_()
             .method<size_t() const>("getElementCount", &_::getElementCount)
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
         
         .protected_()
             .field("m_uiCount", &_::m_uiCount)

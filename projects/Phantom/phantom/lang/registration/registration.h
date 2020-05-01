@@ -160,7 +160,7 @@ public:
 	{
 		for (PhantomBuilderBase* pType : _PHNTM_SubRegistrers)
 		{
-			phantom::DeleteP(pType);
+			phantom::deleteVirtual(pType);
 		}
 	}
 

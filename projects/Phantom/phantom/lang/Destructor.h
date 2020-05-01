@@ -25,7 +25,6 @@ public:
     PHANTOM_DECLARE_META_CLASS(Destructor);
 
 public:
-    Destructor();
     Destructor(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,10 +33,7 @@ public:
     /// \param [in,out] a_pAddress  The address where to construct the instance.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    inline void destroy(void* a_pAddress) const
-    {
-        invoke(a_pAddress, nullptr);
-    }
+    inline void destroy(void* a_pAddress) const { invoke(a_pAddress, nullptr); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Destroys N instances starting at a given place address.
@@ -55,14 +51,9 @@ public:
         }
     }
 
-    Destructor* asDestructor() const override
-    {
-        return (Destructor*)this;
-    }
+    Destructor* asDestructor() const override { return (Destructor*)this; }
 
 protected:
-    Destructor(ClassType* a_pClassType, StringView a_strName, StringView a_strSignature, Modifiers a_Modifiers = 0,
-               uint a_uiFlags = 0);
     virtual void** getNativeVTablePointer() const
     {
         PHANTOM_ASSERT_NO_IMPL();

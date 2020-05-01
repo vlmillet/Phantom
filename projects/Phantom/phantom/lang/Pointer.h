@@ -29,21 +29,13 @@ class PHANTOM_EXPORT_PHANTOM Pointer : public PointerType
 public:
     friend class Type;
 
-protected:
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs a pointer type from a given pointed type (must not be called directly,
-    /// use Type::makePointer() instead).
-    ///
-    /// \param a_pType The pointer type.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+public:
     Pointer(Type* a_pPointeeType)
         : PointerType(TypeKind::Pointer, a_pPointeeType, "*", sizeof(void*), std::alignment_of<void*>::value, 0,
                       PHANTOM_R_FLAG_IMPLICIT | a_pPointeeType->getFlags())
     {
     }
 
-public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the pointed type (ex: int* => int).
     ///

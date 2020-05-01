@@ -57,10 +57,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<FunctionType*(Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<FunctionType*(Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<FunctionType*(Type*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<FunctionType*(Type*, TypesView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
             .enum_<EState>().values({
                 {"eState_Virgin",_::eState_Virgin},
                 {"eState_UnderConstruction",_::eState_UnderConstruction},
@@ -68,7 +64,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .end()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, LanguageElement*, Modifiers, uint)>()["nullptr"]["0"]["0"]
             .constructor<void(Type*, Type*, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, TypesView, Modifiers, uint)>()["0"]["0"]
         
@@ -98,10 +93,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("hasEllipsis", &_::hasEllipsis)
             .method<Types::const_iterator() const>("beginParameterTypes", &_::beginParameterTypes)
             .method<Types::const_iterator() const>("endParameterTypes", &_::endParameterTypes)
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
-            .method<void(LanguageElement*), virtual_|override_>("onElementRemoved", &_::onElementRemoved)
         
         .protected_()
             .field("m_pReturnType", &_::m_pReturnType)

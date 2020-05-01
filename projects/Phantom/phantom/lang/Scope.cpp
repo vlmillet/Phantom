@@ -190,7 +190,7 @@ Template* Scope::addAliasTemplate(TemplateSignature* a_pSignature, StringView a_
     if (pType == nullptr)
         return nullptr;
     Template* pTemplate = m_pUnit->New<Template>(a_pSignature, a_strAliasName, a_Modifiers, a_uiFlags);
-    Alias*    pAlias = Alias::Create(pType, a_strAliasName, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE);
+    Alias*    pAlias = m_pUnit->New<Alias>(pType, a_strAliasName, PHANTOM_R_NONE, a_uiFlags & PHANTOM_R_FLAG_NATIVE);
     pTemplate->getEmptyTemplateSpecialization()->setTemplated(pAlias);
     PHANTOM_ASSERT(pType->getOwner()); // template dependant
     addTemplate(pTemplate);
@@ -238,38 +238,10 @@ PrimitiveType* Scope::getPrimitiveType(StringView a_strName) const
     return pType ? pType->asPrimitiveType() : nullptr;
 }
 
-Class* Scope::getClass(size_t index) const
-{
-    size_t i = 0;
-    for (auto it = m_Types->begin(); it != m_Types->end(); ++it)
-    {
-        if ((*it)->asClass())
-        {
-            if (i == index)
-                return static_cast<Class*>(*it);
-            ++i;
-        }
-    }
-    return nullptr;
-}
-
 Class* Scope::getClass(StringView a_strName) const
 {
     Type* pType = getType(a_strName);
     return pType ? pType->asClass() : nullptr;
-}
-
-size_t Scope::getClassCount() const
-{
-    size_t i = 0;
-    for (auto it = m_Types->begin(); it != m_Types->end(); ++it)
-    {
-        if ((*it)->asClass())
-        {
-            ++i;
-        }
-    }
-    return i;
 }
 
 Function* Scope::getFunction(StringView a_strName, TypesView a_Types) const
@@ -412,7 +384,8 @@ Alias* Scope::getTypedef(StringView a_strTypedef) const
 
 void Scope::addUsing(Symbol* a_pElement)
 {
-    addAlias(New<Alias>(a_pElement, a_pElement->getName()));
+    PHANTOM_ASSERT(m_pUnit);
+    addAlias(m_pUnit->New<Alias>(a_pElement, a_pElement->getName()));
 }
 
 void Scope::fetchTypesCascade(Types& a_Types) const
@@ -490,7 +463,7 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization = New<TemplateSpecialization>(
+    addTemplateSpecialization(pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
                               a_pTemplate, a_pTemplateSignature, a_Arguments,
                               PHANTOM_R_FLAG_PRIVATE_VIS | (PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative())));
     return pTemplateSpecialization;
@@ -510,7 +483,7 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
         PHANTOM_ASSERT(false, "template already instantiated in this module");
         return nullptr;
     }
-    addTemplateSpecialization(pTemplateSpecialization = New<TemplateSpecialization>(
+    addTemplateSpecialization(pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
                               a_pInstantiationSpecialization, a_Arguments, a_PartialSpecializationParameterDeductions));
     // pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE*m_pThisElement->isNative());
     return pTemplateSpecialization;

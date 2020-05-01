@@ -29,10 +29,9 @@ class PHANTOM_EXPORT_PHANTOM LValueReference : public Reference
 public:
     friend class Type;
 
-protected:
+public:
     LValueReference(Type* a_pReferencedType);
 
-public:
     LValueReference* asClassLValueReference() const override;
     LValueReference* asConstClassLValueReference() const override;
 

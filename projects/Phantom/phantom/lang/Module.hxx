@@ -51,7 +51,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using Sources = typedef_< phantom::lang::Sources>;
             using StringView = typedef_< phantom::StringView>;
             using Types = typedef_< phantom::lang::Types>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -64,6 +64,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, uint)>()["0"]
+            .constructor<void(size_t, size_t, StringView, StringView, StringView, uint)>()["0"]
             .method<Module*() const, virtual_|override_>("asModule", &_::asModule)
             .method<bool() const>("isPlugin", &_::isPlugin)
             .method<Plugin*() const>("getPlugin", &_::getPlugin)
@@ -80,8 +81,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Package*() const>("getDefaultPackage", &_::getDefaultPackage)
             .method<Package*(StringView) const>("getPackage", &_::getPackage)
             .method<Package*(StringView)>("getOrCreatePackage", &_::getOrCreatePackage)
-            .method<void(Package*)>("addPackage", &_::addPackage)
-            .method<void(Package*)>("removePackage", &_::removePackage)
+            .method<Package*(StringView)>("newPackage", &_::newPackage)
             .method<Modules const&() const>("getDependencies", &_::getDependencies)
             .method<void(Module*)>("addDependency", &_::addDependency)
             .method<void(Module*)>("removeDependency", &_::removeDependency)
@@ -104,6 +104,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isMarkedOutdated", &_::isMarkedOutdated)
             .method<void()>("markOutdated", &_::markOutdated)
             .method<void()>("markUpToDate", &_::markUpToDate)
+            .method<CustomAllocator const*() const, virtual_|override_>("getAllocator", &_::getAllocator)
         
         .public_()
             .field("packageAdded", &_::packageAdded)
@@ -127,6 +128,11 @@ PHANTOM_PACKAGE("phantom.lang")
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
+        PHANTOM_STRUCT_T((class), (T), Module::DeleteMetaH)
+        {
+            this_()
+            ;
+        }
     PHANTOM_END("Module")
 PHANTOM_END("phantom.lang")
 }

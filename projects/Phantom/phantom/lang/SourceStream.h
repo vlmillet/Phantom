@@ -18,7 +18,7 @@ namespace phantom
 {
 namespace lang
 {
-class PHANTOM_EXPORT_PHANTOM SourceStream : public Object
+class PHANTOM_EXPORT_PHANTOM SourceStream
 {
     friend class Source;
 

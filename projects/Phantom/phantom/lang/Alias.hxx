@@ -50,7 +50,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<Alias*(Symbol*, StringView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Symbol*, StringView, Modifiers, uint)>()["\"\""]["0"]["0"]
@@ -62,9 +61,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Alias*)>("addAlias", &_::addAlias)
             .method<Alias*(StringView) const>("getAlias", &_::getAlias)
             .method<void(Symbols&, bool) const, virtual_>("fetchAccessibleSymbols", &_::fetchAccessibleSymbols)["true"]
-        
-        .protected_()
-            .method<void(LanguageElement*), virtual_|override_>("onReferencedElementRemoved", &_::onReferencedElementRemoved)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

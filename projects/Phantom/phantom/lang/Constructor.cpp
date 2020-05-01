@@ -21,11 +21,5 @@ Constructor::Constructor(StringView a_strName, Signature* a_pSignature, Modifier
 {
 }
 
-Constructor::Constructor(ClassType* a_pClassType, StringView a_strName, StringView a_strSignature,
-                         Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Method(a_pClassType, a_strName, a_strSignature, ABI::MethodCall, a_Modifiers, a_uiFlags)
-{
-}
-
 } // namespace lang
 } // namespace phantom

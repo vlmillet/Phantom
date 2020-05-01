@@ -31,11 +31,5 @@ Function::Function(StringView a_strName, Signature* a_pSignature, Modifiers a_Mo
 {
 }
 
-Function::Function(LanguageElement* a_pScope, StringView a_strName, StringView a_strSignature, ABI a_eABI,
-                   Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Subroutine(a_pScope, a_strName, a_strSignature, a_eABI, a_Modifiers, a_uiFlags)
-{
-}
-
 } // namespace lang
 } // namespace phantom

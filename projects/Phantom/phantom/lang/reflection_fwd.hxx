@@ -148,7 +148,8 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Signal")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<Signals>("Signals"); }
+        /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<Signals>("Signals"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Signal")
     PHANTOM_SOURCE("Field")

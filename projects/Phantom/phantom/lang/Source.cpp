@@ -40,9 +40,7 @@ namespace phantom
 namespace lang
 {
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags),
-      Scope(this, this),
-      LanguageElementUnitT<Source>(&m_Allocator)
+    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this, this), m_pAlloc(&m_RTAllocator)
 {
 }
 
@@ -55,15 +53,21 @@ Source::~Source()
     }
     if (m_pSourceStream)
     {
-        deleteP(m_pSourceStream);
+        deleteVirtual(m_pSourceStream);
     }
 }
 
 void Source::initialize()
 {
-    if (isNative()) // native sources won't have any block content, to allocations will better fit at a module level in
-                    // term of space
-        setAllocator(&getModule()->m_Allocator);
+    if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
+                    // languages, so allocations will better fit at a module level in term of space
+        m_pAlloc = &getModule()->m_Allocator;
+
+    m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
+    m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
+    m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
+
+    Symbol::initialize();
 }
 
 void Source::terminate()

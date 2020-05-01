@@ -38,16 +38,15 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
       m_pBaseAddress((void*)a_NativeHandle),
       m_ImageSize(a_NativeImageSize),
       m_LibraryFullName(a_LibraryFullName),
-      m_DeclarationCppFullName(a_DeclarationCppFullName)
+      m_DeclarationCppFullName(a_DeclarationCppFullName),
+      m_Allocator(isNative() ? 65536 : 1024)
 {
-    Package* pDefaultPackage = PHANTOM_DEFERRED_NEW(Package)(a_strName);
+    Package* pDefaultPackage = newPackage(a_strName);
     if (isNative())
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
-    addPackage(pDefaultPackage);
-    m_pAnonymousSource = PHANTOM_DEFERRED_NEW(Source)("default", Modifier::None);
+    m_pAnonymousSource = pDefaultPackage->newSource("default", 0);
     if (isNative())
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
-    pDefaultPackage->addSource(m_pAnonymousSource);
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
@@ -59,72 +58,14 @@ void Module::terminate()
 {
     setFlag(PHANTOM_R_FLAG_TERMINATED);
 
-    if (isNative() && getName() == "Phantom")
+    auto i = m_Packages.size();
+    while (i--)
     {
-        g_ReleasingPhantomModule = true;
-        PHANTOM_ASSERT(Application::Get() && Application::Get()->getMainModule() == nullptr);
-        LanguageElements allElements;
-        fetchElementsDeep(allElements);
-
-        if (size_t allElementCount = allElements.size())
-        {
-            //             std::sort(allElements.begin(), allElements.end(), [](LanguageElement* l0, LanguageElement*
-            //             l1) -> bool {
-            //                 return l0->destructionPriority() < l1->destructionPriority();
-            //             });
-
-            // first pass we skip meta meta classes
-            while (allElementCount--)
-            {
-                if (allElements[allElementCount] == Class::MetaClass() ||
-                    allElements[allElementCount]->getMetaClass()->getMetaClass() == Class::MetaClass())
-                    continue;
-                if (allElements[allElementCount]->isNative())
-                    allElements[allElementCount]->_nativeDetachElementsFromModule();
-                Delete(allElements)[allElementCount];
-            }
-
-            allElements.clear();
-            fetchElementsDeep(allElements);
-            allElementCount = allElements.size();
-
-            // first pass we skip meta meta classes
-            while (allElementCount--)
-            {
-                if (allElements[allElementCount] == Class::MetaClass() ||
-                    allElements[allElementCount]->getMetaClass() == Class::MetaClass())
-                    continue;
-                if (allElements[allElementCount]->isNative())
-                    allElements[allElementCount]->_nativeDetachElementsFromModule();
-                Delete(allElements)[allElementCount];
-            }
-
-            // second pass we skip only the "master" meta class (the meta class of Class)
-
-            allElements.clear();
-            fetchElementsDeep(allElements);
-            allElementCount = allElements.size();
-
-            while (allElementCount--)
-            {
-                if (allElements[allElementCount] == Class::MetaClass())
-                    continue;
-                if (allElements[allElementCount]->isNative())
-                    allElements[allElementCount]->_nativeDetachElementsFromModule();
-                Delete(allElements)[allElementCount];
-            }
-
-            // then we check we removed every body
-
-            allElements.clear();
-            PHANTOM_ASSERT(([this, &allElements]() -> bool {
-                fetchElementsDeep(allElements);
-                return allElements.empty();
-            }()));
-        }
-        g_ReleasingPhantomModule = false;
+        m_Packages[i]->terminate();
+        m_Packages[i]->~Package();
     }
-    else if (isNative())
+
+    if (isNative())
     {
         StaticGlobals::Release(m_pBaseAddress, reinterpret_cast<uint8_t*>(m_pBaseAddress) + m_ImageSize);
     }
@@ -148,21 +89,6 @@ Package* Module::getDefaultPackage() const
 {
     PHANTOM_ASSERT(m_Packages.size() && m_Packages.front()->getName() == getName());
     return m_Packages.front();
-}
-
-void Module::addPackage(Package* a_pPackage)
-{
-    Package* pPackage = getPackage(a_pPackage->getName());
-    PHANTOM_ASSERT(pPackage == nullptr, "package already exists in this module");
-    PHANTOM_ASSERT(a_pPackage->getModule() == nullptr);
-    if (isNative())
-        a_pPackage->m_uiFlags |= PHANTOM_R_FLAG_NATIVE;
-    addElement(a_pPackage);
-}
-
-void Module::removePackage(Package* a_pPackage)
-{
-    removeElement(a_pPackage);
 }
 
 void Module::addDependency(Module* a_pModule)
@@ -199,27 +125,6 @@ bool Module::hasDependencyCascade(Module* a_pModule) const
     return false;
 }
 
-void Module::onElementAdded(LanguageElement* a_pElement)
-{
-    PHANTOM_ASSERT(!g_ReleasingPhantomModule);
-    if (a_pElement->asPackage())
-    {
-        m_Packages.push_back(static_cast<Package*>(a_pElement));
-        PHANTOM_EMIT packageAdded(static_cast<Package*>(a_pElement));
-        Application::Get()->packageAdded(static_cast<Package*>(a_pElement));
-    }
-}
-
-void Module::onElementRemoved(LanguageElement* a_pElement)
-{
-    if (a_pElement->asPackage())
-    {
-        Application::Get()->packageAboutToBeRemoved(static_cast<Package*>(a_pElement));
-        PHANTOM_EMIT packageAboutToBeRemoved(static_cast<Package*>(a_pElement));
-        m_Packages.erase(std::find(m_Packages.begin(), m_Packages.end(), static_cast<Package*>(a_pElement)));
-    }
-}
-
 bool Module::isPlugin() const
 {
     return Application::Get()->getMainModule() != this;
@@ -254,9 +159,29 @@ Package* Module::getPackage(StringView a_strName) const
 
 Package* Module::getOrCreatePackage(StringView a_strName)
 {
-    Package* pPck = getPackage(a_strName);
-    if (!pPck)
-        addPackage(pPck = New<Package>(a_strName));
+    if (Package* pPck = getPackage(a_strName))
+        return pPck;
+    return newPackage(a_strName);
+}
+
+Package* Module::newPackage(StringView a_strName)
+{
+    PHANTOM_ASSERT(dynamic_initializer_()->installed(), "cannot be called before main()");
+    Package* pPck = phantom::new_<Package>(a_strName);
+    pPck->rtti.instance = pPck;
+    if (dynamic_initializer_()->installed())
+    {
+        pPck->rtti.metaClass = PHANTOM_CLASSOF(Package);
+    }
+    else
+    {
+        phantom::detail::deferInstallation("phantom::lang::Package", &pPck->rtti);
+    }
+    pPck->setOwner(this);
+    pPck->initialize();
+    m_Packages.push_back(pPck);
+    PHANTOM_EMIT packageAdded(pPck);
+    Application::Get()->packageAdded(pPck);
     return pPck;
 }
 

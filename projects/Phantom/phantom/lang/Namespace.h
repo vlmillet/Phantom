@@ -27,6 +27,7 @@ class PHANTOM_EXPORT_PHANTOM Namespace : public Symbol, public Scope
 public:
     friend class phantom::Phantom;
     friend class Type;
+    friend class Symbol;
 
 public:
     static Namespace* Global();
@@ -39,9 +40,6 @@ public:
     Scope*     asScope() const override { return (Namespace*)this; }
     Namespace* asNamespace() const override { return (Namespace*)this; }
     Namespace* toNamespace() const override { return (Namespace*)this; }
-
-    void addNamespace(Namespace* a_pNamespace);
-    void removeNamespace(Namespace* a_pNamespace);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the root namespace.
@@ -146,6 +144,14 @@ public:
     Aliases const& getNamespaceAliases() const { return m_NamespaceAliases; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the namespace aliases referenced in this namespace.
+    ///
+    /// \return the namespace aliases list.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Symbols const& getSymbols() const { return m_Symbols; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Converts this namespace name to a path with given separator.
     ///
     /// \param  separator   (optional) the separator.
@@ -183,17 +189,23 @@ public:
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
 
 protected:
-    Namespaces m_Namespaces;
-    Aliases    m_NamespaceAliases;
+    virtual void onScopeSymbolAdded(Symbol* a_pElement) override;
 
 private:
     Namespace* getNamespaceCascade(Strings& a_HierarchyWords) const;
     Namespace* getOrCreateNamespace(Strings* a_HierarchyWords);
     void       onNamespaceChanging(Namespace* a_pNamespace) override final;
     void       onNamespaceChanged(Namespace* a_pNamespace) override final;
+    void       _registerSymbol(Symbol* a_pSym) { m_Symbols.push_back(a_pSym); }
+    void       _unregisterSymbol(Symbol* a_pSym)
+    {
+        m_Symbols.erase_unsorted(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym).base());
+    }
 
 private:
-    void release(Types& out_types);
+    Namespaces m_Namespaces;
+    Aliases    m_NamespaceAliases;
+    Symbols    m_Symbols;
 };
 
 } // namespace lang

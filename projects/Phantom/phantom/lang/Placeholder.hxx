@@ -46,7 +46,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)
             .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)
-            .method<Placeholder*(uint) const, pure_virtual>("clone", &_::clone)["0"]
+            .method<Placeholder*(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

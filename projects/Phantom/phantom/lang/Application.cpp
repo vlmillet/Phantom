@@ -196,13 +196,11 @@ void Application::terminate()
                 Delete(pElem);
         }
         PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module && "Root Package Folder"
-    }
+	}
+
+	_uninstallNativeModule(m_Modules.back());
 
     StaticGlobals::Release(nullptr, nullptr);
-
-    _uninstallNativeModule(m_Modules.back());
-
-    Delete(Class::MetaClass());
 
     Symbol::terminate();
 }

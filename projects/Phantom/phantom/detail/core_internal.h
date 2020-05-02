@@ -174,10 +174,6 @@ public:
     void deferInstallation(StringView a_strTypeName, RTTI* a_pRtti)
     {
         PHANTOM_ASSERT(a_pRtti->instance);
-		if (a_strTypeName.find("ClassT") != -1)
-		{
-			printf("");
-		}
         m_DeferredInstallationsMutex.lock();
         m_DeferredInstallations.resize(m_DeferredInstallations.size() + 1);
         m_DeferredInstallations.back().typeName = a_strTypeName;

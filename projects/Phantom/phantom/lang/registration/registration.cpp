@@ -591,7 +591,7 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
     }
     PHANTOM_ASSERT(a_pTemplate->isNative());
     TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(
-    a_pTemplate, a_pTemplate->New<TemplateSignature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
+    a_pTemplate, pSource->New<TemplateSignature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
     pSpec->setFlags(PHANTOM_R_FLAG_NATIVE | PHANTOM_R_FLAG_IMPLICIT |
                     pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }

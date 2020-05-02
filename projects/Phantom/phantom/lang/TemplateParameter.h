@@ -35,9 +35,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     TemplateParameter(Placeholder* a_pPlaceholder, LanguageElement* a_pDefaultArgument = nullptr, uint a_uiFlags = 0);
-
-    /// \brief  Destructor.
-    ~TemplateParameter() override {}
+	void initialize();
 
     TemplateParameter* asTemplateParameter() const override { return (TemplateParameter*)this; }
 

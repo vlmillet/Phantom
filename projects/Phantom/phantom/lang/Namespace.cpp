@@ -114,6 +114,7 @@ Namespace* Namespace::newNamespace(StringView a_strName)
 	if (dynamic_initializer_()->installed())
 	{
 		pNS->rtti.metaClass = PHANTOM_CLASSOF(Namespace);
+		pNS->rtti.metaClass->registerInstance(pNS);
 	}
 	else
 	{

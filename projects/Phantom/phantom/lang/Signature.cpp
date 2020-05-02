@@ -21,12 +21,13 @@ namespace lang
 Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs,
                              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
+	Signature* s = a_pOwner->NewDeferred<Signature>(a_pRet, a_Modifiers, a_uiFlags);
     Parameters params;
     for (auto p : a_ParamTs)
     {
-        params.push_back(a_pOwner->NewDeferred<Parameter>(p));
+		s->addParameter(a_pOwner->NewDeferred<Parameter>(p));
     }
-    return a_pOwner->NewDeferred<Signature>(a_pRet, params, a_Modifiers, a_uiFlags);
+    return s;
 }
 
 Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers a_Modifiers /*= 0*/,

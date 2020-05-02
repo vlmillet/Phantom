@@ -24,6 +24,7 @@ class PHANTOM_EXPORT_PHANTOM Scope
 protected:
     Scope(LanguageElement* a_pThisElement, LanguageElement* a_pUnit);
     void initialize();
+	void terminate();
 
 public:
     virtual Scope* asScope() const = 0;

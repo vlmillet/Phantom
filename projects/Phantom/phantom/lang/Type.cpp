@@ -71,17 +71,15 @@ Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, 
 
 Type::~Type()
 {
-    PHANTOM_ASSERT(m_pExtendedTypes == nullptr);
-    if (m_pExtendedTypes)
-    {
-        PHANTOM_ASSERT(g_ReleasingPhantomModule);
-        delete_<Types>(m_pExtendedTypes);
-        m_pExtendedTypes = nullptr;
-    }
 }
 
 void Type::terminate()
 {
+	if (m_pExtendedTypes)
+	{
+		delete_<Types>(m_pExtendedTypes);
+		m_pExtendedTypes = nullptr;
+	}
     Symbol::terminate();
 }
 

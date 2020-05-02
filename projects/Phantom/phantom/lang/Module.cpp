@@ -47,10 +47,6 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
     m_pAnonymousSource = pDefaultPackage->newSource("default");
     if (isNative())
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
-	if (a_strName == "MyApplication")
-	{
-		printf("");
-	}
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
@@ -60,21 +56,17 @@ Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
 
 void Module::terminate()
 {
-    auto i = m_Packages.size();
-    while (i--)
-    {
-		Delete(m_Packages[i]);
-    }
-
-    if (isNative())
-    {
-        StaticGlobals::Release(m_pBaseAddress, reinterpret_cast<uint8_t*>(m_pBaseAddress) + m_ImageSize);
-    }
     m_pPlugin = nullptr;
     Symbol::terminate();
 }
 
-Module::~Module() {}
+Module::~Module() 
+{
+	if (isNative())
+	{
+		StaticGlobals::Release(m_pBaseAddress, reinterpret_cast<uint8_t*>(m_pBaseAddress) + m_ImageSize);
+	}
+}
 
 bool Module::canBeUnloaded() const
 {
@@ -171,8 +163,9 @@ Package* Module::newPackage(StringView a_strName)
     pPck->rtti.instance = pPck;
     if (dynamic_initializer_()->installed())
     {
-        pPck->rtti.metaClass = PHANTOM_CLASSOF(Package);
-    }
+		pPck->rtti.metaClass = PHANTOM_CLASSOF(Package);
+		pPck->rtti.metaClass->registerInstance(pPck);
+	}
     else
     {
         phantom::detail::deferInstallation("phantom::lang::Package", &pPck->rtti);

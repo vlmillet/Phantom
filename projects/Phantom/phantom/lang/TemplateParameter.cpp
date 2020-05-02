@@ -21,11 +21,16 @@ TemplateParameter::TemplateParameter(Placeholder* a_pPlaceholder, LanguageElemen
     : Symbol(a_pPlaceholder->asSymbol()->getName(), 0, a_uiFlags), m_pPlaceholder(a_pPlaceholder)
 {
     PHANTOM_ASSERT(m_pPlaceholder);
-    m_pPlaceholder->asSymbol()->setOwner(this);
     if (a_pDefaultArgument)
     {
         setDefaultArgument(a_pDefaultArgument);
     }
+}
+
+void TemplateParameter::initialize()
+{
+	Symbol::initialize();
+	m_pPlaceholder->asSymbol()->setOwner(this);
 }
 
 TemplateParameter* TemplateParameter::clone(LanguageElement* a_pOwner) const

@@ -37,6 +37,8 @@ public:
 
     void setAllocator(CustomAllocator const* a_pAlloc) { m_container.setAllocator(a_pAlloc); }
 
+	void release() { m_container = t_Container{}; }
+
     t_Container* operator->()
     {
         onAccess();

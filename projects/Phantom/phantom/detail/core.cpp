@@ -242,28 +242,23 @@ void DynamicCppInitializerH::StaticGlobalsRelease()
 	g_pLangNamespace->setNamespace(nullptr);
 
 	auto pClass = PHANTOM_CLASSOF(lang::Namespace);
-	{
-		pClass->unregisterInstance(&*g_pLangNamespace);
-		g_pLangNamespace->_terminate();
-		g_pLangNamespace.destroy();
-	} {
-		pClass->unregisterInstance(&*g_pStdNamespace);
-		g_pStdNamespace->_terminate();
-		g_pStdNamespace.destroy();
-	} {
-		pClass->unregisterInstance(&*g_pPhantomNamespace);
-		g_pPhantomNamespace->_terminate();
-		g_pPhantomNamespace.destroy();
-	} {
-		pClass->unregisterInstance(&*g_pGlobalNamespace);
-		g_pGlobalNamespace->_terminate();
-		g_pGlobalNamespace.destroy();
-	}
+	pClass->unregisterInstance(&*g_pLangNamespace);
+	pClass->unregisterInstance(&*g_pStdNamespace);
+	pClass->unregisterInstance(&*g_pPhantomNamespace);
+	pClass->unregisterInstance(&*g_pGlobalNamespace);
+	PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
 
-    PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
+	g_pLangNamespace->_terminate();
+	g_pStdNamespace->_terminate();
+	g_pPhantomNamespace->_terminate();
+	g_pGlobalNamespace->_terminate();
     g_pApplication->_terminate();
-    g_pApplication->~Application(); // special case for Application which cannot use lang because it is the
-                                    // one holding the lang and releasing it on 'terminate'
+
+	g_pLangNamespace.destroy();
+	g_pStdNamespace.destroy();
+	g_pPhantomNamespace.destroy();
+	g_pGlobalNamespace.destroy();
+    g_pApplication.destroy(); 
 }
 
 DynamicCppInitializerH::DynamicCppInitializerH()

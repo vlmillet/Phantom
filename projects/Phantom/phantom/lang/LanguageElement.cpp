@@ -32,7 +32,12 @@ void LanguageElement::initialize()
 
 LanguageElement::~LanguageElement()
 {
-    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0, "missing super call to terminate() somewhere");
+	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0, "missing super call to terminate() somewhere");
+	if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
+		return;
+	size_t i = m_Elements.size();
+	while (i--)
+		m_Elements[i]->~LanguageElement();
 }
 
 int LanguageElement::destructionPriority() const
@@ -52,8 +57,12 @@ void LanguageElement::terminate()
 	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
 	m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
 	setOwner(nullptr);
-	while (!m_Elements.empty())
-		Delete(m_Elements.back());
+	size_t i = m_Elements.size();
+	while (i--)
+	{
+		m_Elements[i]->rtti.metaClass->unregisterInstance(m_Elements[i]->rtti.instance);
+		m_Elements[i]->terminate();
+	}
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
@@ -227,7 +236,7 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
-		PHANTOM_ASSERT(m_pOwner->m_pSource == m_pSource);
+		PHANTOM_ASSERT(m_pOwner->m_pSource == m_pSource || m_pSource == this);
         m_pOwner->onElementsAccess();
         m_pOwner->m_Elements.push_back(this);
         if (isTemplateDependant() && m_pOwner->asEvaluable())

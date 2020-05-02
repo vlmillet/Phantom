@@ -86,6 +86,7 @@ void Class::terminate()
     {
         bc.baseClass->removeDerivedClass(this);
     }
+	m_BaseClasses.clear();
 
     ClassType::terminate();
 }
@@ -251,25 +252,29 @@ void Class::removeDerivedClass(Class* a_pType)
 #if PHANTOM_CUSTOM_ENABLE_DERIVED_CLASS_CACHE
 void Class::_addDerivedClassRecursive(Class* a_pType)
 {
+	m_RecurseDerivedClasses.push_back(a_pType);
+	for (auto pDerived : a_pType->m_RecurseDerivedClasses)
+	{
+		m_RecurseDerivedClasses.push_back(pDerived);
+	}
     for (Class* pBase : m_BaseClasses)
     {
         pBase->_addDerivedClassRecursive(a_pType);
     }
-    m_RecurseDerivedClasses.push_back(a_pType);
-    for (auto pDerived : a_pType->m_RecurseDerivedClasses)
-        m_RecurseDerivedClasses.push_back(pDerived);
 }
 
 void Class::_removeDerivedClassRecursive(Class* a_pType)
 {
-    for (auto pDerived : a_pType->m_RecurseDerivedClasses)
-        m_RecurseDerivedClasses.erase(
-        std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), pDerived));
-    m_RecurseDerivedClasses.erase(std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), a_pType));
     for (Class* pBase : m_BaseClasses)
     {
         pBase->_removeDerivedClassRecursive(a_pType);
-    }
+	}
+	for (auto pDerived : a_pType->m_RecurseDerivedClasses)
+	{
+		m_RecurseDerivedClasses.erase(
+			std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), pDerived));
+	}
+	m_RecurseDerivedClasses.erase(std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), a_pType));
 }
 #endif
 

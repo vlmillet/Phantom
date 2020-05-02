@@ -62,6 +62,18 @@ void Scope::initialize()
     m_Aliases.setAllocator(pAlloc);
 }
 
+void Scope::terminate()
+{
+	m_Functions.release();
+	m_Variables.release();
+	m_Constants.release();
+	m_Types.release();
+	m_Templates.release();
+	m_TemplateSpecializations.release();
+	m_AnonymousSections.release();
+	m_Aliases.release();
+}
+
 Type* Scope::getType(StringView a_strName) const
 {
     auto it = m_Types->begin();

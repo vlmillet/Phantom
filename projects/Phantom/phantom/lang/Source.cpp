@@ -44,24 +44,15 @@ Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFla
 {
 }
 
-Source::~Source()
-{
-    for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
-    {
-        if (Source* source = it->symbol->asSource())
-            source->_removeImporting(this);
-    }
-}
-
 void Source::initialize()
 {
-    if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
-                    // languages, so allocations will better fit at a module level in term of space
-        m_pAlloc = &getModule()->m_Allocator;
+	if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
+					// languages, so allocations will better fit at a module level in term of space
+		m_pAlloc = &getModule()->m_Allocator;
 
-    m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
-    m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
-    m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
+	m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
+	m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
+	m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
 
 	Symbol::initialize();
 	Scope::initialize();
@@ -69,17 +60,32 @@ void Source::initialize()
 
 void Source::terminate()
 {
-	PHANTOM_ASSERT(m_CreatedElements.front() == this);
+	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
+	m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
 	size_t i = m_CreatedElements.size();
-	// -- first invoke terminate to release links
-	while (i-- > 1)
+	// -- first invoke terminate to cleanup inter-dependencies
+	while (i--)
+	{
+		m_CreatedElements[i]->rtti.metaClass->unregisterInstance(m_CreatedElements[i]->rtti.instance);
 		m_CreatedElements[i]->_terminate();
-	// -- then invoke destructor
-	i = m_CreatedElements.size();
-	while (i-- > 1)
+	}
+	Symbol::terminate();
+	Scope::terminate();
+}
+
+Source::~Source()
+{
+	// -- then invoke destructor to finalize destruction
+	size_t i = m_CreatedElements.size();
+	while (i--)
 		m_CreatedElements[i]->~LanguageElement();
 	// -- deallocation will be made by destructing allocator
-    Symbol::terminate();
+
+    for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
+    {
+        if (Source* source = it->symbol->asSource())
+            source->_removeImporting(this);
+    }
 }
 
 bool Source::canBeUnloaded() const

@@ -117,7 +117,8 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
 
 void TemplateSpecialization::initialize()
 {
-    m_pTemplateSignature->setOwner(this);
+	Symbol::initialize();
+	m_pTemplateSignature->setOwner(this);
     if (m_pTemplated)
         m_pTemplated->setOwner(this);
 }
@@ -129,6 +130,7 @@ void TemplateSpecialization::terminate()
         if (m_pDefaultArguments)
             delete_<LanguageElements>(m_pDefaultArguments);
     }
+	Symbol::terminate();
 }
 
 hash64 TemplateSpecialization::getDecorationHash() const

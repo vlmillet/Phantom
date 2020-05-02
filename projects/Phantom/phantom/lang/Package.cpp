@@ -79,11 +79,6 @@ void Package::terminate()
 {
     if (m_pFolder)
         m_pFolder->_removePackage(this);
-	size_t i = m_Sources.size();
-	while (i--)
-	{
-		deleteSource(m_Sources[i]);
-	}
     Symbol::terminate();
 }
 
@@ -148,6 +143,7 @@ Source* Package::newSource(StringView a_strName, Visibility a_Visibility)
     if (dynamic_initializer_()->installed())
     {
         pS->rtti.metaClass = PHANTOM_CLASSOF(Source);
+		pS->rtti.metaClass->registerInstance(pS);
     }
     else
     {

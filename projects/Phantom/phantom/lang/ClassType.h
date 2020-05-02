@@ -89,6 +89,11 @@ protected:
 
 public:
     void initialize();
+	void terminate()
+	{
+		Scope::terminate();
+		Type::terminate();
+	}
 
     using Type::asClass;
     using Type::asClassType;

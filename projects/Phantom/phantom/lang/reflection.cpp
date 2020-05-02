@@ -76,9 +76,9 @@ void BuiltInTypes::Register()
 #define _PHNTM_REG_FUND(type)                                                                                          \
     {                                                                                                                  \
         auto pType = PHANTOM_TYPEOF(type);                                                                             \
+        Application::Get()->_addBuiltInType(pType);                                                                    \
         detail::registerType(PHANTOM_MODULE_HANDLE(&BuiltInTypes::Register),                                           \
                              makeStringHash(StringView(#type, sizeof(#type) - 1)), pType);                             \
-        Application::Get()->_addBuiltInType(pType);                                                                    \
     }
 
     static bool installed = false;
@@ -159,12 +159,12 @@ void BuiltInTypes::Register()
 
     TYPE_VOID_PTR = TYPE_VOID->makePointer();
 
+	Application::Get()->_addBuiltInType(PHANTOM_TYPEOF(std::nullptr_t));
+	Application::Get()->_addBuiltInType(
+		pDefaultSource->NewDeferred<PlaceholderType>("auto", Modifier::None, PHANTOM_R_FLAG_NATIVE));
     detail::registerType(PHANTOM_MODULE_HANDLE(&BuiltInTypes::Register),
                          makeStringHash(StringView("std::nullptr_t", sizeof("std::nullptr_t") - 1)), "std",
                          PHANTOM_TYPEOF(std::nullptr_t));
-    Application::Get()->_addBuiltInType(PHANTOM_TYPEOF(std::nullptr_t));
-    Application::Get()->_addBuiltInType(
-		pDefaultSource->NewDeferred<PlaceholderType>("auto", Modifier::None, PHANTOM_R_FLAG_NATIVE));
     detail::popInstallation();
 }
 

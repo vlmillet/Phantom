@@ -143,6 +143,7 @@ HAUNT_PAUSE;
 
 #define PHANTOM_DECLARE_META_CLASS(_type_)                                                                             \
 public:                                                                                                                \
+	HAUNT_OFF using MetaClassType = _type_;																			   \
     static phantom::lang::Class* MetaClass();                                                                          \
                                                                                                                        \
 private:

@@ -79,6 +79,11 @@ void Package::terminate()
 {
     if (m_pFolder)
         m_pFolder->_removePackage(this);
+	size_t i = m_Sources.size();
+	while (i--)
+	{
+		deleteSource(m_Sources[i]);
+	}
     Symbol::terminate();
 }
 
@@ -138,7 +143,6 @@ Source* Package::newSource(StringView a_strName, Visibility a_Visibility)
     PHANTOM_ASSERT(getSource(a_strName) == nullptr);
     Source* pS = phantom::new_<Source>(a_strName);
 	pS->m_pSource = pS;
-	pS->m_Orphans.push_back(pS);
     pS->setVisibility(a_Visibility);
     pS->rtti.instance = pS;
     if (dynamic_initializer_()->installed())
@@ -156,9 +160,8 @@ Source* Package::newSource(StringView a_strName, Visibility a_Visibility)
 
 void Package::deleteSource(Source* a_pSource)
 {
-    PHANTOM_ASSERT(std::find(m_ArchivedSources.begin(), m_ArchivedSources.end(), a_pSource) == m_ArchivedSources.end(),
-                   "use removeArchivedSource instead");
-    removeSource(a_pSource);
+	PHANTOM_ASSERT(getSource(a_pSource->getName()) != a_pSource,
+		"use removeSource before deleteSource instead, I won't do it for you :p");
     PHANTOM_CLASSOF(Source)->unregisterInstance(a_pSource);
     a_pSource->terminate();
     phantom::delete_<Source>(a_pSource);
@@ -167,7 +170,7 @@ void Package::deleteSource(Source* a_pSource)
 void Package::addSource(Source* a_pSource)
 {
     PHANTOM_ASSERT(a_pSource->m_pOwner == nullptr);
-    a_pSource->m_pOwner = this;
+    a_pSource->setOwner(this);
     m_Sources.push_back(a_pSource);
     PHANTOM_EMIT sourceAdded(a_pSource);
     Application::Get()->_sourceAdded(a_pSource);
@@ -178,9 +181,8 @@ void Package::removeSource(Source* a_pSource)
     PHANTOM_ASSERT(a_pSource->m_pOwner == this);
     Application::Get()->_sourceAboutToBeRemoved(a_pSource);
     PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
-    a_pSource->setOwner(nullptr);
-    m_Sources.erase_unsorted(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource).base());
-    a_pSource->m_pOwner = nullptr;
+    m_Sources.erase_unsorted(std::next(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource)).base());
+	a_pSource->setOwner(nullptr);
 }
 
 hash64 Package::computeHash() const

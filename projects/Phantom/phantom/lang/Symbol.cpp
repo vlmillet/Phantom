@@ -82,7 +82,7 @@ int Symbol::destructionPriority() const
 
 hash64 Symbol::computeHash() const
 {
-    PHANTOM_ASSERT_DEBUG(m_Hash != 0 || getRootElement() == Application::Get() || getModule());
+    PHANTOM_ASSERT_DEBUG(m_Hash != 0 /*for recompute checks*/ || testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL) || getModule());
     hash64 h = getLocalHash();
     if (auto pNamingScope = getNamingScope())
     {
@@ -265,6 +265,20 @@ void Symbol::setAccess(Access a_eAccess)
     m_eAccess = a_eAccess;
 }
 
+void Symbol::setVisibility(Visibility a_eVis)
+{
+	if (m_eVisibility == a_eVis)
+		return;
+	
+	if (m_eVisibility == Visibility::Public)
+		if (m_pNamespace)
+			m_pNamespace->_unregisterSymbol(this);
+	m_eVisibility = a_eVis;
+	if (m_eVisibility == Visibility::Public)
+		if (m_pNamespace)
+			m_pNamespace->_registerSymbol(this);
+}
+
 void Symbol::setModifiers(Modifiers a_Modifiers)
 {
     m_Modifiers = a_Modifiers;
@@ -334,19 +348,23 @@ void Symbol::setNamespace(Namespace* a_pNS)
     if (m_pNamespace == a_pNS)
         return;
 	Source* pSource = getSource();
-    if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
-    {
-        m_pNamespace->_unregisterSymbol(this);
-    }
-	if(m_pNamespace)
+	if (m_pNamespace)
+	{
 		onNamespaceChanging(a_pNS);
+		if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
+		{
+			m_pNamespace->_unregisterSymbol(this);
+		}
+	}
     m_pNamespace = a_pNS;
 	if (m_pNamespace)
+	{
+		if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
+		{
+			m_pNamespace->_registerSymbol(this);
+		}
 		onNamespaceChanged(a_pNS);
-    if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
-    {
-        m_pNamespace->_registerSymbol(this);
-    }
+	}
 }
 
 void Symbol::getDoubles(Symbols& out) const

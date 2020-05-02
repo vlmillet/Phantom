@@ -47,6 +47,10 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
     m_pAnonymousSource = pDefaultPackage->newSource("default");
     if (isNative())
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
+	if (a_strName == "MyApplication")
+	{
+		printf("");
+	}
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
@@ -56,13 +60,10 @@ Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
 
 void Module::terminate()
 {
-    setFlag(PHANTOM_R_FLAG_TERMINATED);
-
     auto i = m_Packages.size();
     while (i--)
     {
-        m_Packages[i]->terminate();
-        m_Packages[i]->~Package();
+		Delete(m_Packages[i]);
     }
 
     if (isNative())

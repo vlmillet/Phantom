@@ -36,6 +36,7 @@ Template::Template(TemplateSignature* a_pSignature, StringView a_strName, Modifi
                    uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags | PHANTOM_R_ALWAYS_VALID)
 {
+	PHANTOM_ASSERT(a_pSignature);
     createEmptyTemplateSpecialization(a_pSignature);
 }
 
@@ -43,7 +44,7 @@ Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTyp
                           StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
                           uint a_uiFlags /*= 0*/)
 {
-    return a_pContextScope->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes,
+    return a_pOwner->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes,
                                                                            a_strTemplateParam, a_pContextScope,
                                                                            a_uiFlags & PHANTOM_R_FLAG_NATIVE),
                                                   a_strName, a_Modifiers, a_uiFlags);
@@ -118,7 +119,7 @@ void Template::addTemplateParameterAliasName(size_t a_uiIndex, StringView a_strA
 
 void Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature)
 {
-    PHANTOM_DEFERRED_NEW(TemplateSpecialization)
+	a_pTemplateSignature->NewDeferred<TemplateSpecialization>
     (this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), getFlags() & PHANTOM_R_FLAG_NATIVE);
 }
 
@@ -126,7 +127,7 @@ TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSign
                                                                     Symbol*            a_pBody)
 {
     PHANTOM_ASSERT(a_pBody && !isNative());
-    TemplateSpecialization* pSpec = PHANTOM_DEFERRED_NEW(TemplateSpecialization)(
+    TemplateSpecialization* pSpec = a_pTemplateSignature->New<TemplateSpecialization>(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), a_pBody, getFlags() & PHANTOM_R_FLAG_NATIVE);
     return pSpec;
 }
@@ -206,9 +207,9 @@ TemplateSpecialization* Template::createTemplateSpecialization(const LanguageEle
     if (a_pTemplateSignature == nullptr)
         a_pTemplateSignature = New<TemplateSignature>(isNative() * PHANTOM_R_FLAG_NATIVE);
     TemplateSpecialization* pSpec = a_pTemplated
-    ? PHANTOM_DEFERRED_NEW(TemplateSpecialization)(this, a_pTemplateSignature, arguments, a_pTemplated,
+    ? a_pTemplateSignature->NewDeferred<TemplateSpecialization>(this, a_pTemplateSignature, arguments, a_pTemplated,
                                                    getFlags() & PHANTOM_R_FLAG_NATIVE)
-    : PHANTOM_DEFERRED_NEW(TemplateSpecialization)(this, a_pTemplateSignature, arguments,
+    : a_pTemplateSignature->NewDeferred<TemplateSpecialization>(this, a_pTemplateSignature, arguments,
                                                    getFlags() & PHANTOM_R_FLAG_NATIVE);
     return pSpec;
 }

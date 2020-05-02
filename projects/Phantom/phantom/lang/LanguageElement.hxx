@@ -290,31 +290,6 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_END("LanguageElement")
 PHANTOM_END("phantom.lang")
 }
-PHANTOM_PACKAGE("phantom.lang")
-    PHANTOM_SOURCE("LanguageElement")
-
-        PHANTOM_STRUCT_T((class, bool), (T, Is), ConstructorIfLanguageElement)
-        {
-            this_()
-            .PHANTOM_T inherits</* ::phantom::Constructor<T, ConstructorOverloadTag::Enum(ConstructorOverloadTag::MetaElement - 1)> */>()
-            .PHANTOM_T staticMethod<void(T*)>("destroy", &_::destroy)
-            ;
-        }
-        PHANTOM_STRUCT_TS((class), (T), (T, false), ConstructorIfLanguageElement)
-        {
-            this_()
-            .PHANTOM_T inherits</* ::phantom::Constructor<T, ConstructorOverloadTag::Enum(ConstructorOverloadTag::MetaElement - 1)> */>()
-            ;
-        }
-        /// missing symbol(s) reflection (phantom::Constructor) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class), (T), (T, ConstructorOverloadTag::MetaElement), Constructor)
-        {
-            this_()
-            // .PHANTOM_T inherits<::phantom::ConstructorIfLanguageElement<T, std::is_base_of<lang::LanguageElement, T>::value>>()
-            ;
-        } */
-    PHANTOM_END("LanguageElement")
-PHANTOM_END("phantom.lang")
 }
 
 #if defined(_MSC_VER)

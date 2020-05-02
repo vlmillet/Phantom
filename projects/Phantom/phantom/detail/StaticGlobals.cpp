@@ -68,7 +68,10 @@ bool StaticGlobals::ReleaseInProgress(void* a_pModuleHandle)
 
 void StaticGlobals::Release(void* a_pModuleStartAddress, void* a_pModuleEndAddress)
 {
-    auto& sgmap = *_CleanupMap();
+	auto& p_sgmap = _CleanupMap(false);
+	if (!p_sgmap) // no static alloc 
+		return;
+	auto& sgmap = *p_sgmap;
     if (a_pModuleStartAddress == nullptr) // special main case
     {
         PHANTOM_ASSERT(a_pModuleEndAddress == nullptr);

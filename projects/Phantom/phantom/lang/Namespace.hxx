@@ -70,6 +70,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)["\":\""]
             .method<Namespace*() const>("getParentNamespace", &_::getParentNamespace)
             .method<Namespace*(StringView, const char*)>("getOrCreateNamespace", &_::getOrCreateNamespace)["\":\""]
+            .method<Namespace*(StringView)>("newNamespace", &_::newNamespace)
             .method<Alias*(StringView, Namespace*)>("addNamespaceAlias", &_::addNamespaceAlias)
             .method<void(StringView)>("removeNamespaceAlias", &_::removeNamespaceAlias)
             .method<Alias*(StringView) const>("getNamespaceAlias", &_::getNamespaceAlias)

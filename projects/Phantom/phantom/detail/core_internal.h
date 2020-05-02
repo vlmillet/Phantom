@@ -65,7 +65,6 @@ public:
     {
         return moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash);
     }
-    lang::Package* package(lang::Module* a_pModule, StringView a_strName, bool* a_pNew = nullptr);
     size_t         findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
     lang::Module*  findSourceInModules(StringView a_strFilePath, Strings& words);
     lang::Source*  nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
@@ -175,6 +174,10 @@ public:
     void deferInstallation(StringView a_strTypeName, RTTI* a_pRtti)
     {
         PHANTOM_ASSERT(a_pRtti->instance);
+		if (a_strTypeName.find("ClassT") != -1)
+		{
+			printf("");
+		}
         m_DeferredInstallationsMutex.lock();
         m_DeferredInstallations.resize(m_DeferredInstallations.size() + 1);
         m_DeferredInstallations.back().typeName = a_strTypeName;
@@ -186,43 +189,6 @@ public:
 };
 
 PHANTOM_EXPORT_PHANTOM void deferInstallation(StringView a_strTypeName, RTTI* a_pInstance);
-struct DeferredNewH
-{
-    template<class T>
-    inline T* operator*(T* a_pInstance)
-    {
-        PHANTOM_STATIC_ASSERT(std::is_class<T>::value);
-        a_pInstance->rtti.instance = a_pInstance;
-        if (dynamic_initializer_()->installed())
-        {
-            PHANTOM_VERIFY(a_pInstance->rtti.metaClass = static_cast<lang::Class*>(PHANTOM_TYPEOF(T)));
-            a_pInstance->rtti.metaClass->registerInstance(a_pInstance);
-        }
-        else
-        {
-            deferInstallation(lang::TypeInfosOf<T>::object().qualifiedDecoratedName(), &a_pInstance->rtti);
-        }
-        return a_pInstance;
-    }
-};
-template<class T>
-struct DeferredDeleteH
-{
-    inline void operator*(T* a_pInstance)
-    {
-        if (dynamic_initializer_()->installed())
-        {
-            Delete<T>(a_pInstance);
-        }
-        else
-        {
-            a_pInstance->rtti.instance = nullptr;
-            a_pInstance->rtti.metaClass = nullptr;
-            a_pInstance->terminate();
-            a_pInstance->~T();
-        }
-    }
-};
 
 } // namespace detail
 
@@ -230,10 +196,3 @@ HAUNT_RESUME;
 } // namespace phantom
 
 #define TYPE_REGISTRATION_KEY_DEBUG_ENABLED (PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL)
-
-#define PHANTOM_DEFERRED_NEW(...)                                                                                      \
-    phantom::detail::DeferredNewH() *                                                                                  \
-    new (phantom::allocate(sizeof(__VA_ARGS__), PHANTOM_ALIGNOF(__VA_ARGS__))) __VA_ARGS__
-#define PHANTOM_DEFERRED_PLACEMENT_NEW(instance) phantom::detail::DeferredNewH() * instance
-
-#define PHANTOM_DEFERRED_DELETE(...) phantom::detail::DeferredDeleteH<__VA_ARGS__>()*

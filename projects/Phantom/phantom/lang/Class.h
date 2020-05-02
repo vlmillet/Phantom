@@ -90,6 +90,7 @@ class PHANTOM_EXPORT_PHANTOM Class : public ClassType
 public:
     static Class*           MetaClass();
     HAUNT_OFF static Class* metaClass;
+	HAUNT_OFF using MetaClassType = Class;
 
 public:
     friend class phantom::Phantom;

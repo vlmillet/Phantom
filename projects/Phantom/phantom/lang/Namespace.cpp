@@ -121,7 +121,6 @@ Namespace* Namespace::newNamespace(StringView a_strName)
 	}
 	pNS->setNamespace(this);
 	pNS->initialize();
-	m_Namespaces.push_back(pNS);
 	return pNS;
 }
 
@@ -148,7 +147,7 @@ Alias* Namespace::getNamespaceAlias(StringView a_strName) const
 void Namespace::onNamespaceChanging(Namespace* a_pNamespace)
 {
 	Namespace* pParentNamespace = Symbol::getNamespace();
-	auto found = std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this).base();
+	auto found = std::next(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this)).base();
 	PHANTOM_ASSERT(found != pParentNamespace->m_Namespaces.end(), "Namespace not found");
 	pParentNamespace->m_Namespaces.erase_unsorted(found);
 	setOwner(nullptr);
@@ -157,9 +156,11 @@ void Namespace::onNamespaceChanging(Namespace* a_pNamespace)
 
 void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
 {
-	setOwner(Symbol::getNamespace());
-	PHANTOM_ASSERT(Symbol::getNamespace()->getNamespace(getName()) == nullptr);
-	Symbol::getNamespace()->m_Namespaces.push_back(this);
+	Namespace* pParentNamespace = Symbol::getNamespace();
+	setOwner(pParentNamespace);
+	PHANTOM_ASSERT(pParentNamespace->getNamespace(getName()) == nullptr);
+	PHANTOM_ASSERT(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this) == pParentNamespace->m_Namespaces.rend(), "Namespace not found");
+	pParentNamespace->m_Namespaces.push_back(this);
 	setVisibility(Visibility::Public);
 }
 
@@ -178,9 +179,9 @@ Namespace* Namespace::getRootNamespace() const
 Alias* Namespace::addNamespaceAlias(StringView a_strAlias, Namespace* a_pNamespace)
 {
 #if defined(PHANTOM_STATIC_LIB_HANDLE)
-    Alias* pAlias = PHANTOM_DEFERRED_NEW(Alias)(a_pNamespace, a_strAlias);
+    Alias* pAlias = Application::Get()->getDefaultSource()->NewDeferred<Alias>(a_pNamespace, a_strAlias);
 #else
-    Alias* pAlias = PHANTOM_DEFERRED_NEW(Alias)(a_pNamespace, a_strAlias);
+    Alias* pAlias = Application::Get()->getDefaultSource()->NewDeferred<Alias>(a_pNamespace, a_strAlias);
 #endif
     addAlias(pAlias);
     m_NamespaceAliases.push_back(pAlias);
@@ -283,11 +284,9 @@ void Namespace::getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) 
         a_Symbols.push_back(pTemplate);
         return;
     }
-    LanguageElement::getSymbolsWithName(a_Name, a_Symbols);
-    for (auto p : getSymbols())
+    for (auto pSymbol : m_Symbols)
     {
-        Symbol* pSymbol = p->asSymbol();
-        if (pSymbol && pSymbol->getName() == a_Name && !(pSymbol->getVisibility() == Visibility::Private))
+        if (pSymbol->getName() == a_Name)
             a_Symbols.push_back(pSymbol);
     }
 }

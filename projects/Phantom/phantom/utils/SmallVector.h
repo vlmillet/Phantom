@@ -395,30 +395,14 @@ public:
     }
 
     iterator erase_unsorted(const_iterator _it)
-    {
-        iterator it = (iterator)_it;
-        *it = (value_type &&) back();
+	{
+		PHANTOM_ASSERT(_it >= begin() && _it < end());
+		if (_it != (end() - 1))
+		{
+			*const_cast<iterator>(_it) = std::move(back());
+		}
         pop_back();
-        return it + 1;
-    }
-
-    iterator erase_unsorted(const_iterator _it, const_iterator _last)
-    {
-        if (_it == _last)
-            return (iterator)_it;
-        iterator it = (iterator)_it;
-        iterator last = (iterator)_last;
-        PHANTOM_ASSERT(it < last);
-        PHANTOM_ASSERT(it >= begin() && it < end());
-        PHANTOM_ASSERT(last > begin() && last <= end());
-        size_t countToErase = last - it;
-        auto   e = end();
-        for (; last < e; ++last)
-        {
-            *last = *it++;
-        }
-        resize(size() - countToErase);
-        return (iterator)_last;
+        return const_cast<iterator>(_it + 1);
     }
 
     iterator erase(const_iterator _it, const_iterator _last)

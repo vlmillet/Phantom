@@ -68,6 +68,7 @@ public:
     friend class phantom::lang::Symbol;
     friend class phantom::lang::Semantic;
     friend class phantom::lang::MembersBase;
+	friend class phantom::detail::DynamicCppInitializerH;
 
 public:
     typedef Delegate<Symbol*(Symbol*, bool)> SymbolFilter;
@@ -867,6 +868,12 @@ private:
     void _nativeDetachElementsFromModule();
     /// \brief  Detach all element ownership from this one.
     void detachAll();
+	inline void _terminate()
+	{
+		PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
+		m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
+		terminate();
+	}
 
 private:
     LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the
@@ -879,28 +886,5 @@ private:
 };
 
 } // namespace lang
-
-template<class T, bool Is>
-struct ConstructorIfLanguageElement
-    : Constructor<T, ConstructorOverloadTag::Enum(ConstructorOverloadTag::MetaElement - 1)>
-{
-    static void destroy(T* a_pInstance)
-    {
-        a_pInstance->terminate(); // ensure terminate is called before destructor for every LanguageElement
-        Constructor<T, ConstructorOverloadTag::Default>::destroy(a_pInstance);
-    }
-};
-
-template<class T>
-struct ConstructorIfLanguageElement<T, false>
-    : Constructor<T, ConstructorOverloadTag::Enum(ConstructorOverloadTag::MetaElement - 1)>
-{
-};
-
-template<class T>
-struct Constructor<T, ConstructorOverloadTag::MetaElement>
-    : ConstructorIfLanguageElement<T, std::is_base_of<lang::LanguageElement, T>::value>
-{
-};
 
 } // namespace phantom

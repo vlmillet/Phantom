@@ -110,9 +110,19 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
         MODULEINFO modInfo{};
         PHANTOM_VERIFY(
         GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));
-        info->setModule(phantom::new_<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
-                                              info->m_BinaryFileName, info->m_Source,
-                                              info->m_uiFlags | PHANTOM_R_FLAG_NATIVE));
+		Module* pModule = phantom::new_<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
+			info->m_BinaryFileName, info->m_Source,
+			info->m_uiFlags | PHANTOM_R_FLAG_NATIVE);
+		pModule->rtti.instance = pModule;
+		if (phantom::detail::installed())
+		{
+			pModule->rtti.metaClass = PHANTOM_CLASSOF(Module);
+			pModule->rtti.metaClass->registerInstance(pModule);
+		}
+		else
+			phantom::detail::deferInstallation("phantom::lang::Module", &pModule->rtti);
+		pModule->initialize();
+        info->setModule(pModule);
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
@@ -120,17 +130,17 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
 
         if (m_Modules.empty()) // first module ever is the phantom's one
         {
-            m_pDefaultSource = info->m_pModule->getOrCreatePackage("default")->getOrCreateSource("default");
+            m_pDefaultSource = pModule->getOrCreatePackage("default")->getOrCreateSource("default");
         }
-        _addModule(info->m_pModule);
-        info->m_pModule->setOnLoadFunc(info->m_OnLoad);
-        info->m_pModule->setOnUnloadFunc(info->m_OnUnload);
+        _addModule(pModule);
+        pModule->setOnLoadFunc(info->m_OnLoad);
+        pModule->setOnUnloadFunc(info->m_OnUnload);
         if (!Plugin::HasLoadingInProgress())
         {
             if (!phantom::detail::installed()) // phantom is not installed yet, this module is a
                                                // startup module
             {
-                m_StartupModules.push_back(info->m_pModule);
+                m_StartupModules.push_back(pModule);
             }
             else
             {
@@ -161,23 +171,13 @@ void Application::_uninstallNativeModule(Module* a_pModule)
         _moduleAboutToBeRemoved(a_pModule);
     if (a_pModule->getOnUnloadFunc())
         a_pModule->getOnUnloadFunc()();
-    if (a_pModule->getName() == "Phantom")
-    {
-        auto* pModuleClass = PHANTOM_CLASSOF(Module);
-        pModuleClass->unregisterInstance(pModuleClass);
-        phantom::Constructor<Module>::destroy(a_pModule);
-        phantom::Allocator<Module>::deallocate(a_pModule);
-    }
-    else
-    {
-        Delete(a_pModule);
-    }
+	removeModule(a_pModule);
+	deleteModule(a_pModule);
 }
 
 void Application::terminate()
 {
     PHANTOM_ASSERT(m_OperationCounter == 1);
-    setFlag(PHANTOM_R_FLAG_TERMINATED);
     while (m_Modules.size() > 1)
     {
         Module* pMod = m_Modules.back();
@@ -195,7 +195,7 @@ void Application::terminate()
             if (pElem != m_Modules.back()) // != "Phantom" module
                 Delete(pElem);
         }
-        PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
+        PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module && "Root Package Folder"
     }
 
     StaticGlobals::Release(nullptr, nullptr);
@@ -543,7 +543,7 @@ void Application::addModule(Module* a_pModule)
 void Application::_addModule(Module* a_pModule)
 {
     PHANTOM_ASSERT(a_pModule->m_pOwner == nullptr, "module already added");
-    a_pModule->m_pOwner = this;
+    a_pModule->setOwner(this);
     PHANTOM_ASSERT(getModule(a_pModule->getName()) == nullptr, "module with same name already loaded");
 #if !defined(PHANTOM_STATIC_LIB_HANDLE)
     PHANTOM_ASSERT(m_Modules.size() || a_pModule->getName() == "Phantom", "phantom must be the first loaded module");
@@ -563,7 +563,7 @@ void Application::removeModule(Module* a_pModule)
 void Application::_removeModule(Module* a_pModule)
 {
     PHANTOM_ASSERT(a_pModule->m_pOwner == this, "module already added");
-    a_pModule->m_pOwner = nullptr;
+	a_pModule->setOwner(nullptr);
     PHANTOM_EMIT moduleAboutToBeRemoved(a_pModule);
     m_Modules.erase(std::find(m_Modules.begin(), m_Modules.end(),
                               static_cast<Module*>(a_pModule))); // Remove dependencies reference of this module
@@ -699,7 +699,9 @@ void Application::_addBuiltInType(Type* a_pType)
 {
     PHANTOM_ASSERT(getBuiltInType(a_pType->getDecoratedName()) == nullptr);
     m_BuiltInTypes.push_back(a_pType);
-    a_pType->setOwner(this);
+	a_pType->setVisibility(Visibility::Public);
+	a_pType->setOwner(m_pDefaultSource);
+	a_pType->setNamespace(Namespace::Global());
 }
 
 void Application::_removeBuiltInType(Type*) {}
@@ -1024,7 +1026,6 @@ Module* Application::newModule(StringView a_strName)
     Module* pMod = phantom::new_<Module>(a_strName);
     pMod->rtti.instance = pMod;
     pMod->rtti.metaClass = PHANTOM_CLASSOF(Module);
-    pMod->setOwner(this);
     pMod->initialize();
     pMod->rtti.metaClass->registerInstance(pMod);
     return pMod;
@@ -1032,8 +1033,8 @@ Module* Application::newModule(StringView a_strName)
 
 void Application::deleteModule(Module* a_pMod)
 {
-    a_pMod->setOwner(nullptr);
-    a_pMod->terminate();
+	PHANTOM_ASSERT(getModule(a_pMod->getName()) != a_pMod, "module is still in Application, call removeModule before deleteModule");
+    a_pMod->_terminate();
     phantom::delete_<Module>(a_pMod);
 }
 
@@ -1041,6 +1042,7 @@ void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
 {
+	PHANTOM_ASSERT(!testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING));
     if (m_pRootPackageFolder == nullptr)
     {
         PackageFolder* pPF = phantom::new_<PackageFolder>();

@@ -37,6 +37,7 @@
 #include <phantom/utils/ScopeExit.h>
 #include <phantom/utils/SmallString.h>
 #include <phantom/utils/StringView.h>
+#include "Application.h"
 
 #pragma warning(disable : 4996)
 
@@ -319,13 +320,16 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                 {
                     if ((isUnsigned || isLong))
                     {
-                        Type* pType = symbols.front()->asIntegralType();
+                        Type* pType = symbols.front()->toType()->asIntegralType();
                         if (!pType)
                         {
-                            if (isUnsigned)
-                                *a_LastError = "invalid 'unsigned' qualifier";
-                            else
-                                *a_LastError = "invalid 'long' qualifier";
+							if(a_LastError)
+							{
+								if (isUnsigned)
+									*a_LastError = "invalid 'unsigned' qualifier";
+								else
+									*a_LastError = "invalid 'long' qualifier";
+							}
                             return nullptr;
                         }
                         if (isLong)
@@ -514,7 +518,7 @@ bool CppSymbolParser::parse(StringView a_Text, Symbols& a_Symbols, LanguageEleme
                             if (templateArgs.size() <= pTemplate->getTemplateParameters().size())
                             {
                                 TemplateDependantTemplateInstance* pInst =
-                                a_pScope->NewDeferred<TemplateDependantTemplateInstance>(
+                                Application::Get()->getDefaultSource()->NewDeferred<TemplateDependantTemplateInstance>(
                                 pTemplate, templateArgs,
                                 phantom::lang::detail::currentModule() ? PHANTOM_R_FLAG_NATIVE : PHANTOM_R_FLAG_NONE);
                                 a_Symbols.push_back(pInst);
@@ -875,12 +879,12 @@ symbol_post_identifier:
         {
             int64_t num;
             CPPSYMPARS_ERROR_IF(!ReadInteger(InStream, num), "expected identifier or constant");
-            pConstant = Constant::Create(a_pScope, int(num));
+            pConstant = Constant::Create(Application::Get()->getDefaultSource(), int(num));
             tempOrNotTemps.push_back(pConstant);
         }
         else
         {
-            pConstant = Constant::Create(a_pScope, CPPSYMPARS_IDENTIFIER[0] == 't'); // true / false
+            pConstant = Constant::Create(Application::Get()->getDefaultSource(), CPPSYMPARS_IDENTIFIER[0] == 't'); // true / false
         }
         if (phantom::lang::detail::currentModule())
             pConstant->addFlags(PHANTOM_R_FLAG_NATIVE);

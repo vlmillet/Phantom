@@ -295,8 +295,8 @@ NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
     PHANTOM_ASSERT(symbols.size(), "using_ : symbol not found '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
     for (auto pSymbol : symbols)
     {
-        auto pAlias = _PHNTM_pNamespace->addAlias(pSymbol, pSymbol->getName(), Modifier::None, PHANTOM_R_FLAG_NATIVE);
-        _PHNTM_pSource->addAlias(pAlias);
+        auto pAlias = _PHNTM_pSource->addAlias(pSymbol, pSymbol->getName(), Modifier::None, PHANTOM_R_FLAG_NATIVE);
+		pAlias->setNamespace(_PHNTM_pNamespace);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
     }
     return *this;
@@ -323,9 +323,9 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
 
     if (a_pType)
     {
-        auto pAlias = _PHNTM_pNamespace->addAlias(a_pType, a_Name);
+		auto pAlias = _PHNTM_pSource->addAlias(a_pType, a_Name);
+		pAlias->setNamespace(_PHNTM_pNamespace);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
-        _PHNTM_pSource->addAlias(pAlias);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         auto foundDeferred = MultiLevelTypedefs->find(a_Hash);
         if (foundDeferred != MultiLevelTypedefs->end())
@@ -338,10 +338,10 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     }
     else
     {
-        auto pAlias = _PHNTM_pNamespace->addAlias(phantom::lang::BuiltInTypes::TYPE_INT,
-                                                  a_Name); // temporary set as 'int'
-        pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
-        _PHNTM_pSource->addAlias(pAlias);
+		auto pAlias = _PHNTM_pSource->addAlias(phantom::lang::BuiltInTypes::TYPE_INT,
+			a_Name);
+		pAlias->setNamespace(_PHNTM_pNamespace);
+		pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         (*MultiLevelTypedefs)[a_Hash].push_back(pAlias);
     }
@@ -878,5 +878,5 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
 
 PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement()
 {
-    return phantom::lang::Application::Get();
+    return phantom::lang::Application::Get()->getDefaultSource();
 }

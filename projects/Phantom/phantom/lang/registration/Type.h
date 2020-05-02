@@ -212,7 +212,7 @@ struct TypeBuilderT : TypeBuilderBase
 private:
     MetaType* _createMetaType(LanguageElement* a_pScope, StringView a_Name)
     {
-        return m_pType = a_pScope->NewDeferred<MetaType>(a_Name);
+        return m_pType = a_pScope->NewMeta<MetaType>(a_Name);
     }
     void _installRtti()
     {

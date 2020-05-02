@@ -32,7 +32,7 @@ void LanguageElement::initialize()
 
 LanguageElement::~LanguageElement()
 {
-    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == PHANTOM_R_FLAG_TERMINATED);
+    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0, "missing super call to terminate() somewhere");
 }
 
 int LanguageElement::destructionPriority() const
@@ -44,7 +44,16 @@ int LanguageElement::destructionPriority() const
 
 void LanguageElement::terminate()
 {
-    m_uiFlags |= PHANTOM_R_FLAG_TERMINATED;
+	if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
+	{
+		m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
+		return;
+	}
+	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
+	m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
+	setOwner(nullptr);
+	while (!m_Elements.empty())
+		Delete(m_Elements.back());
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
@@ -61,15 +70,24 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
 
 CustomAllocator const* LanguageElement::getAllocator() const
 {
+	if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
+		return &CustomAllocator::CurrentOrDefault();
+	PHANTOM_ASSERT(m_pSource);
     return m_pSource->Source::getAllocator();
 }
 
 void LanguageElement::Delete(LanguageElement* a_pElem)
 {
-    setOwner(nullptr);
+	PHANTOM_ASSERT(a_pElem->m_pOwner == this);
+	PHANTOM_ASSERT((!m_pSource || !m_pSource->testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING)), "never invoke Delete yourself in terminate(), it's the Source's job to do that");
     a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
-    a_pElem->terminate();
-    a_pElem->~LanguageElement();
+    a_pElem->_terminate();
+	a_pElem->~LanguageElement();
+	PHANTOM_ASSERT(a_pElem->m_pSource == m_pSource);
+	if (m_pSource)
+		m_pSource->m_CreatedElements.erase_unsorted(std::next(std::find(m_pSource->m_CreatedElements.rbegin(), m_pSource->m_CreatedElements.rend(), a_pElem)).base());
+	else
+		PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
     // --free(...)-- we never deallocate individually
     // (we always deallocate per-source(script) or per-module(c++) chunks for speed)
 }
@@ -188,12 +206,7 @@ void LanguageElement::_onElementsAccess()
 {
 	if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
 		return;
-    Module* pModule;
-    if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule()) &&
-        !(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
-    {
-        onElementsAccess();
-    }
+	onElementsAccess();
 }
 
 void LanguageElement::setOwner(LanguageElement* a_pOwner)
@@ -208,22 +221,14 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
         // we search for element in reverse order because generally we wan't to change ownership of a recently added
         // element
         m_pOwner->m_Elements.erase_unsorted(
-        std::find(m_pOwner->m_Elements.rbegin(), m_pOwner->m_Elements.rend(), this).base());
+			std::next(std::find(m_pOwner->m_Elements.rbegin(), m_pOwner->m_Elements.rend(), this)).base());
         m_pOwner->m_uiFlags &= ~PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; // FIXME : add a template dependant tracking counter
-		if (m_pSource)
-			m_pSource->m_Orphans.push_back(this);
-		else
-			PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
+		PHANTOM_ASSERT(m_pOwner->m_pSource == m_pSource);
         m_pOwner->onElementsAccess();
-		if (m_pSource)
-			m_pSource->m_Orphans.erase_unsorted(
-				std::find(m_pSource->m_Orphans.rbegin(), m_pSource->m_Orphans.rend(), this).base());
-		else
-			PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
         m_pOwner->m_Elements.push_back(this);
         if (isTemplateDependant() && m_pOwner->asEvaluable())
         {

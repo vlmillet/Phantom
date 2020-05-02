@@ -173,7 +173,7 @@ Alias* Scope::addAlias(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Mod
 {
     PHANTOM_ASSERT(a_pSymbol);
     PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
-    Alias* pAlias = PHANTOM_DEFERRED_NEW(Alias)(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
+    Alias* pAlias = m_pUnit->NewDeferred<Alias>(a_pSymbol, a_strAlias, a_Modifiers, a_uiFlags);
     addAlias(pAlias);
     return pAlias;
 }
@@ -522,44 +522,44 @@ void Scope::findClasses(Classes& a_Classes, Class* a_pBaseClass /*= nullptr*/,
 void Scope::removeAlias(Alias* a_pAlias)
 {
     onScopeSymbolRemoving(a_pAlias);
-    m_Aliases->erase_unsorted(std::find(m_Aliases->rbegin(), m_Aliases->rend(), a_pAlias).base());
+    m_Aliases->erase_unsorted(std::next(std::find(m_Aliases->rbegin(), m_Aliases->rend(), a_pAlias)).base());
 }
 
 void Scope::removeType(Type* a_pType)
 {
     onScopeSymbolRemoving(a_pType);
-    m_Types->erase_unsorted(std::find(m_Types->rbegin(), m_Types->rend(), a_pType).base());
+    m_Types->erase_unsorted(std::next(std::find(m_Types->rbegin(), m_Types->rend(), a_pType)).base());
 }
 
 void Scope::removeFunction(Function* a_pFunction)
 {
     onScopeSymbolRemoving(a_pFunction);
-    m_Functions->erase_unsorted(std::find(m_Functions->rbegin(), m_Functions->rend(), a_pFunction).base());
+    m_Functions->erase_unsorted(std::next(std::find(m_Functions->rbegin(), m_Functions->rend(), a_pFunction)).base());
 }
 
 void Scope::removeVariable(Variable* a_pVariable)
 {
     onScopeSymbolRemoving(a_pVariable);
-    m_Variables->erase_unsorted(std::find(m_Variables->rbegin(), m_Variables->rend(), a_pVariable).base());
+    m_Variables->erase_unsorted(std::next(std::find(m_Variables->rbegin(), m_Variables->rend(), a_pVariable)).base());
 }
 
 void Scope::removeConstant(Constant* a_pConstant)
 {
     onScopeSymbolRemoving(a_pConstant);
-    m_Constants->erase_unsorted(std::find(m_Constants->rbegin(), m_Constants->rend(), a_pConstant).base());
+    m_Constants->erase_unsorted(std::next(std::find(m_Constants->rbegin(), m_Constants->rend(), a_pConstant)).base());
 }
 
 void Scope::removeTemplate(Template* a_pTemplate)
 {
     onScopeSymbolRemoving(a_pTemplate);
-    m_Templates->erase_unsorted(std::find(m_Templates->rbegin(), m_Templates->rend(), a_pTemplate).base());
+    m_Templates->erase_unsorted(std::next(std::find(m_Templates->rbegin(), m_Templates->rend(), a_pTemplate)).base());
 }
 
 void Scope::removeTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization)
 {
     onScopeSymbolRemoving(a_pTemplateSpecialization);
     m_TemplateSpecializations->erase_unsorted(
-    std::find(m_TemplateSpecializations->rbegin(), m_TemplateSpecializations->rend(), a_pTemplateSpecialization)
+		std::next(std::find(m_TemplateSpecializations->rbegin(), m_TemplateSpecializations->rend(), a_pTemplateSpecialization))
     .base());
 }
 

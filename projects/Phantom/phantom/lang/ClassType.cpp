@@ -688,10 +688,10 @@ void ClassType::_onNativeElementsAccessImpl()
 
 void ClassType::_onNativeElementsAccess()
 {
-    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_FLAG_TERMINATED) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);

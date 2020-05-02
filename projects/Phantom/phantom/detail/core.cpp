@@ -164,11 +164,6 @@ RawPlacement<std::mutex> g_PHNTM_slot_pool_mutex;
 template<class T>
 void staticAllocatedDeleteEx(RawPlacement<T>& a_Placement)
 {
-    auto pClass = PHANTOM_CLASSOF(T);
-    T*   pInst = &*a_Placement;
-    pClass->unregisterInstance(pInst);
-    pInst->terminate();
-    a_Placement.destroy();
 }
 
 static lang::Main* g_instance;
@@ -190,7 +185,7 @@ typedef SmallVector<void*, 4096> ToFree;
 RawPlacement<lang::Namespace>        g_pGlobalNamespace;
 static RawPlacement<lang::Namespace> g_pPhantomNamespace;
 static RawPlacement<lang::Namespace> g_pStdNamespace;
-static RawPlacement<lang::Namespace> g_pReflectionNamespace;
+static RawPlacement<lang::Namespace> g_pLangNamespace;
 static RawPlacement<Strings>         g_pMetaDataNames;
 
 static std::thread::id g_MainThreadId = std::this_thread::get_id();
@@ -214,32 +209,59 @@ void DynamicCppInitializerH::StaticGlobalsInit()
     g_pApplication.construct();
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
-    g_pReflectionNamespace.construct("lang");
+    g_pLangNamespace.construct("lang");
 
     g_pStdNamespace->setNamespace(g_pGlobalNamespace);
     g_pPhantomNamespace->setNamespace(g_pGlobalNamespace);
-    g_pReflectionNamespace->setNamespace(g_pPhantomNamespace);
-
-    PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pGlobalNamespace);
-    PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pStdNamespace);
-    PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pPhantomNamespace);
-    PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pReflectionNamespace);
-    PHANTOM_DEFERRED_PLACEMENT_NEW(&*g_pApplication);
+    g_pLangNamespace->setNamespace(g_pPhantomNamespace);
+	g_pGlobalNamespace->rtti.instance = &*g_pGlobalNamespace;
+	detail::deferInstallation("phantom::lang::Namespace", &g_pGlobalNamespace->rtti);
+	g_pGlobalNamespace->initialize();
+	g_pStdNamespace->rtti.instance = &*g_pStdNamespace;
+	detail::deferInstallation("phantom::lang::Namespace", &g_pStdNamespace->rtti);
+	g_pStdNamespace->initialize();
+	g_pPhantomNamespace->rtti.instance = &*g_pPhantomNamespace;
+	detail::deferInstallation("phantom::lang::Namespace", &g_pPhantomNamespace->rtti);
+	g_pPhantomNamespace->initialize();
+	g_pLangNamespace->rtti.instance = &*g_pLangNamespace;
+	detail::deferInstallation("phantom::lang::Namespace", &g_pLangNamespace->rtti);
+	g_pLangNamespace->initialize();
+	g_pApplication->rtti.instance = &*g_pApplication;
+	detail::deferInstallation("phantom::lang::Application", &g_pApplication->rtti);
+	g_pApplication->initialize();
 
     lang::initializeSystem();
 }
 
 void DynamicCppInitializerH::StaticGlobalsRelease()
 {
-    lang::releaseSystem();
+	lang::releaseSystem();
 
-    staticAllocatedDeleteEx(g_pReflectionNamespace);
-    staticAllocatedDeleteEx(g_pStdNamespace);
-    staticAllocatedDeleteEx(g_pPhantomNamespace);
-    staticAllocatedDeleteEx(g_pGlobalNamespace);
+	g_pStdNamespace->setNamespace(nullptr);
+	g_pPhantomNamespace->setNamespace(nullptr);
+	g_pLangNamespace->setNamespace(nullptr);
+
+	auto pClass = PHANTOM_CLASSOF(lang::Namespace);
+	{
+		pClass->unregisterInstance(&*g_pLangNamespace);
+		g_pLangNamespace->_terminate();
+		g_pLangNamespace.destroy();
+	} {
+		pClass->unregisterInstance(&*g_pStdNamespace);
+		g_pStdNamespace->_terminate();
+		g_pStdNamespace.destroy();
+	} {
+		pClass->unregisterInstance(&*g_pPhantomNamespace);
+		g_pPhantomNamespace->_terminate();
+		g_pPhantomNamespace.destroy();
+	} {
+		pClass->unregisterInstance(&*g_pGlobalNamespace);
+		g_pGlobalNamespace->_terminate();
+		g_pGlobalNamespace.destroy();
+	}
 
     PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
-    g_pApplication->terminate();
+    g_pApplication->_terminate();
     g_pApplication->~Application(); // special case for Application which cannot use lang because it is the
                                     // one holding the lang and releasing it on 'terminate'
 }
@@ -311,6 +333,7 @@ void DynamicCppInitializerH::registerTypeHash(size_t a_ModuleHandle, hash64 a_Ha
     _PHNTM_R_MTX_GUARD();
     PHANTOM_ASSERT(moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash) == nullptr,
                    "type already registered in same module, shouldn't happen, test is in TypeOf to avoid that");
+	PHANTOM_ASSERT(a_pType->getOwner() && a_pType->getVisibility() == lang::Visibility::Public);
     moduleRegistrationInfo(a_ModuleHandle)->registerTypeByHash(a_Hash, a_pType);
 }
 
@@ -727,33 +750,6 @@ lang::ModuleRegistrationInfo* DynamicCppInitializerH::moduleRegistrationInfo(siz
         info = &m_ModuleRegistrationInfos.back();
     }
     return info;
-}
-
-lang::Package* DynamicCppInitializerH::package(lang::Module* a_pModule, StringView a_strName, bool* a_pNew)
-{
-    PHANTOM_ASSERT(a_pModule);
-    for (auto pModule : lang::Application::Get()->getModules())
-    {
-        for (auto pPck : pModule->getPackages())
-        {
-            if (pPck->getName() == a_strName)
-            {
-                if (a_pNew)
-                    *a_pNew = false;
-                if (pModule == a_pModule)
-                    return pPck;
-                PHANTOM_WARNING(false,
-                                "package '%.*s' already defined in module '%.*s', cannot be used "
-                                "for current module '%.*s'",
-                                PHANTOM_STRING_AS_PRINTF_ARG(a_strName),
-                                PHANTOM_STRING_AS_PRINTF_ARG(pModule->getName()));
-                return nullptr;
-            }
-        }
-    }
-    if (a_pNew)
-        *a_pNew = true;
-    return PHANTOM_DEFERRED_NEW(lang::Package)(a_strName);
 }
 
 lang::Module* DynamicCppInitializerH::findSourceInModules(StringView a_strFilePath, Strings& a_Words)

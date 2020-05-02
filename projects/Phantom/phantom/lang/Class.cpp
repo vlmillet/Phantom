@@ -835,10 +835,17 @@ void Class::getFields(AggregateFields& a_OutFields) const
 
 void Class::_onNativeElementsAccess()
 {
-    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
+// TODO : check this is this worthy
+// 	Module* pModule;
+// 	if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule()) &&
+// 		!(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
+// 	{
+// 		onElementsAccess();
+// 	}
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_FLAG_TERMINATED) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);

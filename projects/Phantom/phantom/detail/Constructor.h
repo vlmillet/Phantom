@@ -91,25 +91,8 @@ public:
 
 /// @endcond
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \struct constructor
-///
-/// \brief  Constructor. (see instance creation process)
-/// 		Construction : By default Phantom uses C++ placement PHANTOM_NEW(for) instanciable
-/// classes 		Destruction : By default Phantom uses C++ destructor call for instanciable
-/// classes
-///
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename t_Ty, ConstructorOverloadTag::Enum t_Tag = ConstructorOverloadTag::ClassGroup1>
-struct Constructor : Constructor<t_Ty, ConstructorOverloadTag::Enum(t_Tag - 1)>
-{
-};
-
-// ConstructorOverloadTag::Default == 0 => recursion end
-
 template<typename t_Ty>
-struct Constructor<t_Ty, ConstructorOverloadTag::Default>
+struct Constructor
     : public detail::ConstructorH<t_Ty,
                                   std::is_abstract<t_Ty>::value
                                   ? phantom::HasVirtualDestructor<t_Ty>::value
@@ -123,7 +106,7 @@ struct Constructor<t_Ty, ConstructorOverloadTag::Default>
     template<typename t_OtherTy>
     struct rebind
     {
-        typedef Constructor<t_OtherTy, ConstructorOverloadTag::Default> other;
+        typedef Constructor<t_OtherTy> other;
     };
 };
 

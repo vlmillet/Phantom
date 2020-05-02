@@ -210,10 +210,12 @@ private:
     Namespace* getOrCreateNamespace(Strings*);
     void       onNamespaceChanging(Namespace*) override final;
     void       onNamespaceChanged(Namespace*) override final;
-    void       _registerSymbol(Symbol* a_pSym) { m_Symbols.push_back(a_pSym); }
+	void       _registerSymbol(Symbol* a_pSym) { PHANTOM_ASSERT(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym) == m_Symbols.rend()); m_Symbols.push_back(a_pSym); }
     void       _unregisterSymbol(Symbol* a_pSym)
     {
-        m_Symbols.erase_unsorted(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym).base());
+		auto rfound = std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym);
+		PHANTOM_ASSERT(rfound != m_Symbols.rend());
+        m_Symbols.erase_unsorted(std::next(rfound).base());
     }
 
 private:

@@ -380,8 +380,11 @@ private:
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
         T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewH(std::move(a_Site), ptr, T::MetaClass(), ptr);
-        ptr->initialize();
+		if(auto meta = T::MetaClass())
+			_NewH(std::move(a_Site), ptr, meta, ptr);
+		else 
+			_NewDeferredH(std::move(a_Site), ptr, meta, ptr, lang::TypeInfosOf<typename T::MetaClassType>::object().qualifiedDecoratedName());
+		ptr->initialize();
         return ptr;
     }
 
@@ -447,7 +450,7 @@ private:
     FunctionTypes        m_FunctionTypes;
     MethodPointers       m_MethodPointers;
     FieldPointers        m_FieldPointers;
-    LanguageElements     m_Orphans;
+    LanguageElements     m_CreatedElements; ///< list of every created elements at this source level
     Imports              m_Imports;
     Sources              m_Importings;
     Sources              m_Dependencies;

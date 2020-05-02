@@ -69,6 +69,16 @@ void Source::initialize()
 
 void Source::terminate()
 {
+	PHANTOM_ASSERT(m_CreatedElements.front() == this);
+	size_t i = m_CreatedElements.size();
+	// -- first invoke terminate to release links
+	while (i-- > 1)
+		m_CreatedElements[i]->_terminate();
+	// -- then invoke destructor
+	i = m_CreatedElements.size();
+	while (i-- > 1)
+		m_CreatedElements[i]->~LanguageElement();
+	// -- deallocation will be made by destructing allocator
     Symbol::terminate();
 }
 
@@ -100,7 +110,6 @@ void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
         {
             a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
         }
-        a_pSymbol->getNamespace()->_registerSymbol(a_pSymbol);
     }
     if (a_pSymbol->isNative())
     {
@@ -531,7 +540,7 @@ Module* Source::getModule() const
 
 void Source::_NewH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 {
-	m_Orphans.push_back(a_pElem);
+	m_CreatedElements.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
     a_pElem->rtti.metaClass = a_pClass;
@@ -541,7 +550,7 @@ void Source::_NewH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_
 void Source::_NewDeferredH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
                            StringView a_QN)
 {
-	m_Orphans.push_back(a_pElem);
+	m_CreatedElements.push_back(a_pElem);
 	a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
     if (!dynamic_initializer_()->installed())

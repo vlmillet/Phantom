@@ -52,7 +52,7 @@ public:
 
     bool isCopyable() const override { return true; }
 
-    void copyConstruct(void* a_pDest, void const* a_pSrc) const override { memcpy(a_pDest, a_pSrc, m_uiSize); }
+    void copyConstruct(void* a_pDest, void const* a_pSrc) const override { memcpy(a_pDest, a_pSrc, getSize()); }
 };
 
 } // namespace lang

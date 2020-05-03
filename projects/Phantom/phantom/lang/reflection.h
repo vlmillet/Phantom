@@ -110,7 +110,7 @@ struct Modifier
         Volatile = 0x1000,
         Mutable = 0x2000,
         Inline = 0x4000,
-        Slot = 0x8000,
+        // Slot = 0x8000,
         NoExcept = 0x20000,
         Singleton = 0x40000,
         LValueRef = 0x80000,

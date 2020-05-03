@@ -49,7 +49,7 @@ bool Package::IsValidName(StringView a_strName)
 Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID|PHANTOM_R_INTERNAL_FLAG_SPECIAL), m_pNamespace(nullptr)
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
-    String namespaceName = m_strName;
+    String namespaceName = getName();
     StringUtil::ReplaceAll(namespaceName, ".", "::");
     m_pNamespace = Namespace::Global()->getOrCreateNamespace(namespaceName);
     PHANTOM_ASSERT(m_pNamespace);

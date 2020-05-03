@@ -62,7 +62,7 @@ public:
 
     void assignment(void** a_pArgs, void* a_pOutput)
     {
-        memcpy(a_pArgs[0], a_pArgs[1], m_uiSize);
+        memcpy(a_pArgs[0], a_pArgs[1], getSize());
         *(void**)a_pOutput = a_pArgs[0];
     }
 
@@ -77,7 +77,7 @@ public:
 
     void equal(void** a_pArgs, void* a_pOutput)
     {
-        *(bool*)a_pOutput = memcmp(a_pArgs[0], a_pArgs[1], m_uiSize) == 0;
+        *(bool*)a_pOutput = memcmp(a_pArgs[0], a_pArgs[1], getSize()) == 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ public:
 
     void notEqual(void** a_pArgs, void* a_pOutput)
     {
-        *(bool*)a_pOutput = memcmp(a_pArgs[0], a_pArgs[1], m_uiSize) != 0;
+        *(bool*)a_pOutput = memcmp(a_pArgs[0], a_pArgs[1], getSize()) != 0;
     }
 
 protected:

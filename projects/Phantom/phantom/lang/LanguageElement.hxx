@@ -281,9 +281,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .protected_()
             .method<void(), virtual_>("onInvalidated", &_::onInvalidated)
             .method<void(), virtual_>("onElementsAccess", &_::onElementsAccess)
-        
-        .protected_()
-            .method<void()>("_onElementsAccess", &_::_onElementsAccess)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

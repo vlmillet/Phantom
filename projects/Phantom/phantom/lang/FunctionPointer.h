@@ -69,7 +69,7 @@ public:
     /// \return The function type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    FunctionType* getFunctionType() const { return (FunctionType*)m_pUnderlyingType; }
+    FunctionType* getFunctionType() const { return (FunctionType*)getUnderlyingType(); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the ABI of the underlying function.

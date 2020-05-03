@@ -627,10 +627,10 @@ void Type::onNamespaceChanging(Namespace* /*a_pNamespace*/)
 	{
 		if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
 			getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-			((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+			((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
 			!(getSource()->getVisibility() == Visibility::Private))
 		{
-			getModule()->_unregisterType(m_Hash, this);
+			getModule()->_unregisterType(getHash(), this);
 		}
 	}
 }
@@ -641,7 +641,7 @@ void Type::onNamespaceChanged(Namespace* /*a_pNamespace*/)
     {
         if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
              getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-            ((m_Modifiers & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+            ((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
             !(getSource()->getVisibility() == Visibility::Private))
         {
             getModule()->_registerType(getHash(), this);

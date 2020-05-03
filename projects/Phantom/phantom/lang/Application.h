@@ -167,7 +167,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the default module path where translated modules will be exported as
-    /// PHANTOM_NEW(projects).
+    /// new projects.
     ///
     /// \param  a_strPath   The default export path.
     ///
@@ -178,7 +178,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the default export path where translated modules will be exported as
-    /// PHANTOM_NEW(projects).
+    /// new projects.
     ///
     /// \return The default export path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -423,7 +423,7 @@ public:
     const Strings& getSourcePaths() const { return m_SourcePaths; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the default source path where PHANTOM_NEW(source) file will be created
+    /// \brief  Gets the default source path where new source file will be created
     ///
     /// \param  a_strPath   The default source path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,7 +431,7 @@ public:
     StringView getDefaultSourcePath() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the default source path where PHANTOM_NEW(source) file will be created
+    /// \brief  Sets the default source path where new source file will be created
     ///
     /// \param  a_strPath   The default source path.
     ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -159,7 +159,7 @@ public:
     /// \param  a_pBody                 (optional) The body.
     /// \param  a_pTemplateSignature    (optional) The template signature.
     ///
-    /// \return The PHANTOM_NEW(template) specialization.
+    /// \return The new template specialization.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     TemplateSpecialization* createTemplateSpecialization(const LanguageElements& a_Arguments,
@@ -174,7 +174,7 @@ public:
     /// \param  a_pBody                 (optional) The body.
     /// \param  a_pTemplateSignature    (optional) The template signature.
     ///
-    /// \return The PHANTOM_NEW(template) specialization.
+    /// \return The new template specialization.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     TemplateSpecialization* createTemplateSpecialization(LanguageElement* a_pArgument, ClassType* a_pBody = nullptr,

@@ -29,8 +29,8 @@ public:
     using BaseType = TypeT<t_Ty, Enum>;
     EnumT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers, PHANTOM_R_FLAG_NATIVE)
     {
-        this->m_pUnderlyingType =
-        (PrimitiveType*)PHANTOM_PRECISE_TYPEOF(PHANTOM_TYPENAME std::underlying_type<t_Ty>::type);
+        this->setUnderlyingType(
+        (PrimitiveType*)PHANTOM_PRECISE_TYPEOF(PHANTOM_TYPENAME std::underlying_type<t_Ty>::type));
         if (IsEnumClass<t_Ty>::value)
             this->setScoped();
     }
@@ -44,7 +44,7 @@ public:
         using BaseType = TypeT<intType, Enum>;                                                                         \
         EnumT(Modifiers a_Modifiers = 0) : EnumT("", a_Modifiers)                                                      \
         {                                                                                                              \
-            this->m_pUnderlyingType = (PrimitiveType*)PHANTOM_PRECISE_TYPEOF(intType);                                 \
+            this->setUnderlyingType((PrimitiveType*)PHANTOM_PRECISE_TYPEOF(intType));                                 \
         }                                                                                                              \
         EnumT(StringView a_Name, Modifiers a_Modifiers = 0) : BaseType(a_Name, a_Modifiers, PHANTOM_R_FLAG_NATIVE) {}  \
         virtual hash64 computeHash() const override { return Enum::computeHash(); }                                    \

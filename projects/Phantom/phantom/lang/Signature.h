@@ -164,7 +164,7 @@ public:
     Parameter* getParameter(StringView a_strName) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(parameter) with given type, optionals name and default value
+    /// \brief  Adds a new parameter with given type, optionals name and default value
     /// expression.
     ///
     /// \param [in,out] a_pParameterType    The parameter's type.

@@ -59,18 +59,18 @@ Enum::~Enum() {}
 
 void Enum::addConstant(Constant* a_pConstant)
 {
+	auto pUT = getUnderlyingType();
     PHANTOM_ASSERT(getConstant(a_pConstant->getName()) == nullptr);
-    PHANTOM_ASSERT(a_pConstant->getValueType() == this || m_strName == "");
-    if (m_pUnderlyingType->getSize() < a_pConstant->getValueType()->getSize())
+    PHANTOM_ASSERT(a_pConstant->getValueType() == this || getName() == "");
+    if (pUT->getSize() < a_pConstant->getValueType()->getSize())
     {
-        PHANTOM_ASSERT(m_strName == "");
-        removeReferencedElement(m_pUnderlyingType);
+        PHANTOM_ASSERT(getName() == "");
+        removeReferencedElement(pUT);
         PHANTOM_ASSERT(getSize() == sizeof(int));
         PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == sizeof(long long));
-        m_pUnderlyingType = (PrimitiveType*)PHANTOM_TYPEOF(long long);
-        m_uiSize = sizeof(long long);
-        m_uiAlignment = PHANTOM_ALIGNOF(long long);
-        addReferencedElement(m_pUnderlyingType);
+		pUT = (PrimitiveType*)PHANTOM_TYPEOF(long long);
+        setSizeAndAlignemnt(sizeof(long long), PHANTOM_ALIGNOF(long long));
+        addReferencedElement(pUT);
     }
     PHANTOM_ASSERT(a_pConstant->getValueType()->getSize() == getUnderlyingIntType()->getSize());
     a_pConstant->setOwner(this);

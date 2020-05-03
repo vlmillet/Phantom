@@ -53,7 +53,12 @@ class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement
     friend class phantom::lang::Namespace;
 
 public:
-    static bool IsCppIdentifier(StringView a_Name);
+	static bool IsCppIdentifier(StringView a_Name);
+	static hash64  ComputeHash(const char* a_Str, size_t a_Len);
+	static void    CombineHash(hash64& a_rSeed, hash64 a_Value)
+	{
+		a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
+	}
 
 public:
     Symbol(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
@@ -152,8 +157,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     PHANTOM_FORCEINLINE StringView getName() const { return m_strName; }
-
-    void setName(StringView a_strName);
 
     hash64 getHash() const;
     hash64 getLocalHash() const;
@@ -442,7 +445,8 @@ public:
     void getUniqueName(StringBuffer& a_Buf) const override;
 
 protected:
-    PHANTOM_FORCEINLINE void setImportable(bool a_bValue)
+	void setName(StringView a_strName);
+	PHANTOM_FORCEINLINE void setImportable(bool a_bValue)
     {
         if (a_bValue)
             m_uiFlags |= PHANTOM_R_FLAG_IMPORTABLE;
@@ -451,18 +455,13 @@ protected:
     }
     virtual hash64 computeHash() const;
     virtual hash64 computeLocalHash() const;
-    static hash64  ComputeHash(const char* a_Str, size_t a_Len);
-    static void    CombineHash(hash64& a_rSeed, hash64 a_Value)
-    {
-        a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
-    }
 
     virtual void formatAnonymousName(StringBuffer& a_Buf) const;
 
     virtual void onNamespaceChanging(Namespace*) {}
     virtual void onNamespaceChanged(Namespace*) {}
 
-protected:
+private:
     String     m_strName;
     Namespace* m_pNamespace = nullptr; /// Namespace represents the abstract, qualifying container of the element, for
                                        /// example a global function is scoped inside the global namespace

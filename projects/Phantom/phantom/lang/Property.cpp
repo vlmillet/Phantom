@@ -31,11 +31,11 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     if ((a_Modifiers & (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET)) ==
         (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET))
     {
-        m_Modifiers |= PHANTOM_R_VIRTUAL;
+        addModifiers(PHANTOM_R_VIRTUAL);
     }
     else if ((a_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL)
     {
-        m_Modifiers |= Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET);
+		addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
     }
 }
 
@@ -48,11 +48,11 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     if ((a_Modifiers & (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET)) ==
         (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET))
     {
-        m_Modifiers |= PHANTOM_R_VIRTUAL;
+		addModifiers(PHANTOM_R_VIRTUAL);
     }
     else if ((a_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL)
     {
-        m_Modifiers |= Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET);
+		addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
     }
 }
 
@@ -91,7 +91,7 @@ Method* Property::addSet(StringView a_strName /*= ""*/)
     PHANTOM_ASSERT(!testFlags(PHANTOM_R_FLAG_READONLY));
     PHANTOM_ASSERT(getOwner() != nullptr);
     m_pSet =
-    New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_set") : a_strName,
+    New<Method>(a_strName.empty() ? StringView("_PHNTM_" + getName() + "_set") : a_strName,
                 Signature::Create(this, PHANTOM_TYPEOF(void), getValueType()), PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
     m_pSet->m_pProperty = this;
     return m_pSet;
@@ -101,7 +101,7 @@ Method* Property::addGet(StringView a_strName /*= ""*/)
 {
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(getOwner() != nullptr);
-    m_pGet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + m_strName + "_get") : a_strName,
+    m_pGet = New<Method>(a_strName.empty() ? StringView("_PHNTM_" + getName() + "_get") : a_strName,
                          Signature::Create(this, getValueType()), PHANTOM_R_CONST, PHANTOM_R_FLAG_IMPLICIT);
     m_pGet->m_pProperty = this;
     return m_pGet;

@@ -177,9 +177,9 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
             {
                 if (a_pMethod->canOverride(pOverridableMethod))
                 {
-                    a_pMethod->m_Modifiers |= Modifier::Virtual; // Set virtual if not (indeed, even if not explicitely
-                                                                 // virtual, a member function which overrides a virtual
-                                                                 // becomes virtual
+                    a_pMethod->setVirtual(); // Set virtual if not (indeed, even if not explicitely
+                                             // virtual, a member function which overrides a virtual
+                                             // becomes virtual
                     size_t virtualIndex = i;
                     if (getOffset() == 0)
                     {
@@ -207,7 +207,7 @@ bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides
         }
         else
         {
-            // to a PHANTOM_NEW(index)
+            // to a new index
             addMethod(a_pMethod);
         }
         return true;

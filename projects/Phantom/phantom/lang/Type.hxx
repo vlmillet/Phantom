@@ -58,11 +58,9 @@ PHANTOM_PACKAGE("phantom.lang")
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
-            using RecursiveSpinMutex = typedef_< phantom::RecursiveSpinMutex>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TypeFilter = typedef_<_::TypeFilter>;
-            using Types = typedef_< phantom::lang::Types>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Symbol>()
         .public_()
@@ -261,17 +259,13 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
             .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_>("partialAccepts", &_::partialAccepts)
         
+        .protected_()
+            .method<void(Type*)>("setUnderlyingType", &_::setUnderlyingType)
+            .method<void(uint16_t, uint16_t)>("setSizeAndAlignemnt", &_::setSizeAndAlignemnt)
+        
         .public_()
             .field("kindCreated", &_::kindCreated)
             .field("kindDestroying", &_::kindDestroying)
-        
-        .protected_()
-            .field("m_pUnderlyingType", &_::m_pUnderlyingType)
-            .field("m_pExtendedTypes", &_::m_pExtendedTypes)
-            .field("m_uiSize", &_::m_uiSize)
-            .field("m_uiAlignment", &_::m_uiAlignment)
-            .field("m_eTypeKind", &_::m_eTypeKind)
-            .field("m_ExtendedTypesMutex", &_::m_ExtendedTypesMutex)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

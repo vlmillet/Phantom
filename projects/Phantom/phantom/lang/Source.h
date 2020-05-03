@@ -75,6 +75,43 @@ public:
     void initialize();
     void terminate() override;
 
+    template<class T, class... Args>
+    T* New(Args&&... a_Args)
+    {
+        _AssertSpecialSymbols<T>();
+        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
+        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        _NewH(ptr, PHANTOM_CLASSOF(T), ptr);
+        ptr->initialize();
+        return ptr;
+    }
+
+    template<class T, class... Args>
+    T* NewDeferred(Args&&... a_Args)
+    {
+        _AssertSpecialSymbols<T>();
+        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
+        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        _NewDeferredH(ptr, PHANTOM_CLASSOF(T), ptr, lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
+        ptr->initialize();
+        return ptr;
+    }
+
+    template<typename T, class... Args>
+    T* NewMeta(Args&&... a_Args)
+    {
+        _AssertSpecialSymbols<T>();
+        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
+        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        if (auto meta = T::MetaClass())
+            _NewH(ptr, meta, ptr);
+        else
+            _NewDeferredH(ptr, meta, ptr,
+                          lang::TypeInfosOf<typename T::MetaClassType>::object().qualifiedDecoratedName());
+        ptr->initialize();
+        return ptr;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package of this source.
     ///
@@ -91,15 +128,6 @@ public:
 
     Package* getPackage() const;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a valid version of this source matching the given id.
-    ///
-    /// \param  a_uiVersionId   The version id.
-    ///
-    /// \return null if it fails, else a valid version.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Source* getNativeArchive() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get or create a function pointer type.
@@ -212,12 +240,6 @@ public:
     void getImported(Symbols& a_Imports) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets a list of the sources importing this one.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Sources const& getImportings() const { return m_Importings; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds an imported symbol to this source.
     ///
     /// \param [in,out] a_pSource   The imported symbol.
@@ -278,57 +300,6 @@ public:
     bool canImport(Symbol* a_pSymbol, Access a_eAccess = Access::Public, Modifiers a_Modifiers = 0, uint a_uiFlags = 0,
                    SmallMap<Symbol*, Symbols>* a_pCollidingSymbols = nullptr) const;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Gets the dependencies list.
-    ///
-    /// \return An iterator pointing to the end of dependencies in this source.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const Sources& getDependencies() const { return m_Dependencies; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Query if this source has a given dependency on the given source (real definition
-    /// dependency, not declaration only => equivalent of including a file in the .h in C++)
-    ///
-    /// \param [in,out] a_pSource   the candidate dependency source.
-    ///
-    /// \return true if dependant from the given source, false if not.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    bool hasDependency(Source* a_pSource) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Query if this source has a given dependency on the given source recursively across
-    /// all dependencies (real definition dependency, not declaration only => equivalent of
-    /// including a file in the .h in C++)
-    ///
-    /// \param [in,out] a_pSource   the candidate dependency source.
-    ///
-    /// \return true if dependant from the given source, false if not.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    bool hasDependencyCascade(Source* a_pSource) const;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add a dependency on the given source (real definition dependency, not declaration
-    /// only => equivalent of including a file in the .h in C++)
-    ///
-    /// \param [in,out] a_pSource   the dependency source to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addDependency(Source* a_pSource);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add a dependency on the given source (real definition dependency, not declaration
-    /// only => equivalent of including a file in the .h in C++)
-    ///
-    /// \param [in,out] a_SourceName   the name of the dependency source to add.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    bool addDependency(StringView a_strName);
-
-    Sources const& getDependings() const { return m_Dependings; }
-
     Source* asSource() const override { return (Source*)this; }
 
     Scope* asScope() const override { return (Scope*)this; }
@@ -355,13 +326,8 @@ protected:
 
 private:
     bool _hasImported(Symbol* a_pSymbol, SmallSet<const Source*>& treated) const;
-    void _addImporting(Source*);
-    void _removeImporting(Source*);
-    void _addDepending(Source*);
-    void _removeDepending(Source*);
-    bool _hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const;
-    void _NewH(NewCallSite&& a_Site, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
-    void _NewDeferredH(NewCallSite&& a_Site, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN);
+    void _NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD);
+    void _NewDeferredH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN);
 
     template<typename T>
     static void _AssertSpecialSymbols()
@@ -372,43 +338,6 @@ private:
         PHANTOM_STATIC_ASSERT(!(std::is_same<Source, T>::value), "use Package::newSource() instead");
         PHANTOM_STATIC_ASSERT(!(std::is_same<PackageFolder, T>::value),
                               "use PackageFolder::newPackageFolder() instead");
-    }
-
-    template<typename T, class... Args>
-    T* _NewMeta(NewCallSite&& a_Site, Args&&... a_Args)
-    {
-        _AssertSpecialSymbols<T>();
-        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-		if(auto meta = T::MetaClass())
-			_NewH(std::move(a_Site), ptr, meta, ptr);
-		else 
-			_NewDeferredH(std::move(a_Site), ptr, meta, ptr, lang::TypeInfosOf<typename T::MetaClassType>::object().qualifiedDecoratedName());
-		ptr->initialize();
-        return ptr;
-    }
-
-    template<class T, class... Args>
-    T* _New(NewCallSite&& a_Site, Args&&... a_Args)
-    {
-        _AssertSpecialSymbols<T>();
-        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewH(std::move(a_Site), ptr, PHANTOM_CLASSOF(T), ptr);
-        ptr->initialize();
-        return ptr;
-    }
-
-    template<class T, class... Args>
-    T* _NewDeferred(NewCallSite&& a_Site, Args&&... a_Args)
-    {
-        _AssertSpecialSymbols<T>();
-        PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
-        _NewDeferredH(std::move(a_Site), ptr, PHANTOM_CLASSOF(T), ptr,
-                      lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
-        ptr->initialize();
-        return ptr;
     }
 
     template<class T, class... Args>
@@ -435,26 +364,20 @@ private:
 
     void _dealloc(void* ptr) { m_pAlloc->deallocate(ptr); }
 
-private:
 public:
     phantom::Signal<void(SourceStream*)> sourceStreamChanged;
     phantom::Signal<void()>              buildSucceeded;
 
-protected:
-    SourceStream* m_pSourceStream = nullptr;
-    Source*       m_pNativeArchive = nullptr;
-
 private:
-    FunctionPointers     m_FunctionPointers;
+    SourceStream* m_pSourceStream = nullptr;
+	LanguageElements     m_CreatedElements; ///< list of every created elements at this source level
+	FunctionPointers     m_FunctionPointers;
     InitializerListTypes m_InitializerListTypes;
     FunctionTypes        m_FunctionTypes;
     MethodPointers       m_MethodPointers;
     FieldPointers        m_FieldPointers;
-    LanguageElements     m_CreatedElements; ///< list of every created elements at this source level
     Imports              m_Imports;
     Sources              m_Importings;
-    Sources              m_Dependencies;
-    Sources              m_Dependings;
     // this is a forward allocator which never deallocates until being destroyed (optimized chunks because source are
     // generally all-or-nothing)
     ForwardHeapSequence  m_RTAllocator{65536};

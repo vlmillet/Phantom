@@ -79,7 +79,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(StringView, Signature*, Modifiers) const>("canOverride", &_::canOverride)["0"]
             .method<bool(Method*) const>("isOverridableBy", &_::isOverridableBy)
             .method<bool(StringView, Signature*, Modifiers) const>("isOverridableBy", &_::isOverridableBy)["0"]
-            .method<Method*() const, virtual_|override_>("asSlot", &_::asSlot)
             .method<LanguageElement*() const, virtual_>("asLanguageElement", &_::asLanguageElement)
             .method<Subroutine*() const, virtual_|override_>("asSubroutine", &_::asSubroutine)
             .method<Method*() const, virtual_|override_>("asMethod", &_::asMethod)

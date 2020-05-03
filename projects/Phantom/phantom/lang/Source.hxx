@@ -55,7 +55,6 @@ PHANTOM_PACKAGE("phantom.lang")
             using Import = typedef_<_::Import>;
             using Imports = typedef_<_::Imports>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using Sources = typedef_< phantom::lang::Sources>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
@@ -86,7 +85,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .method<Module*() const>("getModule", &_::getModule)
             .method<Package*() const>("getPackage", &_::getPackage)
-            .method<Source*() const>("getNativeArchive", &_::getNativeArchive)
             .method<FunctionType*(Type*, TypesView, Modifiers, uint)>("functionType", &_::functionType)["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<FunctionPointer*(Type*, ABI, TypesView, Modifiers, uint)>("functionPointerType", &_::functionPointerType)["0"]["0"]
@@ -99,18 +97,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<SourceStream*() const>("getSourceStream", &_::getSourceStream)
             .method<Imports const&() const>("getImports", &_::getImports)
             .method<void(Symbols&) const>("getImported", &_::getImported)
-            .method<Sources const&() const>("getImportings", &_::getImportings)
             .method<bool(Symbol*, bool, bool)>("addImport", &_::addImport)["false"]["false"]
             .method<bool(StringView, bool, bool)>("addImport", &_::addImport)["false"]["false"]
             .method<bool(Symbol*) const>("hasImport", &_::hasImport)
             .method<bool(Symbol*) const>("hasImported", &_::hasImported)
             .method<bool(Symbol*, Access, Modifiers, uint, SmallMap<Symbol*, Symbols>*) const>("canImport", &_::canImport)["Access::Public"]["0"]["0"]["nullptr"]
-            .method<const Sources&() const>("getDependencies", &_::getDependencies)
-            .method<bool(Source*) const>("hasDependency", &_::hasDependency)
-            .method<bool(Source*) const>("hasDependencyCascade", &_::hasDependencyCascade)
-            .method<void(Source*)>("addDependency", &_::addDependency)
-            .method<bool(StringView)>("addDependency", &_::addDependency)
-            .method<Sources const&() const>("getDependings", &_::getDependings)
             .method<Source*() const, virtual_|override_>("asSource", &_::asSource)
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<bool() const, virtual_|override_>("canBeUnloaded", &_::canBeUnloaded)
@@ -131,10 +122,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .field("sourceStreamChanged", &_::sourceStreamChanged)
             .field("buildSucceeded", &_::buildSucceeded)
-        
-        .protected_()
-            .field("m_pSourceStream", &_::m_pSourceStream)
-            .field("m_pNativeArchive", &_::m_pNativeArchive)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

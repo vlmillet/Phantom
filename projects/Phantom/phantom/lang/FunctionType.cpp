@@ -192,7 +192,7 @@ bool FunctionType::parseParameterTypeList(StringView a_strText, Types&, Language
 
 bool FunctionType::isSame(FunctionType* a_pOther) const
 {
-    if (m_Modifiers != a_pOther->m_Modifiers)
+    if (getModifiers() != a_pOther->getModifiers())
         return false;
     if (m_ParameterTypes.size() != a_pOther->m_ParameterTypes.size())
         return false;

@@ -205,7 +205,7 @@ PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, S
 void DynamicCppInitializerH::StaticGlobalsInit()
 {
     g_pGlobalNamespace.construct("");
-	g_pGlobalNamespace->setVisibility(lang::Visibility::Public);
+    g_pGlobalNamespace->setVisibility(lang::Visibility::Public);
     g_pApplication.construct();
     g_pStdNamespace.construct("std");
     g_pPhantomNamespace.construct("phantom");
@@ -214,51 +214,51 @@ void DynamicCppInitializerH::StaticGlobalsInit()
     g_pStdNamespace->setNamespace(g_pGlobalNamespace);
     g_pPhantomNamespace->setNamespace(g_pGlobalNamespace);
     g_pLangNamespace->setNamespace(g_pPhantomNamespace);
-	g_pGlobalNamespace->rtti.instance = &*g_pGlobalNamespace;
-	detail::deferInstallation("phantom::lang::Namespace", &g_pGlobalNamespace->rtti);
-	g_pGlobalNamespace->initialize();
-	g_pStdNamespace->rtti.instance = &*g_pStdNamespace;
-	detail::deferInstallation("phantom::lang::Namespace", &g_pStdNamespace->rtti);
-	g_pStdNamespace->initialize();
-	g_pPhantomNamespace->rtti.instance = &*g_pPhantomNamespace;
-	detail::deferInstallation("phantom::lang::Namespace", &g_pPhantomNamespace->rtti);
-	g_pPhantomNamespace->initialize();
-	g_pLangNamespace->rtti.instance = &*g_pLangNamespace;
-	detail::deferInstallation("phantom::lang::Namespace", &g_pLangNamespace->rtti);
-	g_pLangNamespace->initialize();
-	g_pApplication->rtti.instance = &*g_pApplication;
-	detail::deferInstallation("phantom::lang::Application", &g_pApplication->rtti);
-	g_pApplication->initialize();
+    g_pGlobalNamespace->rtti.instance = &*g_pGlobalNamespace;
+    detail::deferInstallation("phantom::lang::Namespace", &g_pGlobalNamespace->rtti);
+    g_pGlobalNamespace->initialize();
+    g_pStdNamespace->rtti.instance = &*g_pStdNamespace;
+    detail::deferInstallation("phantom::lang::Namespace", &g_pStdNamespace->rtti);
+    g_pStdNamespace->initialize();
+    g_pPhantomNamespace->rtti.instance = &*g_pPhantomNamespace;
+    detail::deferInstallation("phantom::lang::Namespace", &g_pPhantomNamespace->rtti);
+    g_pPhantomNamespace->initialize();
+    g_pLangNamespace->rtti.instance = &*g_pLangNamespace;
+    detail::deferInstallation("phantom::lang::Namespace", &g_pLangNamespace->rtti);
+    g_pLangNamespace->initialize();
+    g_pApplication->rtti.instance = &*g_pApplication;
+    detail::deferInstallation("phantom::lang::Application", &g_pApplication->rtti);
+    g_pApplication->initialize();
 
     lang::initializeSystem();
 }
 
 void DynamicCppInitializerH::StaticGlobalsRelease()
 {
-	lang::releaseSystem();
+    lang::releaseSystem();
 
-	g_pStdNamespace->setNamespace(nullptr);
-	g_pPhantomNamespace->setNamespace(nullptr);
-	g_pLangNamespace->setNamespace(nullptr);
+    g_pStdNamespace->setNamespace(nullptr);
+    g_pPhantomNamespace->setNamespace(nullptr);
+    g_pLangNamespace->setNamespace(nullptr);
 
-	auto pClass = PHANTOM_CLASSOF(lang::Namespace);
-	pClass->unregisterInstance(&*g_pLangNamespace);
-	pClass->unregisterInstance(&*g_pStdNamespace);
-	pClass->unregisterInstance(&*g_pPhantomNamespace);
-	pClass->unregisterInstance(&*g_pGlobalNamespace);
-	PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
+    auto pClass = PHANTOM_CLASSOF(lang::Namespace);
+    pClass->unregisterInstance(&*g_pLangNamespace);
+    pClass->unregisterInstance(&*g_pStdNamespace);
+    pClass->unregisterInstance(&*g_pPhantomNamespace);
+    pClass->unregisterInstance(&*g_pGlobalNamespace);
+    PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
 
-	g_pLangNamespace->_terminate();
-	g_pStdNamespace->_terminate();
-	g_pPhantomNamespace->_terminate();
-	g_pGlobalNamespace->_terminate();
+    g_pLangNamespace->_terminate();
+    g_pStdNamespace->_terminate();
+    g_pPhantomNamespace->_terminate();
+    g_pGlobalNamespace->_terminate();
     g_pApplication->_terminate();
 
-	g_pLangNamespace.destroy();
-	g_pStdNamespace.destroy();
-	g_pPhantomNamespace.destroy();
-	g_pGlobalNamespace.destroy();
-    g_pApplication.destroy(); 
+    g_pLangNamespace.destroy();
+    g_pStdNamespace.destroy();
+    g_pPhantomNamespace.destroy();
+    g_pGlobalNamespace.destroy();
+    g_pApplication.destroy();
 }
 
 DynamicCppInitializerH::DynamicCppInitializerH()
@@ -278,10 +278,6 @@ void DynamicCppInitializerH::init()
 
     g_pSource.clear();
     g_pPackage.clear();
-
-#if PHANTOM_REFLECTION_DEBUG_ENABLED
-    g_elements = PHANTOM_NEW(lang::LanguageElements);
-#endif
 
     g_PHNTM_slot_pool_mutex.construct();
     g_pMetaDataNames.construct();
@@ -328,7 +324,7 @@ void DynamicCppInitializerH::registerTypeHash(size_t a_ModuleHandle, hash64 a_Ha
     _PHNTM_R_MTX_GUARD();
     PHANTOM_ASSERT(moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash) == nullptr,
                    "type already registered in same module, shouldn't happen, test is in TypeOf to avoid that");
-	PHANTOM_ASSERT(a_pType->getOwner() && a_pType->getVisibility() == lang::Visibility::Public);
+    PHANTOM_ASSERT(a_pType->getOwner() && a_pType->getVisibility() == lang::Visibility::Public);
     moduleRegistrationInfo(a_ModuleHandle)->registerTypeByHash(a_Hash, a_pType);
 }
 

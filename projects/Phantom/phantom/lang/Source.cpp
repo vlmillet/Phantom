@@ -46,46 +46,40 @@ Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFla
 
 void Source::initialize()
 {
-	if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
-					// languages, so allocations will better fit at a module level in term of space
-		m_pAlloc = &getModule()->m_Allocator;
+    if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
+                    // languages, so allocations will better fit at a module level in term of space
+        m_pAlloc = &getModule()->m_Allocator;
 
-	m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
-	m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
-	m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
+    m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
+    m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
+    m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
 
-	Symbol::initialize();
-	Scope::initialize();
+    Symbol::initialize();
+    Scope::initialize();
 }
 
 void Source::terminate()
 {
-	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
-	m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
-	size_t i = m_CreatedElements.size();
-	// -- first invoke terminate to cleanup inter-dependencies
-	while (i--)
-	{
-		m_CreatedElements[i]->rtti.metaClass->unregisterInstance(m_CreatedElements[i]->rtti.instance);
-		m_CreatedElements[i]->_terminate();
-	}
-	Symbol::terminate();
-	Scope::terminate();
+    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
+    m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
+    size_t i = m_CreatedElements.size();
+    // -- first invoke terminate to cleanup inter-dependencies
+    while (i--)
+    {
+        m_CreatedElements[i]->rtti.metaClass->unregisterInstance(m_CreatedElements[i]->rtti.instance);
+        m_CreatedElements[i]->_terminate();
+    }
+    Symbol::terminate();
+    Scope::terminate();
 }
 
 Source::~Source()
 {
-	// -- then invoke destructor to finalize destruction
-	size_t i = m_CreatedElements.size();
-	while (i--)
-		m_CreatedElements[i]->~LanguageElement();
-	// -- deallocation will be made by destructing allocator
-
-    for (auto it = m_Imports.begin(); it != m_Imports.end(); ++it)
-    {
-        if (Source* source = it->symbol->asSource())
-            source->_removeImporting(this);
-    }
+    // -- then invoke destructor to finalize destruction
+    size_t i = m_CreatedElements.size();
+    while (i--)
+        m_CreatedElements[i]->~LanguageElement();
+    // -- deallocation will be made by destructing allocator
 }
 
 bool Source::canBeUnloaded() const
@@ -146,13 +140,6 @@ void Source::onScopeSymbolRemoving(Symbol* a_pSymbol)
     {
         a_pSymbol->getNamespace()->_unregisterSymbol(a_pSymbol);
     }
-}
-
-Source* Source::getNativeArchive() const
-{
-    if (isNative())
-        return (Source*)this;
-    return m_pNativeArchive;
 }
 
 hash64 Source::computeHash() const
@@ -327,8 +314,6 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     }
     i.alias = pAlias;
     m_Imports.push_back(i);
-    if (Source* pSource = a_pSymbol->asSource())
-        pSource->_addImporting(this);
     return true;
 }
 
@@ -470,94 +455,24 @@ bool Source::hasImported(Symbol* a_pSource) const
     return _hasImported(a_pSource, treated);
 }
 
-void Source::_addImporting(Source* _source)
-{
-    m_Importings.push_back(_source);
-}
-
-void Source::_removeImporting(Source* _source)
-{
-    auto found = std::find(m_Importings.begin(), m_Importings.end(), _source);
-    PHANTOM_ASSERT(found != m_Importings.end());
-    m_Importings.erase(found);
-}
-
-bool Source::hasDependencyCascade(Source* a_pSource) const
-{
-    SmallSet<Source*> treated;
-    return _hasDependencyCascade(a_pSource, treated);
-}
-
-bool Source::_hasDependencyCascade(Source* a_pSource, SmallSet<Source*>& treated) const
-{
-    if (hasDependency(a_pSource))
-        return true;
-    for (auto pDep : m_Dependencies)
-    {
-        if (treated.insert(pDep).second && pDep->_hasDependencyCascade(a_pSource, treated))
-            return true;
-    }
-    return false;
-}
-
-void Source::addDependency(Source* a_pSource)
-{
-    PHANTOM_ASSERT(a_pSource != this);
-    PHANTOM_ASSERT(!(hasDependency(a_pSource)));
-    PHANTOM_ASSERT(!(a_pSource->hasDependencyCascade(this)), "illegal recursive source dependency");
-    m_Dependencies.push_back(a_pSource);
-    a_pSource->m_Dependings.push_back(this);
-}
-
-bool Source::addDependency(StringView a_strName)
-{
-    Source* pSource = Application::Get()->getSource(a_strName);
-    PHANTOM_ASSERT(pSource != this);
-    if (pSource == nullptr)
-    {
-        PHANTOM_LOG(Error, "cannot find source '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
-        return false;
-    }
-    addDependency(pSource);
-    return true;
-}
-
-bool Source::hasDependency(Source* a_pSource) const
-{
-    return std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pSource) != m_Dependencies.end();
-}
-
-void Source::_addDepending(Source* _source)
-{
-    m_Dependings.push_back(_source);
-}
-
-void Source::_removeDepending(Source* _source)
-{
-    auto found = std::find(m_Dependings.begin(), m_Dependings.end(), _source);
-    PHANTOM_ASSERT(found != m_Dependings.end());
-    m_Dependings.erase(found);
-}
-
 Module* Source::getModule() const
 {
     return getPackage()->getModule();
 }
 
-void Source::_NewH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
+void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 {
-	m_CreatedElements.push_back(a_pElem);
+    m_CreatedElements.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
     a_pElem->rtti.metaClass = a_pClass;
     a_pElem->rtti.metaClass->registerInstance(a_pMD);
 }
 
-void Source::_NewDeferredH(NewCallSite&& /*a_Site*/, LanguageElement* a_pElem, Class* a_pClass, void* a_pMD,
-                           StringView a_QN)
+void Source::_NewDeferredH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN)
 {
-	m_CreatedElements.push_back(a_pElem);
-	a_pElem->m_pSource = this;
+    m_CreatedElements.push_back(a_pElem);
+    a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
     if (!dynamic_initializer_()->installed())
     {

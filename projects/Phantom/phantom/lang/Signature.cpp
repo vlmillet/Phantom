@@ -200,7 +200,7 @@ bool Signature::parseParameterTypeList(StringView a_strText, LanguageElement* a_
 
 bool Signature::isSame(Signature* a_pOther) const
 {
-    if (m_Modifiers != a_pOther->m_Modifiers)
+    if (getModifiers() != a_pOther->getModifiers())
         return false;
     Types types;
     for (size_t i = 0; i < m_Parameters.size(); ++i)
@@ -341,9 +341,9 @@ Expression* Signature::getParameterDefaultValueExpression(size_t a_uiParamIndex)
 void Signature::setParameterName(size_t i, StringView a_strName)
 {
     PHANTOM_ASSERT(!isNative());
-    PHANTOM_ASSERT(m_Parameters[i]->m_strName == a_strName || m_Parameters[i]->m_strName.empty(),
+    PHANTOM_ASSERT(m_Parameters[i]->getName() == a_strName || m_Parameters[i]->getName().empty(),
                    "attempt to change a non-empty parameter name");
-    m_Parameters[i]->m_strName = a_strName;
+    m_Parameters[i]->setName(a_strName);
 }
 
 Types Signature::getParameterTypes() const
@@ -465,7 +465,7 @@ StringViews Signature::getNativeDefaultArgumentStrings() const
 FunctionType* Signature::getFunctionType() const
 {
     PHANTOM_ASSERT(getSource(), "signature must be attached to a source via its subroutine");
-    return getSource()->functionType(m_pReturnType, getParameterTypes(), m_Modifiers);
+    return getSource()->functionType(m_pReturnType, getParameterTypes(), getModifiers());
 }
 
 } // namespace lang

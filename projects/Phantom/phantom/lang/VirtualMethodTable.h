@@ -108,9 +108,9 @@ public:
     size_t getOffset() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Derives this virtual member function table with optional PHANTOM_NEW(size)
+    /// \brief  Derives this virtual member function table with optional new size
     ///
-    /// \param  a_uiSize    (optional) the PHANTOM_NEW(size).
+    /// \param  a_uiSize    (optional) the new size.
     ///
     /// \return null if it fails, else the derived virtual member function table.
     ////////////////////////////////////////////////////////////////////////////////////////////////////

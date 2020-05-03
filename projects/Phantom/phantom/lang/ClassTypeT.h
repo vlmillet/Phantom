@@ -293,15 +293,15 @@ protected:
 public:
     bool canHaveImplicitDefaultConstructor() const override { return SelfType::isDefaultConstructible(); }
 
-    void addImplicitDefaultConstructor() override { DefaultCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
+    void addImplicitDefaultConstructor() override { DefaultCtorProvider<t_Ty>::apply(this, BaseType::getName()); }
 
     bool canHaveImplicitCopyConstructor() const override { return SelfType::isTriviallyCopyConstructible(); }
 
     bool canHaveImplicitMoveConstructor() const override { return SelfType::isTriviallyMoveConstructible(); }
 
-    void addImplicitCopyConstructor() override { DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
+    void addImplicitCopyConstructor() override { DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::getName()); }
 
-    void addImplicitMoveConstructor() override { DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::m_strName); }
+    void addImplicitMoveConstructor() override { DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::getName()); }
 
     bool canHaveImplicitCopyAssignmentOperator() const override { return SelfType::isTriviallyCopyAssignable(); }
 
@@ -311,18 +311,18 @@ public:
 
     void addImplicitMoveAssignmentOperator() override { DefaultMoveAssignOpProvider<t_Ty>::apply(this); }
 
-    void addImplicitDestructor() override { DtorProvider<t_Ty>::apply(this, "~" + BaseType::m_strName); }
+    void addImplicitDestructor() override { DtorProvider<t_Ty>::apply(this, "~" + BaseType::getName()); }
 
     bool isPolymorphic() const override { return std::is_polymorphic<t_Ty>::value; }
     bool isDefaultConstructible() const override
     {
         return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&
-        ((this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0);
+        ((this->getModifiers() & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0);
     }
     virtual bool isDefaultInstanciable() const override
     {
         return ::phantom::IsPublicOrProtectedDefaultConstructible<t_Ty>::value &&
-        ((this->m_Modifiers & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && !std::is_abstract<t_Ty>::value;
+        ((this->getModifiers() & PHANTOM_R_FLAG_NO_DEFAULT_CTOR) == 0) && !std::is_abstract<t_Ty>::value;
     }
     bool hasCopyDisabled() const override { return HasCopyDisabled<t_Ty>::value; }
     bool hasMoveDisabled() const override { return HasMoveDisabled<t_Ty>::value; }
@@ -330,12 +330,12 @@ public:
     virtual void finalizeNative() override
     {
         /// Ensure default constructor, copy constructor and destructor are available (if allowed)
-        DefaultCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
-        DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
+        DefaultCtorProvider<t_Ty>::apply(this, BaseType::getName());
+        DefaultCopyCtorProvider<t_Ty>::apply(this, BaseType::getName());
         DefaultCopyAssignOpProvider<t_Ty>::apply(this);
-        DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::m_strName);
+        DefaultMoveCtorProvider<t_Ty>::apply(this, BaseType::getName());
         DefaultMoveAssignOpProvider<t_Ty>::apply(this);
-        DtorProvider<t_Ty>::apply(this, "~" + BaseType::m_strName);
+        DtorProvider<t_Ty>::apply(this, "~" + BaseType::getName());
     }
 
     void onElementsAccess() override { this->_onNativeElementsAccess(); }

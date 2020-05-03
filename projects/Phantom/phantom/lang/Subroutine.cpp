@@ -188,7 +188,7 @@ bool Subroutine::containsMemoryAddress(const byte* a_pAddress)
 
 bool Subroutine::matches(StringView a_strName, TypesView a_FunctionSignature, Modifiers a_Modifiers) const
 {
-    return m_strName == a_strName && matches(a_FunctionSignature, a_Modifiers);
+    return getName() == a_strName && matches(a_FunctionSignature, a_Modifiers);
 }
 
 bool Subroutine::matches(TypesView a_ParameterTypes, Modifiers a_Modifiers) const
@@ -405,10 +405,11 @@ void Subroutine::placementApply(void** a_pArgs, size_t a_uiCount) const
 ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Signature* a_pSignature,
                                                         Modifiers a_Modifiers, uint) const
 {
-    if (a_strName != m_strName // not same name
-        && (m_strName.front() != '~' || a_strName.front() != '~'))
+	StringView name = getName();
+    if (a_strName != name // not same name
+        && (name.front() != '~' || a_strName.front() != '~'))
         return e_SignatureRelation_None;
-    if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (m_Modifiers & PHANTOM_R_METHOD_QUAL_MASK))
+    if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (getModifiers() & PHANTOM_R_METHOD_QUAL_MASK))
         return e_SignatureRelation_None;
 
     if (getSignature()->getParameterCount() != a_pSignature->getParameterCount())
@@ -465,7 +466,7 @@ ESignatureRelation Subroutine::getSignatureRelationWith(Type* a_pReturnType, Str
 {
     if (a_strName != getName())
         return e_SignatureRelation_None;
-    if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (m_Modifiers & PHANTOM_R_METHOD_QUAL_MASK))
+    if ((a_Modifiers & PHANTOM_R_METHOD_QUAL_MASK) != (getModifiers() & PHANTOM_R_METHOD_QUAL_MASK))
         return e_SignatureRelation_None;
 
     if (getSignature()->getParameterCount() != a_Types.size())

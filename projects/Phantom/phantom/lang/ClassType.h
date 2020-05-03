@@ -89,11 +89,11 @@ protected:
 
 public:
     void initialize();
-	void terminate()
-	{
-		Scope::terminate();
-		Type::terminate();
-	}
+    void terminate()
+    {
+        Scope::terminate();
+        Type::terminate();
+    }
 
     using Type::asClass;
     using Type::asClassType;
@@ -143,7 +143,7 @@ public:
     void addConstructor(Constructor* a_pConstructor);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(constructor) instantiated from given parameters and modifiers.
+    /// \brief  Adds a new constructor instantiated from given parameters and modifiers.
     ///
     /// \param  a_Parameters    Options for controlling the operation.
     /// \param  a_Modifiers     (optional) the modifiers.
@@ -154,7 +154,7 @@ public:
     Constructor* addConstructor(const Parameters& a_Parameters, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(default) constructor instantiated with given modifiers.
+    /// \brief  Adds a new default constructor instantiated with given modifiers.
     ///
     /// \param  a_Modifiers (optional) the modifiers.
     ///
@@ -175,7 +175,7 @@ public:
     Constructor* addConstructor(Type* a_pSingleParameterType, Modifiers a_Modifiers, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(destructor) instantiated with given modifiers.
+    /// \brief  Adds a new destructor instantiated with given modifiers.
     ///
     /// \param  a_Modifiers (optional) the modifiers.
     ///
@@ -224,7 +224,7 @@ public:
     /// \param a_Modifiers      (optional) The modifiers.
     /// \param a_uiFlags        (optional) The flags.
     ///
-    /// \return the PHANTOM_NEW(Data) member or null if the Data member cannot be created or added
+    /// \return the new Data member or null if the Data member cannot be created or added
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Field* addField(Type* a_pValueType, StringView a_strName, uint a_uiFilterFlag, Modifiers a_Modifiers = 0,

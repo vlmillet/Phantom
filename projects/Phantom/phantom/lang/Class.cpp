@@ -86,7 +86,7 @@ void Class::terminate()
     {
         bc.baseClass->removeDerivedClass(this);
     }
-	m_BaseClasses.clear();
+    m_BaseClasses.clear();
 
     ClassType::terminate();
 }
@@ -195,7 +195,7 @@ void Class::addBaseClass(Class* a_pClass, Access a_Access)
 {
     ExtraData* pExtraData = getExtraData();
     PHANTOM_ASSERT(pExtraData);
-    PHANTOM_ASSERT(m_uiSize == 0, "class has been sized, cannot add base class anymore");
+    PHANTOM_ASSERT(getSize() == 0, "class has been sized, cannot add base class anymore");
     _addBaseClass(a_pClass, ~size_t(0), a_Access);
 }
 
@@ -252,11 +252,11 @@ void Class::removeDerivedClass(Class* a_pType)
 #if PHANTOM_CUSTOM_ENABLE_DERIVED_CLASS_CACHE
 void Class::_addDerivedClassRecursive(Class* a_pType)
 {
-	m_RecurseDerivedClasses.push_back(a_pType);
-	for (auto pDerived : a_pType->m_RecurseDerivedClasses)
-	{
-		m_RecurseDerivedClasses.push_back(pDerived);
-	}
+    m_RecurseDerivedClasses.push_back(a_pType);
+    for (auto pDerived : a_pType->m_RecurseDerivedClasses)
+    {
+        m_RecurseDerivedClasses.push_back(pDerived);
+    }
     for (Class* pBase : m_BaseClasses)
     {
         pBase->_addDerivedClassRecursive(a_pType);
@@ -268,13 +268,13 @@ void Class::_removeDerivedClassRecursive(Class* a_pType)
     for (Class* pBase : m_BaseClasses)
     {
         pBase->_removeDerivedClassRecursive(a_pType);
-	}
-	for (auto pDerived : a_pType->m_RecurseDerivedClasses)
-	{
-		m_RecurseDerivedClasses.erase(
-			std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), pDerived));
-	}
-	m_RecurseDerivedClasses.erase(std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), a_pType));
+    }
+    for (auto pDerived : a_pType->m_RecurseDerivedClasses)
+    {
+        m_RecurseDerivedClasses.erase(
+        std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), pDerived));
+    }
+    m_RecurseDerivedClasses.erase(std::find(m_RecurseDerivedClasses.begin(), m_RecurseDerivedClasses.end(), a_pType));
 }
 #endif
 
@@ -840,17 +840,20 @@ void Class::getFields(AggregateFields& a_OutFields) const
 
 void Class::_onNativeElementsAccess()
 {
-// TODO : check this is this worthy
-// 	Module* pModule;
-// 	if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule()) &&
-// 		!(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
-// 	{
-// 		onElementsAccess();
-// 	}
-    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
+    // TODO : check this is this worthy
+    // 	Module* pModule;
+    // 	if (Application::Get() && !(Application::Get()->testFlags(PHANTOM_R_FLAG_TERMINATED)) && (pModule = getModule())
+    // &&
+    // 		!(pModule->testFlags(PHANTOM_R_FLAG_TERMINATED)))
+    // 	{
+    // 		onElementsAccess();
+    // 	}
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ &&
+        ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ &&
+            ((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);
@@ -886,6 +889,7 @@ void Class::_onNativeElementsAccessImpl()
             VirtualMethodTable* pDerivedVTable = deriveVirtualMethodTable(pTable);
             pDerivedVTable->setFlag(PHANTOM_R_FLAG_NATIVE);
             pDerivedVTable->m_strName = '$' + StringUtil::ToString(m_VirtualMethodTables.size());
+            pDerivedVTable->setOwner(this);
             m_VirtualMethodTables.push_back(pDerivedVTable);
         }
     }
@@ -948,7 +952,7 @@ bool Class::isPolymorphic() const
 
 void* Class::allocate() const
 {
-    PHANTOM_ASSERT(m_uiSize);
+    PHANTOM_ASSERT(getSize());
     void* pAllocation = Type::allocate();
     memset(pAllocation, 0, getSize());
     return pAllocation;
@@ -956,17 +960,17 @@ void* Class::allocate() const
 
 void Class::deallocate(void* a_pInstance) const
 {
-    PHANTOM_ASSERT(m_uiSize);
+    PHANTOM_ASSERT(getSize());
     Type::deallocate(a_pInstance);
 }
 void* Class::allocate(size_t a_uiCount) const
 {
-    PHANTOM_ASSERT(m_uiSize);
+    PHANTOM_ASSERT(getSize());
     return Type::allocate(a_uiCount);
 }
 void Class::deallocate(void* a_pInstance, size_t a_uiCount) const
 {
-    PHANTOM_ASSERT(m_uiSize);
+    PHANTOM_ASSERT(getSize());
     Type::deallocate(a_pInstance, a_uiCount);
 }
 
@@ -1084,6 +1088,7 @@ void Class::addNewVirtualMethodTable()
     PHANTOM_ASSERT(m_VirtualMethodTables.empty() &&
                    ((m_BaseClasses.size() == 0) || !(getBaseClass(0)->isPolymorphic()) || isNative()));
     VirtualMethodTable* pVMT = createVirtualMethodTable();
+    pVMT->setOwner(this);
     pVMT->setFlag(getFlags() & PHANTOM_R_FLAG_NATIVE);
     m_VirtualMethodTables.push_back(pVMT);
 }

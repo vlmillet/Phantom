@@ -278,7 +278,7 @@ public:
     /// \return true if singleton, false if not.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isSingleton() const { return ((m_Modifiers & PHANTOM_R_SINGLETON) == PHANTOM_R_SINGLETON); }
+    bool isSingleton() const { return ((getModifiers() & PHANTOM_R_SINGLETON) == PHANTOM_R_SINGLETON); }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this type is default constructible.
@@ -1116,10 +1116,10 @@ public:
     virtual void deleteInstance(void* a_pInstance) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  In place PHANTOM_NEW(instance) of this type : construct [+ install + initialize if
+    /// \brief  In place new instance of this type : construct [+ install + initialize if
     ///         class].
     ///
-    /// \return null if it fails, else the PHANTOM_NEW(instance).
+    /// \return null if it fails, else the new instance.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual void* placementNewInstance(void* a_pMemory) const;
@@ -1127,7 +1127,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  In place delete instance of this type
     ///
-    /// \return null if it fails, else the PHANTOM_NEW(instance).
+    /// \return null if it fails, else the new instance.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual void placementDeleteInstance(void* a_pMemory) const;
@@ -1497,6 +1497,14 @@ public:
     /// \internal
     virtual bool partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const;
 
+protected:
+    void setUnderlyingType(Type* a_pType) { m_pUnderlyingType = a_pType; }
+    void setSizeAndAlignemnt(uint16_t a_uiSize, uint16_t a_uiAlign)
+    {
+        m_uiSize = a_uiSize;
+        m_uiAlignment = a_uiAlign;
+    }
+
 private:
     Types&             _extTypes() const;
     Type*              createPointer();
@@ -1520,7 +1528,7 @@ public:
     //@}
 #endif
 
-protected:
+private:
     Type*                      m_pUnderlyingType{};
     mutable Types*             m_pExtendedTypes{};
     uint32_t                   m_uiSize{};

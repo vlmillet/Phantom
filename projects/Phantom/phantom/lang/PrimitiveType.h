@@ -49,7 +49,7 @@ public:
     /// \param  a_pPrimitiveType    (optional) And alternative type for the constant (useful for
     /// enums).
     ///
-    /// \return The PHANTOM_NEW(constant).
+    /// \return The new constant.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual Constant* createConstant(LanguageElement* a_pOwner, void* a_pSrc, StringView a_strName = "",

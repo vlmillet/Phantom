@@ -81,7 +81,6 @@ PHANTOM_PACKAGE("phantom.lang")
                 {"Volatile",_::Volatile},
                 {"Mutable",_::Mutable},
                 {"Inline",_::Inline},
-                {"Slot",_::Slot},
                 {"NoExcept",_::NoExcept},
                 {"Singleton",_::Singleton},
                 {"LValueRef",_::LValueRef},

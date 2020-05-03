@@ -70,7 +70,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         _PHNTM_REG_STATIC_ASSERT((std::is_same<DontTouchThis, void>::value),
                                  "struct_<>() requires empty template signature if no name provided");
-        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>)(this);
+        auto pSec = new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>>(this);
         this->m_MASections.push_back(pSec);
         return *pSec;
     }
@@ -82,7 +82,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         _PHNTM_REG_STATIC_ASSERT(std::is_same<DontTouchThis, void>::value,
                                  "union_<>() requires empty template signature if no name provided");
-        auto pSec = PHANTOM_NEW(MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>)(this);
+        auto pSec = new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>>(this);
         this->m_MASections.push_back(pSec);
         return *pSec;
     }

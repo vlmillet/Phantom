@@ -38,7 +38,6 @@ Method::Method(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifi
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "remove Slot concept from Phantom (get more bloat free)")
 #endif
-    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers /*= 0*/,
@@ -49,7 +48,6 @@ Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifi
       m_pVTableClosures(nullptr),
       m_pProperty(nullptr)
 {
-    PHANTOM_ASSERT(!testModifiers(PHANTOM_R_CONST) || !testModifiers(PHANTOM_R_SLOT_METHOD), "Slots cannot be const");
 }
 
 size_t Method::getVirtualTableIndex(size_t a_uiVtableIndex) const
@@ -111,7 +109,7 @@ void Method::setVirtual()
     if (isVirtual())
         return;
     PHANTOM_ASSERT(getOwner(), "method cannot be set to virtual after being added to a class type");
-    m_Modifiers |= PHANTOM_R_VIRTUAL;
+    addModifiers(PHANTOM_R_VIRTUAL);
 }
 
 void* Method::getVTableClosure(size_t a_uiOffset) const
@@ -194,21 +192,23 @@ Type* Method::getImplicitObjectParameterType() const
     return pImplicitObjectParameterType->makeLValueReference();
 }
 
+void Method::_onAttachingToClass(ClassType* a_pClass)
+{
+	// normalize conversion function name (only if native)
+	if (isNative())
+	{
+		StringBuffer buffer;
+		conversionOperatorNameNormalizer(getName(), buffer, a_pClass);
+		setName(buffer);
+	}
+}
+
 void Method::_onAttachedToClass(ClassType* a_pClass)
 {
     // create this
     PHANTOM_ASSERT(m_pThis == nullptr); // ASSERT_DEBUG
     m_pThis = New<LocalVariable>(
     isConst() ? a_pClass->makeConst()->makePointer()->makeConst() : a_pClass->makePointer()->makeConst(), "this");
-
-    // normalize conversion function name (only if native)
-    if (isNative())
-    {
-        StringBuffer buffer;
-        conversionOperatorNameNormalizer(m_strName, buffer, a_pClass);
-        m_strName.clear();
-        m_strName.append(buffer.data(), buffer.size());
-    }
 }
 
 LocalVariable* Method::getThis() const

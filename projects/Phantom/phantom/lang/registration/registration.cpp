@@ -213,11 +213,7 @@ Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Scope* a
     {
         if (pTemplate->getName() == name)
         {
-            if (!pTemplate->isNative())
-            {
-                pTemplate = pTemplate->getSource()->getNativeArchive()->getTemplate(name);
-                PHANTOM_ASSERT(pTemplate->isNative());
-            }
+			PHANTOM_ASSERT(pTemplate->isNative());
             return pTemplate;
         }
     }

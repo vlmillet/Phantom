@@ -21,7 +21,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/typedef>
 #include <phantom/using>
 #include <phantom/friend>
@@ -61,7 +60,6 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(Symbol)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
@@ -75,6 +73,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .staticMethod<bool(StringView)>("IsCppIdentifier", &_::IsCppIdentifier)
+            .staticMethod<hash64(const char*, size_t)>("ComputeHash", &_::ComputeHash)
+            .staticMethod<void(hash64&, hash64)>("CombineHash", &_::CombineHash)
         
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
@@ -98,7 +98,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Modifiers() const>("getModifiers", &_::getModifiers)
             .method<bool(Modifiers) const>("testModifiers", &_::testModifiers)
             .method<StringView() const>("getName", &_::getName)
-            .method<void(StringView)>("setName", &_::setName)
             .method<hash64() const>("getHash", &_::getHash)
             .method<hash64() const>("getLocalHash", &_::getLocalHash)
             .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)
@@ -171,27 +170,13 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
         
         .protected_()
+            .method<void(StringView)>("setName", &_::setName)
             .method<void(bool)>("setImportable", &_::setImportable)
             .method<hash64() const, virtual_>("computeHash", &_::computeHash)
             .method<hash64() const, virtual_>("computeLocalHash", &_::computeLocalHash)
-            .staticMethod<hash64(const char*, size_t)>("ComputeHash", &_::ComputeHash)
-            .staticMethod<void(hash64&, hash64)>("CombineHash", &_::CombineHash)
             .method<void(StringBuffer&) const, virtual_>("formatAnonymousName", &_::formatAnonymousName)
             .method<void(Namespace*), virtual_>("onNamespaceChanging", &_::onNamespaceChanging)
             .method<void(Namespace*), virtual_>("onNamespaceChanged", &_::onNamespaceChanged)
-        
-        .protected_()
-            .field("m_strName", &_::m_strName)
-            .field("m_pNamespace", &_::m_pNamespace)
-            .field("m_pMetaDatas", &_::m_pMetaDatas)
-            .field("m_pAnnotations", &_::m_pAnnotations)
-            .field("m_pExtensions", &_::m_pExtensions)
-            .field("m_Hash", &_::m_Hash)
-            .field("m_LocalHash", &_::m_LocalHash)
-            .field("m_UserData", &_::m_UserData)
-            .field("m_Modifiers", &_::m_Modifiers)
-            .field("m_eAccess", &_::m_eAccess)
-            .field("m_eVisibility", &_::m_eVisibility)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

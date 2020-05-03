@@ -472,6 +472,12 @@ SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(BasicStringView<CharT> 
 }
 
 template<class CharT>
+SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(const CharT* v0, BasicStringView<CharT> v1)
+{
+	return BasicStringView<CharT>(v0) + v1;
+}
+
+template<class CharT>
 SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(BasicStringView<CharT> v, CharT c0)
 {
     SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> s;

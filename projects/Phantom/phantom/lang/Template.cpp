@@ -191,7 +191,7 @@ void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
     PHANTOM_ASSERT(a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate() == this);
     TemplateSpecialization* pEqual = getTemplateSpecialization(a_pTemplateSpecialization->getArguments());
     PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule());
-    if (m_pNamespace) /// template specialization belongs so same namespace as their template (even
+    if (getNamespace()) /// template specialization belongs so same namespace as their template (even
                       /// if they can belong to different owners)
     {
         PHANTOM_ASSERT(a_pTemplateSpecialization->getNamespace() == nullptr);

@@ -86,7 +86,7 @@ public:
 
     Constant* cloneImpl(LanguageElement* a_pOwner) const override
     {
-        return a_pOwner->NewMeta<SelfType>(m_strName, m_Value, getModifiers(), getFlags());
+        return a_pOwner->NewMeta<SelfType>(getName(), m_Value, getModifiers(), getFlags());
     }
 
     bool isZero() const override { return m_Value == t_Ty(0); }

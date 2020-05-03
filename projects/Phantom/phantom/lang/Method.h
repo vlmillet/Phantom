@@ -167,10 +167,6 @@ public:
 
     bool isOverridableBy(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers = 0) const;
 
-    Method* asSlot() const override
-    {
-        return (((m_Modifiers & PHANTOM_R_SLOT_METHOD) == PHANTOM_R_SLOT_METHOD)) ? const_cast<Method*>(this) : nullptr;
-    }
     virtual LanguageElement* asLanguageElement() const { return const_cast<Method*>(this); }
     Subroutine*              asSubroutine() const override { return const_cast<Method*>(this); }
     Method*                  asMethod() const override { return const_cast<Method*>(this); }
@@ -295,7 +291,8 @@ protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 private:
-    void _onAttachedToClass(ClassType* a_pClass);
+	void _onAttachingToClass(ClassType* a_pClass);
+	void _onAttachedToClass(ClassType* a_pClass);
 
 protected:
     LocalVariable*           m_pThis;

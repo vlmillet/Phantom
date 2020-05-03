@@ -117,7 +117,7 @@ void TemplateDependantTemplateInstance::getQualifiedDecoration(StringBuffer& a_B
 
 void TemplateDependantTemplateInstance::getDecoratedName(StringBuffer& a_Buf) const
 {
-    if (m_strName.empty())
+    if (getName().empty())
         formatAnonymousName(a_Buf);
     else
         getName(a_Buf);

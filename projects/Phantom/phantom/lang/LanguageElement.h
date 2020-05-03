@@ -68,7 +68,7 @@ public:
     friend class phantom::lang::Symbol;
     friend class phantom::lang::Semantic;
     friend class phantom::lang::MembersBase;
-	friend class phantom::detail::DynamicCppInitializerH;
+    friend class phantom::detail::DynamicCppInitializerH;
 
 public:
     typedef Delegate<Symbol*(Symbol*, bool)> SymbolFilter;
@@ -94,17 +94,18 @@ public:
     template<class T, class... Args>
     T* New(Args&&... a_Args)
     {
-        return m_pSource->_New<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))->New<T>(std::forward<Args>(a_Args)...);
     }
     template<class T, class... Args>
     T* NewDeferred(Args&&... a_Args)
     {
-        return m_pSource->_NewDeferred<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))
+        ->NewDeferred<T>(std::forward<Args>(a_Args)...);
     }
     template<class T, class... Args>
     T* NewMeta(Args&&... a_Args)
     {
-        return m_pSource->_NewMeta<T>(NewCallSite(this), std::forward<Args>(a_Args)...);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))->NewMeta<T>(std::forward<Args>(a_Args)...);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,18 +119,18 @@ public:
         PHANTOM_STATIC_ASSERT((std::is_same<T, Module>::value || std::is_same<T, Package>::value ||
                                std::is_same<T, Source>::value || std::is_same<T, PackageFolder>::value ||
                                !std::is_base_of<LanguageElement, T>::value));
-        return m_pSource->_new<T>(std::forward<Args>(a_Args)...);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))->_new<T>(std::forward<Args>(a_Args)...);
     }
     template<class T>
     void delete_(TypeIndentityT<T*> a_p) const
     {
-        return m_pSource->_delete<T>(a_p);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))->_delete<T>(a_p);
     }
     template<class T>
     void deleteVirtual(T* a_p) const
     {
         PHANTOM_STATIC_ASSERT(std::has_virtual_destructor<T>::value);
-        return m_pSource->_delete<T>(a_p);
+        return reinterpret_cast<Source*>(reinterpret_cast<T*>(m_pSource))->_delete<T>(a_p);
     }
 
     virtual CustomAllocator const* getAllocator() const;
@@ -856,24 +857,22 @@ protected:
     virtual void onInvalidated();
     virtual void onElementsAccess() {}
 
-protected:
+private:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Reimplement this function to provide specific behaviors when elements of the scope
     /// are accessed.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     void _onElementsAccess();
-
-private:
     void replaceElement(LanguageElement* a_pOld, LanguageElement* a_pNew);
     void _nativeDetachElementsFromModule();
     /// \brief  Detach all element ownership from this one.
-    void detachAll();
-	inline void _terminate()
-	{
-		PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
-		m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
-		terminate();
-	}
+    void        detachAll();
+    inline void _terminate()
+    {
+        PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
+        m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
+        terminate();
+    }
 
 private:
     LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the

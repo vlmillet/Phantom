@@ -24,7 +24,7 @@ class PHANTOM_EXPORT_PHANTOM Scope
 protected:
     Scope(LanguageElement* a_pThisElement, LanguageElement* a_pUnit);
     void initialize();
-	void terminate();
+    void terminate();
 
 public:
     virtual Scope* asScope() const = 0;
@@ -122,7 +122,7 @@ public:
     void addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Create a PHANTOM_NEW(naked) template specialization.
+    /// \brief  Create a new naked template specialization.
     ///
     /// \param  a_pTemplate             The specialized template.
     /// \param  a_pTemplateSignature    The template signature.
@@ -133,7 +133,7 @@ public:
                                                       const LanguageElements& a_Arguments);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Create a PHANTOM_NEW(template) specialization.
+    /// \brief  Create a new template specialization.
     ///
     /// \param  a_pTemplate             The specialized template.
     /// \param  a_pTemplateSignature    The template signature.
@@ -145,7 +145,7 @@ public:
                                                       const LanguageElements& a_Arguments, Symbol* a_pBody);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Create a PHANTOM_NEW(template) instantiation.
+    /// \brief  Create a new template instantiation.
     ///
     /// \param  a_pInstantiationSpecialization              The template specialization used to
     /// instantiate the template. \param  a_Arguments                                 The template
@@ -231,13 +231,13 @@ public:
     Constants const& getConstants() const { return *m_Constants; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a PHANTOM_NEW(alias) (typedef, using, etc...) to this scope.
+    /// \brief  Adds a new alias (typedef, using, etc...) to this scope.
     ///
     /// \param  a_pElement          The aliased element.
     /// \param  a_strAlias          The alias name.
     /// \param  a_Modifiers         (optional) the modifiers.
     ///
-    /// \return null if it fails, else the PHANTOM_NEW(alias).
+    /// \return null if it fails, else the new alias.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Alias* addAlias(Symbol* a_pSymbol, StringView a_strAlias, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
@@ -260,7 +260,7 @@ public:
     /// \param  a_Modifiers             (optional) the modifiers.
     /// \param  a_uiFlags               (optional) the flags.
     ///
-    /// \return null if failed, else the added PHANTOM_NEW(template) alias.
+    /// \return null if failed, else the added new template alias.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Template* addAliasTemplate(StringView a_TemplateTypes, StringView a_TemplateParams, StringView a_strAliasName,
@@ -274,7 +274,7 @@ public:
     /// \param  a_Modifiers             (optional) the modifiers.
     /// \param  a_uiFlags               (optional) the flags.
     ///
-    /// \return null if failed, else the added PHANTOM_NEW(template) alias.
+    /// \return null if failed, else the added new template alias.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Template* addAliasTemplate(TemplateSignature* a_pSignature, StringView a_strAliasName,

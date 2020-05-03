@@ -17,7 +17,7 @@ ValueMember::ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilt
                          uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags),
       m_pValueType(a_pValueType),
-      m_uiFilterMask(a_uiFilterMask * ((m_Modifiers & PHANTOM_R_TRANSIENT) == 0))
+      m_uiFilterMask(a_uiFilterMask * ((getModifiers() & PHANTOM_R_TRANSIENT) == 0))
 {
     PHANTOM_ASSERT(m_pValueType);
     PHANTOM_ASSERT(m_pValueType->isNative() || m_pValueType->getOwner());

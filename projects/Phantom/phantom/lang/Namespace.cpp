@@ -35,19 +35,21 @@ Namespace* Namespace::Global()
 }
 
 Namespace::Namespace(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
-    : Symbol("", a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)), Scope(this, nullptr)
+    : Symbol("", a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)),
+      Scope(this, nullptr)
 {
 }
 
 Namespace::Namespace(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)), Scope(this, nullptr)
+    : Symbol(a_strName, a_Modifiers, (PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL | a_uiFlags)),
+      Scope(this, nullptr)
 {
 }
 
 void Namespace::initialize()
 {
-	Symbol::initialize();
-	Scope::initialize();
+    Symbol::initialize();
+    Scope::initialize();
 }
 
 void Namespace::onScopeSymbolAdded(Symbol* a_pSym)
@@ -109,20 +111,20 @@ Namespace* Namespace::getOrCreateNamespace(StringView a_strNamespaceName, const 
 
 Namespace* Namespace::newNamespace(StringView a_strName)
 {
-	Namespace* pNS = phantom::new_<Namespace>(a_strName);
-	pNS->rtti.instance = pNS;
-	if (dynamic_initializer_()->installed())
-	{
-		pNS->rtti.metaClass = PHANTOM_CLASSOF(Namespace);
-		pNS->rtti.metaClass->registerInstance(pNS);
-	}
-	else
-	{
-		phantom::detail::deferInstallation("phantom::lang::Namespace", &pNS->rtti);
-	}
-	pNS->setNamespace(this);
-	pNS->initialize();
-	return pNS;
+    Namespace* pNS = phantom::new_<Namespace>(a_strName);
+    pNS->rtti.instance = pNS;
+    if (dynamic_initializer_()->installed())
+    {
+        pNS->rtti.metaClass = PHANTOM_CLASSOF(Namespace);
+        pNS->rtti.metaClass->registerInstance(pNS);
+    }
+    else
+    {
+        phantom::detail::deferInstallation("phantom::lang::Namespace", &pNS->rtti);
+    }
+    pNS->setNamespace(this);
+    pNS->initialize();
+    return pNS;
 }
 
 Namespace* Namespace::getNamespace(StringView a_strName) const
@@ -145,24 +147,27 @@ Alias* Namespace::getNamespaceAlias(StringView a_strName) const
     return nullptr;
 }
 
-void Namespace::onNamespaceChanging(Namespace* a_pNamespace)
+void Namespace::onNamespaceChanging(Namespace* /*a_pNamespace*/)
 {
-	Namespace* pParentNamespace = Symbol::getNamespace();
-	auto found = std::next(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this)).base();
-	PHANTOM_ASSERT(found != pParentNamespace->m_Namespaces.end(), "Namespace not found");
-	pParentNamespace->m_Namespaces.erase_unsorted(found);
-	setOwner(nullptr);
-	setVisibility(Visibility::Private);
+    Namespace* pParentNamespace = Symbol::getNamespace();
+    auto       found =
+    std::next(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this)).base();
+    PHANTOM_ASSERT(found != pParentNamespace->m_Namespaces.end(), "Namespace not found");
+    pParentNamespace->m_Namespaces.erase_unsorted(found);
+    setOwner(nullptr);
+    setVisibility(Visibility::Private);
 }
 
-void Namespace::onNamespaceChanged(Namespace* a_pNamespace)
+void Namespace::onNamespaceChanged(Namespace* /*a_pNamespace*/)
 {
-	Namespace* pParentNamespace = Symbol::getNamespace();
-	setOwner(pParentNamespace);
-	PHANTOM_ASSERT(pParentNamespace->getNamespace(getName()) == nullptr);
-	PHANTOM_ASSERT(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this) == pParentNamespace->m_Namespaces.rend(), "Namespace not found");
-	pParentNamespace->m_Namespaces.push_back(this);
-	setVisibility(Visibility::Public);
+    Namespace* pParentNamespace = Symbol::getNamespace();
+    setOwner(pParentNamespace);
+    PHANTOM_ASSERT(pParentNamespace->getNamespace(getName()) == nullptr);
+    PHANTOM_ASSERT(std::find(pParentNamespace->m_Namespaces.rbegin(), pParentNamespace->m_Namespaces.rend(), this) ==
+                   pParentNamespace->m_Namespaces.rend(),
+                   "Namespace not found");
+    pParentNamespace->m_Namespaces.push_back(this);
+    setVisibility(Visibility::Public);
 }
 
 Namespace* Namespace::getRootNamespace() const

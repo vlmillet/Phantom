@@ -125,22 +125,22 @@ bool MethodPointer::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifie
     PHANTOM_ASSERT(((a_CallerQualifiers & PHANTOM_R_LVALUEREF) == PHANTOM_R_LVALUEREF) ^
                    ((a_CallerQualifiers & PHANTOM_R_RVALUEREF) == PHANTOM_R_RVALUEREF));
     return (((a_CallerQualifiers & PHANTOM_R_CONST) == PHANTOM_R_CONST) <=
-            ((m_Modifiers & PHANTOM_R_CONST) ==
+            ((getModifiers() & PHANTOM_R_CONST) ==
              PHANTOM_R_CONST)) // caller must be equally or less const qualified than member
                                // function (every one can call a const member function but a
                                // const cannot call a non const member function)
-    && (((m_Modifiers & (PHANTOM_R_REFQUAL_MASK)) == 0) ||
-        (m_Modifiers & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
+    && (((getModifiers() & (PHANTOM_R_REFQUAL_MASK)) == 0) ||
+        (getModifiers() & PHANTOM_R_REFQUAL_MASK) == (a_CallerQualifiers & PHANTOM_R_REFQUAL_MASK));
 }
 
 Type* MethodPointer::getImplicitObjectParameterType() const
 {
     Type* pImplicitObjectParameterType = getOwner()->asClassType();
-    if (m_Modifiers & PHANTOM_R_CONST)
+    if (getModifiers() & PHANTOM_R_CONST)
     {
         pImplicitObjectParameterType = pImplicitObjectParameterType->makeConst();
     }
-    if (m_Modifiers & PHANTOM_R_RVALUEREF)
+    if (getModifiers() & PHANTOM_R_RVALUEREF)
     {
         return pImplicitObjectParameterType->makeRValueReference();
     }

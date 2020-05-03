@@ -72,7 +72,7 @@ LocalVariable* LocalVariable::clone(LanguageElement* a_pOwner) const
 
 LocalVariable* LocalVariable::cloneImpl(LanguageElement* a_pOwner) const
 {
-    return a_pOwner->New<LocalVariable>(m_pValueType, m_strName, m_Modifiers);
+    return a_pOwner->New<LocalVariable>(m_pValueType, getName(), getModifiers());
 }
 
 void LocalVariable::getQualifiedName(StringBuffer& a_Buf) const

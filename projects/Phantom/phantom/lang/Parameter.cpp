@@ -31,7 +31,7 @@ Parameter::Parameter(Type* a_pType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlag
 
 Parameter* Parameter::cloneImpl(LanguageElement* a_pOwner) const
 {
-    return a_pOwner->New<Parameter>(m_pValueType, m_strName, m_Modifiers);
+    return a_pOwner->New<Parameter>(m_pValueType, getName(), getModifiers());
 }
 
 bool Parameter::isEllipsis() const
@@ -46,7 +46,7 @@ void Parameter::setNativeDefaultArgumentStr(StringView a_DefaultArgument)
 
 void Parameter::setDefinitionName(StringView a_strName)
 {
-    m_strName = a_strName;
+    setName(a_strName);
 }
 
 bool Parameter::hasDefaultArgument() const

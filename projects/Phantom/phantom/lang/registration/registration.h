@@ -109,7 +109,6 @@ struct _PHNTM_RegistrerKeyWords
     static const int virtual_ = Modifier::Virtual;
     static const int override_ = Modifier::Override;
     static const int final_ = Modifier::Final;
-    static const int slot_ = Modifier::Slot;
     static const int transient = Modifier::Transient;
     static const int explicit_ = Modifier::Explicit;
     static const int mutable_ = Modifier::Mutable;

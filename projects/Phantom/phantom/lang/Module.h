@@ -9,10 +9,10 @@
 /* ****************** Includes ******************* */
 #include <phantom/detail/MemoryContext.h>
 #include <phantom/lang/Symbol.h>
+#include <phantom/utils/ForwardHeap.h>
 #include <phantom/utils/Signal.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/SmallSet.h>
-/* **************** Declarations ***************** */
 /* *********************************************** */
 namespace phantom
 {

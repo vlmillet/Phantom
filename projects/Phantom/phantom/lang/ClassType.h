@@ -908,6 +908,10 @@ protected:
 
 private:
     friend class ModuleRegistrationInfo;
+    template<class, class>
+    friend class ClassT;
+    template<class, class>
+    friend class ClassTypeT;
     void        _onNativeElementsAccess();
     void        _onNativeElementsAccessImpl();
     inline void _addSymbol(Symbol* a_pSymbol)
@@ -956,16 +960,15 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
     PHANTOM_STATIC_ASSERT(phantom::IsTypeDefined<DontTouchThis>::value,
                           "missing #include <phantom/lang/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
-    auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
-    new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
-                  PHANTOM_TYPEOF(ValueT), a_strName,
-                  [=](void const* a_pInstance, void* a_pValue) {
-                      a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));
-                  },
-                  [=](void* a_pInstance, void const* a_pValue) {
-                      a_Set(reinterpret_cast<ClassT*>(a_pInstance), reinterpret_cast<ValueT const*>(a_pValue));
-                  },
-                  a_uiFilterMask);
+    auto pFProp = New<DontTouchThis>(
+    PHANTOM_TYPEOF(ValueT), a_strName,
+    [=](void const* a_pInstance, void* a_pValue) {
+        a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));
+    },
+    [=](void* a_pInstance, void const* a_pValue) {
+        a_Set(reinterpret_cast<ClassT*>(a_pInstance), reinterpret_cast<ValueT const*>(a_pValue));
+    },
+    a_uiFilterMask);
     pFProp->setFlag(getFlags() & PHANTOM_R_FLAG_NATIVE);
     addValueMember(pFProp);
     return pFProp;
@@ -977,13 +980,12 @@ FunctorProperty* ClassType::addFunctorProperty(StringView a_strName, GetFunctor&
     PHANTOM_STATIC_ASSERT(phantom::IsTypeDefined<DontTouchThis>::value,
                           "missing #include <phantom/lang/FunctorProperty.h");
     PHANTOM_ASSERT(static_cast<ClassType*>(PHANTOM_TYPEOF(ClassT)) == this);
-    auto pFProp = ::phantom::detail::NewH<DontTouchThis>() *
-    new (phantom::allocate(sizeof(DontTouchThis), PHANTOM_ALIGNOF(DontTouchThis))) DontTouchThis(
-                  PHANTOM_TYPEOF(ValueT), a_strName,
-                  [=](void const* a_pInstance, void* a_pValue) {
-                      a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));
-                  },
-                  a_uiFilterMask);
+    auto pFProp = New<DontTouchThis>(
+    PHANTOM_TYPEOF(ValueT), a_strName,
+    [=](void const* a_pInstance, void* a_pValue) {
+        a_Get(reinterpret_cast<ClassT const*>(a_pInstance), reinterpret_cast<ValueT*>(a_pValue));
+    },
+    a_uiFilterMask);
     pFProp->setFlag(getFlags() & PHANTOM_R_FLAG_NATIVE);
     addValueMember(pFProp);
     return pFProp;

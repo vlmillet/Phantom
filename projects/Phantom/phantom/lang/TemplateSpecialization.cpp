@@ -42,7 +42,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
     addReferencedElement(m_pTemplate);
-    m_pTemplate->addTemplateSpecialization(this);
     if (!isFull())
     {
         m_pTemplated->setTemplateDependant();
@@ -69,7 +68,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
     addReferencedElement(m_pTemplate);
-    m_pTemplate->addTemplateSpecialization(this);
 }
 
 TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization,
@@ -112,13 +110,13 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
     addReferencedElement(m_pInstantiationSpecialization);
     PHANTOM_ASSERT(m_pTemplate);
     addReferencedElement(m_pTemplate);
-    m_pTemplate->addTemplateSpecialization(this);
 }
 
 void TemplateSpecialization::initialize()
 {
-	Symbol::initialize();
-	m_pTemplateSignature->setOwner(this);
+    Symbol::initialize();
+    m_pTemplateSignature->setOwner(this);
+    m_pTemplate->addTemplateSpecialization(this);
     if (m_pTemplated)
         m_pTemplated->setOwner(this);
 }
@@ -130,7 +128,7 @@ void TemplateSpecialization::terminate()
         if (m_pDefaultArguments)
             delete_<LanguageElements>(m_pDefaultArguments);
     }
-	Symbol::terminate();
+    Symbol::terminate();
 }
 
 hash64 TemplateSpecialization::getDecorationHash() const

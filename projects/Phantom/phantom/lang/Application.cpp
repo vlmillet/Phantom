@@ -110,18 +110,18 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
         MODULEINFO modInfo{};
         PHANTOM_VERIFY(
         GetModuleInformation(GetCurrentProcess(), (HMODULE)info->m_ModuleHandle, &modInfo, sizeof(MODULEINFO)));
-		Module* pModule = phantom::new_<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name,
-			info->m_BinaryFileName, info->m_Source,
-			info->m_uiFlags | PHANTOM_R_FLAG_NATIVE);
-		pModule->rtti.instance = pModule;
-		if (phantom::detail::installed())
-		{
-			pModule->rtti.metaClass = PHANTOM_CLASSOF(Module);
-			pModule->rtti.metaClass->registerInstance(pModule);
-		}
-		else
-			phantom::detail::deferInstallation("phantom::lang::Module", &pModule->rtti);
-		pModule->initialize();
+        Module* pModule =
+        phantom::new_<Module>(info->m_ModuleHandle, modInfo.SizeOfImage, info->m_Name, info->m_BinaryFileName,
+                              info->m_Source, info->m_uiFlags | PHANTOM_R_FLAG_NATIVE);
+        pModule->rtti.instance = pModule;
+        if (phantom::detail::installed())
+        {
+            pModule->rtti.metaClass = PHANTOM_CLASSOF(Module);
+            pModule->rtti.metaClass->registerInstance(pModule);
+        }
+        else
+            phantom::detail::deferInstallation("phantom::lang::Module", &pModule->rtti);
+        pModule->initialize();
         info->setModule(pModule);
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
@@ -171,8 +171,8 @@ void Application::_uninstallNativeModule(Module* a_pModule)
         _moduleAboutToBeRemoved(a_pModule);
     if (a_pModule->getOnUnloadFunc())
         a_pModule->getOnUnloadFunc()();
-	removeModule(a_pModule);
-	deleteModule(a_pModule);
+    removeModule(a_pModule);
+    deleteModule(a_pModule);
 }
 
 void Application::terminate()
@@ -196,9 +196,9 @@ void Application::terminate()
                 Delete(pElem);
         }
         PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module && "Root Package Folder"
-	}
+    }
 
-	_uninstallNativeModule(m_Modules.back());
+    _uninstallNativeModule(m_Modules.back());
 
     StaticGlobals::Release(nullptr, nullptr);
 
@@ -273,7 +273,7 @@ void Application::_prefetchPlugins(StringView a_strPath)
                 }
                 else
                 {
-                    addPlugin(new_<Plugin>(entry.path().genericString()));
+                    addPlugin(phantom::new_<Plugin>(entry.path().genericString()));
                 }
             }
         }
@@ -561,7 +561,7 @@ void Application::removeModule(Module* a_pModule)
 void Application::_removeModule(Module* a_pModule)
 {
     PHANTOM_ASSERT(a_pModule->m_pOwner == this, "module already added");
-	a_pModule->setOwner(nullptr);
+    a_pModule->setOwner(nullptr);
     PHANTOM_EMIT moduleAboutToBeRemoved(a_pModule);
     m_Modules.erase(std::find(m_Modules.begin(), m_Modules.end(),
                               static_cast<Module*>(a_pModule))); // Remove dependencies reference of this module
@@ -574,8 +574,8 @@ void Application::_registerBuiltInTypes()
     phantom::lang::BuiltInTypes::Register();
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
-    Alias* pUnsignedAlias = m_pDefaultSource->
-    NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
+    Alias* pUnsignedAlias =
+    m_pDefaultSource->NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     pUnsignedAlias->setNamespace(Namespace::Global());
 
     Namespace* pGlobal = Namespace::Global();
@@ -583,10 +583,10 @@ void Application::_registerBuiltInTypes()
     PHANTOM_ASSERT(pPhantom);
 
 #define _PHNTM_FUND_TD(t)                                                                                              \
-	pGlobal->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
+    pGlobal->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
 
 #define _PHNTM_FUND_TD_PHNTM(t)                                                                                        \
-	pPhantom->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
+    pPhantom->addAlias(m_pDefaultSource->addAlias(PHANTOM_TYPEOF(t), #t, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE))
 
     // #if defined(_M_IA64) || defined(_M_X64) || defined(_M_AMD64)
     //     _PHNTM_FUND_TD(int128);
@@ -683,7 +683,7 @@ Constant* Application::getNullptr() const
 {
     if (m_pNullptr == nullptr)
     {
-        m_pNullptr = Constant::Create<std::nullptr_t>(const_cast<Application*>(this), nullptr, "nullptr");
+        m_pNullptr = Constant::Create<std::nullptr_t>(m_pDefaultSource, nullptr, "nullptr");
     }
     return m_pNullptr;
 }
@@ -697,9 +697,9 @@ void Application::_addBuiltInType(Type* a_pType)
 {
     PHANTOM_ASSERT(getBuiltInType(a_pType->getDecoratedName()) == nullptr);
     m_BuiltInTypes.push_back(a_pType);
-	a_pType->setVisibility(Visibility::Public);
-	a_pType->setOwner(m_pDefaultSource);
-	a_pType->setNamespace(Namespace::Global());
+    a_pType->setVisibility(Visibility::Public);
+    a_pType->setOwner(m_pDefaultSource);
+    a_pType->setNamespace(Namespace::Global());
 }
 
 void Application::_removeBuiltInType(Type*) {}
@@ -1031,7 +1031,8 @@ Module* Application::newModule(StringView a_strName)
 
 void Application::deleteModule(Module* a_pMod)
 {
-	PHANTOM_ASSERT(getModule(a_pMod->getName()) != a_pMod, "module is still in Application, call removeModule before deleteModule");
+    PHANTOM_ASSERT(getModule(a_pMod->getName()) != a_pMod,
+                   "module is still in Application, call removeModule before deleteModule");
     a_pMod->_terminate();
     phantom::delete_<Module>(a_pMod);
 }
@@ -1040,14 +1041,13 @@ void Application::getUniqueName(StringBuffer&) const {}
 
 PackageFolder* Application::rootPackageFolder() const
 {
-	PHANTOM_ASSERT(!testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING));
+    PHANTOM_ASSERT(!testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING));
     if (m_pRootPackageFolder == nullptr)
     {
         PackageFolder* pPF = phantom::new_<PackageFolder>();
         pPF->rtti.instance = pPF;
         pPF->setOwner(const_cast<Application*>(this));
-        phantom::detail::deferInstallation("phantom::lang::PackageFolder",
-                                           &pPF->rtti);
+        phantom::detail::deferInstallation("phantom::lang::PackageFolder", &pPF->rtti);
         pPF->initialize();
         const_cast<Application*>(this)->m_pRootPackageFolder = pPF;
     }

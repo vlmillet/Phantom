@@ -64,14 +64,14 @@ void Scope::initialize()
 
 void Scope::terminate()
 {
-	m_Functions.release();
-	m_Variables.release();
-	m_Constants.release();
-	m_Types.release();
-	m_Templates.release();
-	m_TemplateSpecializations.release();
-	m_AnonymousSections.release();
-	m_Aliases.release();
+    m_Functions.release();
+    m_Variables.release();
+    m_Constants.release();
+    m_Types.release();
+    m_Templates.release();
+    m_TemplateSpecializations.release();
+    m_AnonymousSections.release();
+    m_Aliases.release();
 }
 
 Type* Scope::getType(StringView a_strName) const
@@ -137,6 +137,7 @@ void Scope::addType(Type* a_pType)
 {
     if (a_pType->asClassType() || a_pType->asEnum())
     {
+        PHANTOM_ASSERT(std::find(m_Types->begin(), m_Types->end(), a_pType) == m_Types->end());
         m_Types->push_back(a_pType);
     }
     onScopeSymbolAdded(a_pType);
@@ -571,7 +572,8 @@ void Scope::removeTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
 {
     onScopeSymbolRemoving(a_pTemplateSpecialization);
     m_TemplateSpecializations->erase_unsorted(
-		std::next(std::find(m_TemplateSpecializations->rbegin(), m_TemplateSpecializations->rend(), a_pTemplateSpecialization))
+    std::next(
+    std::find(m_TemplateSpecializations->rbegin(), m_TemplateSpecializations->rend(), a_pTemplateSpecialization))
     .base());
 }
 

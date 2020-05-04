@@ -90,7 +90,7 @@ class PHANTOM_EXPORT_PHANTOM Class : public ClassType
 public:
     static Class*           MetaClass();
     HAUNT_OFF static Class* metaClass;
-	HAUNT_OFF using MetaClassType = Class;
+    HAUNT_OFF using MetaClassType = Class;
 
 public:
     friend class phantom::Phantom;
@@ -1007,7 +1007,11 @@ private:
     bool getBaseClassAccess(Class* a_pClass, Access* a_pInheritanceAccess) const;
     bool getBaseClassAccessCascade(Class* a_pClass, Access* a_pInheritanceAccess) const;
 
-protected:
+private:
+    template<class, class>
+    friend class ClassT;
+    template<class, class>
+    friend class ClassTypeT;
     void _onNativeElementsAccess();
     void _onNativeElementsAccessImpl();
 

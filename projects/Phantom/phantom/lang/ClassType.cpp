@@ -48,7 +48,7 @@ ClassType::ClassType(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize
 void ClassType::initialize()
 {
     Type::initialize();
-	Scope::initialize();
+    Scope::initialize();
     m_Constructors.setAllocator(getAllocator());
     m_Friends.setAllocator(getAllocator());
     m_Methods.setAllocator(getAllocator());
@@ -362,8 +362,11 @@ ValueMember* ClassType::getValueMember(StringView a_strName) const
 
 void ClassType::addConstructor(Constructor* a_pConstructor)
 {
+    // TODO rename these internal calls will more precise names (more what they do)
+    // a_pConstructor->_onAttachingToClass(this);
     _addSymbol(a_pConstructor);
     m_Constructors.push_back(a_pConstructor);
+    a_pConstructor->_onAttachedToClass(this);
 }
 
 Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0*/,
@@ -407,11 +410,11 @@ void ClassType::addProperty(Property* a_pProperty)
                    "type sized, cannot add property with signal anymore or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || a_pProperty->getGet() == nullptr || !(a_pProperty->getGet()->isVirtual()) ||
-		getSize() == 0,
+                   getSize() == 0,
                    "type sized, cannot add property with virtual method or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || a_pProperty->getSet() == nullptr || !(a_pProperty->getSet()->isVirtual()) ||
-		getSize() == 0,
+                   getSize() == 0,
                    "type sized, cannot add property with virtual method or the memory "
                    "consistency would be messed up");
     m_Properties.push_back(a_pProperty);
@@ -456,13 +459,13 @@ Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFi
 
 void ClassType::addMethod(Method* a_pMethod)
 {
-	a_pMethod->_onAttachingToClass(this);
-	_addSymbol(a_pMethod);
+    a_pMethod->_onAttachingToClass(this);
+    _addSymbol(a_pMethod);
     PHANTOM_ASSERT(isNative() || getSize() == 0 || !(a_pMethod->isVirtual()),
                    "type sized, cannot add virtual member functions anymore or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(a_pMethod));
-	m_Methods.push_back(a_pMethod);
+    m_Methods.push_back(a_pMethod);
     a_pMethod->_onAttachedToClass(this);
 }
 
@@ -689,10 +692,12 @@ void ClassType::_onNativeElementsAccessImpl()
 
 void ClassType::_onNativeElementsAccess()
 {
-    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
+    if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ &&
+        ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
     {
         auto guard = m_OnDemandMutex.autoLock();
-        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ && ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
+        if (!(m_OnDemandMembersFunc.empty()) /*&& !isFinalized()*/ &&
+            ((getFlags() & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0))
         {
             Module* pThisModule = getModule();
             PHANTOM_ASSERT(pThisModule);

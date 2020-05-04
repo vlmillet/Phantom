@@ -12,7 +12,6 @@
 HAUNT_STOP;
 
 #include <limits>
-#include <phantom/CustomAllocator.h>
 #include <stdlib.h>
 
 namespace phantom

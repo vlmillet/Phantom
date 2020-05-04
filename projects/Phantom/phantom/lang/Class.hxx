@@ -119,6 +119,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()
         
         .public_()
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<Class*(Class*) const>("getCommonBaseClass", &_::getCommonBaseClass)
             .method<void(Methods&) const>("filtersNonOverloadedPureVirtualMethodsCascade", &_::filtersNonOverloadedPureVirtualMethodsCascade)
             .method<void(Methods&) const>("findPureVirtualMethods", &_::findPureVirtualMethods)
@@ -253,10 +255,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("canBeDestroyed", &_::canBeDestroyed)
             .method<Strings() const>("getBaseClasseNames", &_::getBaseClasseNames)
             .method<void(Strings), virtual_>("setBaseClasseNames", &_::setBaseClasseNames)
-        
-        .protected_()
-            .method<void()>("_onNativeElementsAccess", &_::_onNativeElementsAccess)
-            .method<void()>("_onNativeElementsAccessImpl", &_::_onNativeElementsAccessImpl)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

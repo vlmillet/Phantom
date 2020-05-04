@@ -9,6 +9,7 @@
 #include "ArrayView.h"
 
 #include <algorithm>
+#include <phantom/CustomAllocator.h>
 #include <phantom/alignof>
 #include <phantom/detail/core.h>
 #include <phantom/traits/CopyTraits.h>
@@ -395,12 +396,12 @@ public:
     }
 
     iterator erase_unsorted(const_iterator _it)
-	{
-		PHANTOM_ASSERT(_it >= begin() && _it < end());
-		if (_it != (end() - 1))
-		{
-			*const_cast<iterator>(_it) = std::move(back());
-		}
+    {
+        PHANTOM_ASSERT(_it >= begin() && _it < end());
+        if (_it != (end() - 1))
+        {
+            *const_cast<iterator>(_it) = std::move(back());
+        }
         pop_back();
         return const_cast<iterator>(_it + 1);
     }

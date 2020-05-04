@@ -27,6 +27,7 @@
 #endif
 #include "FieldPointer.h"
 #include "InitializerListType.h"
+#include "Method.h"
 #include "MethodPointer.h"
 
 #include <phantom/detail/core_internal.h>
@@ -73,6 +74,14 @@ void Source::terminate()
     Scope::terminate();
 }
 
+void* Source::PlacementInit(Class* a_pClass, void* a_pInstance)
+{
+    PHANTOM_ASSERT(a_pClass->isA(PHANTOM_CLASSOF(LanguageElement)));
+    _NewH(a_pClass->cast<LanguageElement>(a_pInstance), a_pClass, a_pInstance);
+    a_pClass->getMethodCascade("initialize", TypesView{})->invoke<void>(a_pInstance);
+    return a_pInstance;
+}
+
 Source::~Source()
 {
     // -- then invoke destructor to finalize destruction
@@ -103,6 +112,7 @@ void Source::getQualifiedName(StringBuffer&) const
 
 void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 {
+    a_pSymbol->setOwner(this);
     if (getVisibility() == Visibility::Public) // not an archive
     {
         a_pSymbol->setVisibility(Visibility::Public);
@@ -138,8 +148,10 @@ void Source::onScopeSymbolRemoving(Symbol* a_pSymbol)
 {
     if (getVisibility() == Visibility::Public) // not an archive
     {
+        a_pSymbol->setVisibility(Visibility::Private);
         a_pSymbol->getNamespace()->_unregisterSymbol(a_pSymbol);
     }
+    a_pSymbol->setOwner(nullptr);
 }
 
 hash64 Source::computeHash() const

@@ -32,12 +32,13 @@ void LanguageElement::initialize()
 
 LanguageElement::~LanguageElement()
 {
-	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0, "missing super call to terminate() somewhere");
-	if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
-		return;
-	size_t i = m_Elements.size();
-	while (i--)
-		m_Elements[i]->~LanguageElement();
+    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0,
+                   "missing super call to terminate() somewhere");
+    if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
+        return;
+    size_t i = m_Elements.size();
+    while (i--)
+        m_Elements[i]->~LanguageElement();
 }
 
 int LanguageElement::destructionPriority() const
@@ -49,20 +50,20 @@ int LanguageElement::destructionPriority() const
 
 void LanguageElement::terminate()
 {
-	if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
-	{
-		m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
-		return;
-	}
-	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
-	m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
-	setOwner(nullptr);
-	size_t i = m_Elements.size();
-	while (i--)
-	{
-		m_Elements[i]->rtti.metaClass->unregisterInstance(m_Elements[i]->rtti.instance);
-		m_Elements[i]->terminate();
-	}
+    if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
+    {
+        m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
+        return;
+    }
+    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
+    m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
+    setOwner(nullptr);
+    size_t i = m_Elements.size();
+    while (i--)
+    {
+        m_Elements[i]->rtti.metaClass->unregisterInstance(m_Elements[i]->rtti.instance);
+        m_Elements[i]->terminate();
+    }
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const
@@ -79,24 +80,19 @@ void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= n
 
 CustomAllocator const* LanguageElement::getAllocator() const
 {
-	if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
-		return &CustomAllocator::CurrentOrDefault();
-	PHANTOM_ASSERT(m_pSource);
+    if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
+        return &CustomAllocator::CurrentOrDefault();
+    PHANTOM_ASSERT(m_pSource);
     return m_pSource->Source::getAllocator();
 }
 
 void LanguageElement::Delete(LanguageElement* a_pElem)
 {
-	PHANTOM_ASSERT(a_pElem->m_pOwner == this);
-	PHANTOM_ASSERT((!m_pSource || !m_pSource->testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING)), "never invoke Delete yourself in terminate(), it's the Source's job to do that");
-    a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
-    a_pElem->_terminate();
-	a_pElem->~LanguageElement();
-	PHANTOM_ASSERT(a_pElem->m_pSource == m_pSource);
-	if (m_pSource)
-		m_pSource->m_CreatedElements.erase_unsorted(std::next(std::find(m_pSource->m_CreatedElements.rbegin(), m_pSource->m_CreatedElements.rend(), a_pElem)).base());
-	else
-		PHANTOM_ASSERT(testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL));
+    PHANTOM_ASSERT(a_pElem->m_pOwner == this);
+    PHANTOM_ASSERT((!m_pSource || !m_pSource->testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING)),
+                   "never invoke Delete yourself in terminate(), it's the Source's job to do that");
+    PHANTOM_ASSERT(m_pSource);
+    m_pSource->Delete(a_pElem);
     // --free(...)-- we never deallocate individually
     // (we always deallocate per-source(script) or per-module(c++) chunks for speed)
 }
@@ -213,9 +209,9 @@ Statement* LanguageElement::getEnclosingStatement() const
 
 void LanguageElement::_onElementsAccess()
 {
-	if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
-		return;
-	onElementsAccess();
+    if (testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL))
+        return;
+    onElementsAccess();
 }
 
 void LanguageElement::setOwner(LanguageElement* a_pOwner)
@@ -230,13 +226,13 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
         // we search for element in reverse order because generally we wan't to change ownership of a recently added
         // element
         m_pOwner->m_Elements.erase_unsorted(
-			std::next(std::find(m_pOwner->m_Elements.rbegin(), m_pOwner->m_Elements.rend(), this)).base());
+        std::next(std::find(m_pOwner->m_Elements.rbegin(), m_pOwner->m_Elements.rend(), this)).base());
         m_pOwner->m_uiFlags &= ~PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; // FIXME : add a template dependant tracking counter
     }
     m_pOwner = a_pOwner;
     if (m_pOwner)
     {
-		PHANTOM_ASSERT(m_pOwner->m_pSource == m_pSource || m_pSource == this);
+        PHANTOM_ASSERT(m_pOwner->m_pSource == m_pSource || m_pSource == this);
         m_pOwner->onElementsAccess();
         m_pOwner->m_Elements.push_back(this);
         if (isTemplateDependant() && m_pOwner->asEvaluable())
@@ -258,7 +254,7 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
                     Symbol* pSymbol = pElm->asSymbol();
                     (void)pSymbol;
                     PHANTOM_ASSERT_DEBUG(pSymbol == nullptr || pSymbol->getVisibility() == Visibility::Private ||
-						asSymbol()->getVisibility() == Visibility::Private ||
+                                         asSymbol()->getVisibility() == Visibility::Private ||
                                          pSymbol->getDecoratedName() != getDecoratedName(),
                                          "equal element already added : be careful not having "
                                          "duplicate member declarations in your class, or check not "
@@ -589,7 +585,8 @@ bool LanguageElement::hasSymbol(StringView a_strName) const
 
 Module* LanguageElement::getModule() const
 {
-    return m_pSource->getModule();
+    return m_pSource ? m_pSource->getModule() // source or symbol
+                     : m_pOwner->asModule();  // package
 }
 
 Package* LanguageElement::getPackage() const

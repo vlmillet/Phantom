@@ -86,6 +86,8 @@ public:
         return ptr;
     }
 
+    void* PlacementInit(Class* a_pClass, void* a_pInstance);
+
     template<class T, class... Args>
     T* NewDeferred(Args&&... a_Args)
     {
@@ -112,6 +114,16 @@ public:
         return ptr;
     }
 
+    void Delete(LanguageElement* a_pElem)
+    {
+        PHANTOM_ASSERT(a_pElem->m_pSource == this);
+        a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
+        a_pElem->_terminate();
+        a_pElem->~LanguageElement();
+        m_CreatedElements.erase_unsorted(
+        std::next(std::find(m_CreatedElements.rbegin(), m_CreatedElements.rend(), a_pElem)).base());
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package of this source.
     ///
@@ -127,7 +139,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Package* getPackage() const;
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Get or create a function pointer type.
@@ -369,9 +380,9 @@ public:
     phantom::Signal<void()>              buildSucceeded;
 
 private:
-    SourceStream* m_pSourceStream = nullptr;
-	LanguageElements     m_CreatedElements; ///< list of every created elements at this source level
-	FunctionPointers     m_FunctionPointers;
+    SourceStream*        m_pSourceStream = nullptr;
+    LanguageElements     m_CreatedElements; ///< list of every created elements at this source level
+    FunctionPointers     m_FunctionPointers;
     InitializerListTypes m_InitializerListTypes;
     FunctionTypes        m_FunctionTypes;
     MethodPointers       m_MethodPointers;

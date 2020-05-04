@@ -46,7 +46,8 @@ bool Package::IsValidName(StringView a_strName)
     return true;
 }
 
-Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID|PHANTOM_R_INTERNAL_FLAG_SPECIAL), m_pNamespace(nullptr)
+Package::Package(StringView a_strName)
+    : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL), m_pNamespace(nullptr)
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
     String namespaceName = getName();
@@ -126,38 +127,38 @@ Source* Package::getSource(StringView a_strName) const
 
 Source* Package::getOrCreateSource(StringView a_strName, Visibility a_Visibility)
 {
-	if (Source* pSource = getSource(a_strName))
-		return pSource;
-	return newSource(a_strName, a_Visibility); 
+    if (Source* pSource = getSource(a_strName))
+        return pSource;
+    Source* pSource = newSource(a_strName, a_Visibility);
+    addSource(pSource);
+    return pSource;
 }
 
 Source* Package::newSource(StringView a_strName, Visibility a_Visibility)
 {
     PHANTOM_ASSERT(getPackageFolder()->getPackageFolder(a_strName) == nullptr);
     PHANTOM_ASSERT(getModule());
-    PHANTOM_ASSERT(getSource(a_strName) == nullptr);
     Source* pS = phantom::new_<Source>(a_strName);
-	pS->m_pSource = pS;
+    pS->m_pSource = pS;
     pS->setVisibility(a_Visibility);
     pS->rtti.instance = pS;
     if (dynamic_initializer_()->installed())
     {
         pS->rtti.metaClass = PHANTOM_CLASSOF(Source);
-		pS->rtti.metaClass->registerInstance(pS);
+        pS->rtti.metaClass->registerInstance(pS);
     }
     else
     {
         phantom::detail::deferInstallation("phantom::lang::Source", &pS->rtti);
     }
     pS->initialize();
-    addSource(pS);
     return pS;
 }
 
 void Package::deleteSource(Source* a_pSource)
 {
-	PHANTOM_ASSERT(getSource(a_pSource->getName()) != a_pSource,
-		"use removeSource before deleteSource instead, I won't do it for you :p");
+    PHANTOM_ASSERT(getSource(a_pSource->getName()) != a_pSource,
+                   "use removeSource before deleteSource instead, I won't do it for you :p");
     PHANTOM_CLASSOF(Source)->unregisterInstance(a_pSource);
     a_pSource->terminate();
     phantom::delete_<Source>(a_pSource);
@@ -166,6 +167,8 @@ void Package::deleteSource(Source* a_pSource)
 void Package::addSource(Source* a_pSource)
 {
     PHANTOM_ASSERT(a_pSource->m_pOwner == nullptr);
+    PHANTOM_ASSERT(getSource(a_pSource->getName()) == nullptr,
+                   "a source with this name already exists in this package");
     a_pSource->setOwner(this);
     m_Sources.push_back(a_pSource);
     PHANTOM_EMIT sourceAdded(a_pSource);
@@ -178,7 +181,7 @@ void Package::removeSource(Source* a_pSource)
     Application::Get()->_sourceAboutToBeRemoved(a_pSource);
     PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
     m_Sources.erase_unsorted(std::next(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource)).base());
-	a_pSource->setOwner(nullptr);
+    a_pSource->setOwner(nullptr);
 }
 
 hash64 Package::computeHash() const

@@ -843,8 +843,10 @@ public:
 
     void setOwner(LanguageElement* a_pOwner);
 
-    inline void addReferencedElement(LanguageElement*)
-    { /*no impl for now*/
+    inline void addReferencedElement(LanguageElement* a_pRef)
+    {
+        // if any referenced element is template dependant, we become template dependant too
+        m_uiFlags |= (a_pRef->m_uiFlags & PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
     }
     inline void removeReferencedElement(LanguageElement*)
     { /*no impl for now*/

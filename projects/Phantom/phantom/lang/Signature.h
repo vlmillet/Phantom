@@ -69,6 +69,8 @@ public:
 
     Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
+    void initialize();
+
     Signature* asSignature() const override { return (Signature*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

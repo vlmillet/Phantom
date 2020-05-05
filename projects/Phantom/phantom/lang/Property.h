@@ -21,6 +21,8 @@ class PHANTOM_EXPORT_PHANTOM Property : public ValueMember
 {
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
+    friend class ClassType;
+
 public:
     PHANTOM_DECLARE_META_CLASS(Property);
 
@@ -100,17 +102,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Method* addSet(StringView a_strName = "");
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Add the signal with an optional custom name.
-    ///
-    /// \param  a_strName   (optional) the name (if not specified, phantom will generated a name of
-    ///                     the form &lt;property-name&gt;$signal.
-    ///
-    /// \return The signal.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Signal* addSignal(StringView a_strName = "");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add the 'get' member function with an optional custom name.

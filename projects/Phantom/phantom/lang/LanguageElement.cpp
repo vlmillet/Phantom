@@ -32,8 +32,8 @@ void LanguageElement::initialize()
 
 LanguageElement::~LanguageElement()
 {
-    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0,
-                   "missing super call to terminate() somewhere");
+	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0,
+		"missing super call to terminate() somewhere");
     if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
         return;
     size_t i = m_Elements.size();
@@ -219,7 +219,7 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
     if (m_pOwner == a_pOwner)
         return;
 
-    if (m_pOwner)
+    if (m_pOwner && (m_pOwner->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0)
     {
         m_pOwner->onElementsAccess();
 

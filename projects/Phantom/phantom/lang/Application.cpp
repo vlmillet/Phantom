@@ -193,9 +193,13 @@ void Application::terminate()
         {
             LanguageElement* pElem = elements[i];
             if (pElem != m_Modules.back()) // != "Phantom" module
-                Delete(pElem);
+            {
+                pElem->_terminate();
+                pElem->~LanguageElement();
+                phantom::deallocate(pElem);
+            }
         }
-        PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module && "Root Package Folder"
+        PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
     }
 
     _uninstallNativeModule(m_Modules.back());
@@ -417,7 +421,8 @@ void Application::_unloadMain()
                                 "a Phantom Plugin .dll is still in use while releasing Application; we manually force "
                                 "release of the reflection Module elements ; ensure your .dll is unloaded before to "
                                 "avoid undefined behavior.");
-                    Delete(pModule);
+                    removeModule(pModule);
+                    deleteModule(pModule);
                 }
                 break;
             }

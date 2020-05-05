@@ -91,6 +91,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()
         
         .public_()
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_>("terminate", &_::terminate)
             .using_("Type::asClass")
             .using_("Type::asClassType")
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)

@@ -236,6 +236,8 @@ public:
 
     size_t getSize() const;
 
+    inline bool isSized() const { return isVoid() || m_uiSize != 0; }
+
     void setSize(size_t a_uiSize);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////

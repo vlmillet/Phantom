@@ -86,6 +86,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<void*(Class*, void*)>("PlacementInit", &_::PlacementInit)
+            .method<void(LanguageElement*)>("Delete", &_::Delete)
             .method<Module*() const>("getModule", &_::getModule)
             .method<Package*() const>("getPackage", &_::getPackage)
             .method<FunctionType*(Type*, TypesView, Modifiers, uint)>("functionType", &_::functionType)["0"]["0"]

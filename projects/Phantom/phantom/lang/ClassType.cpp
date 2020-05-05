@@ -406,18 +406,19 @@ void ClassType::addValueMember(ValueMember* a_pValueMember)
 void ClassType::addProperty(Property* a_pProperty)
 {
     addValueMember(a_pProperty);
-    PHANTOM_ASSERT(isNative() || a_pProperty->getSignal() == nullptr || getSize() == 0,
+    PHANTOM_ASSERT(isNative() || a_pProperty->getSignal() == nullptr || !isSized(),
                    "type sized, cannot add property with signal anymore or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || a_pProperty->getGet() == nullptr || !(a_pProperty->getGet()->isVirtual()) ||
-                   getSize() == 0,
+                   !isSized(),
                    "type sized, cannot add property with virtual method or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || a_pProperty->getSet() == nullptr || !(a_pProperty->getSet()->isVirtual()) ||
-                   getSize() == 0,
+                   !isSized(),
                    "type sized, cannot add property with virtual method or the memory "
                    "consistency would be messed up");
     m_Properties.push_back(a_pProperty);
+    a_pProperty->onAttachedToClass(this);
 }
 
 Property* ClassType::addProperty(StringView, uint)
@@ -429,7 +430,7 @@ Property* ClassType::addProperty(StringView, uint)
 void ClassType::addField(Field* a_pField)
 {
     PHANTOM_ASSERT_DEBUG(getValueMember(a_pField->getName()) == nullptr);
-    PHANTOM_ASSERT(isNative() || getSize() == 0,
+    PHANTOM_ASSERT(isNative() || !isSized(),
                    "type sized, cannot add fields anymore or the memory consistency would be messed up");
     PHANTOM_ASSERT((asPOD() == nullptr || (a_pField->getValueType()->asPOD() != nullptr)),
                    "POD structs can only store pod types");
@@ -461,7 +462,7 @@ void ClassType::addMethod(Method* a_pMethod)
 {
     a_pMethod->_onAttachingToClass(this);
     _addSymbol(a_pMethod);
-    PHANTOM_ASSERT(isNative() || getSize() == 0 || !(a_pMethod->isVirtual()),
+    PHANTOM_ASSERT(isNative() || !isSized() || !(a_pMethod->isVirtual()),
                    "type sized, cannot add virtual member functions anymore or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(a_pMethod));
@@ -874,7 +875,7 @@ void ClassType::addStaticField(StaticField* a_pField)
 
 void ClassType::addMemberAnonymousSection(MemberAnonymousSection* a_pMemberAnonymousSection)
 {
-    PHANTOM_ASSERT(isNative() || getSize() == 0,
+    PHANTOM_ASSERT(isNative() || !isSized(),
                    "type sized, cannot add anonymous types anymore or the memory consistency "
                    "would be messed up");
     _addSymbol(a_pMemberAnonymousSection);

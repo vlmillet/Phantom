@@ -69,17 +69,15 @@ Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, 
     addReferencedElement(m_pUnderlyingType);
 }
 
-Type::~Type()
-{
-}
+Type::~Type() {}
 
 void Type::terminate()
 {
-	if (m_pExtendedTypes)
-	{
-		delete_<Types>(m_pExtendedTypes);
-		m_pExtendedTypes = nullptr;
-	}
+    if (m_pExtendedTypes)
+    {
+        delete_<Types>(m_pExtendedTypes);
+        m_pExtendedTypes = nullptr;
+    }
     Symbol::terminate();
 }
 
@@ -166,7 +164,7 @@ bool Type::equal(void const* a_pSrc0, void const* a_pSrc1) const
 Types& Type::_extTypes() const
 {
     if (m_pExtendedTypes == nullptr)
-		m_pExtendedTypes = new_<Types>(getAllocator());
+        m_pExtendedTypes = new_<Types>(getAllocator());
     return *m_pExtendedTypes;
 }
 
@@ -623,16 +621,16 @@ Type* Type::makePointer(size_t a_uiPointerLevel) const
 
 void Type::onNamespaceChanging(Namespace* /*a_pNamespace*/)
 {
-	if (!isNative())
-	{
-		if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
-			getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-			((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
-			!(getSource()->getVisibility() == Visibility::Private))
-		{
-			getModule()->_unregisterType(getHash(), this);
-		}
-	}
+    if (!isNative())
+    {
+        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
+             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
+            ((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
+            !(getSource()->getVisibility() == Visibility::Private) && getModule())
+        {
+            getModule()->_unregisterType(getHash(), this);
+        }
+    }
 }
 
 void Type::onNamespaceChanged(Namespace* /*a_pNamespace*/)

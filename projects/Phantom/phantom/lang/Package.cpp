@@ -171,6 +171,7 @@ void Package::addSource(Source* a_pSource)
                    "a source with this name already exists in this package");
     a_pSource->setOwner(this);
     m_Sources.push_back(a_pSource);
+    a_pSource->setVisibility(Visibility::Public);
     PHANTOM_EMIT sourceAdded(a_pSource);
     Application::Get()->_sourceAdded(a_pSource);
 }
@@ -180,6 +181,7 @@ void Package::removeSource(Source* a_pSource)
     PHANTOM_ASSERT(a_pSource->m_pOwner == this);
     Application::Get()->_sourceAboutToBeRemoved(a_pSource);
     PHANTOM_EMIT sourceAboutToBeRemoved(a_pSource);
+    a_pSource->setVisibility(Visibility::Private);
     m_Sources.erase_unsorted(std::next(std::find(m_Sources.rbegin(), m_Sources.rend(), a_pSource)).base());
     a_pSource->setOwner(nullptr);
 }

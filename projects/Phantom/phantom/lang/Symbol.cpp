@@ -82,7 +82,8 @@ int Symbol::destructionPriority() const
 
 hash64 Symbol::computeHash() const
 {
-    PHANTOM_ASSERT_DEBUG(m_Hash != 0 /*for recompute checks*/ || testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL) || getModule());
+    PHANTOM_ASSERT_DEBUG(m_Hash != 0 /*for recompute checks*/ || testFlags(PHANTOM_R_INTERNAL_FLAG_SPECIAL) ||
+                         getModule());
     hash64 h = getLocalHash();
     if (auto pNamingScope = getNamingScope())
     {
@@ -267,16 +268,16 @@ void Symbol::setAccess(Access a_eAccess)
 
 void Symbol::setVisibility(Visibility a_eVis)
 {
-	if (m_eVisibility == a_eVis)
-		return;
-	
-	if (m_eVisibility == Visibility::Public)
-		if (m_pNamespace)
-			m_pNamespace->_unregisterSymbol(this);
-	m_eVisibility = a_eVis;
-	if (m_eVisibility == Visibility::Public)
-		if (m_pNamespace)
-			m_pNamespace->_registerSymbol(this);
+    if (m_eVisibility == a_eVis)
+        return;
+
+    if (m_eVisibility == Visibility::Public)
+        if (m_pNamespace)
+            m_pNamespace->_unregisterSymbol(this);
+    m_eVisibility = a_eVis;
+    if (m_eVisibility == Visibility::Public)
+        if (m_pNamespace)
+            m_pNamespace->_registerSymbol(this);
 }
 
 void Symbol::setModifiers(Modifiers a_Modifiers)
@@ -306,7 +307,7 @@ bool Symbol::isSame(LanguageElement* a_pOther) const
 
 bool Symbol::isSame(Symbol* a_pOther) const
 {
-    return (this == a_pOther || (a_pOther->getModule() && this->getModule() && getHash() == a_pOther->getHash()));
+    return (this == a_pOther || (a_pOther->getOwner() && this->getOwner() && getHash() == a_pOther->getHash()));
 }
 
 bool Symbol::hasElementWithName(StringView a_strName) const
@@ -347,24 +348,24 @@ void Symbol::setNamespace(Namespace* a_pNS)
 {
     if (m_pNamespace == a_pNS)
         return;
-	Source* pSource = getSource();
-	if (m_pNamespace)
-	{
-		onNamespaceChanging(a_pNS);
-		if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
-		{
-			m_pNamespace->_unregisterSymbol(this);
-		}
-	}
+    Source* pSource = getSource();
+    if (m_pNamespace)
+    {
+        onNamespaceChanging(a_pNS);
+        if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
+        {
+            m_pNamespace->_unregisterSymbol(this);
+        }
+    }
     m_pNamespace = a_pNS;
-	if (m_pNamespace)
-	{
-		if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
-		{
-			m_pNamespace->_registerSymbol(this);
-		}
-		onNamespaceChanged(a_pNS);
-	}
+    if (m_pNamespace)
+    {
+        if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
+        {
+            m_pNamespace->_registerSymbol(this);
+        }
+        onNamespaceChanged(a_pNS);
+    }
 }
 
 void Symbol::getDoubles(Symbols& out) const

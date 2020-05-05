@@ -119,6 +119,7 @@ void VirtualMethodTable::terminate()
         delete_<Methods>(m_pMethods);
     if (m_ppClosures)
         PHANTOM_FREE(m_ppClosures - 1);
+    Symbol::terminate();
 }
 
 size_t VirtualMethodTable::getIndexOf(Method* a_pMethod) const

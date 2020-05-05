@@ -834,8 +834,8 @@ public:
 
     void saveArgs(void** a_pArgs, SmallVector<Variant, 10>& a_variants) const override;
 
-protected:
-    Subroutine();
+public:
+    void initialize();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs a 'void()' subroutine with a name, an ABI and optional modifiers.

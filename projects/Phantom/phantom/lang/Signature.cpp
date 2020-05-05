@@ -21,11 +21,11 @@ namespace lang
 Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs,
                              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
-	Signature* s = a_pOwner->NewDeferred<Signature>(a_pRet, a_Modifiers, a_uiFlags);
+    Signature* s = a_pOwner->NewDeferred<Signature>(a_pRet, a_Modifiers, a_uiFlags);
     Parameters params;
     for (auto p : a_ParamTs)
     {
-		s->addParameter(a_pOwner->NewDeferred<Parameter>(p));
+        s->addParameter(a_pOwner->NewDeferred<Parameter>(p));
     }
     return s;
 }
@@ -52,14 +52,27 @@ Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_
 
 Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0 */,
                      uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
+    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
+      m_pReturnType(nullptr),
+      m_pReturnTypeName(nullptr),
+      m_Parameters(a_Parameters)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
     setReturnType(a_pType);
-    for (auto it = a_Parameters.begin(); it != a_Parameters.end(); ++it)
+    Parameter* prev = nullptr;
+    for (auto p : m_Parameters)
     {
-        addParameter(*it);
+        PHANTOM_ASSERT(!prev || !prev->hasDefaultArgument() || p->hasDefaultArgument(),
+                       "parameter must have a default argument because the previous parameter had one");
+        prev = p;
     }
+}
+
+void Signature::initialize()
+{
+    Symbol::initialize();
+    for (auto p : m_Parameters)
+        p->setOwner(this);
 }
 
 Parameter* Signature::addParameter(Type* a_pType, StringView a_strName)

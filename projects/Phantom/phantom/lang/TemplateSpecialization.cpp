@@ -115,7 +115,8 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
 void TemplateSpecialization::initialize()
 {
     Symbol::initialize();
-    m_pTemplateSignature->setOwner(this);
+    if (m_pTemplateSignature)
+        m_pTemplateSignature->setOwner(this);
     m_pTemplate->addTemplateSpecialization(this);
     if (m_pTemplated)
         m_pTemplated->setOwner(this);

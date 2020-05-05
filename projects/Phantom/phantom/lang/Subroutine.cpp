@@ -39,6 +39,12 @@ Subroutine::Subroutine(StringView a_strName, Signature* a_pSignature, ABI a_eABI
     setModifiers((m_pSignature->getModifiers() & PHANTOM_R_METHOD_QUAL_MASK) | getModifiers());
 }
 
+void Subroutine::initialize()
+{
+    Symbol::initialize();
+    m_pSignature->setOwner(this);
+}
+
 void Subroutine::terminate()
 {
     if (m_pInstructions)
@@ -405,7 +411,7 @@ void Subroutine::placementApply(void** a_pArgs, size_t a_uiCount) const
 ESignatureRelation Subroutine::getSignatureRelationWith(StringView a_strName, Signature* a_pSignature,
                                                         Modifiers a_Modifiers, uint) const
 {
-	StringView name = getName();
+    StringView name = getName();
     if (a_strName != name // not same name
         && (name.front() != '~' || a_strName.front() != '~'))
         return e_SignatureRelation_None;

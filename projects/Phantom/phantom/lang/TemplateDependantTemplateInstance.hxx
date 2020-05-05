@@ -20,6 +20,7 @@
 #include <phantom/class>
 #include <phantom/method>
 #include <phantom/constructor>
+#include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
@@ -55,6 +56,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const>("getDecoration", &_::getDecoration)
             .method<void(StringBuffer&) const>("getQualifiedDecoration", &_::getQualifiedDecoration)
             .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoration", &_::getRelativeDecoration)
+            .using_("LanguageElement::getDecoratedName")
+            .using_("LanguageElement::getQualifiedName")
+            .using_("LanguageElement::getQualifiedDecoratedName")
+            .using_("LanguageElement::getRelativeName")
+            .using_("LanguageElement::getRelativeDecoratedName")
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)

@@ -71,6 +71,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, const Parameters&, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Signature*() const, virtual_|override_>("asSignature", &_::asSignature)
             .method<bool() const>("isRVOCandidate", &_::isRVOCandidate)
             .method<bool() const>("isVariadic", &_::isVariadic)

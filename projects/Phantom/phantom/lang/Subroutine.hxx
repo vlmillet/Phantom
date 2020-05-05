@@ -138,6 +138,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .typedef_<ApplyPointer>("ApplyPointer")
         
         .public_()
+            .method<void(), virtual_>("terminate", &_::terminate)
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<ABI() const>("getABI", &_::getABI)
             .method<Callable*() const, virtual_>("asCallable", &_::asCallable)
@@ -211,8 +212,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void()>("clearInstructions", &_::clearInstructions)
             .method<void(void**, SmallVector<Variant, 10>&) const, virtual_|override_>("saveArgs", &_::saveArgs)
         
-        .protected_()
-            .constructor<void()>()
+        .public_()
+            .method<void()>("initialize", &_::initialize)
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files

@@ -68,7 +68,6 @@ Expression* Parameter::getDefaultArgumentExpression() const
 
 void Parameter::setDefaultArgumentExpression(Expression* a_pDefaultArgumentExpression)
 {
-    PHANTOM_ASSERT(reinterpret_cast<LanguageElement*>(m_pDefaultArgumentExpression)->getOwner());
     PHANTOM_ASSERT(!isNative());
     PHANTOM_ASSERT(a_pDefaultArgumentExpression && m_pDefaultArgumentExpression == nullptr);
     m_pDefaultArgumentExpression = a_pDefaultArgumentExpression;

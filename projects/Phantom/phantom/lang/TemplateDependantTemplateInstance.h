@@ -43,6 +43,12 @@ public:
     void getQualifiedDecoration(StringBuffer& a_Buf) const;
     void getRelativeDecoration(LanguageElement* a_pTo, StringBuffer& a_Buf) const;
 
+    using LanguageElement::getDecoratedName;
+    using LanguageElement::getQualifiedName;
+    using LanguageElement::getQualifiedDecoratedName;
+    using LanguageElement::getRelativeName;
+    using LanguageElement::getRelativeDecoratedName;
+
     void   getDecoratedName(StringBuffer& a_Buf) const override;
     void   getQualifiedName(StringBuffer& a_Buf) const override;
     void   getQualifiedDecoratedName(StringBuffer& a_Buf) const override;

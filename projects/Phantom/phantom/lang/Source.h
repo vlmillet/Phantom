@@ -117,6 +117,7 @@ public:
     void Delete(LanguageElement* a_pElem)
     {
         PHANTOM_ASSERT(a_pElem->m_pSource == this);
+        PHANTOM_ASSERT((m_uiFlags & (PHANTOM_R_INTERNAL_FLAG_TERMINATING | PHANTOM_R_INTERNAL_FLAG_TERMINATED)) == 0);
         a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
         a_pElem->_terminate();
         a_pElem->~LanguageElement();

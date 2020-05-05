@@ -35,7 +35,7 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     }
     else if ((a_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL)
     {
-		addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
+        addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
     }
 }
 
@@ -48,11 +48,11 @@ Property::Property(Type* a_pFunctionsType, StringView a_strName, uint a_uiFilter
     if ((a_Modifiers & (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET)) ==
         (PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET))
     {
-		addModifiers(PHANTOM_R_VIRTUAL);
+        addModifiers(PHANTOM_R_VIRTUAL);
     }
     else if ((a_Modifiers & PHANTOM_R_VIRTUAL) == PHANTOM_R_VIRTUAL)
     {
-		addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
+        addModifiers(Modifiers(PHANTOM_R_VIRTUAL_GET | PHANTOM_R_VIRTUAL_SET));
     }
 }
 
@@ -61,14 +61,12 @@ void Property::setSet(Method* a_pFunc)
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getParameters().size() == 1);
     PHANTOM_ASSERT(
     !a_pFunc || a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers() == getValueType());
-    a_pFunc->setOwner(this);
     m_pSet = a_pFunc;
 }
 
 void Property::setGet(Method* a_pFunc)
 {
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers() == getValueType());
-    a_pFunc->setOwner(this);
     m_pGet = a_pFunc;
 }
 

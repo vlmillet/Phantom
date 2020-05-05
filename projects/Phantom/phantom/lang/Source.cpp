@@ -63,12 +63,15 @@ void Source::terminate()
 {
     PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
     m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
+    setVisibility(Visibility::Private);
     size_t i = m_CreatedElements.size();
     // -- first invoke terminate to cleanup inter-dependencies
     while (i--)
     {
+        size_t sb = m_CreatedElements.size();
         m_CreatedElements[i]->rtti.metaClass->unregisterInstance(m_CreatedElements[i]->rtti.instance);
         m_CreatedElements[i]->_terminate();
+        PHANTOM_ASSERT(sb == m_CreatedElements.size());
     }
     Symbol::terminate();
     Scope::terminate();
@@ -87,7 +90,11 @@ Source::~Source()
     // -- then invoke destructor to finalize destruction
     size_t i = m_CreatedElements.size();
     while (i--)
+    {
+        size_t sb = m_CreatedElements.size();
         m_CreatedElements[i]->~LanguageElement();
+        PHANTOM_ASSERT(sb == m_CreatedElements.size());
+    }
     // -- deallocation will be made by destructing allocator
 }
 
@@ -474,6 +481,8 @@ Module* Source::getModule() const
 
 void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 {
+    PHANTOM_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
+                   m_CreatedElements.end()); // ASSERT_DEBUG
     m_CreatedElements.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
@@ -483,6 +492,8 @@ void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 
 void Source::_NewDeferredH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN)
 {
+    PHANTOM_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
+                   m_CreatedElements.end()); // ASSERT_DEBUG
     m_CreatedElements.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;

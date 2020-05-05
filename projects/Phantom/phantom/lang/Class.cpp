@@ -195,7 +195,7 @@ void Class::addBaseClass(Class* a_pClass, Access a_Access)
 {
     ExtraData* pExtraData = getExtraData();
     PHANTOM_ASSERT(pExtraData);
-    PHANTOM_ASSERT(getSize() == 0, "class has been sized, cannot add base class anymore");
+    PHANTOM_ASSERT(!isSized(), "class has been sized, cannot add base class anymore");
     _addBaseClass(a_pClass, ~size_t(0), a_Access);
 }
 
@@ -1038,7 +1038,10 @@ Expression* Class::getOverriddenDefaultExpressionCascade(ValueMember* a_pValueMe
 
 VirtualMethodTable* Class::deriveVirtualMethodTable(VirtualMethodTable* a_pVirtualMethodTable)
 {
-    return a_pVirtualMethodTable->derive(this);
+    VirtualMethodTable* pVMT = a_pVirtualMethodTable->derive(this);
+    pVMT->setOwner(this);
+    m_VirtualMethodTables.push_back(pVMT);
+    return pVMT;
 }
 
 SymbolExtension* Class::getExtensionCascade(Class* a_pSymbolExtensionClass, size_t a_Num /*= 0*/) const

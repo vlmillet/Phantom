@@ -36,7 +36,7 @@ Template::Template(TemplateSignature* a_pSignature, StringView a_strName, Modifi
                    uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags | PHANTOM_R_ALWAYS_VALID)
 {
-	PHANTOM_ASSERT(a_pSignature);
+    PHANTOM_ASSERT(a_pSignature);
     createEmptyTemplateSpecialization(a_pSignature);
 }
 
@@ -44,10 +44,9 @@ Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTyp
                           StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
                           uint a_uiFlags /*= 0*/)
 {
-    return a_pOwner->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes,
-                                                                           a_strTemplateParam, a_pContextScope,
-                                                                           a_uiFlags & PHANTOM_R_FLAG_NATIVE),
-                                                  a_strName, a_Modifiers, a_uiFlags);
+    return a_pOwner->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes, a_strTemplateParam,
+                                                                    a_pContextScope, a_uiFlags & PHANTOM_R_FLAG_NATIVE),
+                                           a_strName, a_Modifiers, a_uiFlags);
 }
 
 Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -119,8 +118,8 @@ void Template::addTemplateParameterAliasName(size_t a_uiIndex, StringView a_strA
 
 void Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature)
 {
-	a_pTemplateSignature->NewDeferred<TemplateSpecialization>
-    (this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), getFlags() & PHANTOM_R_FLAG_NATIVE);
+    a_pTemplateSignature->NewDeferred<TemplateSpecialization>(
+    this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), getFlags() & PHANTOM_R_FLAG_NATIVE);
 }
 
 TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature,
@@ -192,7 +191,7 @@ void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
     TemplateSpecialization* pEqual = getTemplateSpecialization(a_pTemplateSpecialization->getArguments());
     PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule());
     if (getNamespace()) /// template specialization belongs so same namespace as their template (even
-                      /// if they can belong to different owners)
+                        /// if they can belong to different owners)
     {
         PHANTOM_ASSERT(a_pTemplateSpecialization->getNamespace() == nullptr);
     }
@@ -208,9 +207,9 @@ TemplateSpecialization* Template::createTemplateSpecialization(const LanguageEle
         a_pTemplateSignature = New<TemplateSignature>(isNative() * PHANTOM_R_FLAG_NATIVE);
     TemplateSpecialization* pSpec = a_pTemplated
     ? a_pTemplateSignature->NewDeferred<TemplateSpecialization>(this, a_pTemplateSignature, arguments, a_pTemplated,
-                                                   getFlags() & PHANTOM_R_FLAG_NATIVE)
+                                                                getFlags() & PHANTOM_R_FLAG_NATIVE)
     : a_pTemplateSignature->NewDeferred<TemplateSpecialization>(this, a_pTemplateSignature, arguments,
-                                                   getFlags() & PHANTOM_R_FLAG_NATIVE);
+                                                                getFlags() & PHANTOM_R_FLAG_NATIVE);
     return pSpec;
 }
 

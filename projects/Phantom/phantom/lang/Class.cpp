@@ -1335,7 +1335,8 @@ bool Class::canHaveImplicitDefaultConstructor() const
         }
         for (auto pField : getFields())
         {
-            if (ClassType* pClassType = pField->getValueType()->removeAllQualifiers()->asClassType())
+            Type* pType = pField->getValueType()->removeAllExtents()->removeQualifiers();
+            if (ClassType* pClassType = pType->asClassType())
             {
                 Constructor* pCtor;
                 if (pField->getDefaultExpression() == nullptr &&
@@ -1344,7 +1345,7 @@ bool Class::canHaveImplicitDefaultConstructor() const
                      pCtor->testModifiers(Modifier::Deleted)))
                     return false;
             }
-            else if (pField->getValueType()->asReference())
+            else if (pType->asReference())
                 return false;
         }
         return true;

@@ -760,11 +760,11 @@ public:
 
     PHANTOM_FORCEINLINE bool isNative() const { return testFlags(PHANTOM_R_FLAG_NATIVE); }
 
-    bool isTemplateDependant() const
+    PHANTOM_FORCEINLINE bool isTemplateDependant() const
     {
         return ((m_uiFlags & PHANTOM_R_FLAG_TEMPLATE_DEPENDANT) == PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
     }
-    void setTemplateDependant() { m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; }
+    PHANTOM_FORCEINLINE void setTemplateDependant() { m_uiFlags |= PHANTOM_R_FLAG_TEMPLATE_DEPENDANT; }
 
     PHANTOM_FORCEINLINE bool isAlwaysValid() const
     {

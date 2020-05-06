@@ -285,6 +285,48 @@ void Application::_prefetchPlugins()
     }
 }
 
+bool Application::findCppSymbols(StringView a_Text, Symbols& a_Symbols, LanguageElement* a_pScope /*= nullptr*/,
+                                 StringBuffer* a_pLastError /*= nullptr*/)
+{
+    CppSymbolParser parser;
+    PHANTOM_ASSERT(a_pScope);
+    return parser.parse(a_Text, a_Symbols, a_pScope, a_pLastError);
+}
+
+bool Application::findCppSymbols(StringView a_Text, Symbols& a_Symbols, StringBuffer* a_pLastError /*= nullptr*/)
+{
+    return findCppSymbols(a_Text, a_Symbols, Namespace::Global(), a_pLastError);
+}
+
+namespace
+{
+SpinMutex                 findCppCacheMutex;
+SmallMap<hash64, Symbol*> findCppCache;
+} // namespace
+
+Symbol* Application::findCppSymbolCached(StringView a_Text, LanguageElement* a_pScope,
+                                         StringBuffer* a_pLastError /*= nullptr*/)
+{
+    if (a_pScope == nullptr)
+        a_pScope = Namespace::Global();
+    if (Symbol* pSym = a_pScope->asSymbol())
+    {
+        auto   lock = findCppCacheMutex.autoLock();
+        hash64 hs = pSym->getHash();
+        Symbol::CombineHash(hs, Symbol::ComputeHash(a_Text.data(), a_Text.size()));
+        auto& cached = findCppCache[hs];
+        if (cached == nullptr)
+        {
+            auto result = findCppSymbol(a_Text, a_pScope, a_pLastError);
+            if (result && !result->isNative())
+                return result; // if not native, don't cache
+            cached = result;
+        }
+        return cached;
+    }
+    return findCppSymbol(a_Text, a_pScope, a_pLastError);
+}
+
 Symbol* Application::findCppSymbol(StringView a_Text, LanguageElement* a_pScope,
                                    StringBuffer* a_pLastError /*= nullptr*/)
 {
@@ -299,17 +341,9 @@ Symbol* Application::findCppSymbol(StringView a_Text, StringBuffer* a_pLastError
     return findCppSymbol(a_Text, Namespace::Global(), a_pLastError);
 }
 
-bool Application::findCppSymbols(StringView a_Text, Symbols& a_Symbols, LanguageElement* a_pScope /*= nullptr*/,
-                                 StringBuffer* a_pLastError /*= nullptr*/)
+Symbol* Application::findCppSymbolCached(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
 {
-    CppSymbolParser parser;
-    PHANTOM_ASSERT(a_pScope);
-    return parser.parse(a_Text, a_Symbols, a_pScope, a_pLastError);
-}
-
-bool Application::findCppSymbols(StringView a_Text, Symbols& a_Symbols, StringBuffer* a_pLastError /*= nullptr*/)
-{
-    return findCppSymbols(a_Text, a_Symbols, Namespace::Global(), a_pLastError);
+    return findCppSymbolCached(a_Text, Namespace::Global(), a_pLastError);
 }
 
 Type* Application::findCppType(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError /*= nullptr*/)
@@ -322,6 +356,19 @@ Type* Application::findCppType(StringView a_Text, LanguageElement* a_pScope, Str
 Type* Application::findCppType(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
 {
     return findCppType(a_Text, Namespace::Global(), a_pLastError);
+}
+
+Type* Application::findCppTypeCached(StringView a_Text, LanguageElement* a_pScope,
+                                     StringBuffer* a_pLastError /*= nullptr*/)
+{
+    if (Symbol* pSym = findCppSymbolCached(a_Text, a_pScope, a_pLastError))
+        return pSym->toType();
+    return nullptr;
+}
+
+Type* Application::findCppTypeCached(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
+{
+    return findCppTypeCached(a_Text, Namespace::Global(), a_pLastError);
 }
 
 Template* Application::findCppTemplate(StringView a_Text, LanguageElement* a_pScope,
@@ -337,6 +384,19 @@ Template* Application::findCppTemplate(StringView a_Text, StringBuffer* a_pLastE
     return findCppTemplate(a_Text, Namespace::Global(), a_pLastError);
 }
 
+Template* Application::findCppTemplateCached(StringView a_Text, LanguageElement* a_pScope,
+                                             StringBuffer* a_pLastError /*= nullptr*/)
+{
+    if (Symbol* pSym = findCppSymbolCached(a_Text, a_pScope, a_pLastError))
+        return pSym->asTemplate();
+    return nullptr;
+}
+
+Template* Application::findCppTemplateCached(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
+{
+    return findCppTemplateCached(a_Text, Namespace::Global(), a_pLastError);
+}
+
 Class* Application::findCppClass(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError /*= nullptr*/)
 {
     if (Type* pType = findCppType(a_Text, a_pScope, a_pLastError))
@@ -347,6 +407,19 @@ Class* Application::findCppClass(StringView a_Text, LanguageElement* a_pScope, S
 Class* Application::findCppClass(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
 {
     return findCppClass(a_Text, Namespace::Global(), a_pLastError);
+}
+
+Class* Application::findCppClassCached(StringView a_Text, LanguageElement* a_pScope,
+                                       StringBuffer* a_pLastError /*= nullptr*/)
+{
+    if (Type* pType = findCppTypeCached(a_Text, a_pScope, a_pLastError))
+        return pType->asClass();
+    return nullptr;
+}
+
+Class* Application::findCppClassCached(StringView a_Text, StringBuffer* a_pLastError /*= nullptr*/)
+{
+    return findCppClassCached(a_Text, Namespace::Global(), a_pLastError);
 }
 
 void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,

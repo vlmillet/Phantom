@@ -95,17 +95,27 @@ public:
     /// \return true if it succeeds to load the file, false if it fails.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    bool findCppSymbols(StringView a_Text, Symbols& a_Symbols, StringBuffer* a_pLastError = nullptr);
+    bool findCppSymbols(StringView a_Text, Symbols& a_Symbols, LanguageElement* a_pScope,
+                        StringBuffer* a_pLastError = nullptr);
+
     Symbol*   findCppSymbol(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
-    bool      findCppSymbols(StringView a_Text, Symbols& a_Symbols, LanguageElement* a_pScope,
-                             StringBuffer* a_pLastError = nullptr);
     Type*     findCppType(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
     Template* findCppTemplate(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
     Template* findCppTemplate(StringView a_Text, StringBuffer* a_pLastError = nullptr);
     Class*    findCppClass(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
     Symbol*   findCppSymbol(StringView a_Text, StringBuffer* a_pLastError = nullptr);
-    bool      findCppSymbols(StringView a_Text, Symbols& a_Symbols, StringBuffer* a_pLastError = nullptr);
     Type*     findCppType(StringView a_Text, StringBuffer* a_pLastError = nullptr);
     Class*    findCppClass(StringView a_Text, StringBuffer* a_pLastError = nullptr);
+
+    Symbol*   findCppSymbolCached(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
+    Type*     findCppTypeCached(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
+    Template* findCppTemplateCached(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
+    Template* findCppTemplateCached(StringView a_Text, StringBuffer* a_pLastError = nullptr);
+    Class*    findCppClassCached(StringView a_Text, LanguageElement* a_pScope, StringBuffer* a_pLastError = nullptr);
+    Symbol*   findCppSymbolCached(StringView a_Text, StringBuffer* a_pLastError = nullptr);
+    Type*     findCppTypeCached(StringView a_Text, StringBuffer* a_pLastError = nullptr);
+    Class*    findCppClassCached(StringView a_Text, StringBuffer* a_pLastError = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the internal module representing the main application (on windows the .exe

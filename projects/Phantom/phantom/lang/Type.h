@@ -234,7 +234,12 @@ public:
     /// \return The type size.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t getSize() const;
+    PHANTOM_FORCEINLINE size_t getSize() const
+    {
+        PHANTOM_ASSERT(isNative() || isVoid() || isTemplateDependant() || m_uiSize,
+                       "accessing size on incomplete type");
+        return m_uiSize;
+    }
 
     inline bool isSized() const { return isVoid() || m_uiSize != 0; }
 

@@ -81,12 +81,6 @@ void Type::terminate()
     Symbol::terminate();
 }
 
-size_t Type::getSize() const
-{
-    PHANTOM_ASSERT(isVoid() || isTemplateDependant() || m_uiSize, "accessing size on incomplete type");
-    return m_uiSize;
-}
-
 void Type::setSize(size_t a_uiSize)
 {
     PHANTOM_ASSERT(m_uiSize == 0);

@@ -18,6 +18,15 @@
 #include <phantom/detail/StaticGlobals.h>
 #include <phantom/traits/IntTypeBySize.h>
 #include <phantom/utils/SmallSet.h>
+
+#if PHANTOM_CONSISTENCY_CHECK_ENABLED
+#    define PHANTOM_CONSISTENCY_CHECK_ASSERT PHANTOM_ASSERT
+#    define PHANTOM_CONSISTENCY_CHECK_CODE(...) __VA_ARGS__
+#else
+#    define PHANTOM_CONSISTENCY_CHECK_ASSERT(...)
+#    define PHANTOM_CONSISTENCY_CHECK_CODE(...)
+#endif
+
 /* *********************************************** */
 namespace phantom
 {
@@ -32,13 +41,26 @@ void LanguageElement::initialize()
 
 LanguageElement::~LanguageElement()
 {
-	PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0,
-		"missing super call to terminate() somewhere");
-    if (m_pSource && (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING))
-        return;
+    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) != 0,
+                   "missing super call to terminate() somewhere");
+    if (m_pSource)
+    {
+        if (m_pSource->m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING)
+        {
+            m_Elements.clear(); // ensure deallocation will be made with still valid allocator in Source
+            return;
+        }
+        auto found =
+        std::next(std::find(m_pSource->m_CreatedElements.rbegin(), m_pSource->m_CreatedElements.rend(), this)).base();
+        PHANTOM_CONSISTENCY_CHECK_ASSERT(found != m_pSource->m_CreatedElements.end());
+        m_pSource->m_CreatedElements.erase_unsorted(found);
+    }
+
     size_t i = m_Elements.size();
     while (i--)
+    {
         m_Elements[i]->~LanguageElement();
+    }
 }
 
 int LanguageElement::destructionPriority() const
@@ -55,14 +77,14 @@ void LanguageElement::terminate()
         m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
         return;
     }
-    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
+    PHANTOM_CONSISTENCY_CHECK_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
     m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
     setOwner(nullptr);
     size_t i = m_Elements.size();
     while (i--)
     {
         m_Elements[i]->rtti.metaClass->unregisterInstance(m_Elements[i]->rtti.instance);
-        m_Elements[i]->terminate();
+        m_Elements[i]->_terminate();
     }
 }
 
@@ -88,10 +110,10 @@ CustomAllocator const* LanguageElement::getAllocator() const
 
 void LanguageElement::Delete(LanguageElement* a_pElem)
 {
-    PHANTOM_ASSERT(a_pElem->m_pOwner == this);
-    PHANTOM_ASSERT((!m_pSource || !m_pSource->testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING)),
-                   "never invoke Delete yourself in terminate(), it's the Source's job to do that");
-    PHANTOM_ASSERT(m_pSource);
+    PHANTOM_CONSISTENCY_CHECK_ASSERT(a_pElem->m_pOwner == this);
+    PHANTOM_CONSISTENCY_CHECK_ASSERT((!m_pSource || !m_pSource->testFlags(PHANTOM_R_INTERNAL_FLAG_TERMINATING)),
+                                     "never invoke Delete yourself in terminate(), it's the Source's job to do that");
+    PHANTOM_CONSISTENCY_CHECK_ASSERT(m_pSource);
     m_pSource->Delete(a_pElem);
     // --free(...)-- we never deallocate individually
     // (we always deallocate per-source(script) or per-module(c++) chunks for speed)

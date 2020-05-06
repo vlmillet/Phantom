@@ -69,7 +69,8 @@ void Class::initialize()
 
 void Class::terminate()
 {
-    delete_<ExtraData>(static_cast<ExtraData*>(m_pExtraData));
+    if (m_pExtraData)
+        delete_<ExtraData>(static_cast<ExtraData*>(m_pExtraData));
     if (m_pInstanceCache)
         delete_<InstanceCache>(m_pInstanceCache);
 

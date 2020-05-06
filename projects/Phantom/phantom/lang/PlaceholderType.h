@@ -28,7 +28,6 @@ class PHANTOM_EXPORT_PHANTOM PlaceholderType : public Type, public Placeholder
 
 public:
     PlaceholderType(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
     bool accepts(LanguageElement* a_pLanguageElement) const override { return a_pLanguageElement->asType() != nullptr; }
     Symbol*          asSymbol() const override { return (PlaceholderType*)this; }
     Placeholder*     asPlaceholder() const override { return (PlaceholderType*)this; }

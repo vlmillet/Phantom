@@ -36,6 +36,14 @@
 /* *********************************************** */
 #define PHANTOM_DEBUG_PACKAGE 0
 
+#if PHANTOM_CONSISTENCY_CHECK_ENABLED
+#    define PHANTOM_CONSISTENCY_CHECK_ASSERT PHANTOM_ASSERT
+#    define PHANTOM_CONSISTENCY_CHECK_CODE(...) __VA_ARGS__
+#else
+#    define PHANTOM_CONSISTENCY_CHECK_ASSERT(...)
+#    define PHANTOM_CONSISTENCY_CHECK_CODE(...)
+#endif
+
 namespace phantom
 {
 namespace lang
@@ -61,17 +69,15 @@ void Source::initialize()
 
 void Source::terminate()
 {
-    PHANTOM_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATING) == 0);
-    m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATING;
     setVisibility(Visibility::Private);
     size_t i = m_CreatedElements.size();
     // -- first invoke terminate to cleanup inter-dependencies
     while (i--)
     {
-        size_t sb = m_CreatedElements.size();
+        PHANTOM_CONSISTENCY_CHECK_CODE(size_t sb = m_CreatedElements.size(););
         m_CreatedElements[i]->rtti.metaClass->unregisterInstance(m_CreatedElements[i]->rtti.instance);
         m_CreatedElements[i]->_terminate();
-        PHANTOM_ASSERT(sb == m_CreatedElements.size());
+        PHANTOM_CONSISTENCY_CHECK_ASSERT(sb == m_CreatedElements.size());
     }
     Symbol::terminate();
     Scope::terminate();
@@ -91,11 +97,51 @@ Source::~Source()
     size_t i = m_CreatedElements.size();
     while (i--)
     {
-        size_t sb = m_CreatedElements.size();
+        PHANTOM_CONSISTENCY_CHECK_CODE(size_t sb = m_CreatedElements.size());
         m_CreatedElements[i]->~LanguageElement();
-        PHANTOM_ASSERT(sb == m_CreatedElements.size());
+        PHANTOM_CONSISTENCY_CHECK_ASSERT(sb == m_CreatedElements.size());
     }
+    // ensure we deallocate Smallvector content before destroying allocator
+    // TODO : reorder members in Source so that it can't happen
+    m_CreatedElements = decltype(m_CreatedElements){};
+    m_Elements = decltype(m_Elements){};
     // -- deallocation will be made by destructing allocator
+}
+
+void Source::Delete(LanguageElement* a_pElem)
+{
+    PHANTOM_ASSERT(a_pElem->m_pSource == this);
+    PHANTOM_CONSISTENCY_CHECK_ASSERT(
+    (m_uiFlags & (PHANTOM_R_INTERNAL_FLAG_TERMINATING | PHANTOM_R_INTERNAL_FLAG_TERMINATED)) == 0);
+    a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
+    a_pElem->_terminate();
+    a_pElem->~LanguageElement();
+    // memset(a_pElem->rtti.instance, 0xDC, a_pElem->rtti.metaClass->getSize());
+}
+
+void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
+{
+    PHANTOM_CONSISTENCY_CHECK_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
+                                     m_CreatedElements.end());
+
+    m_CreatedElements.push_back(a_pElem);
+    a_pElem->m_pSource = this;
+    a_pElem->rtti.instance = a_pMD;
+    a_pElem->rtti.metaClass = a_pClass;
+    a_pElem->rtti.metaClass->registerInstance(a_pMD);
+}
+
+void Source::_NewDeferredH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN)
+{
+    if (dynamic_initializer_()->installed())
+        return _NewH(a_pElem, a_pClass, a_pMD);
+
+    PHANTOM_CONSISTENCY_CHECK_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
+                                     m_CreatedElements.end()); // ASSERT_DEBUG
+    m_CreatedElements.push_back(a_pElem);
+    a_pElem->m_pSource = this;
+    a_pElem->rtti.instance = a_pMD;
+    phantom::detail::deferInstallation(a_QN, &a_pElem->rtti);
 }
 
 bool Source::canBeUnloaded() const
@@ -477,35 +523,6 @@ bool Source::hasImported(Symbol* a_pSource) const
 Module* Source::getModule() const
 {
     return getPackage()->getModule();
-}
-
-void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
-{
-    PHANTOM_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
-                   m_CreatedElements.end()); // ASSERT_DEBUG
-    m_CreatedElements.push_back(a_pElem);
-    a_pElem->m_pSource = this;
-    a_pElem->rtti.instance = a_pMD;
-    a_pElem->rtti.metaClass = a_pClass;
-    a_pElem->rtti.metaClass->registerInstance(a_pMD);
-}
-
-void Source::_NewDeferredH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD, StringView a_QN)
-{
-    PHANTOM_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
-                   m_CreatedElements.end()); // ASSERT_DEBUG
-    m_CreatedElements.push_back(a_pElem);
-    a_pElem->m_pSource = this;
-    a_pElem->rtti.instance = a_pMD;
-    if (!dynamic_initializer_()->installed())
-    {
-        phantom::detail::deferInstallation(a_QN, &a_pElem->rtti);
-    }
-    else
-    {
-        PHANTOM_VERIFY(a_pElem->rtti.metaClass = a_pClass);
-        a_pElem->rtti.metaClass->registerInstance(a_pMD);
-    }
 }
 
 } // namespace lang

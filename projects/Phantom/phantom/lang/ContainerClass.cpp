@@ -37,6 +37,7 @@ void ContainerClass::terminate()
 {
     if (m_pData)
         delete_<RTData>(m_pData);
+    Class::terminate();
 }
 
 void ContainerClass::setValueType(Type* a_pValueType)

@@ -62,8 +62,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Property*() const, virtual_|override_>("asProperty", &_::asProperty)
             .method<Method*() const>("getSet", &_::getSet)
             .method<Method*(StringView)>("addSet", &_::addSet)["\"\""]
-            /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<Signal*(StringView)>("addSignal", &_::addSignal)["\"\""]
             .method<Method*(StringView)>("addGet", &_::addGet)["\"\""]
             .method<Method*() const>("getGet", &_::getGet)
             /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files

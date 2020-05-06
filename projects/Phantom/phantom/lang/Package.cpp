@@ -160,7 +160,7 @@ void Package::deleteSource(Source* a_pSource)
     PHANTOM_ASSERT(getSource(a_pSource->getName()) != a_pSource,
                    "use removeSource before deleteSource instead, I won't do it for you :p");
     PHANTOM_CLASSOF(Source)->unregisterInstance(a_pSource);
-    a_pSource->terminate();
+    a_pSource->_terminate();
     phantom::delete_<Source>(a_pSource);
 }
 

@@ -185,24 +185,18 @@ void Application::terminate()
                        "every runtime/script module must have been destroyed before or during release of Main module");
         _uninstallNativeModule(pMod);
     }
-    PHANTOM_ASSERT(m_Modules.back()->getName() == "Phantom");
-    LanguageElements elements = getElements();
-    if (elements.size())
-    {
-        for (size_t i = 0; i < elements.size(); ++i)
-        {
-            LanguageElement* pElem = elements[i];
-            if (pElem != m_Modules.back()) // != "Phantom" module
-            {
-                pElem->_terminate();
-                pElem->~LanguageElement();
-                phantom::deallocate(pElem);
-            }
-        }
-        PHANTOM_ASSERT(getElements().size() == 1); // "Phantom" module
-    }
+    PHANTOM_ASSERT(m_Modules.size() == 1 && m_Modules.back()->getName() == "Phantom");
+
+    // root package folder release
+    PHANTOM_ASSERT(m_Elements.front() == m_pRootPackageFolder);
+    PHANTOM_CLASSOF(PackageFolder)->unregisterInstance(m_pRootPackageFolder);
+    m_pRootPackageFolder->_terminate();
+    m_pRootPackageFolder->~PackageFolder();
+    phantom::deallocate(m_pRootPackageFolder);
 
     _uninstallNativeModule(m_Modules.back());
+
+    m_Elements.clear();
 
     StaticGlobals::Release(nullptr, nullptr);
 

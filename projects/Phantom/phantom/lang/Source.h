@@ -114,16 +114,7 @@ public:
         return ptr;
     }
 
-    void Delete(LanguageElement* a_pElem)
-    {
-        PHANTOM_ASSERT(a_pElem->m_pSource == this);
-        PHANTOM_ASSERT((m_uiFlags & (PHANTOM_R_INTERNAL_FLAG_TERMINATING | PHANTOM_R_INTERNAL_FLAG_TERMINATED)) == 0);
-        a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
-        a_pElem->_terminate();
-        a_pElem->~LanguageElement();
-        m_CreatedElements.erase_unsorted(
-        std::next(std::find(m_CreatedElements.rbegin(), m_CreatedElements.rend(), a_pElem)).base());
-    }
+    void Delete(LanguageElement* a_pElem);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the package of this source.

@@ -14,6 +14,8 @@
 
 // FEATURES activation / deactivation
 
+#define PHANTOM_CONSISTENCY_CHECK_ENABLED 0
+
 // internals (alpha) (don't touch)
 #if !defined(PHANTOM_CUSTOM_ENABLE_COMPILE_TIME_MODE)
 #    define PHANTOM_CUSTOM_ENABLE_COMPILE_TIME_MODE                                                                    \

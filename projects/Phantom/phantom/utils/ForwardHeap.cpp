@@ -94,9 +94,30 @@ void* ForwardHeapSequence::allocate(size_t _s, size_t _a)
     return allocate(_s, _a);
 }
 
+struct FriendHeap
+{
+    size_t         m_heapSize;  /// Reserved heap size
+    unsigned char* m_current{}; /// First free (usable but no necessary committed) bit  // TODO: Thread safety Atomic
+    unsigned char* m_begin{};   /// First reserved byte
+    unsigned char* m_end{};     /// Last (not included) byte
+};
+
 void ForwardHeapSequence::deallocate(void* _ptr)
 {
-    m_Heaps.back().deallocate(_ptr);
+    bool inOneOfHeap = false;
+    for (auto& heap : m_Heaps)
+    {
+        FriendHeap& fh = (FriendHeap&)heap;
+        if (fh.m_begin <= _ptr && _ptr < fh.m_end)
+        {
+            inOneOfHeap = true;
+            break;
+        }
+    }
+    PHANTOM_ASSERT(inOneOfHeap);
+    FriendHeap& fh = (FriendHeap&)m_Heaps.back();
+    if (fh.m_begin <= _ptr && _ptr < fh.m_end)
+        m_Heaps.back().deallocate(_ptr);
 }
 
 void ForwardHeapSequence::reset()

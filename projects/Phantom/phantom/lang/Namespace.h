@@ -37,7 +37,7 @@ public:
     Namespace(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     Namespace(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-	void initialize();
+    void initialize();
 
     Scope*     asScope() const override { return (Namespace*)this; }
     Namespace* asNamespace() const override { return (Namespace*)this; }
@@ -88,18 +88,18 @@ public:
     /// \return null if it fails, else the found or create namespace cascade.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
+    Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// \brief  Searches for a namespace recursively or create it if not found.
-	///
-	/// \param  a_strNamespaceName  Name of the namespace.
-	/// \param  separatorPattern    (optional) a pattern specifying the separator.
-	///
-	/// \return null if it fails, else the found or create namespace cascade.
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Searches for a namespace recursively or create it if not found.
+    ///
+    /// \param  a_strNamespaceName  Name of the namespace.
+    /// \param  separatorPattern    (optional) a pattern specifying the separator.
+    ///
+    /// \return null if it fails, else the found or create namespace cascade.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Namespace* newNamespace(StringView a_strNamespace);
+    Namespace* newNamespace(StringView a_strNamespace);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a namespace alias to this namespace.
@@ -210,12 +210,16 @@ private:
     Namespace* getOrCreateNamespace(Strings*);
     void       onNamespaceChanging(Namespace*) override final;
     void       onNamespaceChanged(Namespace*) override final;
-	void       _registerSymbol(Symbol* a_pSym) { PHANTOM_ASSERT(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym) == m_Symbols.rend()); m_Symbols.push_back(a_pSym); }
-    void       _unregisterSymbol(Symbol* a_pSym)
+    void       _registerSymbol(Symbol* a_pSym)
     {
-		auto rfound = std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym);
-		PHANTOM_ASSERT(rfound != m_Symbols.rend());
-        m_Symbols.erase_unsorted(std::next(rfound).base());
+        PHANTOM_ASSERT(std::find(m_Symbols.begin(), m_Symbols.end(), a_pSym) == m_Symbols.end());
+        m_Symbols.push_back(a_pSym);
+    }
+    void _unregisterSymbol(Symbol* a_pSym)
+    {
+        auto found = std::next(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym)).base();
+        PHANTOM_ASSERT(found != m_Symbols.end());
+        m_Symbols.erase_unsorted(found);
     }
 
 private:

@@ -22,16 +22,17 @@ namespace phantom
 {
 namespace detail
 {
-extern RawPlacement<lang::Namespace> g_pGlobalNamespace;
 }
 
 namespace lang
 {
+extern lang::Namespace* g_pGlobalNamespace;
+
 PHANTOM_DEFINE_META_CLASS(Namespace);
 
 Namespace* Namespace::Global()
 {
-    return phantom::detail::g_pGlobalNamespace;
+    return g_pGlobalNamespace;
 }
 
 Namespace::Namespace(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
@@ -50,6 +51,8 @@ void Namespace::initialize()
 {
     Symbol::initialize();
     Scope::initialize();
+    // namespaces are public by default
+    setVisibility(Visibility::Public);
 }
 
 void Namespace::onScopeSymbolAdded(Symbol* a_pSym)
@@ -112,6 +115,7 @@ Namespace* Namespace::getOrCreateNamespace(StringView a_strNamespaceName, const 
 Namespace* Namespace::newNamespace(StringView a_strName)
 {
     Namespace* pNS = phantom::new_<Namespace>(a_strName);
+    pNS->m_pSource = m_pSource;
     pNS->rtti.instance = pNS;
     if (dynamic_initializer_()->installed())
     {
@@ -184,11 +188,7 @@ Namespace* Namespace::getRootNamespace() const
 
 Alias* Namespace::addNamespaceAlias(StringView a_strAlias, Namespace* a_pNamespace)
 {
-#if defined(PHANTOM_STATIC_LIB_HANDLE)
-    Alias* pAlias = Application::Get()->getDefaultSource()->NewDeferred<Alias>(a_pNamespace, a_strAlias);
-#else
-    Alias* pAlias = Application::Get()->getDefaultSource()->NewDeferred<Alias>(a_pNamespace, a_strAlias);
-#endif
+    Alias* pAlias = Application::Get()->getDefaultSource()->addAlias(a_pNamespace, a_strAlias);
     addAlias(pAlias);
     m_NamespaceAliases.push_back(pAlias);
     return pAlias;

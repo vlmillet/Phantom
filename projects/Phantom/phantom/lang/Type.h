@@ -1511,6 +1511,8 @@ protected:
         m_uiSize = a_uiSize;
         m_uiAlignment = a_uiAlign;
     }
+    void onVisibilityChanging(Visibility a_eVis) override;
+    void onVisibilityChanged(Visibility a_eVis) override;
 
 private:
     Types&             _extTypes() const;

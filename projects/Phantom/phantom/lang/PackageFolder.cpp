@@ -32,7 +32,13 @@ PackageFolder* PackageFolder::newPackageFolder(String a_strName)
     PackageFolder* pPF = phantom::new_<PackageFolder>(a_strName);
     pPF->rtti.instance = pPF;
     pPF->setOwner(this);
-    phantom::detail::deferInstallation("phantom::lang::PackageFolder", &pPF->rtti);
+    if (!dynamic_initializer_()->installed())
+        phantom::detail::deferInstallation("phantom::lang::PackageFolder", &pPF->rtti);
+    else
+    {
+        pPF->rtti.metaClass = PHANTOM_CLASSOF(PackageFolder);
+        pPF->rtti.metaClass->registerInstance(pPF);
+    }
     pPF->initialize();
     m_PackageFolders.push_back(pPF);
     return pPF;

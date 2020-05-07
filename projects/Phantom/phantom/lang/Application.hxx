@@ -75,6 +75,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void()>()
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_>("terminate", &_::terminate)
             .method<Source*() const>("getDefaultSource", &_::getDefaultSource)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(CppExpressionParser)>("setCppExpressionParser", &_::setCppExpressionParser)
@@ -82,16 +84,24 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<CppExpressionParser()>("getCppExpressionParser", &_::getCppExpressionParser)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(StringView, LanguageElement*) const>("cppExpression", &_::cppExpression)
-            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
+            .method<bool(StringView, Symbols&, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
             .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
+            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
             .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppType", &_::findCppType)["nullptr"]
             .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)["nullptr"]
             .method<Template*(StringView, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)["nullptr"]
             .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClass", &_::findCppClass)["nullptr"]
             .method<Symbol*(StringView, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
-            .method<bool(StringView, Symbols&, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
             .method<Type*(StringView, StringBuffer*)>("findCppType", &_::findCppType)["nullptr"]
             .method<Class*(StringView, StringBuffer*)>("findCppClass", &_::findCppClass)["nullptr"]
+            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)["nullptr"]
+            .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)["nullptr"]
+            .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)["nullptr"]
+            .method<Template*(StringView, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)["nullptr"]
+            .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)["nullptr"]
+            .method<Symbol*(StringView, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)["nullptr"]
+            .method<Type*(StringView, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)["nullptr"]
+            .method<Class*(StringView, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)["nullptr"]
             .method<Module*() const>("getMainModule", &_::getMainModule)
             .method<Module*(StringView)>("getOrCreateModule", &_::getOrCreateModule)
             .method<Modules() const>("getNativeModules", &_::getNativeModules)

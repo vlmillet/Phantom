@@ -53,12 +53,12 @@ class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement
     friend class phantom::lang::Namespace;
 
 public:
-	static bool IsCppIdentifier(StringView a_Name);
-	static hash64  ComputeHash(const char* a_Str, size_t a_Len);
-	static void    CombineHash(hash64& a_rSeed, hash64 a_Value)
-	{
-		a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
-	}
+    static bool   IsCppIdentifier(StringView a_Name);
+    static hash64 ComputeHash(const char* a_Str, size_t a_Len);
+    static void   CombineHash(hash64& a_rSeed, hash64 a_Value)
+    {
+        a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
+    }
 
 public:
     Symbol(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
@@ -445,8 +445,8 @@ public:
     void getUniqueName(StringBuffer& a_Buf) const override;
 
 protected:
-	void setName(StringView a_strName);
-	PHANTOM_FORCEINLINE void setImportable(bool a_bValue)
+    void                     setName(StringView a_strName);
+    PHANTOM_FORCEINLINE void setImportable(bool a_bValue)
     {
         if (a_bValue)
             m_uiFlags |= PHANTOM_R_FLAG_IMPORTABLE;
@@ -460,6 +460,8 @@ protected:
 
     virtual void onNamespaceChanging(Namespace*) {}
     virtual void onNamespaceChanged(Namespace*) {}
+    virtual void onVisibilityChanging(Visibility) {}
+    virtual void onVisibilityChanged(Visibility) {}
 
 private:
     String     m_strName;

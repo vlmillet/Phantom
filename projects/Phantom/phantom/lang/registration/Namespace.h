@@ -86,10 +86,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         auto pFunc =
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
         _PHNTM_pSource, a_Name, lang::SignatureH<Sign>::Create(_PHNTM_pSource), a_Ptr);
-        _PHNTM_pNamespace->addFunction(pFunc);
-        _PHNTM_pSource->addFunction(pFunc);
-        m_Symbols.push_back(pFunc);
-        _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pFunc);
+        _addFunction(pFunc);
         return *this;
     }
 
@@ -100,10 +97,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
                                  "missing #include <phantom/constant>");
         auto pConst =
         _PHNTM_pSource->NewMeta<lang::ConstantT<ConstantT>>(a_Name, a_Val, lang::Modifier::None, PHANTOM_R_FLAG_NATIVE);
-        _PHNTM_pNamespace->addConstant(pConst);
-        _PHNTM_pSource->addConstant(pConst);
-        _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pConst);
-        m_Symbols.push_back(pConst);
+        _addConstant(pConst);
         return *this;
     }
 
@@ -112,10 +106,7 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
     {
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<lang::VariableT<T>>::value, "missing #include <phantom/variable>");
         auto pVar = _PHNTM_pSource->NewMeta<lang::VariableT<T>>(a_Name, a_pVar);
-        _PHNTM_pNamespace->addVariable(pVar);
-        _PHNTM_pSource->addVariable(pVar);
-        _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pVar);
-        m_Symbols.push_back(pVar);
+        _addVariable(pVar);
         return *this;
     }
     template<class T>
@@ -172,6 +163,9 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
 private:
     void _PHNTM_setLastSymbol(lang::Symbol* a_pSymbol) { _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pSymbol); }
     NamespaceBuilder& _PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType);
+    void              _addFunction(Function* a_pFunc);
+    void              _addConstant(Constant* a_pConst);
+    void              _addVariable(Variable* a_pVar);
 
 private:
     lang::Namespace*                 _PHNTM_pNamespace;

@@ -56,6 +56,7 @@ Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFla
 
 void Symbol::terminate()
 {
+    setVisibility(Visibility::Private);
     setNamespace(nullptr);
     if (m_pMetaDatas)
         delete_<MetaDatas>(m_pMetaDatas);
@@ -271,13 +272,58 @@ void Symbol::setVisibility(Visibility a_eVis)
     if (m_eVisibility == a_eVis)
         return;
 
+    if (Application::Get() == this)
+        return;
+
+    if (!getSource())
+    {
+        m_eVisibility = a_eVis;
+        return;
+    }
+
+    onVisibilityChanging(m_eVisibility);
     if (m_eVisibility == Visibility::Public)
-        if (m_pNamespace)
+    {
+        if (m_pNamespace && getSource() && getSource()->getVisibility() == Visibility::Public)
+        {
             m_pNamespace->_unregisterSymbol(this);
+        }
+        else if (getSource() == this) // this is a source
+        {
+            for (auto p : getElements())
+            {
+                if (Symbol* pSymbol = p->asSymbol())
+                {
+                    pSymbol->onVisibilityChanging(pSymbol->getVisibility());
+                    if (pSymbol->getVisibility() == Visibility::Public)
+                        if (pSymbol->m_pNamespace)
+                            pSymbol->m_pNamespace->_unregisterSymbol(pSymbol);
+                }
+            }
+        }
+    }
     m_eVisibility = a_eVis;
     if (m_eVisibility == Visibility::Public)
-        if (m_pNamespace)
+    {
+        if (m_pNamespace && getSource() && getSource()->getVisibility() == Visibility::Public)
+        {
             m_pNamespace->_registerSymbol(this);
+        }
+        else if (getSource() == this) // this is a source
+        {
+            for (auto p : getElements())
+            {
+                if (Symbol* pSymbol = p->asSymbol())
+                {
+                    if (pSymbol->getVisibility() == Visibility::Public)
+                        if (pSymbol->m_pNamespace)
+                            m_pNamespace->_registerSymbol(pSymbol);
+                    pSymbol->onVisibilityChanged(pSymbol->getVisibility());
+                }
+            }
+        }
+    }
+    onVisibilityChanged(m_eVisibility);
 }
 
 void Symbol::setModifiers(Modifiers a_Modifiers)
@@ -349,9 +395,11 @@ void Symbol::setNamespace(Namespace* a_pNS)
     if (m_pNamespace == a_pNS)
         return;
     Source* pSource = getSource();
+    PHANTOM_ASSERT(asNamespace() || pSource == getOwner(),
+                   "only namespaces or source level symbols can be added to namespaces");
     if (m_pNamespace)
     {
-        onNamespaceChanging(a_pNS);
+        onNamespaceChanging(m_pNamespace);
         if (getVisibility() == Visibility::Public && pSource && pSource->getVisibility() == Visibility::Public)
         {
             m_pNamespace->_unregisterSymbol(this);
@@ -364,7 +412,7 @@ void Symbol::setNamespace(Namespace* a_pNS)
         {
             m_pNamespace->_registerSymbol(this);
         }
-        onNamespaceChanged(a_pNS);
+        onNamespaceChanged(m_pNamespace);
     }
 }
 

@@ -78,6 +78,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<Symbol*(Symbol*, bool)>("NoFilter", &_::NoFilter)
             .staticMethod<Symbol*(Symbol*, bool)>("PublicFilter", &_::PublicFilter)
             .staticMethod<Symbol*(Symbol*, bool)>("PublicIfUnamedSubSymbolFilter", &_::PublicIfUnamedSubSymbolFilter)
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
         
         .public_()
             .struct_<NewCallSite>()

@@ -42,6 +42,9 @@ protected:
         Check();
         PHANTOM_IF_UNLIKELY(m_state == MemoryState::ValidBreakOnDestruction) Break();
         m_state = MemoryState::Destructed;
+#    if PHANTOM_CONSISTENCY_CHECK_ENABLED
+        Trace();
+#    endif
     }
 
     inline void Check() const
@@ -55,11 +58,13 @@ protected:
     }
     void Error() const; // Called when data is invalid
     void Break() const; // Called when destructed and user called RequestBreakOnDestruction() earlier
+    void Trace() const;
 #else
     inline void Check() const {}
     void        RequestBreakOnDestruction() const {}
     void        Error() const {} // Called when data is invalid
     void        Break() const {} // Called when destructed and user called RequestBreakOnDestruction() earlier
+    void        Trace() const {}
 #endif
 };
 } // namespace phantom

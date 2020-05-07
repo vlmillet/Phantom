@@ -79,13 +79,13 @@ void LanguageElement::terminate()
     }
     PHANTOM_CONSISTENCY_CHECK_ASSERT((m_uiFlags & PHANTOM_R_INTERNAL_FLAG_TERMINATED) == 0);
     m_uiFlags |= PHANTOM_R_INTERNAL_FLAG_TERMINATED;
-    setOwner(nullptr);
     size_t i = m_Elements.size();
     while (i--)
     {
         m_Elements[i]->rtti.metaClass->unregisterInstance(m_Elements[i]->rtti.instance);
         m_Elements[i]->_terminate();
     }
+    setOwner(nullptr);
 }
 
 void LanguageElement::fetchElements(LanguageElements& out, Class* a_pClass /*= nullptr*/) const

@@ -58,6 +58,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView)>()
+            .method<void(), virtual_>("terminate", &_::terminate)
             .method<Package*() const, virtual_|override_>("asPackage", &_::asPackage)
             .method<Module*() const>("getModule", &_::getModule)
             .method<PackageFolder*() const>("getPackageFolder", &_::getPackageFolder)
@@ -80,12 +81,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .field("sourceAdded", &_::sourceAdded)
             .field("sourceAboutToBeRemoved", &_::sourceAboutToBeRemoved)
-        
-        .protected_()
-            .field("m_pNamespace", &_::m_pNamespace)
-            .field("m_pFolder", &_::m_pFolder)
-            .field("m_Sources", &_::m_Sources)
-            .field("m_ArchivedSources", &_::m_ArchivedSources)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

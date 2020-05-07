@@ -182,11 +182,7 @@ typedef SmallMap<String, lang::Package*> PackageMap;
 
 typedef SmallVector<void*, 4096> ToFree;
 
-RawPlacement<lang::Namespace>        g_pGlobalNamespace;
-static RawPlacement<lang::Namespace> g_pPhantomNamespace;
-static RawPlacement<lang::Namespace> g_pStdNamespace;
-static RawPlacement<lang::Namespace> g_pLangNamespace;
-static RawPlacement<Strings>         g_pMetaDataNames;
+static RawPlacement<Strings> g_pMetaDataNames;
 
 static std::thread::id g_MainThreadId = std::this_thread::get_id();
 
@@ -204,28 +200,8 @@ PHANTOM_EXPORT_PHANTOM lang::Symbol* symbolRegisteredAt(size_t a_ModuleHandle, S
 
 void DynamicCppInitializerH::StaticGlobalsInit()
 {
-    g_pGlobalNamespace.construct("");
-    g_pGlobalNamespace->setVisibility(lang::Visibility::Public);
     g_pApplication.construct();
-    g_pStdNamespace.construct("std");
-    g_pPhantomNamespace.construct("phantom");
-    g_pLangNamespace.construct("lang");
 
-    g_pStdNamespace->setNamespace(g_pGlobalNamespace);
-    g_pPhantomNamespace->setNamespace(g_pGlobalNamespace);
-    g_pLangNamespace->setNamespace(g_pPhantomNamespace);
-    g_pGlobalNamespace->rtti.instance = &*g_pGlobalNamespace;
-    detail::deferInstallation("phantom::lang::Namespace", &g_pGlobalNamespace->rtti);
-    g_pGlobalNamespace->initialize();
-    g_pStdNamespace->rtti.instance = &*g_pStdNamespace;
-    detail::deferInstallation("phantom::lang::Namespace", &g_pStdNamespace->rtti);
-    g_pStdNamespace->initialize();
-    g_pPhantomNamespace->rtti.instance = &*g_pPhantomNamespace;
-    detail::deferInstallation("phantom::lang::Namespace", &g_pPhantomNamespace->rtti);
-    g_pPhantomNamespace->initialize();
-    g_pLangNamespace->rtti.instance = &*g_pLangNamespace;
-    detail::deferInstallation("phantom::lang::Namespace", &g_pLangNamespace->rtti);
-    g_pLangNamespace->initialize();
     g_pApplication->rtti.instance = &*g_pApplication;
     detail::deferInstallation("phantom::lang::Application", &g_pApplication->rtti);
     g_pApplication->initialize();
@@ -237,27 +213,9 @@ void DynamicCppInitializerH::StaticGlobalsRelease()
 {
     lang::releaseSystem();
 
-    g_pStdNamespace->setNamespace(nullptr);
-    g_pPhantomNamespace->setNamespace(nullptr);
-    g_pLangNamespace->setNamespace(nullptr);
-
-    auto pClass = PHANTOM_CLASSOF(lang::Namespace);
-    pClass->unregisterInstance(&*g_pLangNamespace);
-    pClass->unregisterInstance(&*g_pStdNamespace);
-    pClass->unregisterInstance(&*g_pPhantomNamespace);
-    pClass->unregisterInstance(&*g_pGlobalNamespace);
     PHANTOM_CLASSOF(lang::Application)->unregisterInstance(g_pApplication);
 
-    g_pLangNamespace->_terminate();
-    g_pStdNamespace->_terminate();
-    g_pPhantomNamespace->_terminate();
-    g_pGlobalNamespace->_terminate();
     g_pApplication->_terminate();
-
-    g_pLangNamespace.destroy();
-    g_pStdNamespace.destroy();
-    g_pPhantomNamespace.destroy();
-    g_pGlobalNamespace.destroy();
     g_pApplication.destroy();
 }
 

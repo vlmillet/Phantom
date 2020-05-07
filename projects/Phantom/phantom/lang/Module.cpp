@@ -41,12 +41,6 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
       m_DeclarationCppFullName(a_DeclarationCppFullName),
       m_Allocator(isNative() ? 65536 : 1024)
 {
-    Package* pDefaultPackage = newPackage(a_strName);
-    if (isNative())
-        pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
-    m_pAnonymousSource = pDefaultPackage->getOrCreateSource("default");
-    if (isNative())
-        m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
 }
 
 Module::Module(StringView a_strName, uint a_uiFlags /*= 0*/)
@@ -66,6 +60,17 @@ Module::~Module()
     {
         StaticGlobals::Release(m_pBaseAddress, reinterpret_cast<uint8_t*>(m_pBaseAddress) + m_ImageSize);
     }
+}
+
+void Module::initialize()
+{
+    Symbol::initialize();
+    Package* pDefaultPackage = newPackage(getName());
+    if (isNative())
+        pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
+    m_pAnonymousSource = pDefaultPackage->getOrCreateSource("default");
+    if (isNative())
+        m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
 }
 
 bool Module::canBeUnloaded() const

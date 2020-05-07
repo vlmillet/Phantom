@@ -83,6 +83,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
         
         .public_()
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<int() const, virtual_|override_>("destructionPriority", &_::destructionPriority)
         
         .public_()
@@ -177,6 +178,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_>("formatAnonymousName", &_::formatAnonymousName)
             .method<void(Namespace*), virtual_>("onNamespaceChanging", &_::onNamespaceChanging)
             .method<void(Namespace*), virtual_>("onNamespaceChanged", &_::onNamespaceChanged)
+            .method<void(Visibility), virtual_>("onVisibilityChanging", &_::onVisibilityChanging)
+            .method<void(Visibility), virtual_>("onVisibilityChanged", &_::onVisibilityChanged)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

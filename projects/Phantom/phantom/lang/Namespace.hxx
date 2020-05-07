@@ -62,6 +62,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<Namespace*() const, virtual_|override_>("asNamespace", &_::asNamespace)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)

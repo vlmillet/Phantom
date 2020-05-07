@@ -46,14 +46,9 @@ bool Package::IsValidName(StringView a_strName)
     return true;
 }
 
-Package::Package(StringView a_strName)
-    : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL), m_pNamespace(nullptr)
+Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_VALID | PHANTOM_R_INTERNAL_FLAG_SPECIAL)
 {
     PHANTOM_ASSERT(IsValidName(a_strName));
-    String namespaceName = getName();
-    StringUtil::ReplaceAll(namespaceName, ".", "::");
-    m_pNamespace = Namespace::Global()->getOrCreateNamespace(namespaceName);
-    PHANTOM_ASSERT(m_pNamespace);
     Strings folders;
     StringUtil::Split(folders, a_strName, ".");
     m_pFolder = Application::Get()->rootPackageFolder();
@@ -71,7 +66,6 @@ Package::Package(StringView a_strName)
     }
     m_pFolder->_addPackage(this);
     addReferencedElement(m_pFolder);
-    addReferencedElement(m_pNamespace);
 }
 
 Package::~Package() {}
@@ -162,6 +156,19 @@ void Package::deleteSource(Source* a_pSource)
     PHANTOM_CLASSOF(Source)->unregisterInstance(a_pSource);
     a_pSource->_terminate();
     phantom::delete_<Source>(a_pSource);
+}
+
+Namespace* Package::getCounterpartNamespace() const
+{
+    if (m_pCPNamespace == nullptr)
+    {
+        String namespaceName = getName();
+        StringUtil::ReplaceAll(namespaceName, ".", "::");
+        m_pCPNamespace = Namespace::Global()->getOrCreateNamespace(namespaceName);
+        PHANTOM_ASSERT(m_pCPNamespace);
+        const_cast<Package*>(this)->addReferencedElement(m_pCPNamespace);
+    }
+    return m_pCPNamespace;
 }
 
 void Package::addSource(Source* a_pSource)

@@ -42,7 +42,8 @@ public:
            StringView a_DeclarationCppFullName, uint a_uiFlags = 0);
     ~Module() override;
 
-    void terminate();
+    void initialize();
+    void terminate() override;
 
     template<typename T>
     struct DeleteMetaH

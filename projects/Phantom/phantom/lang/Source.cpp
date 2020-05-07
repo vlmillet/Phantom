@@ -69,7 +69,6 @@ void Source::initialize()
 
 void Source::terminate()
 {
-    setVisibility(Visibility::Private);
     size_t i = m_CreatedElements.size();
     // -- first invoke terminate to cleanup inter-dependencies
     while (i--)
@@ -166,13 +165,10 @@ void Source::getQualifiedName(StringBuffer&) const
 void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 {
     a_pSymbol->setOwner(this);
-    if (getVisibility() == Visibility::Public) // not an archive
+    a_pSymbol->setVisibility(Visibility::Public);
+    if (a_pSymbol->getNamespace() == nullptr)
     {
-        a_pSymbol->setVisibility(Visibility::Public);
-        if (a_pSymbol->getNamespace() == nullptr)
-        {
-            a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
-        }
+        a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
     }
     if (a_pSymbol->isNative())
     {
@@ -199,11 +195,7 @@ void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 
 void Source::onScopeSymbolRemoving(Symbol* a_pSymbol)
 {
-    if (getVisibility() == Visibility::Public) // not an archive
-    {
-        a_pSymbol->setVisibility(Visibility::Private);
-        a_pSymbol->getNamespace()->_unregisterSymbol(a_pSymbol);
-    }
+    a_pSymbol->setVisibility(Visibility::Private);
     a_pSymbol->setOwner(nullptr);
 }
 

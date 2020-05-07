@@ -65,6 +65,8 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .constructor<void(StringView, uint)>()["0"]
             .constructor<void(size_t, size_t, StringView, StringView, StringView, uint)>()["0"]
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<Module*() const, virtual_|override_>("asModule", &_::asModule)
             .method<bool() const>("isPlugin", &_::isPlugin)
             .method<Plugin*() const>("getPlugin", &_::getPlugin)

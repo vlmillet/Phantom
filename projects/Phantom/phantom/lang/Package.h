@@ -110,7 +110,7 @@ public:
     /// \return The counterpart namespace of this package.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Namespace* getCounterpartNamespace() const { return m_pNamespace; }
+    Namespace* getCounterpartNamespace() const;
 
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getQualifiedName(a_Buf); }
 
@@ -167,11 +167,11 @@ private: // to ensure they won't be accessible
     using LanguageElement::new_;
     using LanguageElement::delete_;
 
-protected:
-    Namespace*     m_pNamespace;
-    PackageFolder* m_pFolder;
-    Sources        m_Sources;
-    Sources        m_ArchivedSources;
+private:
+    mutable Namespace* m_pCPNamespace{};
+    PackageFolder*     m_pFolder{};
+    Sources            m_Sources;
+    Sources            m_ArchivedSources;
 };
 
 } // namespace lang

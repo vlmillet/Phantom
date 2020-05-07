@@ -25,6 +25,7 @@
 #include <phantom/lang/TemplateParameter.h>
 #include <phantom/lang/TemplateSignature.h>
 #include <phantom/lang/TemplateSpecialization.h>
+#include <phantom/lang/Variable.h>
 #include <phantom/utils/StringUtil.h>
 
 namespace phantom
@@ -105,9 +106,9 @@ TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope,
         a_pType->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     else
     {
+        a_pSource->addType(a_pType);
         if (a_pNamingScope != a_pSource)
             a_pNamingScope->addType(a_pType);
-        a_pSource->addType(a_pType);
     }
 }
 TypeBuilderBase::TypeBuilderBase(lang::Scope* a_pOwner, Scope* a_pNamingScope, Type* a_pType,
@@ -120,9 +121,9 @@ TypeBuilderBase::TypeBuilderBase(lang::Scope* a_pOwner, Scope* a_pNamingScope, T
         a_pType->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     else
     {
+        a_pOwner->addType(a_pType);
         if (a_pNamingScope != a_pOwner)
             a_pNamingScope->addType(a_pType);
-        a_pOwner->addType(a_pType);
     }
 }
 
@@ -213,7 +214,7 @@ Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Scope* a
     {
         if (pTemplate->getName() == name)
         {
-			PHANTOM_ASSERT(pTemplate->isNative());
+            PHANTOM_ASSERT(pTemplate->isNative());
             return pTemplate;
         }
     }
@@ -292,7 +293,7 @@ NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
     for (auto pSymbol : symbols)
     {
         auto pAlias = _PHNTM_pSource->addAlias(pSymbol, pSymbol->getName(), Modifier::None, PHANTOM_R_FLAG_NATIVE);
-		pAlias->setNamespace(_PHNTM_pNamespace);
+        pAlias->setNamespace(_PHNTM_pNamespace);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
     }
     return *this;
@@ -313,14 +314,38 @@ Source* NamespaceBuilder::_PHNTM_getSource()
     return _PHNTM_pSource;
 }
 
+void NamespaceBuilder::_addFunction(Function* a_pFunc)
+{
+    _PHNTM_pSource->addFunction(a_pFunc);
+    _PHNTM_pNamespace->addFunction(a_pFunc);
+    _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pFunc);
+    m_Symbols.push_back(a_pFunc);
+}
+
+void NamespaceBuilder::_addConstant(Constant* a_pConst)
+{
+    _PHNTM_pSource->addConstant(a_pConst);
+    _PHNTM_pNamespace->addConstant(a_pConst);
+    _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pConst);
+    m_Symbols.push_back(a_pConst);
+}
+
+void NamespaceBuilder::_addVariable(Variable* a_pVar)
+{
+    _PHNTM_pSource->addVariable(a_pVar);
+    _PHNTM_pNamespace->addVariable(a_pVar);
+    _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pVar);
+    m_Symbols.push_back(a_pVar);
+}
+
 NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType)
 {
     static StaticGlobal<SmallMap<uint64, Aliases, 16>> MultiLevelTypedefs;
 
     if (a_pType)
     {
-		auto pAlias = _PHNTM_pSource->addAlias(a_pType, a_Name);
-		pAlias->setNamespace(_PHNTM_pNamespace);
+        auto pAlias = _PHNTM_pSource->addAlias(a_pType, a_Name);
+        pAlias->setNamespace(_PHNTM_pNamespace);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         auto foundDeferred = MultiLevelTypedefs->find(a_Hash);
@@ -334,10 +359,9 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     }
     else
     {
-		auto pAlias = _PHNTM_pSource->addAlias(phantom::lang::BuiltInTypes::TYPE_INT,
-			a_Name);
-		pAlias->setNamespace(_PHNTM_pNamespace);
-		pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
+        auto pAlias = _PHNTM_pSource->addAlias(phantom::lang::BuiltInTypes::TYPE_INT, a_Name);
+        pAlias->setNamespace(_PHNTM_pNamespace);
+        pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         (*MultiLevelTypedefs)[a_Hash].push_back(pAlias);
     }
@@ -491,16 +515,17 @@ void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
         lang::Template* pTemplate =
         Template::Parse(pSource, m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
         // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
-        pNamingScope->asScope()->addTemplate(pTemplate);
         if (pTemplate->getOwner() == nullptr)
         {
             /// At source scope
             pSource->addTemplate(pTemplate);
+            pNamingScope->asScope()->addTemplate(pTemplate);
             detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source)
             ->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }
         else
         {
+            pNamingScope->asScope()->addTemplate(pTemplate);
             /// At class type scope
             pTemplate->getOwner()->asScope()->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }

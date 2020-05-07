@@ -613,31 +613,39 @@ Type* Type::makePointer(size_t a_uiPointerLevel) const
     return makePointer()->makePointer(a_uiPointerLevel - 1);
 }
 
+void Type::onVisibilityChanging(Visibility a_eVis)
+{
+    if (!isNative() && a_eVis == Visibility::Public && getNamespace() && !isTemplateDependant() &&
+        getSource()->getVisibility() != Visibility::Private)
+    {
+        getModule()->_unregisterType(getHash(), this);
+    }
+}
+
+void Type::onVisibilityChanged(Visibility a_eVis)
+{
+    if (!isNative() && a_eVis == Visibility::Public && getNamespace() && !isTemplateDependant() &&
+        getSource()->getVisibility() != Visibility::Private)
+    {
+        getModule()->_registerType(getHash(), this);
+    }
+}
+
 void Type::onNamespaceChanging(Namespace* /*a_pNamespace*/)
 {
-    if (!isNative())
+    if (!isNative() && getVisibility() == Visibility::Public && getNamespace() && !isTemplateDependant() &&
+        getSource()->getVisibility() != Visibility::Private)
     {
-        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
-             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-            ((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
-            !(getSource()->getVisibility() == Visibility::Private) && getModule())
-        {
-            getModule()->_unregisterType(getHash(), this);
-        }
+        getModule()->_registerType(getHash(), this);
     }
 }
 
 void Type::onNamespaceChanged(Namespace* /*a_pNamespace*/)
 {
-    if (!isNative())
+    if (!isNative() && getVisibility() == Visibility::Public && getNamespace() && !isTemplateDependant() &&
+        getSource()->getVisibility() != Visibility::Private)
     {
-        if ((getTypeKind() == TypeKind::Class || getTypeKind() == TypeKind::Union ||
-             getTypeKind() == TypeKind::Structure || getTypeKind() == TypeKind::Enum) &&
-            ((getModifiers() & (PHANTOM_R_CONST | PHANTOM_R_VOLATILE)) == 0) && !isTemplateDependant() &&
-            !(getSource()->getVisibility() == Visibility::Private))
-        {
-            getModule()->_registerType(getHash(), this);
-        }
+        getModule()->_registerType(getHash(), this);
     }
 }
 

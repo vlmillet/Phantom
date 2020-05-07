@@ -61,6 +61,8 @@ extern RawPlacement<lang::Application> g_pApplication;
 }
 namespace lang
 {
+lang::Namespace* g_pGlobalNamespace;
+
 PHANTOM_DEFINE_META_CLASS(Source);
 
 String Application_normalizePathString(StringView a_strPath)
@@ -122,16 +124,20 @@ void Application::_createNativeModule(ModuleRegistrationInfo* info)
         else
             phantom::detail::deferInstallation("phantom::lang::Module", &pModule->rtti);
         pModule->initialize();
+        if (m_Modules.empty()) // first module ever is the phantom's one
+        {
+            m_pDefaultSource = pModule->getOrCreatePackage("default")->getOrCreateSource("default");
+            g_pGlobalNamespace = m_pDefaultSource->NewDeferred<Namespace>("");
+            g_pGlobalNamespace->getOrCreateNamespace("phantom")->getOrCreateNamespace("lang");
+            g_pGlobalNamespace->getOrCreateNamespace("std");
+            PHANTOM_ASSERT(g_pGlobalNamespace == Namespace::Global());
+        }
         info->setModule(pModule);
         PHANTOM_ASSERT(m_OperationCounter,
                        "DLL loader must be responsible for loading phantom modules, don't use "
                        "platform specific function to load them such as LoadLibrary/FreeLibrary, "
                        "use Application::loadLibrary/unloadlibrary");
 
-        if (m_Modules.empty()) // first module ever is the phantom's one
-        {
-            m_pDefaultSource = pModule->getOrCreatePackage("default")->getOrCreateSource("default");
-        }
         _addModule(pModule);
         pModule->setOnLoadFunc(info->m_OnLoad);
         pModule->setOnUnloadFunc(info->m_OnUnload);
@@ -647,7 +653,7 @@ void Application::_registerBuiltInTypes()
     Module* pPhantomModule = m_Modules.front();
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
     Alias* pUnsignedAlias =
-    m_pDefaultSource->NewDeferred<Alias>(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
+    m_pDefaultSource->addAlias(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     pUnsignedAlias->setNamespace(Namespace::Global());
 
     Namespace* pGlobal = Namespace::Global();

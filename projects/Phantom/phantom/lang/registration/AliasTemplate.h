@@ -45,8 +45,8 @@ void SolveAliasTemplate(Source* a_pSource, RegistrationStep a_Step, Template*& a
 
         a_rpTemplate = a_pSource->New<Template>(pTS, a_Name, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
 
-        a_Builder._PHNTM_getMeta()->addTemplate(a_rpTemplate);
         a_Builder._PHNTM_getSource()->addTemplate(a_rpTemplate);
+        a_Builder._PHNTM_getMeta()->addTemplate(a_rpTemplate);
         a_Builder._PHNTM_getSource()->addTemplateSpecialization(a_rpTemplate->getEmptyTemplateSpecialization());
     }
     else // PostTypes

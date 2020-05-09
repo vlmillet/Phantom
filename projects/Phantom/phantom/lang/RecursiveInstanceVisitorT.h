@@ -1093,7 +1093,9 @@ public:
 
     bool _traverseValueMember(MemberAccessT<ValueMember> a_Input)
     {
-        Type*  pValueType = a_Input.getMemberMeta()->getValueType();
+        Type* pValueType = a_Input.getMemberMeta()->getValueType();
+        if (!a_Input.getMemberMeta()->isReadable() || !a_Input.getMemberMeta()->isWrittable())
+            return true;
         size_t valueTypeSz = pValueType->getSize();
         void*  buffer = alloca(valueTypeSz);
         pValueType->construct(buffer);

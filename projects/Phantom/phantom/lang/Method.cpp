@@ -194,13 +194,13 @@ Type* Method::getImplicitObjectParameterType() const
 
 void Method::_onAttachingToClass(ClassType* a_pClass)
 {
-	// normalize conversion function name (only if native)
-	if (isNative())
-	{
-		StringBuffer buffer;
-		conversionOperatorNameNormalizer(getName(), buffer, a_pClass);
-		setName(buffer);
-	}
+    // normalize conversion function name (only if native)
+    if (isNative())
+    {
+        StringBuffer buffer;
+        conversionOperatorNameNormalizer(getName(), buffer, a_pClass);
+        setName(buffer);
+    }
 }
 
 void Method::_onAttachedToClass(ClassType* a_pClass)
@@ -292,7 +292,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs) const
         newArgs[0] = &a_pObject;
         if (a_pArgs && argCount > 1)
         {
-            memcpy(&newArgs[0], a_pArgs, (argCount - 1) * sizeof(void*));
+            memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
         }
         apply(newArgs.data(), argCount);
     }
@@ -320,7 +320,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) con
         newArgs.resize(argCount);
         newArgs[0] = &a_pObject;
         if (a_pArgs && argCount > 1)
-            memcpy(&newArgs[0], a_pArgs, (argCount - 1) * sizeof(void*));
+            memcpy(&newArgs[1], a_pArgs, (argCount - 1) * sizeof(void*));
         apply(newArgs.data(), argCount, a_pReturnAddress);
     }
 }

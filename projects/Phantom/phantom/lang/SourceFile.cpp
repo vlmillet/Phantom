@@ -66,6 +66,11 @@ time_t SourceFile::getLastChangeTime() const
     return s.st_mtime;
 }
 
+bool SourceFile::exists() const
+{
+    return phantom::Path::Exists(getPath());
+}
+
 bool SourceFile::deleteFile()
 {
     return Path::Remove(getPath());

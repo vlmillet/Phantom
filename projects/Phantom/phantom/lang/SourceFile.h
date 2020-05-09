@@ -45,6 +45,8 @@ public:
 
     SourceFile* asFile() override { return this; }
 
+    bool exists() const;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Deletes the represented file.
     ///

@@ -39,6 +39,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<SourceFile*()>("asFile", &_::asFile)
+            .method<bool() const, pure_virtual>("exists", &_::exists)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<std::basic_istream<char>*(), pure_virtual>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files

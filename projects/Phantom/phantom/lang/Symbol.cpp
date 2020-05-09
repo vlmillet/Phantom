@@ -317,7 +317,7 @@ void Symbol::setVisibility(Visibility a_eVis)
                 {
                     if (pSymbol->getVisibility() == Visibility::Public)
                         if (pSymbol->m_pNamespace)
-                            m_pNamespace->_registerSymbol(pSymbol);
+                            pSymbol->m_pNamespace->_registerSymbol(pSymbol);
                     pSymbol->onVisibilityChanged(pSymbol->getVisibility());
                 }
             }

@@ -15,21 +15,26 @@ namespace phantom
 {
 namespace lang
 {
-struct EraseOrAssert
+template<class Container, class It, bool HasErase>
+struct _EraseOrAssert
 {
-    template<class Container, class It, class = std::enable_if_t<HasContainerErase<Container>::value, void>>
-    static void Erase(Container* a_pContainer, It* a_It)
+    static void Erase(Container* a_pContainer, It const* a_It)
     {
         // if you get compilation error here, this means your container value type don't use sfinae
         // to remove its operator= depending on its content you can specialize IsContainerErasable
         // to std::false_type to ensure compilation succeeds
         a_pContainer->erase(*a_It);
     }
-    template<class, class, class>
-    static void Erase(void*, void const*)
-    {
-        PHANTOM_ASSERT(false, "push_back not available");
-    }
+};
+template<class Container, class It>
+struct _EraseOrAssert<Container, It, false>
+{
+    static void Erase(Container* a_pContainer, It const* a_It) { PHANTOM_ASSERT(false, "push_back not available"); }
+};
+
+template<class Container, class It>
+struct EraseOrAssert : _EraseOrAssert<Container, It, HasContainerErase<Container>::value>
+{
 };
 
 template<typename t_Ty, typename Base = ContainerClass>
@@ -73,7 +78,14 @@ public:
         t_Ty* pContainer = static_cast<t_Ty*>(a_pContainer);
         auto  it = pContainer->begin();
         std::advance(it, a_uiIndex);
-        EraseOrAssert::Erase<t_Ty, ContainerValueType, ContainerIterator>(pContainer, &it);
+        EraseOrAssert<t_Ty, ContainerIterator>::Erase(pContainer, &it);
+    }
+
+    virtual void erase(void* a_pContainer, void const* a_pIt) const override
+    {
+        t_Ty*                    pContainer = static_cast<t_Ty*>(a_pContainer);
+        ContainerIterator const* pIt = reinterpret_cast<ContainerIterator const*>(a_pIt);
+        EraseOrAssert<t_Ty, ContainerIterator>::Erase(pContainer, pIt);
     }
 
     virtual void clear(void* a_pContainer) const override { static_cast<t_Ty*>(a_pContainer)->clear(); }

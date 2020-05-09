@@ -11,8 +11,7 @@
 namespace phantom
 {
 template<class Container,
-         class = decltype(
-         std::declval<Container>().erase(std::declval<PHANTOM_TYPENAME Container::iterator>()))>
+         class = decltype(std::declval<Container>().erase(std::declval<PHANTOM_TYPENAME Container::const_iterator>()))>
 std::true_type HasContainerEraseH(Container&&);
 
 template<class Container>
@@ -24,8 +23,7 @@ struct HasContainerErase : decltype(HasContainerEraseH<Container>(std::declval<C
 };
 
 template<class Container,
-         class = decltype(std::declval<Container>().push_back(
-         std::declval<PHANTOM_TYPENAME Container::value_type>()))>
+         class = decltype(std::declval<Container>().push_back(std::declval<PHANTOM_TYPENAME Container::value_type>()))>
 std::true_type HasContainerPushBackH(Container&&);
 
 template<class Container>

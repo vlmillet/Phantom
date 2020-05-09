@@ -52,3 +52,4 @@ phantom::byte=
 phantom::sreal=
 phantom::dreal=
 phantom::real=
+phantom::MessageType=

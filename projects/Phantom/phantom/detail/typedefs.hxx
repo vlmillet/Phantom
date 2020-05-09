@@ -1,5 +1,7 @@
 #pragma once
 
+// clang-format off
+
 // haunt {
 
 #include "typedefs.h"
@@ -167,3 +169,17 @@ PHANTOM_END("c.def");
 PHANTOM_SOURCE("c.args");
 PHANTOM_TYPEDEF(va_list);
 PHANTOM_END("c.args");
+
+#include <phantom/enum>
+
+namespace phantom
+{
+    PHANTOM_PACKAGE("phantom");
+    PHANTOM_SOURCE("MessageType");
+#if PHANTOM_NOT_TEMPLATE
+	PHANTOM_ENUM(MessageType)
+		(MessageType::Undefined, MessageType::Error, MessageType::Success, MessageType::Warning, MessageType::Information);
+#endif
+    PHANTOM_END("MessageType");
+    PHANTOM_END("phantom");
+} // namespace phantom

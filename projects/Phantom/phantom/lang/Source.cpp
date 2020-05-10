@@ -122,7 +122,6 @@ void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)
 {
     PHANTOM_CONSISTENCY_CHECK_ASSERT(std::find(m_CreatedElements.begin(), m_CreatedElements.end(), a_pElem) ==
                                      m_CreatedElements.end());
-
     m_CreatedElements.push_back(a_pElem);
     a_pElem->m_pSource = this;
     a_pElem->rtti.instance = a_pMD;
@@ -323,6 +322,15 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     {
         return false;
     }
+
+    Module* pThisMod = getModule();
+    Module* pImportMod = a_pSymbol->getModule();
+    if (pThisMod != pImportMod)
+    {
+        if (!pThisMod->hasDependency(pImportMod))
+            pThisMod->addDependency(pImportMod);
+    }
+
     PHANTOM_ASSERT(a_pSymbol);
     Import i;
     i.symbol = a_pSymbol;

@@ -899,5 +899,5 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
 
 PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement()
 {
-    return phantom::lang::Application::Get()->getDefaultSource();
+    return phantom::lang::detail::currentSource();
 }

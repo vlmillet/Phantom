@@ -123,6 +123,18 @@ bool Module::hasDependencyCascade(Module* a_pModule) const
     return false;
 }
 
+int Module::getDependencyLevel() const
+{
+    int maxLevel = 0;
+    for (auto pDep : m_Dependencies)
+    {
+        int level = pDep->getDependencyLevel() + 1;
+        if (level > maxLevel)
+            maxLevel = level;
+    }
+    return maxLevel;
+}
+
 bool Module::isPlugin() const
 {
     return Application::Get()->getMainModule() != this;

@@ -451,21 +451,23 @@ void Application::_unloadMain()
 
     // destroy runtime/script modules (they depend on natives and not the opposite, so they must be destroyed before)
 
-    while (true)
+    SmallSet<Module*, 32, Module::DependencyPred> nonNativeModules;
+
+    for (auto pMod : m_Modules)
     {
-        int moduleIdx = int(m_Modules.size());
-        while (moduleIdx--)
+        if (!pMod->isNative())
         {
-            Module* pModule = m_Modules[moduleIdx];
-            if (!pModule->isNative())
-            {
-                // destroying runtime/script modules
-                Delete(pModule);
-                break;
-            }
+            nonNativeModules.insert(pMod);
         }
-        if (moduleIdx == -1)
-            break;
+    }
+
+    size_t i = nonNativeModules.size();
+    while (i--)
+    {
+        Module* pMod = nonNativeModules[i];
+        // destroying runtime/script modules
+        removeModule(pMod);
+        deleteModule(pMod);
     }
 
     // unload plugins

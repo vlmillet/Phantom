@@ -238,6 +238,26 @@ public:
     bool hasDependencyCascade(Module* a_pModule) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  A sort predicate based on dependency level to use in sets or maps.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    struct DependencyPred
+    {
+        bool operator()(Module* a_pM0, Module* a_pM1) const
+        {
+            int dep0 = a_pM0->getDependencyLevel();
+            int dep1 = a_pM1->getDependencyLevel();
+            return (dep0 == dep1) ? (a_pM0 < a_pM1) : (dep0 < dep1);
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the dependency level of this module (which can be used for sorting or parallelization).
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    int getDependencyLevel() const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Fetches all the sources of this module into a vector container.
     ///
     /// \param [in,out] a_Sources   [in,out] The fetched sources.

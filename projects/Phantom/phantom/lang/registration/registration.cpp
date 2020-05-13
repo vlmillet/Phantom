@@ -495,7 +495,7 @@ void PhantomBuilderBase::addSubPhantomBuilderBase(PhantomBuilderBase* a_pSub)
 TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
     : _PHNTM_StaticGlobalRegistrer(PHANTOM_MODULE_HANDLE(this), dynamic_initializer_()->currentPackage(),
                                    dynamic_initializer_()->currentSource(), a_strFile, line, tag,
-                                   {::phantom::RegistrationStep::ClassTypes}),
+                                   {::phantom::RegistrationStep::Templates}),
       m_func(func)
 {
     _PHNTM_attach();

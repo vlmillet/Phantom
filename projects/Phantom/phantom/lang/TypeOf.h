@@ -33,6 +33,10 @@ namespace phantom
 {
 PHANTOM_EXPORT_PHANTOM size_t _dllModuleHandleFromAddress(void const*);
 
+namespace detail
+{
+PHANTOM_EXPORT_PHANTOM bool installed();
+}
 namespace lang
 {
 template<typename>
@@ -101,8 +105,7 @@ PHANTOM_EXPORT_PHANTOM Type* type_cast(Array* a_pElement);
 
 #else
 // dirty c-style cast to avoid includes (we know that every Type derived class is single inherited
-#    define PHANTOM_R_TYPE_CAST(...)                                                                                   \
-        ((::phantom::lang::Type*)(__VA_ARGS__)) //((::phantom::lang::Type*)(__VA_ARGS__))
+#    define PHANTOM_R_TYPE_CAST(...) ((::phantom::lang::Type*)(__VA_ARGS__)) //((::phantom::lang::Type*)(__VA_ARGS__))
 #    define PHANTOM_R_SYM_CAST(...)                                                                                    \
         ((::phantom::lang::Symbol*)(__VA_ARGS__)) //((::phantom::lang::Symbol*)(__VA_ARGS__))
 
@@ -347,7 +350,7 @@ struct TypeOfByName
                 }
 #endif
             }
-            else
+            else if (phantom::detail::installed())
             {
                 PHANTOM_LOG(Warning,
                             "cannot find type '%.*s' in any module, ensure it has lang "

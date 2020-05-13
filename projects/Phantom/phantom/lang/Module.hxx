@@ -44,6 +44,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using Classes = typedef_< phantom::lang::Classes>;
             using Dependencies = typedef_<_::Dependencies>;
+            using DependencyPred = typedef_<_::DependencyPred>;
             using FuncT = typedef_<_::FuncT>;
             using Functions = typedef_< phantom::lang::Functions>;
             using Modules = typedef_< phantom::lang::Modules>;
@@ -89,6 +90,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Module*)>("removeDependency", &_::removeDependency)
             .method<bool(Module*) const>("hasDependency", &_::hasDependency)
             .method<bool(Module*) const>("hasDependencyCascade", &_::hasDependencyCascade)
+            .struct_<DependencyPred>()
+                .method<bool(Module*, Module*) const>("operator()", &_::DependencyPred::operator())
+            .end()
+            .method<int() const>("getDependencyLevel", &_::getDependencyLevel)
             .method<void(Sources&) const>("getSources", &_::getSources)
             .method<void(Modules&) const>("fetchDependencies", &_::fetchDependencies)
             .method<void(Classes&, ::phantom::lang::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]

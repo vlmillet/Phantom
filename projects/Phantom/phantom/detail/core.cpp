@@ -565,6 +565,9 @@ void DynamicCppInitializerH::installModules()
     PHANTOM_LOG_NATIVE_REFLECTION("enums installation...");
     stepRegistration(RegistrationStep::Enums);
 
+    PHANTOM_LOG_NATIVE_REFLECTION("templates installation...");
+    stepRegistration(RegistrationStep::Templates);
+
     PHANTOM_LOG_NATIVE_REFLECTION("class types installation...");
     stepRegistration(RegistrationStep::ClassTypes);
 

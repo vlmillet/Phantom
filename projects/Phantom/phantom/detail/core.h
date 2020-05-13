@@ -92,6 +92,7 @@ enum class RegistrationStep
     Start,
     Namespaces,
     Enums,
+    Templates,
     ClassTypes,
     PostClassTypes,
     Typedefs,

@@ -9,7 +9,11 @@
 /* ****************** Includes ******************* */
 #include <ctime>
 #include <istream>
+#include <phantom/plugin.h>
 #include <phantom/utils/Object.h>
+#include <phantom/utils/String.h>
+#include <phantom/utils/StringView.h>
+#include <time.h>
 /* **************** Declarations ***************** */
 
 /* *********************************************** */
@@ -18,6 +22,7 @@ namespace phantom
 {
 namespace lang
 {
+class SourceFile;
 class PHANTOM_EXPORT_PHANTOM SourceStream
 {
 public:
@@ -99,7 +104,7 @@ protected:
 
     SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol) {}
 
-protected:
+private:
     String m_Path;
     String m_Protocol;
 };

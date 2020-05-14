@@ -513,17 +513,17 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     //
     // #else
     template<bool Cond, typename F>
-    MostDerived& if_(F const& f)
+    MostDerived& if_(F const& a_F)
     {
-        phantom::static_if<Cond>(f);
+        phantom::static_if<Cond>([&](auto a_Idtty) { a_F(a_Idtty(this_())); });
         return static_cast<MostDerived&>(*this);
     }
 
 #define PHANTOM_IF(Cond, ...)                                                                                          \
-    .PHANTOM_T if_<(Cond)>([&](auto _PHNTM_IDTTY) {                                                                    \
+    .PHANTOM_T if_<(Cond)>([&](auto&& a_This) {                                                                        \
         PHANTOM_IF_NOT_COMPILER_VISUAL_STUDIO(                                                                         \
-        using _ = phantom::lang::BuilderProxyTypeT<std::remove_reference_t<decltype(_PHNTM_IDTTY((this_())))>>;)       \
-        _PHNTM_IDTTY(this_()) __VA_ARGS__;                                                                             \
+        using _ = phantom::lang::BuilderProxyTypeT<std::remove_reference_t<decltype(a_This)>>;)                        \
+        a_This __VA_ARGS__;                                                                                            \
     })
 
     //#endif

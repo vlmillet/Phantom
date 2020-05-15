@@ -25,8 +25,22 @@ Alias::Alias(Symbol* a_pSymbol, StringView a_strName, Modifiers a_Modifiers /*= 
     addReferencedElement(m_pAliasedSymbol);
 }
 
+void Alias::terminate()
+{
+    if (m_pAliases)
+    {
+        delete_<Aliases>(m_pAliases);
+    }
+    Symbol::terminate();
+}
+
 void Alias::addAlias(Alias* a_pAlias)
 {
+    if (!m_pAliases)
+    {
+        m_pAliases = new_<Aliases>();
+        m_pAliases->setAllocator(getAllocator());
+    }
     m_pAliases->push_back(a_pAlias);
     a_pAlias->setOwner(this);
 }

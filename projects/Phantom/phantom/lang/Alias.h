@@ -50,6 +50,8 @@ public:
 
     Alias(Symbol* a_pSymbol, StringView a_strName = "", Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
+    void terminate() override;
+
     Type* toType() const override { return m_pAliasedSymbol ? m_pAliasedSymbol->toType() : nullptr; }
 
     Namespace* toNamespace() const override { return m_pAliasedSymbol ? m_pAliasedSymbol->toNamespace() : nullptr; }

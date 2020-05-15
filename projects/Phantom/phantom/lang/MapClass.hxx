@@ -53,6 +53,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<Type*() const, virtual_|final_|override_>("getKeyType", &_::getKeyType)
             .method<Type*() const, virtual_|final_|override_>("getMappedType", &_::getMappedType)
             .method<void(Type*)>("setKeyType", &_::setKeyType)

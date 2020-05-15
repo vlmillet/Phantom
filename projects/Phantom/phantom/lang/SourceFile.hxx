@@ -48,7 +48,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView)>()
-            .method<SourceFile*()>("asFile", &_::asFile)
+            .method<SourceFile*(), virtual_|override_>("asFile", &_::asFile)
             .method<bool() const, virtual_>("exists", &_::exists)
             .method<bool()>("deleteFile", &_::deleteFile)
             .method<void(String&)>("read", &_::read)

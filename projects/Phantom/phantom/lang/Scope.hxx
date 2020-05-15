@@ -56,6 +56,8 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
         .protected_()
             .constructor<void(LanguageElement*, LanguageElement*)>()
+            .method<void()>("initialize", &_::initialize)
+            .method<void()>("terminate", &_::terminate)
         
         .public_()
             .method<Scope*() const, pure_virtual>("asScope", &_::asScope)

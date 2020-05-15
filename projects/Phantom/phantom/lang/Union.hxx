@@ -49,6 +49,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Union*() const, virtual_|override_>("asUnion", &_::asUnion)
         
         .protected_()

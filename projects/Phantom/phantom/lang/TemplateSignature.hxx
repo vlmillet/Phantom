@@ -55,6 +55,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(uint)>()["PHANTOM_R_NONE"]
             .staticMethod<TemplateSignature*(LanguageElement*, const TemplateParameters&, bool, uint)>("Create", &_::Create)["false"]["PHANTOM_R_FLAG_NONE"]
             .staticMethod<TemplateSignature*(LanguageElement*, StringView, StringView, LanguageElement*, uint)>("Parse", &_::Parse)["PHANTOM_R_NONE"]
+            .method<void()>("initialize", &_::initialize)
             .method<TemplateSignature*() const, virtual_|override_>("asTemplateSignature", &_::asTemplateSignature)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)

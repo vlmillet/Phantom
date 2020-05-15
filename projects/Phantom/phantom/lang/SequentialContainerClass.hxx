@@ -52,6 +52,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(TypeKind, StringView, Modifiers, uint)>()["0"]["0"]
         
         .public_()
+            .method<void()>("initialize", &_::initialize)
+            .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<SequentialContainerClass*() const, virtual_|override_>("asSequentialContainerClass", &_::asSequentialContainerClass)
             .method<void(void*, void const*) const, virtual_>("push_back", &_::push_back)
             /// missing symbol(s) reflection (phantom::MoveArg) -> use the 'haunt.bind' to bind symbols with your custom haunt files

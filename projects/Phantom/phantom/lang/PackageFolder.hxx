@@ -28,6 +28,7 @@
 
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -56,6 +57,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .constructor<void()>()
             .constructor<void(StringView)>()
+            .method<void(), virtual_>("terminate", &_::terminate)
             .method<PackageFolder*(String)>("newPackageFolder", &_::newPackageFolder)
             .method<PackageFolder*() const, virtual_|override_>("asPackageFolder", &_::asPackageFolder)
             .method<PackageFolder*() const>("getParentFolder", &_::getParentFolder)

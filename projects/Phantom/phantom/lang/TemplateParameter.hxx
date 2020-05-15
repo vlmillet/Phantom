@@ -50,6 +50,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(Placeholder*, LanguageElement*, uint)>()["nullptr"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<TemplateParameter*() const, virtual_|override_>("asTemplateParameter", &_::asTemplateParameter)
             .method<size_t() const>("getIndex", &_::getIndex)
             .method<TemplateParameter*(LanguageElement*) const>("clone", &_::clone)

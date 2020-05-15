@@ -52,6 +52,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Type*() const, virtual_|override_>("asPOD", &_::asPOD)
             .method<Structure*() const, virtual_|override_>("asStructure", &_::asStructure)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)

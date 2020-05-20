@@ -130,7 +130,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<bool() const>("operator bool", &_::operator notypedef<bool>)
             .PHANTOM_T method<bool() const>("empty", &_::empty)
             .PHANTOM_T method<void()>("clear", &_::clear)
-            .PHANTOM_T method<const OpaqueDelegate&() const>("getOpaque", &_::getOpaque)
+            .PHANTOM_T method<const ::phantom::OpaqueDelegate &() const>("getOpaque", &_::getOpaque)
             .PHANTOM_T method<void(const OpaqueDelegate&)>("setOpaque", &_::setOpaque)
             ;
         }

@@ -54,6 +54,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Type*, StringView, void*, Modifiers, uint)>()["0"]["0"]
         
         .public_()
+            .method<void()>("initialize", &_::initialize)
             .method<void*() const>("getAddress", &_::getAddress)
             .method<Type*() const>("getValueType", &_::getValueType)
             .method<void(void const*) const>("setValue", &_::setValue)

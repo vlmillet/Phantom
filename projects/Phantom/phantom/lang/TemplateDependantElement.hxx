@@ -55,6 +55,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(LanguageElement*, StringView, OptionalArrayView<LanguageElement*>, OptionalArrayView<LanguageElement*>, Modifiers, uint)>()["NullOpt"]["NullOpt"]["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Type*() const, virtual_|override_>("toType", &_::toType)
             .method<LanguageElement*() const>("getLeft", &_::getLeft)
             .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoration", &_::getRelativeDecoration)

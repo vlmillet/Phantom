@@ -47,7 +47,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<SourceFile*(), virtual_>("asFile", &_::asFile)
             .method<bool() const, pure_virtual>("exists", &_::exists)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<std::basic_istream<char>*(), pure_virtual>("createInputStream", &_::createInputStream)
+            // .method<::std::basic_istream<char> *(), pure_virtual>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(::std::basic_istream<char> *), pure_virtual>("destroyInputStream", &_::destroyInputStream)
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files

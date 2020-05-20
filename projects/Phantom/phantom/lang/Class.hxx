@@ -49,7 +49,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .field("access", &_::access)
             .field("baseClass", &_::baseClass)
             .field("offset", &_::offset)
-            .method<Class*() const>("operator Class*", &_::operator notypedef<Class*>)
+            .method<::phantom::lang::Class *() const>("operator ::phantom::lang::Class *", &_::operator notypedef<::phantom::lang::Class *>)
             ;
         }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<BaseClasses>("BaseClasses"); }
@@ -72,7 +72,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<ClassBuilder&(Type*, StringView, size_t, uint)>("field", &_::field)["0"]["~0u"]
             .method<ClassBuilder&(Access)>("access", &_::access)
             .method<Class*()>("finalize", &_::finalize)
-            .method<Class*()>("operator Class*", &_::operator notypedef<Class*>)
+            .method<::phantom::lang::Class *()>("operator ::phantom::lang::Class *", &_::operator notypedef<::phantom::lang::Class *>)
             ;
         }
         PHANTOM_CLASS(Class)
@@ -214,8 +214,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void*(void*) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void*(void*, Constructor*, void**) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_|override_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<const Variant&(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
-            .method<const Variant&(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const ::phantom::Variant &(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const ::phantom::Variant &(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
             .method<void(StringView, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
             .method<void(StringWithHash, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
             .method<bool(StringWithHash) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)

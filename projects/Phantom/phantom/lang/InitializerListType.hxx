@@ -51,6 +51,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(TypesView)>()
+            .method<void()>("initialize", &_::initialize)
             .method<TypesView() const>("getTypes", &_::getTypes)
             .method<bool(TypesView) const>("matches", &_::matches)
             .method<InitializerListType*() const, virtual_|override_>("asInitializerListType", &_::asInitializerListType)

@@ -67,8 +67,8 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(ABI, Modifiers, uint)>()["ABI::MethodCall"]["0"]["0"]
             .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
-            .method<lang::ClassType*() const>("getOwnerClassType", &_::getOwnerClassType)
-            .method<lang::Class*() const>("getOwnerClass", &_::getOwnerClass)
+            .method<::phantom::lang::ClassType *() const>("getOwnerClassType", &_::getOwnerClassType)
+            .method<::phantom::lang::Class *() const>("getOwnerClass", &_::getOwnerClass)
             .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)
             .method<void(void*, void**, void*) const, virtual_|override_>("placementInvoke", &_::placementInvoke)

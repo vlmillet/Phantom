@@ -30,6 +30,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/ArrayView.hxx>
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
@@ -117,6 +118,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .using_("LanguageElement::getUniqueName")
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
             .method<CustomAllocator const*() const, virtual_|override_>("getAllocator", &_::getAllocator)
+            .method<void(Source*)>("addDependency", &_::addDependency)
+            .method<ArrayView<Source*>() const>("getDependencies", &_::getDependencies)
         
         .protected_()
             .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)

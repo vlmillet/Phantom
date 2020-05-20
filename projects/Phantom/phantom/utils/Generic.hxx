@@ -47,8 +47,8 @@ PHANTOM_PACKAGE("phantom.utils")
             )
             .PHANTOM_T constructor<void(::phantom::lang::Type *)>()
             .PHANTOM_T method<::phantom::lang::Type *() const>("operator ::phantom::lang::Type *", &_::operator notypedef<::phantom::lang::Type *>)
-            .PHANTOM_T method<lang::Type*() const>("getType", &_::getType)
-            .PHANTOM_T method<lang::Class*() const>("getClass", &_::getClass)
+            .PHANTOM_T method<::phantom::lang::Type *() const>("getType", &_::getType)
+            .PHANTOM_T method<::phantom::lang::Class *() const>("getClass", &_::getClass)
             ;
         }
         PHANTOM_STRUCT_T((class), (T), Param)

@@ -21,7 +21,6 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/field>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
@@ -54,10 +53,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .staticMethod<Template*(LanguageElement*, StringView, StringView, StringView, LanguageElement*, Modifiers, uint)>("Parse", &_::Parse)
+            .staticMethod<::phantom::lang::Template *(LanguageElement*, StringView, StringView, StringView, LanguageElement*, Modifiers, uint)>("Parse", &_::Parse)
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(TemplateSignature*, StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<Scope*() const>("getScope", &_::getScope)
             .method<TemplateSpecializations const&() const>("getTemplateSpecializations", &_::getTemplateSpecializations)
             .method<TemplateParameters const&() const>("getTemplateParameters", &_::getTemplateParameters)
@@ -85,13 +85,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(const char**, LanguageElement*)>("setNativeDefaultArgumentStrings", &_::setNativeDefaultArgumentStrings)
         
         .protected_()
-            .method<void(TemplateSpecialization*)>("addTemplateSpecialization", &_::addTemplateSpecialization)
-        
-        .protected_()
             .method<bool() const, virtual_|override_>("canBeDestroyed", &_::canBeDestroyed)
-        
-        .protected_()
-            .field("m_TemplateSpecializations", &_::m_TemplateSpecializations)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

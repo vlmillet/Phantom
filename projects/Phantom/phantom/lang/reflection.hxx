@@ -231,8 +231,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .field("m_private", &_::m_private)
             ;
         }
-        PHANTOM_REGISTER(Functions) { this_().function<ReflectionMutex&()>("read_mutex", read_mutex);}
-        PHANTOM_REGISTER(Functions) { this_().function<ReflectionMutex&()>("write_mutex", write_mutex);}
+        PHANTOM_REGISTER(Functions) { this_().function<::phantom::lang::ReflectionMutex &()>("read_mutex", read_mutex);}
+        PHANTOM_REGISTER(Functions) { this_().function<::phantom::lang::ReflectionMutex &()>("write_mutex", write_mutex);}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection")
 PHANTOM_END("phantom.lang")

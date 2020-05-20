@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(TypeIndex const&) const>("operator==", &_::operator==)
             .method<bool(TypeIndex const&) const>("operator!=", &_::operator!=)
             .method<bool(TypeIndex) const>("operator<", &_::operator<)
-            .method<Type*() const>("operator Type*", &_::operator notypedef<Type*>)
+            .method<::phantom::lang::Type *() const>("operator ::phantom::lang::Type *", &_::operator notypedef<::phantom::lang::Type *>)
             .field("hash", &_::hash)
             .field("type", &_::type)
             ;

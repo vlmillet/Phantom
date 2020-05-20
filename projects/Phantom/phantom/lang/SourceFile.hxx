@@ -56,7 +56,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<time_t() const, virtual_|override_>("getLastChangeTime", &_::getLastChangeTime)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<std::basic_istream<char>*(), virtual_|override_>("createInputStream", &_::createInputStream)
+            // .method<::std::basic_istream<char> *(), virtual_|override_>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(::std::basic_istream<char> *), virtual_|override_>("destroyInputStream", &_::destroyInputStream)
             .method<SourceFile*() const, virtual_|override_>("clone", &_::clone)

@@ -64,10 +64,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .end()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, Type*, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, TypesView, Modifiers, uint)>()["0"]["0"]
         
         .public_()
+            .method<void()>("initialize", &_::initialize)
             .method<FunctionType*() const, virtual_|override_>("asFunctionType", &_::asFunctionType)
             .method<bool() const>("isRVOCandidate", &_::isRVOCandidate)
             .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
@@ -91,8 +91,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .using_("LanguageElement::getQualifiedDecoratedName")
             .using_("LanguageElement::getUniqueName")
             .method<bool() const>("hasEllipsis", &_::hasEllipsis)
-            .method<Types::const_iterator() const>("beginParameterTypes", &_::beginParameterTypes)
-            .method<Types::const_iterator() const>("endParameterTypes", &_::endParameterTypes)
+            .method<::phantom::SmallVector<Type *, 4>::const_iterator() const>("beginParameterTypes", &_::beginParameterTypes)
+            .method<::phantom::SmallVector<Type *, 4>::const_iterator() const>("endParameterTypes", &_::endParameterTypes)
         
         .protected_()
             .field("m_pReturnType", &_::m_pReturnType)

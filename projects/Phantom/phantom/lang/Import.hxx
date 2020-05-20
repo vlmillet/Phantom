@@ -50,7 +50,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(Source*, StringView, Modifiers, uint)>()["0"]["0"]
-            .method<Import*() const, virtual_>("asImport", &_::asImport)
+            .method<void()>("initialize", &_::initialize)
+            .method<::phantom::lang::Import *() const, virtual_>("asImport", &_::asImport)
             .method<Source*() const>("getImportedSource", &_::getImportedSource)
         
         .public_()

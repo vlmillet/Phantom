@@ -47,6 +47,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .constructor<void(TemplateSpecialization*, const LanguageElements&, uint)>()["0"]
             .constructor<void(Template*, const LanguageElements&, uint)>()["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)

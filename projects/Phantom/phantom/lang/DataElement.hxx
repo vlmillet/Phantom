@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<void(Fields&) const, pure_virtual>("fetchFields", &_::fetchFields)
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<Symbol*() const>("asSymbol", &_::asSymbol)
+            // .method<int*() const>("asSymbol", &_::asSymbol)
         
         .protected_()
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h

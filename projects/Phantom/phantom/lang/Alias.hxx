@@ -53,6 +53,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Symbol*, StringView, Modifiers, uint)>()["\"\""]["0"]["0"]
+            .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<Type*() const, virtual_|override_>("toType", &_::toType)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)

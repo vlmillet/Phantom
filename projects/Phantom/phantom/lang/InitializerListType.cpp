@@ -13,8 +13,6 @@ namespace lang
 InitializerListType::InitializerListType(TypesView a_Types)
     : Type(TypeKind::InitializerList, "", 0, 0, 0, 0), m_Types(a_Types)
 {
-    for (auto pType : m_Types)
-        addReferencedElement(pType);
 }
 
 bool InitializerListType::matches(TypesView a_Types) const

@@ -20,7 +20,6 @@ VolatileType::VolatileType(Type* a_pType)
                     a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_VOLATILE,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
-    addReferencedElement(a_pType);
 }
 
 bool VolatileType::partialAccepts(Type* a_pType, size_t& a_Score, PlaceholderMap& a_Deductions) const

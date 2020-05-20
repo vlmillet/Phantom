@@ -322,6 +322,12 @@ public:
     // this must be used inside containers holded by any element (so ensure they will share the same memory context)
     CustomAllocator const* getAllocator() const override { return &m_CustomAlloc; }
 
+    void               addDependency(Source* a_pSource) { m_Dependencies.insert(a_pSource); }
+    ArrayView<Source*> getDependencies() const
+    {
+        return ArrayView<Source*>(m_Dependencies.begin(), m_Dependencies.end());
+    }
+
 protected:
     void   onScopeSymbolAdded(Symbol* a_pSymbol) override;
     void   onScopeSymbolRemoving(Symbol* a_pSymbol) override;
@@ -386,6 +392,7 @@ private:
     ForwardHeapSequence  m_RTAllocator{65536};
     ForwardHeapSequence* m_pAlloc;
     CustomAllocator      m_CustomAlloc;
+    SmallSet<Source*>    m_Dependencies;
 };
 
 } // namespace lang

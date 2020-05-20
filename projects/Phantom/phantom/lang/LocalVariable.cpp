@@ -20,9 +20,6 @@ LocalVariable::LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pValueType(a_pValueType)
 {
     PHANTOM_ASSERT(m_pValueType);
-    addReferencedElement(m_pValueType);
-    if (m_pValueType->isTemplateDependant())
-        setTemplateDependant();
 }
 
 Block* LocalVariable::getBlock() const

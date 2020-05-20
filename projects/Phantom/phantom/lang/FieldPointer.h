@@ -55,7 +55,11 @@ protected:
                  Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
-    PHANTOM_DTOR ~FieldPointer() override {}
+    void initialize()
+    {
+        MemberPointer::initialize();
+        addReferencedElement(m_pValueType);
+    }
 
     FieldPointer* asFieldPointer() const override { return (FieldPointer*)this; }
 

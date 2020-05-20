@@ -51,7 +51,7 @@ public:
 
     Template(StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    PHANTOM_DTOR ~Template() override;
+    void initialize();
 
     Scope* getScope() const;
 
@@ -282,7 +282,10 @@ public:
 
     void setNativeDefaultArgumentStrings(const char** a_ppArgs, LanguageElement* a_pScope /*= nullptr*/);
 
-protected: // native constructor
+protected:
+    bool canBeDestroyed() const override { return m_TemplateSpecializations.empty() && Symbol::canBeDestroyed(); }
+
+private:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a template specialization to this template.
     ///
@@ -291,15 +294,13 @@ protected: // native constructor
 
     void addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpecialization);
 
-protected:
-    bool canBeDestroyed() const override { return m_TemplateSpecializations.empty() && Symbol::canBeDestroyed(); }
-
 private:
     TemplateSpecialization* createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature, Symbol* a_pBody);
     void                    createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature);
 
-protected:
+private:
     TemplateSpecializations m_TemplateSpecializations;
+    TemplateSignature*      m_pTemplateSignature{};
 };
 
 } // namespace lang

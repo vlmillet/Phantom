@@ -39,7 +39,12 @@ public:
 
     ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask, Modifiers a_Modifiers = 0,
                 uint a_uiFlags = 0);
-    PHANTOM_DTOR ~ValueMember() override {}
+
+    void initialize()
+    {
+        Symbol::initialize();
+        addReferencedElement(m_pValueType);
+    }
 
     ValueMember* asValueMember() const override { return (ValueMember*)this; }
 

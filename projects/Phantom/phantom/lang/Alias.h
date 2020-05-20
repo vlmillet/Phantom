@@ -50,6 +50,12 @@ public:
 
     Alias(Symbol* a_pSymbol, StringView a_strName = "", Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
+    void initialize()
+    {
+        Symbol::initialize();
+        if (m_pAliasedSymbol)
+            addReferencedElement(m_pAliasedSymbol);
+    }
     void terminate() override;
 
     Type* toType() const override { return m_pAliasedSymbol ? m_pAliasedSymbol->toType() : nullptr; }

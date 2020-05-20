@@ -27,6 +27,14 @@ class PHANTOM_EXPORT_PHANTOM InitializerListType : public Type
 
 public:
     InitializerListType(TypesView a_Types);
+
+    void initialize()
+    {
+        Type::initialize();
+        for (auto pType : m_Types)
+            addReferencedElement(pType);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the types of the initializers expressions.
     ///

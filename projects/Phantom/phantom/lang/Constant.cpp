@@ -14,13 +14,11 @@ namespace lang
 Constant::Constant(Type* a_pValueType, Modifiers a_Modifiers /*= 0*/, uint a_Flags /*= 0*/)
     : Symbol("", a_Modifiers, a_Flags), m_pValueType(a_pValueType)
 {
-    addReferencedElement(m_pValueType);
 }
 
 Constant::Constant(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_Flags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_Flags), m_pValueType(a_pValueType)
 {
-    addReferencedElement(m_pValueType);
 }
 
 void Constant::getQualifiedName(StringBuffer& a_Buf) const

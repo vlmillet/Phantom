@@ -12,6 +12,7 @@
 #include "LValueReference.h"
 #include "Module.h"
 #include "Namespace.h"
+#include "Package.h"
 #include "TemplateSpecialization.h"
 
 #include <ostream>
@@ -283,6 +284,21 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
                                          "registering not two type with same name in the same source");
                 };
             }
+        }
+    }
+}
+
+void LanguageElement::_addSourceDependency(LanguageElement* a_pRef)
+{
+    // if any referenced element is template dependant, we become template dependant too
+    if (a_pRef->m_pSource)
+        m_pSource->addDependency(a_pRef->m_pSource);
+    else
+    {
+        PHANTOM_ASSERT(a_pRef->asPackage());
+        for (auto pSrc : static_cast<Package*>(a_pRef)->getSources())
+        {
+            _addSourceDependency(pSrc);
         }
     }
 }

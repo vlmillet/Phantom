@@ -53,17 +53,6 @@ public:
     FunctionType(Type* a_pReturnType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Constructs an function type with a given return type, a single parameter type and
-    ///         optional a_Modifiers/qualifiers.
-    ///
-    /// \param  a_pReturnType           The return type.
-    /// \param  a_pSingleParameterType  The single parameter type.
-    /// \param  a_Modifiers               (optional) The modifiers.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    FunctionType(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Constructs an function type with a given return type, parameters types and
     ///         optional a_Modifiers/qualifiers.
     ///
@@ -75,7 +64,13 @@ public:
     FunctionType(Type* a_pType, TypesView a_Types, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
 public:
-    PHANTOM_DTOR ~FunctionType() override;
+    void initialize()
+    {
+        Type::initialize();
+        addReferencedElement(m_pReturnType);
+        for (auto pPT : m_ParameterTypes)
+            addReferencedElement(pPT);
+    }
 
     FunctionType* asFunctionType() const override { return (FunctionType*)this; }
 

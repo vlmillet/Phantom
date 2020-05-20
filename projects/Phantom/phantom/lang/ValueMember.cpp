@@ -20,7 +20,6 @@ ValueMember::ValueMember(Type* a_pValueType, StringView a_strName, uint a_uiFilt
       m_uiFilterMask(a_uiFilterMask * ((getModifiers() & PHANTOM_R_TRANSIENT) == 0))
 {
     PHANTOM_ASSERT(m_pValueType);
-    addReferencedElement(m_pValueType);
     if (m_pValueType->isTemplateDependant())
         addFlags(PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
 }

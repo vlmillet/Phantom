@@ -24,7 +24,6 @@ Variable::Variable(Type* a_pValueType, void* a_pAddress, Modifiers a_Modifiers /
 {
     PHANTOM_ASSERT(isNative());
     PHANTOM_ASSERT(m_pValueType);
-    addReferencedElement(m_pValueType);
 }
 
 Variable::Variable(Type* a_pValueType, StringView a_strName, void* a_pAddress, Modifiers a_Modifiers /*= 0*/,
@@ -37,7 +36,6 @@ Variable::Variable(Type* a_pValueType, StringView a_strName, void* a_pAddress, M
 {
     PHANTOM_ASSERT(isNative());
     PHANTOM_ASSERT(m_pValueType);
-    addReferencedElement(m_pValueType);
 }
 
 Variable::Variable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -48,10 +46,6 @@ Variable::Variable(Type* a_pValueType, StringView a_strName, Modifiers a_Modifie
       m_pInitializationExpression(nullptr)
 {
     PHANTOM_ASSERT(!isNative());
-    if (m_pValueType)
-    {
-        addReferencedElement(m_pValueType);
-    }
 }
 
 Variable::~Variable()
@@ -60,6 +54,12 @@ Variable::~Variable()
     {
         m_pValueType->deleteInstance(m_pAddress);
     }
+}
+
+void Variable::initialize()
+{
+    Symbol::initialize();
+    addReferencedElement(m_pValueType);
 }
 
 void Variable::setValue(void const* a_pInputBuffer) const

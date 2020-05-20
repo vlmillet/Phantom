@@ -46,7 +46,6 @@ Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, 
            uint a_uiFlags /*= 0*/)
     : Symbol(a_strName, a_Modifiers, a_uiFlags), m_pUnderlyingType(a_pUnderlyingType), m_eTypeKind(a_eTypeKind)
 {
-    addReferencedElement(m_pUnderlyingType);
 }
 
 Type::Type(TypeKind a_eTypeKind, StringView a_strName, size_t a_uiSize, size_t a_uiAlignment,
@@ -66,10 +65,7 @@ Type::Type(TypeKind a_eTypeKind, Type* a_pUnderlyingType, StringView a_strName, 
       m_uiSize(uint32_t(a_uiSize)),
       m_uiAlignment(uint16_t(a_uiAlignment))
 {
-    addReferencedElement(m_pUnderlyingType);
 }
-
-Type::~Type() {}
 
 void Type::terminate()
 {

@@ -41,7 +41,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
-    addReferencedElement(m_pTemplate);
     if (!isFull())
     {
         m_pTemplated->setTemplateDependant();
@@ -67,7 +66,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     }
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
-    addReferencedElement(m_pTemplate);
 }
 
 TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization,
@@ -107,9 +105,6 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
     {
         setArgument(i, a_Arguments[i]);
     }
-    addReferencedElement(m_pInstantiationSpecialization);
-    PHANTOM_ASSERT(m_pTemplate);
-    addReferencedElement(m_pTemplate);
 }
 
 void TemplateSpecialization::initialize()
@@ -120,6 +115,11 @@ void TemplateSpecialization::initialize()
     m_pTemplate->addTemplateSpecialization(this);
     if (m_pTemplated)
         m_pTemplated->setOwner(this);
+    for (auto pArg : m_Arguments)
+        addReferencedElement(pArg);
+    addReferencedElement(m_pTemplate);
+    if (m_pInstantiationSpecialization)
+        addReferencedElement(m_pInstantiationSpecialization);
 }
 
 void TemplateSpecialization::terminate()
@@ -247,7 +247,6 @@ void TemplateSpecialization::setArgument(size_t a_uiIndex, LanguageElement* a_pE
     PHANTOM_ASSERT(index != ~size_t(0));
     PHANTOM_ASSERT(m_Arguments[index] == nullptr);
     m_Arguments[index] = a_pElement;
-    addReferencedElement(a_pElement);
 }
 
 void TemplateSpecialization::setDefaultArgument(StringView a_strParameterName, LanguageElement* a_pElement)

@@ -25,6 +25,12 @@ TemplateDependantElement::TemplateDependantElement(LanguageElement* a_pLeft, Str
         m_pTemplateArguments.emplace(*a_pTemplateArguments);
     if (a_pFunctionArguments)
         m_pFunctionArguments.emplace(*a_pFunctionArguments);
+}
+
+void TemplateDependantElement::initialize()
+{
+    Symbol::initialize();
+
     if (m_pLeft)
     {
         addReferencedElement(m_pLeft);

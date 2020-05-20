@@ -843,14 +843,15 @@ public:
 
     void setOwner(LanguageElement* a_pOwner);
 
-    inline void addReferencedElement(LanguageElement* a_pRef)
+    void addReferencedElement(LanguageElement* a_pRef)
     {
-        // if any referenced element is template dependant, we become template dependant too
         m_uiFlags |= (a_pRef->m_uiFlags & PHANTOM_R_FLAG_TEMPLATE_DEPENDANT);
+        if (a_pRef->m_pSource != m_pSource)
+            _addSourceDependency(a_pRef);
     }
-    inline void removeReferencedElement(LanguageElement*)
-    { /*no impl for now*/
-    }
+    /*no removeReferencedElement impl, because removing a reference can cause unpredictable behavior (need more thinking
+     * about it)*/
+    inline void removeReferencedElement(LanguageElement*) {}
 
 protected:
     LanguageElement(uint a_uiFlags = 0);
@@ -864,6 +865,7 @@ private:
     /// \brief  Reimplement this function to provide specific behaviors when elements of the scope
     /// are accessed.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    void _addSourceDependency(LanguageElement* a_pRef);
     void _onElementsAccess();
     void replaceElement(LanguageElement* a_pOld, LanguageElement* a_pNew);
     void _nativeDetachElementsFromModule();

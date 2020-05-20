@@ -24,9 +24,6 @@ MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunction
       m_pFunctionType(a_pFunctionType)
 {
     PHANTOM_ASSERT(!isNative());
-    addReferencedElement(m_pFunctionType);
-    if (m_pFunctionType->isTemplateDependant())
-        setTemplateDependant();
 }
 
 MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunctionType, size_t a_Size, size_t a_Alignment,
@@ -36,9 +33,6 @@ MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunction
       m_pFunctionType(a_pFunctionType)
 {
     PHANTOM_ASSERT(isNative());
-    addReferencedElement(m_pFunctionType);
-    if (m_pFunctionType->isTemplateDependant())
-        setTemplateDependant();
 }
 
 void MethodPointer::valueToLiteral(StringBuffer& a_Buf, const void* src) const
@@ -71,6 +65,12 @@ void MethodPointer::call(void* a_pPointer, void* a_pThis, void** a_pArgs, void* 
 {
     PHANTOM_ASSERT(a_pPointer);
     static_cast<Method*>(a_pPointer)->invoke(a_pThis, a_pArgs, a_pReturnAddress);
+}
+
+void MethodPointer::initialize()
+{
+    MemberPointer::initialize();
+    addReferencedElement(m_pFunctionType);
 }
 
 bool MethodPointer::matches(TypesView parameters, Modifiers a_Modifiers, uint a_uiFlags) const

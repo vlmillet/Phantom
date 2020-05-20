@@ -227,10 +227,7 @@ void TemplateSignature::addTemplateParameter(TemplateParameter* a_pTemplateParam
     Symbol* pPH =
     (a_pTemplateParameter->getPlaceholder()) ? a_pTemplateParameter->getPlaceholder()->asSymbol() : nullptr;
     m_Placeholders.push_back(pPH);
-    if (pPH)
-    {
-        addReferencedElement(pPH);
-    }
+    addReferencedElement(pPH);
 }
 
 void TemplateSignature::addTemplateParameterAliasName(size_t a_uiIndex, StringView a_strAlias)

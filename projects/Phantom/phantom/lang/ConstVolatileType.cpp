@@ -18,7 +18,6 @@ ConstVolatileType::ConstVolatileType(Type* a_pType)
                     a_pType->isNative() ? a_pType->getAlignment() : 0, PHANTOM_R_VOLATILE | PHANTOM_R_CONST,
                     a_pType->getFlags() | PHANTOM_R_FLAG_IMPLICIT)
 {
-    addReferencedElement(a_pType);
 }
 
 Type* ConstVolatileType::replicate(Type* a_pSource) const

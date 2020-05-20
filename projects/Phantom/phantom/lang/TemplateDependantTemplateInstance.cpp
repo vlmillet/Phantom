@@ -25,14 +25,6 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(TemplateSpe
       m_pTemplateSpecialization(a_pTemplateSpecialization),
       m_Arguments(a_Arguments)
 {
-    PHANTOM_ASSERT(m_pTemplate);
-    addReferencedElement(m_pTemplate);
-    PHANTOM_ASSERT(m_pTemplateSpecialization);
-    addReferencedElement(m_pTemplateSpecialization);
-    for (auto pArg : m_Arguments)
-    {
-        addReferencedElement(pArg);
-    }
 }
 
 TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(Template*               a_pTemplate,
@@ -43,6 +35,14 @@ TemplateDependantTemplateInstance::TemplateDependantTemplateInstance(Template*  
       m_Arguments(a_Arguments)
 {
     PHANTOM_ASSERT(m_pTemplate);
+}
+
+void TemplateDependantTemplateInstance::initialize()
+{
+    Type::initialize();
+    addReferencedElement(m_pTemplate);
+    if (m_pTemplateSpecialization)
+        addReferencedElement(m_pTemplateSpecialization);
     for (auto pArg : m_Arguments)
     {
         addReferencedElement(pArg);

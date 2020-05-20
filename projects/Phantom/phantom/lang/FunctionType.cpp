@@ -20,32 +20,22 @@ namespace phantom
 namespace lang
 {
 FunctionType::FunctionType(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags), m_pReturnType(nullptr)
+    : FunctionType(PHANTOM_TYPEOF(void), TypesView{}, a_Modifiers, a_uiFlags)
 {
 }
 
 FunctionType::FunctionType(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags), m_pReturnType(nullptr)
+    : FunctionType(a_pReturnType, TypesView{}, a_Modifiers, a_uiFlags)
 {
-    setReturnType(a_pReturnType);
 }
 
-FunctionType::FunctionType(Type* a_pReturnType, Type* a_pSingleParameterType, Modifiers a_Modifiers /*= 0*/,
-                           uint a_uiFlags /*= 0*/)
-    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags), m_pReturnType(nullptr)
+FunctionType::FunctionType(Type* a_pReturnType, TypesView a_Types, Modifiers a_Modifiers /*= 0 */,
+                           uint a_uiFlags /*=0*/)
+    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags),
+      m_pReturnType(a_pReturnType),
+      m_ParameterTypes(a_Types)
 {
-    setReturnType(a_pReturnType);
-    addParameterType(a_pSingleParameterType);
-}
-
-FunctionType::FunctionType(Type* a_pType, TypesView a_Types, Modifiers a_Modifiers /*= 0 */, uint a_uiFlags /*=0*/)
-    : Type(TypeKind::Function, "", 0, 0, a_Modifiers, a_uiFlags), m_pReturnType(nullptr)
-{
-    setReturnType(a_pType);
-    for (auto it = a_Types.begin(); it != a_Types.end(); ++it)
-    {
-        addParameterType(*it);
-    }
+    PHANTOM_ASSERT(m_pReturnType);
 }
 
 void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pContextScope)
@@ -85,8 +75,6 @@ void FunctionType::parse(StringView a_strFunctionType, LanguageElement* a_pConte
         prevChar = c;
     }
 }
-
-FunctionType::~FunctionType() {}
 
 void FunctionType::addParameterType(Type* a_pType)
 {

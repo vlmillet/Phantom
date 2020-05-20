@@ -34,10 +34,16 @@ Template::Template(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
 
 Template::Template(TemplateSignature* a_pSignature, StringView a_strName, Modifiers a_Modifiers /*= 0*/,
                    uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, a_uiFlags | PHANTOM_R_ALWAYS_VALID)
+    : Symbol(a_strName, a_Modifiers, a_uiFlags | PHANTOM_R_ALWAYS_VALID), m_pTemplateSignature(a_pSignature)
 {
-    PHANTOM_ASSERT(a_pSignature);
-    createEmptyTemplateSpecialization(a_pSignature);
+    PHANTOM_ASSERT(m_pTemplateSignature);
+}
+
+void Template::initialize()
+{
+    Symbol::initialize();
+    if (m_pTemplateSignature)
+        createEmptyTemplateSpecialization(m_pTemplateSignature);
 }
 
 Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTypes, StringView a_strTemplateParam,
@@ -53,8 +59,6 @@ Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_u
     : Symbol(a_strName, a_Modifiers, a_uiFlags | PHANTOM_R_ALWAYS_VALID)
 {
 }
-
-Template::~Template() {}
 
 Scope* Template::getScope() const
 {
@@ -196,7 +200,6 @@ void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
         PHANTOM_ASSERT(a_pTemplateSpecialization->getNamespace() == nullptr);
     }
     m_TemplateSpecializations.push_back(a_pTemplateSpecialization);
-    addReferencedElement(a_pTemplateSpecialization);
 }
 
 TemplateSpecialization* Template::createTemplateSpecialization(const LanguageElements& arguments,

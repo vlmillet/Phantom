@@ -74,7 +74,6 @@ VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable)
     : Symbol(Modifiers(0)), m_pMethods(a_pBaseTable->m_pMethods), m_pBaseTable(a_pBaseTable), m_bShared(true)
 {
     m_pBaseTable->m_DerivedTables.push_back(this);
-    addReferencedElement(m_pBaseTable);
 }
 
 VirtualMethodTable::VirtualMethodTable(VirtualMethodTable* a_pBaseTable, size_t a_uiSize)

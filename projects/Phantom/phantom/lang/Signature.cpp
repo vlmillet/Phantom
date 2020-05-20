@@ -37,28 +37,27 @@ Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers 
 }
 
 Signature::Signature(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
+    : Signature(PHANTOM_TYPEOF(void), Parameters{}, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags)
 {
-    PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    setReturnType(PHANTOM_TYPEOF(void));
 }
 
 Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(nullptr), m_pReturnTypeName(nullptr)
+    : Signature(a_pReturnType, Parameters{}, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags)
 {
-    PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    setReturnType(a_pReturnType);
 }
 
 Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0 */,
                      uint a_uiFlags /*= 0*/)
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
-      m_pReturnType(nullptr),
+      m_pReturnType(a_pType),
       m_pReturnTypeName(nullptr),
       m_Parameters(a_Parameters)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    setReturnType(a_pType);
+    PHANTOM_ASSERT(m_pReturnType &&
+                   (m_pReturnType->isTemplateDependant() || (m_pReturnType == PHANTOM_TYPEOF(void)) ||
+                    m_pReturnType->asReference() || m_pReturnType->isMoveConstructible()));
+
     Parameter* prev = nullptr;
     for (auto p : m_Parameters)
     {
@@ -71,8 +70,12 @@ Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_
 void Signature::initialize()
 {
     Symbol::initialize();
+    addReferencedElement(m_pReturnType);
     for (auto p : m_Parameters)
+    {
+        addReferencedElement(p);
         p->setOwner(this);
+    }
 }
 
 Parameter* Signature::addParameter(Type* a_pType, StringView a_strName)

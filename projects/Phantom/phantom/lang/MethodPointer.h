@@ -47,6 +47,8 @@ protected: // Native constructor
                   Modifiers a_Modifiers, uint a_uiFlags);
 
 public:
+    void initialize();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if the signature matches the given parameter types and qualifiers (const,
     /// &amp;,

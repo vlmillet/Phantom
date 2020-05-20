@@ -36,7 +36,12 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     LocalVariable(Type* a_pValueType, StringView a_strName, Modifiers modifiers = 0, uint a_uiFlags = 0);
-    ~LocalVariable() override {}
+
+    void initialize()
+    {
+        Symbol::initialize();
+        addReferencedElement(m_pValueType);
+    }
 
     LocalVariable* asLocalVariable() const override { return (LocalVariable*)this; }
 

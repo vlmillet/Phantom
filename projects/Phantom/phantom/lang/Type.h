@@ -216,9 +216,14 @@ protected:
          uint a_uiFlags = 0);
 
 public:
-    ~Type() override;
+    void initialize()
+    {
+        Symbol::initialize();
+        if (m_pUnderlyingType)
+            addReferencedElement(m_pUnderlyingType);
+    }
 
-    void terminate();
+    void terminate() override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the type identifier.

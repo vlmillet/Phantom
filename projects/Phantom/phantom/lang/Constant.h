@@ -31,6 +31,12 @@ public:
     Constant(Type* a_pValueType, Modifiers modifiers = 0, uint a_uiFlags = 0);
     Constant(Type* a_pValueType, StringView a_strName, Modifiers modifiers = 0, uint a_uiFlags = 0);
 
+    void initialize()
+    {
+        Symbol::initialize();
+        addReferencedElement(m_pValueType);
+    }
+
     virtual Type* getValueType() const { return m_pValueType; }
     virtual void  getValue(void* dest) const = 0;
     virtual bool  hasValue(const void* a_pSrc) const = 0;

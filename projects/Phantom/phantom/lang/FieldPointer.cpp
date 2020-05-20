@@ -19,8 +19,6 @@ FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, Modifie
                     a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_pValueType(a_pValueType)
 {
-    if (m_pValueType)
-        addReferencedElement(m_pValueType);
 }
 
 FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, size_t a_uiSize, size_t a_uiAlignment,
@@ -29,8 +27,6 @@ FieldPointer::FieldPointer(ClassType* a_pObjectType, Type* a_pValueType, size_t 
                     a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_pValueType(a_pValueType)
 {
-    if (m_pValueType)
-        addReferencedElement(m_pValueType);
 }
 
 size_t FieldPointer::getOffset(void* a_pPointer) const

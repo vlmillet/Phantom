@@ -40,10 +40,13 @@ public:
 
     Import(Source* a_pSource, StringView a_strSymbolName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
-    virtual Import* asImport() const
+    void initialize()
     {
-        return (Import*)this;
+        Symbol::initialize();
+        addReferencedElement(m_pImportedSource);
     }
+
+    virtual Import* asImport() const { return (Import*)this; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the imported source.
@@ -51,10 +54,7 @@ public:
     /// \return null if it fails, else the imported source.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Source* getImportedSource() const
-    {
-        return m_pImportedSource;
-    }
+    Source* getImportedSource() const { return m_pImportedSource; }
 
 public:
     Source* m_pImportedSource;

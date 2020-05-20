@@ -29,6 +29,8 @@ public:
                                       const LanguageElements& a_Arguments, uint a_uiFlags = 0);
     TemplateDependantTemplateInstance(Template* a_pTemplate, const LanguageElements& a_Arguments, uint a_uiFlags = 0);
 
+    void initialize();
+
     bool isA(Type*) const override { return true; }
 
     Template*               getTemplate() const { return m_pTemplate; }

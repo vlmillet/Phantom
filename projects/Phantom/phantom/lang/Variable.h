@@ -64,6 +64,8 @@ public:
 public:
     PHANTOM_DTOR ~Variable() override;
 
+    void initialize();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the address of this variable.
     ///

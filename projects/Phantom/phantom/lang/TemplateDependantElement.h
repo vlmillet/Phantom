@@ -34,6 +34,8 @@ public:
                              OptionalArrayView<LanguageElement*> a_pFunctionArguments = NullOpt,
                              Modifiers modifiers = 0, uint a_uiFlags = 0);
 
+    void initialize();
+
     Type*            toType() const override;
     LanguageElement* getLeft() const { return m_pLeft; }
 

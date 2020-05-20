@@ -65,7 +65,6 @@ Package::Package(StringView a_strName) : Symbol(a_strName, 0, PHANTOM_R_ALWAYS_V
         }
     }
     m_pFolder->_addPackage(this);
-    addReferencedElement(m_pFolder);
 }
 
 Package::~Package() {}
@@ -166,7 +165,6 @@ Namespace* Package::getCounterpartNamespace() const
         StringUtil::ReplaceAll(namespaceName, ".", "::");
         m_pCPNamespace = Namespace::Global()->getOrCreateNamespace(namespaceName);
         PHANTOM_ASSERT(m_pCPNamespace);
-        const_cast<Package*>(this)->addReferencedElement(m_pCPNamespace);
     }
     return m_pCPNamespace;
 }

@@ -41,8 +41,8 @@ public:
     /// \param  a_uiModifiers           (optional) the Data member's modifiers.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Field(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask = ~0u, Modifiers a_Modifiers = 0,
-          uint a_uiFlags = 0);
+    Field(Type* a_pValueType, StringView a_strName, uint a_uiFilterMask = PHANTOM_R_FILTER_FIELD,
+          Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the offset from base address.

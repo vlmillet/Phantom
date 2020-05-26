@@ -88,7 +88,7 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     }
 
     template<class ValueType, int Modifiers = 0>
-    MostDerived& field(StringView a_Name, ValueType(ReflectedType::*a_FPtr), uint a_FilterMask = ~uint(0))
+    MostDerived& field(StringView a_Name, ValueType(ReflectedType::*a_FPtr), uint a_FilterMask = PHANTOM_R_FILTER_FIELD)
     {
         using MetaType = Meta;
         using FieldPtrT = decltype(a_FPtr);

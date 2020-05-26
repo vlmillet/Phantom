@@ -534,7 +534,8 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     /// &MyClass::myMethod)
 
     template<int Modifiers, class ValueTypeFwd>
-    MostDerived& field(StringView a_Name, RemoveForwardT<ValueTypeFwd>(T::*a_FPtr), uint a_FilterMask = ~uint(0))
+    MostDerived& field(StringView a_Name, RemoveForwardT<ValueTypeFwd>(T::*a_FPtr),
+                       uint       a_FilterMask = PHANTOM_R_FILTER_FIELD)
     {
         using NoFwdT = RemoveForwardT<ValueTypeFwd>;
         using PtrType = decltype(a_FPtr);
@@ -551,7 +552,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     }
 
     template<int Modifiers, class ValueType>
-    MostDerived& field(StringView a_Name, ValueType(T::*a_FPtr), uint a_FilterMask = ~uint(0))
+    MostDerived& field(StringView a_Name, ValueType(T::*a_FPtr), uint a_FilterMask = PHANTOM_R_FILTER_FIELD)
     {
         using PtrType = decltype(a_FPtr);
         _PHNTM_REG_STATIC_ASSERT(phantom::IsTypeDefined<lang::FieldT<ValueType(T::*)>>::value,
@@ -567,13 +568,14 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     }
 
     template<class ValueTypeFwd>
-    MostDerived& field(StringView a_Name, RemoveForwardT<ValueTypeFwd>(T::*a_FPtr), uint a_FilterMask = ~uint(0))
+    MostDerived& field(StringView a_Name, RemoveForwardT<ValueTypeFwd>(T::*a_FPtr),
+                       uint       a_FilterMask = PHANTOM_R_FILTER_FIELD)
     {
         return this->field<0, ValueTypeFwd>(a_Name, a_FPtr, a_FilterMask);
     }
 
     template<class ValueType>
-    MostDerived& field(StringView a_Name, ValueType(T::*a_FPtr), uint a_FilterMask = ~uint(0))
+    MostDerived& field(StringView a_Name, ValueType(T::*a_FPtr), uint a_FilterMask = PHANTOM_R_FILTER_FIELD)
     {
         return this->field<0, ValueType>(a_Name, a_FPtr, a_FilterMask);
     }

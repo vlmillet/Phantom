@@ -52,7 +52,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constant("InvalidOffset", _::InvalidOffset)
-            .constructor<void(Type*, StringView, uint, Modifiers, uint)>()["~0u"]["0"]["0"]
+            .constructor<void(Type*, StringView, uint, Modifiers, uint)>()["PHANTOM_R_FILTER_FIELD"]["0"]["0"]
             .method<size_t() const, virtual_|override_>("getOffset", &_::getOffset)
             .method<void*(void const*) const, virtual_|override_>("getAddress", &_::getAddress)
             .method<MemberAnonymousSection*() const>("getMemberAnonymousSection", &_::getMemberAnonymousSection)

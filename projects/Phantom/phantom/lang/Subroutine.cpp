@@ -301,7 +301,14 @@ void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs) const
     PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     size_t argCount =
     m_pSignature->getParameterCount() + (asMethod() != nullptr); // TODO : optimize by storing this value
-    a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount);
+    if (m_ApplyPointer)
+    {
+        call(a_pArgs, a_Context.resultPointer());
+    }
+    else
+    {
+        a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount);
+    }
 }
 
 void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs, size_t a_uiCount) const
@@ -314,7 +321,14 @@ void Subroutine::placementCall(ExecutionContext& a_Context, void** a_pArgs) cons
     PHANTOM_ASSERT(getReturnType() == PHANTOM_TYPEOF(void) || a_Context.resultPointer());
     size_t argCount =
     m_pSignature->getParameterCount() + (asMethod() != nullptr); // TODO : optimize by storing this value
-    PHANTOM_VERIFY(a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount));
+    if (m_ApplyPointer)
+    {
+        placementCall(a_pArgs, a_Context.resultPointer());
+    }
+    else
+    {
+        PHANTOM_VERIFY(a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount));
+    }
 }
 
 void Subroutine::placementCall(void** a_pArgs, void* a_pReturnAddress) const

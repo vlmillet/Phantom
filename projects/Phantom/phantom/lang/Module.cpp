@@ -39,7 +39,7 @@ Module::Module(size_t a_NativeHandle, size_t a_NativeImageSize, StringView a_str
       m_ImageSize(a_NativeImageSize),
       m_LibraryFullName(a_LibraryFullName),
       m_DeclarationCppFullName(a_DeclarationCppFullName),
-      m_Allocator(isNative() ? 65536 : 1024)
+      m_FWH(isNative() ? 65536 : 1024)
 {
 }
 

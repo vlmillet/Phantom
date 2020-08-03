@@ -80,7 +80,7 @@ public:
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        T* ptr = new (m_CustomAlloc.allocFunc(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
         _NewH(ptr, PHANTOM_CLASSOF(T), ptr);
         ptr->initialize();
         return ptr;
@@ -93,7 +93,7 @@ public:
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        T* ptr = new (m_CustomAlloc.allocFunc(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
         _NewDeferredH(ptr, PHANTOM_CLASSOF(T), ptr, lang::TypeInfosOf<T>::object().qualifiedDecoratedName());
         ptr->initialize();
         return ptr;
@@ -104,7 +104,7 @@ public:
     {
         _AssertSpecialSymbols<T>();
         PHANTOM_STATIC_ASSERT((std::is_base_of<LanguageElement, T>::value));
-        T* ptr = new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        T* ptr = new (m_CustomAlloc.allocFunc(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
         if (auto meta = T::MetaClass())
             _NewH(ptr, meta, ptr);
         else
@@ -352,26 +352,26 @@ private:
     template<class T, class... Args>
     T* _new(Args&&... a_Args)
     {
-        return new (m_pAlloc->allocate(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
+        return new (m_CustomAlloc.allocFunc(sizeof(T), PHANTOM_ALIGNOF(T))) T(std::forward<Args>(a_Args)...);
     }
 
     template<class T>
     void _delete(TypeIndentityT<T*> a_p)
     {
         a_p->~T();
-        m_pAlloc->deallocate(a_p);
+        m_CustomAlloc.deallocFunc(a_p);
     }
 
 private:
-    void* _alloc(size_t size, size_t align) { return m_pAlloc->allocate(size, align); }
+    void* _allocFWH(size_t size, size_t align) { return m_pFWH->allocate(size, align); }
 
-    void* _relloc(void* ptr, size_t size, size_t align)
+    void* _rellocFWH(void* ptr, size_t size, size_t align)
     {
-        m_pAlloc->deallocate(ptr);
-        return m_pAlloc->allocate(size, align);
+        m_pFWH->deallocate(ptr);
+        return m_pFWH->allocate(size, align);
     }
 
-    void _dealloc(void* ptr) { m_pAlloc->deallocate(ptr); }
+    void _deallocFWH(void* ptr) { m_pFWH->deallocate(ptr); }
 
 public:
     phantom::Signal<void(SourceStream*)> sourceStreamChanged;
@@ -389,8 +389,8 @@ private:
     Sources              m_Importings;
     // this is a forward allocator which never deallocates until being destroyed (optimized chunks because source are
     // generally all-or-nothing)
-    ForwardHeapSequence  m_RTAllocator{65536};
-    ForwardHeapSequence* m_pAlloc;
+    ForwardHeapSequence  m_LocalFWH;
+    ForwardHeapSequence* m_pFWH;
     CustomAllocator      m_CustomAlloc;
     SmallSet<Source*>    m_Dependencies;
 };

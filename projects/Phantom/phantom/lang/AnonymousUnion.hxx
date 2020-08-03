@@ -31,7 +31,7 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(AnonymousUnion)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::AnonymousSection>()
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)

@@ -584,7 +584,7 @@ bool Plugin::unload()
 {
     PHANTOM_ASSERT(Application::Get()->getPlugin(m_strName) == this,
                    "Plugin should be added to Application before being (un)loaded");
-    PHANTOM_ASSERT_ON_MAIN_THREAD();
+    // PHANTOM_ASSERT_ON_MAIN_THREAD();
     LoadingPluginsGuard __guard(&g_UnloadingPlugins);
     g_UnloadingPlugins.push_back(this);
     if (m_RefCount == 1)

@@ -27,50 +27,23 @@ struct PHANTOM_EXPORT_PHANTOM Path
 
     static Path TempFolder();
 
-    static bool Exists(const Path& p)
-    {
-        return p.exists();
-    }
+    static bool Exists(const Path& p) { return p.exists(); }
 
-    static bool IsAbsolute(const Path& p)
-    {
-        return p.isAbsolute();
-    }
+    static bool IsAbsolute(const Path& p) { return p.isAbsolute(); }
 
-    static bool IsGenericAbsolute(const Path& p)
-    {
-        return p.isGenericAbsolute();
-    }
+    static bool IsGenericAbsolute(const Path& p) { return p.isGenericAbsolute(); }
 
-    static bool IsWindowsAbsolute(const Path& p)
-    {
-        return p.isWindowsAbsolute();
-    }
+    static bool IsWindowsAbsolute(const Path& p) { return p.isWindowsAbsolute(); }
 
-    static bool IsUnixAbsolute(const Path& p)
-    {
-        return p.isUnixAbsolute();
-    }
+    static bool IsUnixAbsolute(const Path& p) { return p.isUnixAbsolute(); }
 
-    static bool IsDirectory(const Path& p)
-    {
-        return p.isDirectory();
-    }
+    static bool IsDirectory(const Path& p) { return p.isDirectory(); }
 
-    static bool IsRegularFile(const Path& p)
-    {
-        return p.isRegularFile();
-    }
+    static bool IsRegularFile(const Path& p) { return p.isRegularFile(); }
 
-    static bool IsSymLink(const Path& p)
-    {
-        return p.isSymLink();
-    }
+    static bool IsSymLink(const Path& p) { return p.isSymLink(); }
 
-    static Path Absolute(const Path& p)
-    {
-        return p.absolute();
-    }
+    static Path Absolute(const Path& p) { return p.absolute(); }
 
     static bool Equivalent(const Path& p0, const Path& p1);
 
@@ -111,39 +84,20 @@ struct PHANTOM_EXPORT_PHANTOM Path
 #endif
     static const size_t npos = size_t(-1);
 
-    Path()
-    {
-    }
+    Path() {}
     Path(StringView a_Path);
-    Path(String const& a_Path) : Path(StringView(a_Path))
-    {
-    }
+    Path(String const& a_Path) : Path(StringView(a_Path)) {}
     Path(StringView a_Path, const char separator);
     Path(const char* a_Path);
 
     Path& operator=(const StringView a_Path);
 
-    String& front()
-    {
-        return parts.front();
-    }
-    StringView front() const
-    {
-        return parts.front();
-    }
-    String& back()
-    {
-        return parts.back();
-    }
-    StringView back() const
-    {
-        return parts.back();
-    }
+    String&    front() { return parts.front(); }
+    StringView front() const { return parts.front(); }
+    String&    back() { return parts.back(); }
+    StringView back() const { return parts.back(); }
 
-    void popBack()
-    {
-        parts.pop_back();
-    }
+    void popBack() { parts.pop_back(); }
 
     void append(phantom::Path const& _child)
     {
@@ -151,30 +105,23 @@ struct PHANTOM_EXPORT_PHANTOM Path
             parts.push_back(c);
     }
 
-    inline void removeExtension()
+    inline Path& removeExtension()
     {
         if (size())
             back() = stem();
+        return *this;
     }
 
-    String& operator[](size_t i)
-    {
-        return parts[i];
-    }
-    StringView operator[](size_t i) const
-    {
-        return parts[i];
-    }
+    String&    operator[](size_t i) { return parts[i]; }
+    StringView operator[](size_t i) const { return parts[i]; }
 
-    Strings::const_iterator begin() const
-    {
-        return parts.begin();
-    }
+    Strings::const_iterator begin() const { return parts.begin(); }
 
-    Strings::const_iterator end() const
-    {
-        return parts.end();
-    }
+    Strings::const_iterator end() const { return parts.end(); }
+
+    Strings::iterator begin() { return parts.begin(); }
+
+    Strings::iterator end() { return parts.end(); }
 
     String platformString() const;
 
@@ -195,10 +142,7 @@ struct PHANTOM_EXPORT_PHANTOM Path
 
     bool exists() const;
 
-    void clear()
-    {
-        parts.clear();
-    }
+    void clear() { parts.clear(); }
 
     Type getType() const;
 
@@ -226,36 +170,16 @@ struct PHANTOM_EXPORT_PHANTOM Path
 
     inline bool operator==(const Path& other) const;
 
-    inline bool operator!=(const Path& other) const
-    {
-        return !operator==(other);
-    }
+    inline bool operator!=(const Path& other) const { return !operator==(other); }
 
     inline bool operator<(const Path& other) const
     {
         return absolute().genericString() < other.absolute().genericString();
     }
 
-    size_t size() const
-    {
-        return parts.size();
-    }
+    size_t size() const { return parts.size(); }
 
-    inline Path relative(const Path& to) const
-    {
-        if (to.isAbsolute())
-        {
-            if (!isAbsolute())
-                return absolute()._relative(to);
-            return _relative(to);
-        }
-        else
-        {
-            if (!isAbsolute())
-                return absolute()._relative(to.absolute());
-            return _relative(to.absolute());
-        }
-    }
+    inline Path relative(const Path& to) const { return absolute().canonical()._relative(to.absolute().canonical()); }
 
     bool hasChildPath(const Path& other) const;
 
@@ -273,28 +197,12 @@ private:
 
 struct PHANTOM_EXPORT_PHANTOM DirectoryEntry
 {
-    DirectoryEntry() : m_Type(Path::Type::unknown)
-    {
-    }
-    DirectoryEntry(const Path& p, Path::Type t) : m_EntryPath(p), m_Type(t)
-    {
-    }
-    const Path& path() const
-    {
-        return m_EntryPath;
-    }
-    bool isRegularFile() const
-    {
-        return m_Type == Path::Type::regular;
-    }
-    bool isDirectory() const
-    {
-        return m_Type == Path::Type::directory;
-    }
-    bool isSymLink() const
-    {
-        return m_Type == Path::Type::symlink;
-    }
+    DirectoryEntry() : m_Type(Path::Type::unknown) {}
+    DirectoryEntry(const Path& p, Path::Type t) : m_EntryPath(p), m_Type(t) {}
+    const Path& path() const { return m_EntryPath; }
+    bool        isRegularFile() const { return m_Type == Path::Type::regular; }
+    bool        isDirectory() const { return m_Type == Path::Type::directory; }
+    bool        isSymLink() const { return m_Type == Path::Type::symlink; }
 
 private:
     Path       m_EntryPath;

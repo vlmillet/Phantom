@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Template, ::phantom::lang::Placeholder>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)

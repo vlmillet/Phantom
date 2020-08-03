@@ -40,7 +40,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using GetFunctor = typedef_<_::GetFunctor>;
             using SetFunctor = typedef_<_::SetFunctor>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::ValueMember>()
         .public_()
             .typedef_<SetFunctor>("SetFunctor")

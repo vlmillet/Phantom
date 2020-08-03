@@ -49,7 +49,10 @@ namespace phantom
 namespace lang
 {
 Source::Source(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags), Scope(this, this), m_pAlloc(&m_RTAllocator)
+    : Symbol(a_strName, a_Modifiers, PHANTOM_R_ALWAYS_VALID | a_uiFlags),
+      Scope(this, this),
+      m_LocalFWH(65536),
+      m_pFWH(&m_LocalFWH)
 {
 }
 
@@ -57,11 +60,17 @@ void Source::initialize()
 {
     if (isNative()) // native sources won't have any block content, so way less memory consumption compared to full
                     // languages, so allocations will better fit at a module level in term of space
-        m_pAlloc = &getModule()->m_Allocator;
+        m_pFWH = &getModule()->m_FWH;
 
-    m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_alloc);
-    m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_relloc);
-    m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_dealloc);
+#if USE_FORWARD_HEAP
+
+    m_CustomAlloc.allocFunc = CustomAllocator::AllocFunc(this, &Source::_allocFWH);
+    m_CustomAlloc.reallocFunc = CustomAllocator::ReallocFunc(this, &Source::_rellocFWH);
+    m_CustomAlloc.deallocFunc = CustomAllocator::DeallocFunc(this, &Source::_deallocFWH);
+
+#else
+    m_CustomAlloc = CustomAllocator::CurrentOrDefault();
+#endif
 
     Symbol::initialize();
     Scope::initialize();
@@ -98,6 +107,7 @@ Source::~Source()
     {
         PHANTOM_CONSISTENCY_CHECK_CODE(size_t sb = m_CreatedElements.size());
         m_CreatedElements[i]->~LanguageElement();
+        m_CustomAlloc.deallocFunc(m_CreatedElements[i]);
         PHANTOM_CONSISTENCY_CHECK_ASSERT(sb == m_CreatedElements.size());
     }
     // ensure we deallocate Smallvector content before destroying allocator
@@ -112,10 +122,11 @@ void Source::Delete(LanguageElement* a_pElem)
     PHANTOM_ASSERT(a_pElem->m_pSource == this);
     PHANTOM_CONSISTENCY_CHECK_ASSERT(
     (m_uiFlags & (PHANTOM_R_INTERNAL_FLAG_TERMINATING | PHANTOM_R_INTERNAL_FLAG_TERMINATED)) == 0);
-    a_pElem->rtti.metaClass->unregisterInstance(a_pElem->rtti.instance);
+    void* ptr = a_pElem->rtti.instance;
+    a_pElem->rtti.metaClass->unregisterInstance(ptr);
     a_pElem->_terminate();
     a_pElem->~LanguageElement();
-    // memset(a_pElem->rtti.instance, 0xDC, a_pElem->rtti.metaClass->getSize());
+    m_CustomAlloc.deallocFunc(ptr);
 }
 
 void Source::_NewH(LanguageElement* a_pElem, Class* a_pClass, void* a_pMD)

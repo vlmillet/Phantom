@@ -55,9 +55,10 @@ public:
     using StdFuncType = std::function<R(Params...)>;
     using DynDelegateType = DynDelegate<R(Params...)>;
     template<class T>
-    using EnableIfCustomArg = std::enable_if_t<!std::is_lvalue_reference<T>::value ||
-                                               std::is_const<std::remove_reference_t<T>>::value // & => const&
-                                               >;
+    using EnableIfCustomArg = std::enable_if_t<!std::is_same<ThisType, std::remove_cv_t<T>>::value &&
+                                               (!std::is_lvalue_reference<T>::value ||
+                                                std::is_const<std::remove_reference_t<T>>::value // & => const&
+                                                )>;
     // Delegate
 
     /// @brief default constructor (holds a Delegate by default)
@@ -358,6 +359,11 @@ public:
     {
     }
     Functor(OpaqueDynDelegate a_OpaqueDynDelegate) : Functor(DynDelegateType(a_OpaqueDynDelegate)) {}
+
+    Functor& operator=(OpaqueDynDelegate a_OpaqueDynDelegate)
+    {
+        return operator=(DynDelegateType(a_OpaqueDynDelegate));
+    }
 
     ThisType& operator=(DynDelegateType const& a_In)
     {

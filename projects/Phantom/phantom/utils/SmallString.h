@@ -18,10 +18,10 @@ PHANTOM_EXPORT_PHANTOM extern size_t SmallStringTotalSize;
 PHANTOM_EXPORT_PHANTOM extern size_t SmallStringTotalCount;
 #endif
 
-template<class T, size_t StaticAllocSize>
+template<class T, uint32_t StaticAllocSize>
 class SmallString
 {
-    template<class, size_t>
+    template<class, uint32_t>
     friend class SmallString;
 
 public:
@@ -474,7 +474,7 @@ SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(BasicStringView<CharT> 
 template<class CharT>
 SmallString<CharT, PHANTOM_STRING_STATIC_SIZE> operator+(const CharT* v0, BasicStringView<CharT> v1)
 {
-	return BasicStringView<CharT>(v0) + v1;
+    return BasicStringView<CharT>(v0) + v1;
 }
 
 template<class CharT>

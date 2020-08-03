@@ -90,7 +90,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(const CodeRangeLocation&) const>("operator>", &_::operator>)
             .method<bool(int) const>("containsLine", &_::containsLine)
             .method<bool(const CodePosition&) const>("containsCodePosition", &_::containsCodePosition)
-            .method<CodeRangeLocation(const CodeRangeLocation&) const>("operator|", &_::operator|)
+            .method<::phantom::lang::CodeRangeLocation(const CodeRangeLocation&) const>("operator|", &_::operator|)
             .field("source", &_::source)
             .field("range", &_::range)
             ;

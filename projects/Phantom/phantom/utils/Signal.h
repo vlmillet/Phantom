@@ -193,7 +193,14 @@ public:
 
     void disconnect(OpaqueDynDelegate const& a_ODynDelegate)
     {
-        if (auto const& od = a_ODynDelegate.getOpaqueDelegate())
+        if (auto&& od = a_ODynDelegate.getOpaqueDelegate())
+            return _disconnect(od.getID());
+        return _disconnect(a_ODynDelegate.getID());
+    }
+
+    void disconnect(OpaqueDynDelegate&& a_ODynDelegate)
+    {
+        if (auto&& od = a_ODynDelegate.getOpaqueDelegate())
             return _disconnect(od.getID());
         return _disconnect(a_ODynDelegate.getID());
     }

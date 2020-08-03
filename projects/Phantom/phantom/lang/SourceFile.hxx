@@ -44,7 +44,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .inherits<::phantom::lang::SourceStream>()
         
         .public_()
-            .staticMethod<SourceFile*(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
+            .staticMethod<::phantom::lang::SourceFile *(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
         
         .public_()
             .constructor<void(StringView)>()

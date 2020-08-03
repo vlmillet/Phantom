@@ -25,6 +25,7 @@ class PHANTOM_EXPORT_PHANTOM Signature : public Symbol
     PHANTOM_DECLARE_META_CLASS(Signature);
 
     friend class Subroutine;
+    friend class Source;
 
 public:
     enum EState
@@ -166,25 +167,6 @@ public:
     Parameter* getParameter(StringView a_strName) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a new parameter with given type, optionals name and default value
-    /// expression.
-    ///
-    /// \param [in,out] a_pParameterType    The parameter's type.
-    /// \param  a_strName                   (optional) The parameter's name.
-    /// \param  a_pDefaultValueExpression   (optional) The default value expression
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Parameter* addParameter(Type* a_pType, StringView a_strName = "");
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Adds a parameter.
-    ///
-    /// \param [in,out] a_pParameter    The parameter.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void addParameter(Parameter* a_pParameter);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the type of the parameter at given index position.
     ///
     /// \param  a_uiParamIndex  Index of the parameter.
@@ -231,23 +213,6 @@ public:
     Expression* getParameterDefaultValueExpression(size_t a_uiParamIndex) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the return type of this signature.
-    ///
-    /// \param [in,out] a_pType The return type.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setReturnType(Type* a_pType);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the name of the parameter at given index position.
-    ///
-    /// \param  a_uiParamIndex  Index of the parameter.
-    /// \param  a_strName       The name.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setParameterName(size_t i, StringView a_strName);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the return type of this signature.
     ///
     /// \return The return type.
@@ -258,11 +223,13 @@ public:
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
+    using LanguageElement::getRelativeDecoratedName;
     using LanguageElement::getUniqueName;
 
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getDecoratedName(StringBuffer& a_Buf) const override;
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void getUniqueName(StringBuffer& a_Buf) const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,7 +278,6 @@ private:
 protected:
     Type*      m_pReturnType;
     Parameters m_Parameters;
-    String*    m_pReturnTypeName;
     bool       m_bVariadic = false;
 };
 

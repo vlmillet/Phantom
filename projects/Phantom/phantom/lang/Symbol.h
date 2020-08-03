@@ -60,6 +60,8 @@ public:
         a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
     }
 
+    struct ExtraData;
+
 public:
     Symbol(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
@@ -414,19 +416,9 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     template<class T>
-    T* getUserDataAs()
+    T* getUserDataAs() const
     {
-        return reinterpret_cast<T*>(m_UserData.getData());
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Get the user data back reinterpret casted in the given type
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    template<class T>
-    T const* getUserDataAs() const
-    {
-        return reinterpret_cast<T const*>(m_UserData.getData());
+        return m_pExtraData ? reinterpret_cast<T*>(_userData().getData()) : nullptr;
     }
 
     using LanguageElement::getQualifiedName;
@@ -464,18 +456,32 @@ protected:
     virtual void onVisibilityChanged(Visibility) {}
 
 private:
+    ExtraData&       _extraData();
+    ExtraData const& _extraData() const
+    {
+        PHANTOM_ASSERT(m_pExtraData);
+        return *m_pExtraData;
+    }
+    MetaDatas&        _metaDatas();
+    Annotations&      _annotations();
+    UserData&         _userData();
+    SymbolExtensions& _extensions();
+
+    MetaDatas const&        _metaDatas() const;
+    Annotations const&      _annotations() const;
+    UserData const&         _userData() const;
+    SymbolExtensions const& _extensions() const;
+
+private:
     String     m_strName;
-    Namespace* m_pNamespace = nullptr; /// Namespace represents the abstract, qualifying container of the element, for
-                                       /// example a global function is scoped inside the global namespace
-    MetaDatas*        m_pMetaDatas = nullptr;
-    Annotations*      m_pAnnotations = nullptr;
-    SymbolExtensions* m_pExtensions = nullptr;
-    mutable hash64    m_Hash = 0;
-    mutable hash64    m_LocalHash = 0;
-    UserData          m_UserData;
-    Modifiers         m_Modifiers = PHANTOM_R_NONE;
-    Access            m_eAccess = Access::Undefined;
-    Visibility        m_eVisibility = Visibility::Private;
+    Namespace* m_pNamespace{}; /// Namespace represents the abstract, qualifying container of the element, for
+                               /// example a global function is scoped inside the global namespace
+    ExtraData*     m_pExtraData{};
+    mutable hash64 m_Hash{};
+    mutable hash64 m_LocalHash{};
+    Modifiers      m_Modifiers{};
+    Access         m_eAccess = Access::Undefined;
+    Visibility     m_eVisibility = Visibility::Private;
 };
 
 } // namespace lang

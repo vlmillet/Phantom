@@ -88,10 +88,13 @@ void* ForwardHeapSequence::allocate(size_t _s, size_t _a)
 {
     PHANTOM_ASSERT((_s % _a) == 0);
     void* ptr;
-    if (!m_Heaps.empty() && (ptr = m_Heaps.back().allocate(_s, _a)))
-        return ptr;
+    for (auto& heap : m_Heaps)
+    {
+        if ((ptr = heap.allocate(_s, _a)))
+            return ptr;
+    }
     m_Heaps.emplace_back(std::max(_s + _a + sizeof(void*), m_HeapSize));
-    return allocate(_s, _a);
+    return m_Heaps.back().allocate(_s, _a);
 }
 
 struct FriendHeap
@@ -110,8 +113,8 @@ void ForwardHeapSequence::deallocate(void* _ptr)
         FriendHeap& fh = (FriendHeap&)heap;
         if (fh.m_begin <= _ptr && _ptr < fh.m_end)
         {
-            inOneOfHeap = true;
-            break;
+            heap.deallocate(_ptr);
+            return;
         }
     }
     PHANTOM_ASSERT(inOneOfHeap);

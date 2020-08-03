@@ -22,6 +22,8 @@ namespace phantom
 {
 namespace lang
 {
+using BlockBuilder = Functor<bool(Block*)>;
+
 struct PHANTOM_EXPORT_PHANTOM MemoryLocation
 {
     /// \brief  Default constructor.
@@ -375,11 +377,13 @@ public:
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;
+    using LanguageElement::getRelativeDecoratedName;
     using LanguageElement::getUniqueName;
 
     void getDecoratedName(StringBuffer& a_Buf) const override;
     void getQualifiedName(StringBuffer& a_Buf) const override;
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override;
+    void getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const override;
     void getUniqueName(StringBuffer& a_Buf) const override;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -753,6 +757,26 @@ public:
     void setBlock(Block* a_pBlock);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Adds a block to this subroutine. The subroutine must not be native.
+    ///
+    /// \return null if it fails, else the new code block.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool buildBlock();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Adds a block builder to this subroutine. It will allow compilation on demand.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setBlockBuilder(BlockBuilder a_BlockBuilder);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Adds a block builder to this subroutine. It will allow compilation on demand.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    BlockBuilder getBlockBuilder() const { return m_BlockBuilder; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Query if this subroutine contains the given memory address.
     ///
     /// \param  a_pAddress  The address to test.
@@ -873,16 +897,16 @@ public:
 
     uint64_t getUniqueID() const override { return uint64_t(this); }
 
-protected:
+private:
     Signature*     m_pSignature = nullptr;
-    ABI            m_eABI = ABI::StdCall;
     Instructions*  m_pInstructions = nullptr;
     Block*         m_pBlock = nullptr;
     MemoryLocation m_MemoryLocation;
-    CallDelegate   m_CallDelegate;
     ApplyPointer   m_ApplyPointer = nullptr;
+    BlockBuilder   m_BlockBuilder;
     Closure        m_Closure;
-    size_t         m_uiFrameSize = 0;
+    ABI            m_eABI = ABI::StdCall;
+    int            m_uiFrameSize = 0;
 };
 
 template<class R, class... Args>

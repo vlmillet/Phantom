@@ -11,6 +11,7 @@
 #include "ExecutionContext.h"
 #include "Parameter.h"
 #include "Signature.h"
+#include "TemplateSpecialization.h"
 
 #include <phantom/utils/Variant.h>
 /* *********************************************** */
@@ -84,6 +85,41 @@ void Subroutine::getQualifiedDecoratedName(StringBuffer& a_Buf) const
         return;
     }
     return getDecoratedName(a_Buf);
+}
+
+void Subroutine::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    if (TemplateSpecialization* pSpec = getTemplateSpecialization())
+    {
+        return pSpec->getRelativeDecoratedName(a_pTo, a_Buf);
+    }
+    LanguageElement* pTo = a_pTo;
+    while (pTo != Namespace::Global())
+    {
+        if (pTo == this)
+            return getDecoratedName(a_Buf);
+        if (hasNamingScopeCascade(pTo))
+            break;
+        pTo = pTo->getNamingScope();
+    }
+
+    if (pTo == Namespace::Global())
+        return getQualifiedDecoratedName(a_Buf);
+
+    LanguageElement* pNamingScope = getNamingScope();
+    if (pNamingScope && pTo != pNamingScope)
+    {
+        size_t prev = a_Buf.size();
+        pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
+        bool ownerEmpty = (a_Buf.size() - prev) == 0;
+        if (!ownerEmpty) // no owner name
+        {
+            a_Buf += ':';
+            a_Buf += ':';
+        }
+    }
+    getName(a_Buf);
+    m_pSignature->getRelativeDecoratedName(a_pTo, a_Buf);
 }
 
 Types Subroutine::getParameterTypes() const
@@ -187,6 +223,42 @@ void Subroutine::setBlock(Block* a_pBlock)
     reinterpret_cast<LanguageElement*>(m_pBlock)->setOwner(this);
 }
 
+bool Subroutine::buildBlock()
+{
+    PHANTOM_ASSERT(!isNative());
+
+    if (Block* pBlock = getBlock())
+    {
+        if (m_BlockBuilder)
+        {
+            bool res = m_BlockBuilder(pBlock);
+            m_BlockBuilder = BlockBuilder{};
+            return res;
+        }
+        return true;
+    }
+    else
+    {
+        addFlags(PHANTOM_R_FLAG_COMPILATION_REQUESTED);
+        return true;
+    }
+}
+
+void Subroutine::setBlockBuilder(BlockBuilder a_BlockBuilder)
+{
+    PHANTOM_ASSERT(!m_BlockBuilder);
+    if (testFlags(PHANTOM_R_FLAG_COMPILATION_REQUESTED))
+    {
+        Block* pBlock = getBlock();
+        PHANTOM_ASSERT(pBlock);
+        a_BlockBuilder(pBlock);
+    }
+    else
+    {
+        m_BlockBuilder = a_BlockBuilder;
+    }
+}
+
 bool Subroutine::containsMemoryAddress(const byte* a_pAddress)
 {
     return m_MemoryLocation.containsMemoryAddress(a_pAddress);
@@ -239,6 +311,7 @@ typedef SmallVector<void*, 7> TempArgs;
 
 void Subroutine::call(void** a_pArgs) const
 {
+    PHANTOM_VERIFY(const_cast<Subroutine*>(this)->buildBlock());
     PHANTOM_ASSERT(asMethod() == nullptr);
     Type* pRetType = getReturnType();
     if (auto applyPointer = getApplyPointer())
@@ -270,6 +343,7 @@ void Subroutine::call(void** a_pArgs) const
 
 void Subroutine::call(void** a_pArgs, void* a_pReturnAddress) const
 {
+    PHANTOM_VERIFY(const_cast<Subroutine*>(this)->buildBlock());
     PHANTOM_ASSERT(a_pReturnAddress);
     if (auto applyPointer = getApplyPointer())
     {
@@ -307,6 +381,7 @@ void Subroutine::call(ExecutionContext& a_Context, void** a_pArgs) const
     }
     else
     {
+        PHANTOM_VERIFY(const_cast<Subroutine*>(this)->buildBlock());
         a_Context.call(const_cast<Subroutine*>(this), a_pArgs, argCount);
     }
 }

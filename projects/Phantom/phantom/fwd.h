@@ -35,22 +35,22 @@ class BasicStringView;
 template<class S>
 class Delegate;
 
-template<class T, ::size_t StaticAllocSize>
+template<class T, uint32_t StaticAllocSize>
 class SmallString;
 
 template<class>
 struct Less;
 
-template<class T, ::size_t StaticAllocSize = 4, class Pred = Less<T>>
+template<class T, uint32_t StaticAllocSize = 4, class Pred = Less<T>>
 class SmallSet;
 
-template<class K, class V, ::size_t StaticAllocSize = 4, class Pred = Less<K>>
+template<class K, class V, uint32_t StaticAllocSize = 4, class Pred = Less<K>>
 class SmallMap;
 
-template<class K, class V, ::size_t StaticAllocSize = 4, class Pred = Less<K>>
+template<class K, class V, uint32_t StaticAllocSize = 4, class Pred = Less<K>>
 class SmallMultimap;
 
-template<class T, ::size_t StaticAllocSize = 4>
+template<class T, uint32_t StaticAllocSize = 4>
 class SmallVector;
 
 template<class T>

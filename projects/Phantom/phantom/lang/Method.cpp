@@ -165,7 +165,7 @@ bool Method::acceptsCallerExpressionType(Type* a_pType) const
 
 bool Method::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifiers) const
 {
-    Modifiers signModifiers = m_pSignature->getModifiers();
+    Modifiers signModifiers = getSignature()->getModifiers();
     PHANTOM_ASSERT((a_CallerQualifiers & (~(PHANTOM_R_REFQUAL_MASK | PHANTOM_R_CONST))) == 0);
     PHANTOM_ASSERT(((a_CallerQualifiers & PHANTOM_R_LVALUEREF) == PHANTOM_R_LVALUEREF) ^
                    ((a_CallerQualifiers & PHANTOM_R_RVALUEREF) == PHANTOM_R_RVALUEREF));
@@ -181,11 +181,11 @@ bool Method::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifiers) con
 Type* Method::getImplicitObjectParameterType() const
 {
     Type* pImplicitObjectParameterType = getOwner()->asClassType();
-    if (m_pSignature->testModifiers(PHANTOM_R_CONST))
+    if (getSignature()->testModifiers(PHANTOM_R_CONST))
     {
         pImplicitObjectParameterType = pImplicitObjectParameterType->makeConst();
     }
-    if (m_pSignature->testModifiers(PHANTOM_R_RVALUEREF))
+    if (getSignature()->testModifiers(PHANTOM_R_RVALUEREF))
     {
         return pImplicitObjectParameterType->makeRValueReference();
     }
@@ -261,7 +261,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs) const
         Type*     pRetType = getReturnType();
         bool      bRVO = isRVOCandidate();
         const int extraArgs = 1 + bRVO;
-        size_t    argCount = m_pSignature->getParameters().size() + extraArgs;
+        size_t    argCount = getSignature()->getParameters().size() + extraArgs;
         newArgs.resize(argCount);
         newArgs[0] = &a_pObject;
         unsigned char dummy[16];
@@ -287,7 +287,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs) const
     }
     else
     {
-        size_t argCount = m_pSignature->getParameters().size() + 1;
+        size_t argCount = getSignature()->getParameters().size() + 1;
         newArgs.resize(argCount);
         newArgs[0] = &a_pObject;
         if (a_pArgs && argCount > 1)
@@ -306,7 +306,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) con
     {
         bool      bRVO = isRVOCandidate();
         const int extraArgs = 1 + bRVO;
-        size_t    argCount = m_pSignature->getParameters().size() + extraArgs;
+        size_t    argCount = getSignature()->getParameters().size() + extraArgs;
         newArgs.resize(argCount);
         newArgs[bRVO] = &a_pReturnAddress;
         newArgs[0] = &a_pObject;
@@ -316,7 +316,7 @@ void Method::invoke(void* a_pObject, void** a_pArgs, void* a_pReturnAddress) con
     }
     else
     {
-        size_t argCount = m_pSignature->getParameters().size() + 1;
+        size_t argCount = getSignature()->getParameters().size() + 1;
         newArgs.resize(argCount);
         newArgs[0] = &a_pObject;
         if (a_pArgs && argCount > 1)

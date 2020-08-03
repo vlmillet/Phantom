@@ -51,7 +51,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
-            .method<void const*(void const*) const, virtual_>("data", &_::data)
+            .method<const void*(void const*) const, virtual_>("data", &_::data)
             .method<void*(void*) const, virtual_>("data", &_::data)
             .method<void(void*, size_t) const, virtual_>("resize", &_::resize)
             .method<const void*(void const*, size_t) const, virtual_|override_>("referenceAt", &_::referenceAt)

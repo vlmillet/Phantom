@@ -112,6 +112,9 @@ public:
 
     Namespace* getCounterpartNamespace() const;
 
+    using Symbol::getQualifiedDecoratedName;
+    using Symbol::getQualifiedName;
+
     void getQualifiedDecoratedName(StringBuffer& a_Buf) const override { return getQualifiedName(a_Buf); }
 
     void getQualifiedName(StringBuffer& a_Buf) const override;

@@ -46,7 +46,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -61,7 +61,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_>("terminate", &_::terminate)
             .method<TemplateSpecialization*() const, virtual_|override_>("asTemplateSpecialization", &_::asTemplateSpecialization)
-            .method<TemplateSpecialization*() const, virtual_>("getEnclosingTemplateSpecialization", &_::getEnclosingTemplateSpecialization)
+            .method<::phantom::lang::TemplateSpecialization *() const, virtual_>("getEnclosingTemplateSpecialization", &_::getEnclosingTemplateSpecialization)
             .method<LanguageElement*() const, virtual_|override_>("getNamingScope", &_::getNamingScope)
             .method<size_t() const>("getArgumentCount", &_::getArgumentCount)
             .method<Type*(StringView) const>("getArgumentAsType", &_::getArgumentAsType)

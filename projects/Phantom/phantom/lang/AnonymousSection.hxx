@@ -35,7 +35,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using Variables = typedef_< phantom::lang::Variables>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)

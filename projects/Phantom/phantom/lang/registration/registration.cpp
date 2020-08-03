@@ -139,7 +139,9 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             Template* pTemplate = this->_getClassTemplate(static_cast<lang::ClassType*>(a_pType), m_pNamingScope);
 
             // ---------------------------------------
-            // If you get an assert here, it probably means that your manual-written reflection file has reflection
+            // If you get an assert here, it probably means that :
+            //
+            // Your manual-written reflection file has reflection
             // headers ordering messed up (be careful of clang-format !).
             // Indeed, you need to always have other template .hxx included
             // in between 'template-only-push' and 'template-only-pop'
@@ -147,6 +149,11 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             // #include <phantom/template-only-push>
             // #include "vector.hxx"
             // #include <phantom/template-only-pop>
+            //
+            // OR
+            //
+            // You forgot to include your .hxx somewhere isolated inside its own .cpp, WITHOUT
+            // <phantom/template-only-push> guard this time, so that the Template symbol could be registered
             // ---------------------------------------
             PHANTOM_ASSERT(pTemplate);
 
@@ -154,6 +161,8 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             TemplateSpecialization* pSpec = pTemplate->getTemplateInstantiation(args);
             if (pSpec == nullptr || pSpec->getModule() != detail::currentModule())
             {
+                if (auto pNS = m_pNamingScope->asNamespace())
+                    a_pType->setNamespace(pNS);
                 detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType));
             }
             else
@@ -578,7 +587,7 @@ static PerThreadScope& GetPerThreadScope()
 {
     if (!g_pPerThread)
     {
-        PHANTOM_ASSERT(!isMainThread(), "main thread scope should have been initialized manually");
+        // PHANTOM_ASSERT(!isMainThread(), "main thread scope should have been initialized manually");
         BuildPerThreadScope();
     }
     return *g_pPerThread;

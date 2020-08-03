@@ -7,8 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include "../thread/SpinMutex.h"
-
+#include <phantom/lang/reflection_fwd.h>
+#include <phantom/thread/SpinMutex.h>
 #include <phantom/utils/Property.h>
 #include <phantom/utils/SmallMap.h>
 #include <phantom/utils/SmallVector.h>

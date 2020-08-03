@@ -22,6 +22,7 @@
 #include <phantom/static_method>
 #include <phantom/constructor>
 #include <phantom/field>
+#include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
@@ -70,6 +71,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Source*)>("removeSource", &_::removeSource)
             .method<void(Source*)>("deleteSource", &_::deleteSource)
             .method<Namespace*() const>("getCounterpartNamespace", &_::getCounterpartNamespace)
+            .using_("Symbol::getQualifiedDecoratedName")
+            .using_("Symbol::getQualifiedName")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<bool() const, virtual_|override_>("canBeUnloaded", &_::canBeUnloaded)

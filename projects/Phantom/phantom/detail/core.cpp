@@ -833,6 +833,8 @@ phantom::lang::Source* DynamicCppInitializerH::nativeSource(StringView a_strFile
         PHANTOM_ASSERT(pPackage);
 
         pSource = pPackage->getOrCreateSource(sourceName);
+        if (pSource->getSourceStream() == nullptr)
+            pSource->setSourceStream(pSource->new_<lang::SourceFile>(a_strFile));
         pSource->addFlags(PHANTOM_R_FLAG_NATIVE);
     }
     return pSource;

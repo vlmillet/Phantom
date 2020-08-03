@@ -71,7 +71,7 @@ PHANTOM_PACKAGE("phantom.lang")
             // .typedef_<CppExpressionParser>("CppExpressionParser")
         
         .public_()
-            .staticMethod<Application*()>("Get", &_::Get)
+            .staticMethod<::phantom::lang::Application *()>("Get", &_::Get)
         
         .public_()
             .constructor<void()>()

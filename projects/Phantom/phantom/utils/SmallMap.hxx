@@ -41,7 +41,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallMap")
 
-        PHANTOM_CLASS_T((class, class, size_t, class), (K, V, S, Pred), SmallMap)
+        PHANTOM_CLASS_T((class, class, phantom::uint, class), (K, V, S, Pred), SmallMap)
         {
             using BaseType = typedef_<PHANTOM_TYPENAME _::BaseType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;

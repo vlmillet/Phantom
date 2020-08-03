@@ -36,6 +36,12 @@ public:
         return Variant(a_Param0.getType(), a_Arg0.getValue());
     }
 
+    template<class T>
+    static Variant From(T* a_pArg)
+    {
+        return Variant(PHANTOM_TYPEOF(T), a_pArg);
+    }
+
 public:
     static const Variant null;
     inline Variant() : m_pType(nullptr) {}
@@ -143,6 +149,14 @@ public:
     inline void fundamental(T value);
 
 private:
+    inline static byte* _Alloc(size_t _s, size_t _a)
+    {
+        auto b = reinterpret_cast<byte*>(PHANTOM_MALLOC_ALIGNED(_s, _a));
+        // zero memory as we want everything to be safe inside a Variant (they are not designed for performances)
+        memset(b, 0, _s);
+        return b;
+    }
+
     inline bool _as(lang::Type* a_pType, void* a_pDest) const;
 
     inline byte* _buffer() const

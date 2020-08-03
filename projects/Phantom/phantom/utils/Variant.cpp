@@ -24,7 +24,7 @@ phantom::Variant::TypeConverter Variant::GetTypeConverter()
 Variant::Variant(lang::Type* a_pType, void const* a_pValue)
 {
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
-    ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
+    ? (m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment()))
     : m_Buffer.staticBuffer;
     m_pType = a_pType;
     a_pType->copyConstruct(pBuffer, a_pValue);
@@ -33,7 +33,7 @@ Variant::Variant(lang::Type* a_pType, void const* a_pValue)
 Variant::Variant(lang::Type* a_pType, void* a_pValue, bool a_bMove)
 {
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
-    ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
+    ? (m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment()))
     : m_Buffer.staticBuffer;
     m_pType = a_pType;
     if (a_bMove)
@@ -67,7 +67,7 @@ void Variant::copyConstruct(lang::Type* a_pType, const void* a_pValue)
         _release();
     }
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
-    ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
+    ? (m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment()))
     : m_Buffer.staticBuffer;
     m_pType = a_pType;
     a_pType->copyConstruct(pBuffer, a_pValue);
@@ -82,7 +82,7 @@ void Variant::moveConstruct(lang::Type* a_pType, void* a_pValue)
         _release();
     }
     byte* pBuffer = (a_pType->getSize() > StaticBufferSize)
-    ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
+    ? (m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment()))
     : m_Buffer.staticBuffer;
     m_pType = a_pType;
     a_pType->moveConstruct(pBuffer, a_pValue);

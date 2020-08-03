@@ -60,14 +60,14 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void()>("terminate", &_::terminate)
         
         .public_()
-            .method<Scope*() const, pure_virtual>("asScope", &_::asScope)
+            .method<::phantom::lang::Scope *() const, pure_virtual>("asScope", &_::asScope)
             .method<::phantom::lang::LanguageElement *() const>("asLanguageElement", &_::asLanguageElement)
             .method<::phantom::lang::Symbol *() const>("asSymbol", &_::asSymbol)
             .method<::phantom::lang::Namespace *() const>("asNamespace", &_::asNamespace)
             .method<bool(Symbol*) const>("isSame", &_::isSame)
             .method<bool(LanguageElement*) const>("isSame", &_::isSame)
             .method<bool(Scope*) const>("isSame", &_::isSame)
-            .method<Scope*() const, virtual_>("getNamedScope", &_::getNamedScope)
+            .method<::phantom::lang::Scope *() const, virtual_>("getNamedScope", &_::getNamedScope)
             .method<void(Type*)>("addType", &_::addType)
             .method<Types const&() const>("getTypes", &_::getTypes)
             .method<Type*(StringView) const>("getType", &_::getType)
@@ -103,7 +103,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Functions&, StringView, const Types*, Type*) const>("findFunctions", &_::findFunctions)["StringView()"]["nullptr"]["nullptr"]
             .method<void(AnonymousSection*), virtual_>("addAnonymousSection", &_::addAnonymousSection)
             .method<AnonymousSections const&() const>("getAnonymousSections", &_::getAnonymousSections)
-            .method<Subroutine*(StringView, TypesView, Modifiers) const, virtual_>("getSubroutine", &_::getSubroutine)["0"]
+            .method<::phantom::lang::Subroutine *(StringView, TypesView, Modifiers) const, virtual_>("getSubroutine", &_::getSubroutine)["0"]
             .method<Subroutine*(Type*, StringView, TypesView, Modifiers) const>("getSubroutine", &_::getSubroutine)["0"]
             .method<void(Subroutine*), virtual_>("addSubroutine", &_::addSubroutine)
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_>("acceptsSubroutine", &_::acceptsSubroutine)["0"]["0"]["nullptr"]

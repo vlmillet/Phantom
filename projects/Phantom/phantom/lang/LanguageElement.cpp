@@ -55,12 +55,23 @@ LanguageElement::~LanguageElement()
         std::next(std::find(m_pSource->m_CreatedElements.rbegin(), m_pSource->m_CreatedElements.rend(), this)).base();
         PHANTOM_CONSISTENCY_CHECK_ASSERT(found != m_pSource->m_CreatedElements.end());
         m_pSource->m_CreatedElements.erase_unsorted(found);
-    }
 
-    size_t i = m_Elements.size();
-    while (i--)
+        size_t i = m_Elements.size();
+        while (i--)
+        {
+            auto pEl = m_Elements[i];
+            pEl->~LanguageElement();
+            m_pSource->m_CustomAlloc.deallocFunc(pEl);
+        }
+    }
+    else
     {
-        m_Elements[i]->~LanguageElement();
+        size_t i = m_Elements.size();
+        while (i--)
+        {
+            auto pEl = m_Elements[i];
+            pEl->~LanguageElement();
+        }
     }
 }
 
@@ -632,20 +643,15 @@ Package* LanguageElement::getPackage() const
     return m_pSource->getPackage();
 }
 
+// TODO : move to header
 void LanguageElement::setCodeRange(const CodeRange& a_CodeRange)
 {
-    if (m_CodeRange == a_CodeRange)
-        return;
     m_CodeRange = a_CodeRange;
-    //             if (m_pOwner && !(asSource()))
-    //             {
-    //                 m_pOwner->setCodeRange(m_pOwner->m_CodeRange | a_CodeRange);
-    //             }
 }
 
 Source* LanguageElement::getCodeLocationSource() const
 {
-    return m_pOwner ? m_pOwner->getCodeLocationSource() : nullptr;
+    return m_pOwner ? m_pOwner->getCodeLocationSource() : m_pSource;
 }
 
 LanguageElement* LanguageElement::getElementAtCodePosition(const CodePosition& a_CodePosition) const

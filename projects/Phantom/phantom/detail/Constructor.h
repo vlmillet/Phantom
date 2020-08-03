@@ -92,16 +92,16 @@ public:
 /// @endcond
 
 template<typename t_Ty>
-struct Constructor
-    : public detail::ConstructorH<t_Ty,
-                                  std::is_abstract<t_Ty>::value
-                                  ? phantom::HasVirtualDestructor<t_Ty>::value
-                                  ? detail::ConstructorSelectorId::NoDefault
-                                  : detail::ConstructorSelectorId::Abstract // abstract
-                                  : std::is_class<t_Ty>::value ? !(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
-                                  ? detail::ConstructorSelectorId::NoDefault // no default constructor
-                                  : detail::ConstructorSelectorId::Default
-                                                               : detail::ConstructorSelectorId::Fundamental>
+struct Constructor : public detail::ConstructorH<t_Ty,
+                                                 std::is_abstract<t_Ty>::value
+                                                 ? phantom::HasVirtualDestructor<t_Ty>::value
+                                                 ? detail::ConstructorSelectorId::NoDefault
+                                                 : detail::ConstructorSelectorId::Abstract // abstract
+                                                 : (std::is_class<t_Ty>::value || std::is_union<t_Ty>::value)
+                                                 ? !(IsPublicOrProtectedDefaultConstructible<t_Ty>::value)
+                                                 ? detail::ConstructorSelectorId::NoDefault // no default constructor
+                                                 : detail::ConstructorSelectorId::Default
+                                                 : detail::ConstructorSelectorId::Fundamental>
 {
     template<typename t_OtherTy>
     struct rebind

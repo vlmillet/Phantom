@@ -212,7 +212,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                                  "missing #include <phantom/constructor>");
         this->_addCtor(m_pClassType, [](MemberBuilder const& a_Member) {
             auto pConstructor = a_Member.apply(a_Member.classType()->NewMeta<CtorNoFwd>(
-            a_Member.classType()->getName(), phantom::lang::SignatureH<Sign>::Create(a_Member.classType()),
+            a_Member.classType()->getName(), phantom::lang::SignatureH<Sign>::Create(a_Member.classType()->getSource()),
             lang::Modifiers(Modifiers)));
             a_Member.classType()->addConstructor(pConstructor);
         });
@@ -299,9 +299,9 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<FuncProviderNoFwd>::value, "missing #include <phantom/static_method>");
         using FuncPtrT = decltype(a_Ptr);
         this->_addFunc(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_Ptr), [](MemberBuilder const& a_Member) {
-            auto pFunc = FuncProviderNoFwd::CreateFunction(a_Member.classType(), a_Member.name,
-                                                           lang::SignatureH<Sign>::Create(a_Member.classType()),
-                                                           PHANTOM_REG_MEMBER_GETBACK_ARG(0, FuncPtrT));
+            auto pFunc = FuncProviderNoFwd::CreateFunction(
+            a_Member.classType(), a_Member.name, lang::SignatureH<Sign>::Create(a_Member.classType()->getSource()),
+            PHANTOM_REG_MEMBER_GETBACK_ARG(0, FuncPtrT));
             a_Member.classType()->addFunction(a_Member.apply(pFunc));
         });
         return static_cast<MostDerived&>(*this);
@@ -488,7 +488,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         this->_addMethod(
         m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(simplified), [](MemberBuilder const& a_Member) {
             auto pMethod = a_Member.classType()->NewMeta<::phantom::lang::MethodT<SimplifiedType>>(
-            a_Member.name, lang::SignatureH<Sign>::Create(a_Member.classType()),
+            a_Member.name, lang::SignatureH<Sign>::Create(a_Member.classType()->getSource()),
             PHANTOM_REG_MEMBER_GETBACK_ARG(0, SimplifiedType),
             lang::Modifiers(Modifiers & (lang::Modifier::Virtual | lang::Modifier::Override | lang::Modifier::Final)),
             PHANTOM_R_FLAG_NONE);
@@ -979,14 +979,14 @@ auto _PHTNM_TemplateTypeOfH()
 }
 
 #define _PHNTM_TEMPLATE_TYPEOF_BY_ADL(TemplateSign, DecoratedType)                                                     \
-    PHANTOM_PP_IDENTITY TemplateSign inline auto _PHNTM_TypeOf(phantom::TypeOfTag<PHANTOM_PP_IDENTITY DecoratedType>)  \
+    PHANTOM_PP_IDENTITY TemplateSign inline auto _PHNTM_TypeOf(PHANTOM_PP_IDENTITY DecoratedType**)                    \
     {                                                                                                                  \
         return _PHTNM_TemplateTypeOfH<PHANTOM_TYPENAME _PHNTM_Registrer<                                               \
         phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::_PHNTM_User>();                     \
     }
 
 #define _PHNTM_TEMPLATE_TYPEOF_BY_UNDEFINED(TemplateSign, DecoratedType)                                               \
-    PHANTOM_PP_IDENTITY TemplateSign inline auto _PHNTM_TypeOf(phantom::TypeOfTag<PHANTOM_PP_IDENTITY DecoratedType>)  \
+    PHANTOM_PP_IDENTITY TemplateSign inline auto _PHNTM_TypeOf(PHANTOM_PP_IDENTITY DecoratedType**)                    \
     {                                                                                                                  \
         return phantom::lang::TypeOfUndefined<                                                                         \
         phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::object();                           \

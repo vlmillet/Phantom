@@ -46,10 +46,11 @@
   </Type>
   
   <Type Name="phantom::SmallString&lt;*,*&gt;">
-    <DisplayString>{m_Chars.m_data,s}</DisplayString>
+    <DisplayString>{m_Chars.m_data,sb}</DisplayString>
     <Expand>
       <Item Name="length">m_Chars.m_size-1</Item>
       <Item Name="capacity">m_Chars.m_capacity</Item>
+      <Item Name="data">(const char*)m_Chars.m_data</Item>
     </Expand>
   </Type>
 

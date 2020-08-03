@@ -42,7 +42,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
-        PHANTOM_CLASS_T((class, size_t), (T, StaticAllocSize), SmallVector)
+        PHANTOM_CLASS_T((class, phantom::uint), (T, StaticAllocSize), SmallVector)
         {
             using ArrayViewType = typedef_<PHANTOM_TYPENAME _::ArrayViewType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;
@@ -101,10 +101,10 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<value_type&()>("front", &_::front)
             .PHANTOM_T method<value_type&()>("back", &_::back)
             .PHANTOM_T method<void()>("pop_back", &_::pop_back)
-            .PHANTOM_T method<void(size_t)>("reserve", &_::reserve)
-            .PHANTOM_T method<void(size_t)>("resize", &_::resize)
-            .PHANTOM_T method<void(size_t, const value_type&)>("resize", &_::resize)
-            .PHANTOM_T method<void(size_t, value_type&&)>("resize", &_::resize)
+            .PHANTOM_T method<void(size_type)>("reserve", &_::reserve)
+            .PHANTOM_T method<void(size_type)>("resize", &_::resize)
+            .PHANTOM_T method<void(size_type, const value_type&)>("resize", &_::resize)
+            .PHANTOM_T method<void(size_type, value_type&&)>("resize", &_::resize)
             .PHANTOM_T method<void(const value_type&)>("push_back", &_::push_back)
             .PHANTOM_T method<iterator(const_iterator)>("erase", &_::erase)
             .PHANTOM_T method<iterator(const_iterator)>("erase_unsorted", &_::erase_unsorted)
@@ -129,7 +129,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsCopyAssignable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsCopyAssignable)
+        /* PHANTOM_STRUCT_TS((class, phantom::uint), (T, S), (), IsCopyAssignable)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsCopyAssignable<T>::value)>>()
@@ -143,7 +143,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsMoveAssignable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsMoveAssignable)
+        /* PHANTOM_STRUCT_TS((class, phantom::uint), (T, S), (), IsMoveAssignable)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsMoveAssignable<T>::value)>>()
@@ -157,7 +157,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsCopyConstructible) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsCopyConstructible)
+        /* PHANTOM_STRUCT_TS((class, phantom::uint), (T, S), (), IsCopyConstructible)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsCopyConstructible<T>::value)>>()
@@ -171,7 +171,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallVector")
 
         /// missing symbol(s) reflection (phantom::IsMoveConstructible) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_TS((class, size_t), (T, S), (), IsMoveConstructible)
+        /* PHANTOM_STRUCT_TS((class, phantom::uint), (T, S), (), IsMoveConstructible)
         {
             this_()
             // .PHANTOM_T inherits<::std::integral_constant<bool, !(!IsMoveConstructible<T>::value)>>()

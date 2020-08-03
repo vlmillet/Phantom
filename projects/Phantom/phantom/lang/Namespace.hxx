@@ -46,7 +46,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol, ::phantom::lang::Scope>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -57,7 +57,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
         
         .public_()
-            .staticMethod<Namespace*()>("Global", &_::Global)
+            .staticMethod<::phantom::lang::Namespace *()>("Global", &_::Global)
         
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]

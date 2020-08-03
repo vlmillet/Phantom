@@ -46,8 +46,8 @@ public:
     virtual Type* getKeyType() const { return PHANTOM_TYPEOF(size_t); }
     virtual Type* getMappedType() const { return m_pValueType; }
 
-    inline Type* getValueType() const { return m_pValueType; }
-    void         setValueType(Type* a_pValueType);
+    Type* getValueType() const;
+    void  setValueType(Type* a_pValueType);
 
     ContainerClass* asContainerClass() const override { return const_cast<ContainerClass*>(this); }
 
@@ -77,7 +77,7 @@ protected:
     virtual Property* createSizeProperty();
 
 protected:
-    Type*             m_pValueType = nullptr;
+    mutable Type*     m_pValueType = nullptr;
     mutable RTData*   m_pData = nullptr;
     mutable Property* m_pSizeProperty = nullptr;
 

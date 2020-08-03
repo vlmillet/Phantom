@@ -98,7 +98,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T inherits<::phantom::OpaqueDelegate>()
         .public_()
             /// missing symbol(s) reflection (phantom::detail::DelegateGenericClass, ) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<DelegateGenericClass*() const>("getThis", &_::getThis)
+            // .PHANTOM_T method<::phantom::detail::DelegateGenericClass *() const>("getThis", &_::getThis)
             .PHANTOM_T method<t_GenericMFP() const>("getMFPtr", &_::getMFPtr)
             .PHANTOM_T method<t_StaticFP() const>("getStaticFP", &_::getStaticFP)
             .PHANTOM_T method<bool(t_StaticFP)>("contains", &_::contains)

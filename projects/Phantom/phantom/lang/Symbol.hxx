@@ -63,7 +63,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::LanguageElement>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -88,7 +88,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .method<Type*() const, virtual_|override_>("toType", &_::toType)
-            .method<Namespace*() const, virtual_>("toNamespace", &_::toNamespace)
+            .method<::phantom::lang::Namespace *() const, virtual_>("toNamespace", &_::toNamespace)
             .method<void(Access)>("setAccess", &_::setAccess)
             .method<Access() const>("getAccess", &_::getAccess)
             .method<void(Visibility)>("setVisibility", &_::setVisibility)

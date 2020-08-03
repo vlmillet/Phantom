@@ -40,7 +40,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)

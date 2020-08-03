@@ -41,7 +41,7 @@ namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("SmallSet")
 
-        PHANTOM_CLASS_T((class, size_t, class), (T, S, Pred), SmallSet)
+        PHANTOM_CLASS_T((class, phantom::uint, class), (T, S, Pred), SmallSet)
         {
             using BaseType = typedef_<PHANTOM_TYPENAME _::BaseType>;
             using SelfType = typedef_<PHANTOM_TYPENAME _::SelfType>;

@@ -759,7 +759,9 @@ void Class::placementDeleteInstance(void* a_pInstance) const
 
 bool Class::isA(Class* a_pType) const
 {
-    if (isSame(a_pType))
+    if (a_pType == this)
+        return true;
+    if (getTemplateSpecialization() && a_pType->getTemplateSpecialization() && isSame(a_pType))
         return true;
     for (auto& bc : m_BaseClasses)
     {

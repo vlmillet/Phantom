@@ -58,7 +58,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(FunctionType*, ABI, Modifiers, uint)>()["0"]["0"]
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<Closure(void*) const, virtual_>("getClosure", &_::getClosure)
+            // .method<::phantom::Closure(void*) const, virtual_>("getClosure", &_::getClosure)
             .method<FunctionPointer*() const, virtual_|override_>("asFunctionPointer", &_::asFunctionPointer)
             .method<void(StringView, void*) const, virtual_|override_>("valueFromString", &_::valueFromString)
             .method<void(StringBuffer&, const void*) const, virtual_|override_>("valueToString", &_::valueToString)

@@ -202,7 +202,8 @@ public:
     Impl*       this_() { return static_cast<Impl*>(this); }
     Impl const* this_() const { return static_cast<Impl const*>(this); }
 
-    bool shouldUpdateValueMember(MemberAccessT<ValueMember> a_Input) const { return false; }
+    bool shouldWriteValueMember(MemberAccessT<ValueMember> a_Input) const { return false; }
+    bool shouldReadValueMember(MemberAccessT<ValueMember> a_Input) const { return false; }
 
     inline bool traverseValueMembers(InstanceT<ClassType> a_Input)
     {
@@ -227,6 +228,16 @@ public:
 
     bool traverse(InstanceT<Type> a_Input)
     {
+        // remove const/volatile
+        if (a_Input.getMeta()->isQualified())
+        {
+            if (a_Input.getMeta()->isConstVolatile())
+                return traverse(
+                InstanceT<ConstVolatileType>((ConstVolatileType*)a_Input.getMeta(), a_Input.getAddress()));
+            else if (a_Input.getMeta()->isConst())
+                return traverse(InstanceT<ConstType>((ConstType*)a_Input.getMeta(), a_Input.getAddress()));
+            return traverse(InstanceT<VolatileType>((VolatileType*)a_Input.getMeta(), a_Input.getAddress()));
+        }
         switch (a_Input.getMeta()->getTypeKind())
         {
         case TypeKind::Class:
@@ -1094,16 +1105,17 @@ public:
     bool _traverseValueMember(MemberAccessT<ValueMember> a_Input)
     {
         Type* pValueType = a_Input.getMemberMeta()->getValueType();
-        if (!a_Input.getMemberMeta()->isReadable() || !a_Input.getMemberMeta()->isWrittable())
+        bool  read = this_()->shouldReadValueMember(a_Input);
+        bool  write = this_()->shouldWriteValueMember(a_Input);
+        if ((read && !a_Input.getMemberMeta()->isReadable()) || (write && !a_Input.getMemberMeta()->isWrittable()))
             return true;
         size_t valueTypeSz = pValueType->getSize();
         void*  buffer = alloca(valueTypeSz);
         pValueType->construct(buffer);
-        bool set = this_()->shouldUpdateValueMember(a_Input);
-        if (!set)
+        if (read)
             a_Input.getMemberMeta()->getValue(a_Input.getOwner().getAddress(), buffer);
         bool res = traverse(InstanceT<Type>(pValueType, buffer));
-        if (res && set)
+        if (res && write)
             a_Input.getMemberMeta()->setValue(a_Input.getOwner().getAddress(), buffer);
         pValueType->destroy(buffer);
         return res;

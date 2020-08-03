@@ -61,6 +61,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TypeFilter = typedef_<_::TypeFilter>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Symbol>()
         .public_()
@@ -240,7 +241,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Scope*() const>("getScope", &_::getScope)
             .method<Type*() const>("getOwnerType", &_::getOwnerType)
             .method<size_t() const>("getExtendedTypeCount", &_::getExtendedTypeCount)
-            .method<Type*(size_t) const>("getExtendedType", &_::getExtendedType)
+            .method<TypesView() const>("getExtendedTypes", &_::getExtendedTypes)
             .method<::phantom::lang::Type *(Type*) const, virtual_>("getCommonBaseAncestor", &_::getCommonBaseAncestor)
             .method<Pointer*() const>("getPointer", &_::getPointer)
             .method<LValueReference*() const>("getLValueReference", &_::getLValueReference)

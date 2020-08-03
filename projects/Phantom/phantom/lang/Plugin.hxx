@@ -37,6 +37,7 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(Plugin)
         {
+            using Plugins = typedef_< phantom::lang::Plugins>;
             using StringView = typedef_< phantom::StringView>;
             this_()
         
@@ -44,8 +45,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<bool()>("HasLoadingInProgress", &_::HasLoadingInProgress)
             .staticMethod<bool(Module*)>("HasLoadingInProgress", &_::HasLoadingInProgress)
             .staticMethod<bool()>("HasUnloadingInProgress", &_::HasUnloadingInProgress)
-            .staticMethod<Plugins const&()>("GetLoadingPluginStack", &_::GetLoadingPluginStack)
-            .staticMethod<Plugins const&()>("GetUnloadingPluginStack", &_::GetUnloadingPluginStack)
+            .staticMethod<const Plugins&()>("GetLoadingPluginStack", &_::GetLoadingPluginStack)
+            .staticMethod<const Plugins&()>("GetUnloadingPluginStack", &_::GetUnloadingPluginStack)
         
         .public_()
             .constructor<void(StringView, StringView)>()

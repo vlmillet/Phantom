@@ -16,7 +16,6 @@
 
 #include <locale>
 #include <phantom/utils/StringHash.h>
-#include <phantom/utils/Variant.h>
 /* *********************************************** */
 namespace phantom
 {
@@ -26,6 +25,14 @@ static Symbols          empty_elements;
 static MetaDatas        empty_metas;
 static Annotations      empty_annotations;
 static SymbolExtensions empty_extensions;
+
+struct Symbol::ExtraData
+{
+    MetaDatas        metaDatas{};
+    Annotations      annotations{};
+    SymbolExtensions extensions{};
+    UserData         userData{};
+};
 
 bool Symbol::IsCppIdentifier(StringView a_Name)
 {
@@ -58,10 +65,8 @@ void Symbol::terminate()
 {
     setVisibility(Visibility::Private);
     setNamespace(nullptr);
-    if (m_pMetaDatas)
-        delete_<MetaDatas>(m_pMetaDatas);
-    if (m_pAnnotations)
-        delete_<Annotations>(m_pAnnotations);
+    if (m_pExtraData)
+        delete_<ExtraData>(m_pExtraData);
     LanguageElement::terminate();
 }
 
@@ -69,9 +74,9 @@ int Symbol::destructionPriority() const
 {
     int prio = LanguageElement::destructionPriority();
 
-    if (m_pMetaDatas != nullptr)
+    if (m_pExtraData != nullptr)
     {
-        for (MetaDatas::value_type& pair : *m_pMetaDatas)
+        for (MetaDatas::value_type& pair : m_pExtraData->metaDatas)
         {
             int typePrio = pair.second.type()->destructionPriority() - 1;
             if (typePrio < prio)
@@ -115,6 +120,16 @@ void Symbol::formatAnonymousName(StringBuffer& a_Buf) const
     a_Buf += buf;
 }
 
+MetaDatas& Symbol::_metaDatas()
+{
+    return _extraData().metaDatas;
+}
+
+MetaDatas const& Symbol::_metaDatas() const
+{
+    return _extraData().metaDatas;
+}
+
 const Variant& Symbol::getMetaData(StringView a_Name) const
 {
     return getMetaData(StringWithHash(a_Name));
@@ -123,17 +138,19 @@ const Variant& Symbol::getMetaData(StringView a_Name) const
 const Variant& Symbol::getMetaData(StringWithHash a_Name) const
 {
     static Variant null;
-    if (m_pMetaDatas == nullptr)
+    if (m_pExtraData == nullptr)
         return null;
-    auto found = m_pMetaDatas->find(a_Name);
-    return found == m_pMetaDatas->end() ? null : found->second;
+    auto& md = _metaDatas();
+    auto  found = md.find(a_Name);
+    return found == md.end() ? null : found->second;
 }
 
 bool Symbol::hasMetaData(StringWithHash a_Hash) const
 {
-    if (m_pMetaDatas == nullptr)
+    if (m_pExtraData == nullptr)
         return false;
-    return m_pMetaDatas->find(a_Hash) != m_pMetaDatas->end();
+    auto& md = _metaDatas();
+    return md.find(a_Hash) != md.end();
 }
 
 bool Symbol::hasMetaData(StringView a_strName) const
@@ -143,38 +160,29 @@ bool Symbol::hasMetaData(StringView a_strName) const
 
 const MetaDatas& Symbol::getMetaDatas() const
 {
-    return m_pMetaDatas ? *m_pMetaDatas : empty_metas;
+    return m_pExtraData ? m_pExtraData->metaDatas : empty_metas;
 }
 
 bool Symbol::hasAnnotation(StringView a_strName) const
 {
-    return (m_pAnnotations && m_pAnnotations->find(a_strName) != m_pAnnotations->end());
+    return (m_pExtraData && m_pExtraData->annotations.find(a_strName) != m_pExtraData->annotations.end());
 }
 
 bool Symbol::addAnnotation(StringView a_strName)
 {
-    if (m_pAnnotations == nullptr)
-        m_pAnnotations = new_<Annotations>(getAllocator());
-    return m_pAnnotations->insert(a_strName).second;
+    return _annotations().insert(a_strName).second;
 }
 
 bool Symbol::removeAnnotation(StringView a_strName)
 {
-    if (m_pAnnotations && m_pAnnotations->erase(a_strName) == 1)
-    {
-        if (m_pAnnotations->empty())
-        {
-            delete_<Annotations>(m_pAnnotations);
-            m_pAnnotations = nullptr;
-        }
+    if (m_pExtraData && _annotations().erase(a_strName) == 1)
         return true;
-    }
     return false;
 }
 
 const Annotations& Symbol::getAnnotations() const
 {
-    return m_pAnnotations ? *m_pAnnotations : empty_annotations;
+    return m_pExtraData ? m_pExtraData->annotations : empty_annotations;
 }
 
 SymbolExtension* Symbol::getExtension(Class* a_pClass, size_t a_Num /* = 0*/) const
@@ -190,7 +198,7 @@ SymbolExtension* Symbol::getExtension(Class* a_pClass, size_t a_Num /* = 0*/) co
 const SymbolExtensions& Symbol::getExtensions() const
 {
     const_cast<Symbol*>(this)->onElementsAccess();
-    return m_pExtensions ? *m_pExtensions : empty_extensions;
+    return m_pExtraData ? m_pExtraData->extensions : empty_extensions;
 }
 
 void Symbol::addExtensions(const SymbolExtensions& a_Extensions)
@@ -201,20 +209,19 @@ void Symbol::addExtensions(const SymbolExtensions& a_Extensions)
 
 void Symbol::addExtension(SymbolExtension* a_pExtension)
 {
-    if (m_pExtensions == nullptr)
-        m_pExtensions = new_<SymbolExtensions>(getAllocator());
-    PHANTOM_ASSERT(std::find(m_pExtensions->begin(), m_pExtensions->end(), a_pExtension) == m_pExtensions->end());
-    m_pExtensions->push_back(a_pExtension);
+    auto& exts = _extensions();
+    PHANTOM_ASSERT(std::find(exts.begin(), exts.end(), a_pExtension) == exts.end());
+    exts.push_back(a_pExtension);
 }
 
 void Symbol::setMetaData(StringWithHash a_Hash, const Variant& a_Value)
 {
-    (*m_pMetaDatas)[a_Hash] = a_Value;
+    _metaDatas()[a_Hash] = a_Value;
 }
 
 void Symbol::setMetaData(StringWithHash a_Hash, Variant&& a_Value)
 {
-    (*m_pMetaDatas)[a_Hash] = std::move(a_Value);
+    _metaDatas()[a_Hash] = std::move(a_Value);
 }
 
 void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
@@ -224,9 +231,7 @@ void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
     {
         PHANTOM_ASSERT(Symbol::IsCppIdentifier(a_Name), "meta '%.*s' is not an identifier name matching [a-zA-Z0-9_]+",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
-        if (m_pMetaDatas == nullptr)
-            m_pMetaDatas = new_<MetaDatas>(getAllocator());
-        (*m_pMetaDatas)[StringWithHash(a_Name)] = a_Value;
+        _metaDatas()[StringWithHash(a_Name)] = a_Value;
     }
     else
     {
@@ -239,22 +244,16 @@ void Symbol::setMetaData(StringView a_Name, const Variant& a_Value)
 
 void Symbol::setMetaData(StringView a_Name, Variant&& a_Value)
 {
-    if (m_pMetaDatas == nullptr)
-        m_pMetaDatas = new_<MetaDatas>(getAllocator());
-    (*m_pMetaDatas)[StringWithHash(a_Name)] = (Variant &&) a_Value;
+    _metaDatas()[StringWithHash(a_Name)] = (Variant &&) a_Value;
 }
 
 void Symbol::removeMetaData(StringWithHash a_NameHash)
 {
-    PHANTOM_ASSERT(m_pMetaDatas);
-    auto found = m_pMetaDatas->find(a_NameHash);
-    PHANTOM_ASSERT(found != m_pMetaDatas->end());
-    m_pMetaDatas->erase(found);
-    if (m_pMetaDatas->empty())
-    {
-        delete_<MetaDatas>(m_pMetaDatas);
-        m_pMetaDatas = nullptr;
-    }
+    PHANTOM_ASSERT(m_pExtraData);
+    auto& md = _metaDatas();
+    auto  found = md.find(a_NameHash);
+    PHANTOM_ASSERT(found != md.end());
+    md.erase(found);
 }
 
 void Symbol::removeMetaData(StringView a_Name)
@@ -375,10 +374,6 @@ LanguageElement* Symbol::getNamingScope() const
     {
         if (pOwner->asSource() == nullptr)
         {
-            if (TemplateSpecialization* pSpec = pOwner->asTemplateSpecialization())
-            {
-                return pSpec->getTemplate()->getNamingScope();
-            }
             return pOwner;
         }
     }
@@ -395,8 +390,8 @@ void Symbol::setNamespace(Namespace* a_pNS)
     if (m_pNamespace == a_pNS)
         return;
     Source* pSource = getSource();
-    PHANTOM_ASSERT(asNamespace() || pSource == getOwner(),
-                   "only namespaces or source level symbols can be added to namespaces");
+    //     PHANTOM_ASSERT(asNamespace() || pSource == getOwner(),
+    //                    "only namespaces or source level symbols can be added to namespaces");
     if (m_pNamespace)
     {
         onNamespaceChanging(m_pNamespace);
@@ -450,30 +445,14 @@ void Symbol::setMetaDatas(MetaDatas&& a_MetaDatas)
 {
     if (&a_MetaDatas == nullptr)
         return;
-    if (m_pMetaDatas == nullptr)
-    {
-        m_pMetaDatas = new_<MetaDatas>(std::move(a_MetaDatas));
-        m_pMetaDatas->setAllocator(getAllocator());
-    }
-    else
-    {
-        *m_pMetaDatas = std::move(a_MetaDatas);
-    }
+    _metaDatas() = std::move(a_MetaDatas);
 }
 
 void Symbol::setMetaDatas(const MetaDatas& a_MetaDatas)
 {
     if (&a_MetaDatas == nullptr)
         return;
-    if (m_pMetaDatas == nullptr)
-    {
-        m_pMetaDatas = new_<MetaDatas>(a_MetaDatas);
-        m_pMetaDatas->setAllocator(getAllocator());
-    }
-    else
-    {
-        *m_pMetaDatas = a_MetaDatas;
-    }
+    _metaDatas() = a_MetaDatas;
 }
 
 void Symbol::addMetaDatas(const MetaDatas& a_MetaDatas)
@@ -648,6 +627,20 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
             return getDecoratedName(a_Buf);
         if (hasNamingScopeCascade(pTo))
             break;
+        //         if (auto pSym = pTo->asSymbol())
+        //         {
+        //             if (auto pSpec = pSym->getTemplateSpecialization())
+        //             {
+        //                 if (!pSpec->testFlags(PHANTOM_R_FLAG_IMPLICIT))
+        //                 {
+        //                     if (pSpec->getNamespace())
+        //                     {
+        //                         pTo = pSpec->getOwner();
+        //                         continue;
+        //                     }
+        //                 }
+        //             }
+        //         }
         pTo = pTo->getNamingScope();
     }
 
@@ -757,7 +750,7 @@ Symbol* SymbolExtension::getSymbol() const
 
 void Symbol::setUserData(UserData&& a_UserData)
 {
-    m_UserData = std::move(a_UserData);
+    _userData() = std::move(a_UserData);
 }
 
 hash64 Symbol::getHash() const
@@ -776,6 +769,43 @@ hash64 Symbol::getHash() const
     PHANTOM_ASSERT_DEBUG(computeHash() == m_Hash, "hash for symbol %s is inconsistent over time",
                          getQualifiedDecoratedName().c_str());
     return m_Hash;
+}
+
+Annotations& Symbol::_annotations()
+{
+    return _extraData().annotations;
+}
+
+Annotations const& Symbol::_annotations() const
+{
+    return _extraData().annotations;
+}
+
+UserData& Symbol::_userData()
+{
+    return _extraData().userData;
+}
+
+UserData const& Symbol::_userData() const
+{
+    return _extraData().userData;
+}
+
+SymbolExtensions& Symbol::_extensions()
+{
+    return _extraData().extensions;
+}
+
+SymbolExtensions const& Symbol::_extensions() const
+{
+    return _extraData().extensions;
+}
+
+Symbol::ExtraData& Symbol::_extraData()
+{
+    if (m_pExtraData == nullptr)
+        m_pExtraData = new_<ExtraData>();
+    return *m_pExtraData;
 }
 
 } // namespace lang

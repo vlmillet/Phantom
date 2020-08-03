@@ -44,7 +44,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringView = typedef_< phantom::StringView>;
             using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
             using TemplateSpecializations = typedef_< phantom::lang::TemplateSpecializations>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)

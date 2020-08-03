@@ -37,16 +37,16 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             this_()
         .public_()
-            .method<Symbol*() const, pure_virtual>("asSymbol", &_::asSymbol)
-            .method<Placeholder*() const, pure_virtual>("asPlaceholder", &_::asPlaceholder)
-            .method<PlaceholderType*() const, virtual_>("asPlaceholderType", &_::asPlaceholderType)
-            .method<PlaceholderConstant*() const, virtual_>("asPlaceholderConstant", &_::asPlaceholderConstant)
-            .method<PlaceholderClass*() const, virtual_>("asPlaceholderClass", &_::asPlaceholderClass)
-            .method<PlaceholderTemplate*() const, virtual_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
+            .method<::phantom::lang::Symbol *() const, pure_virtual>("asSymbol", &_::asSymbol)
+            .method<::phantom::lang::Placeholder *() const, pure_virtual>("asPlaceholder", &_::asPlaceholder)
+            .method<::phantom::lang::PlaceholderType *() const, virtual_>("asPlaceholderType", &_::asPlaceholderType)
+            .method<::phantom::lang::PlaceholderConstant *() const, virtual_>("asPlaceholderConstant", &_::asPlaceholderConstant)
+            .method<::phantom::lang::PlaceholderClass *() const, virtual_>("asPlaceholderClass", &_::asPlaceholderClass)
+            .method<::phantom::lang::PlaceholderTemplate *() const, virtual_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
             .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)
             .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)
-            .method<Placeholder*(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)["0"]
+            .method<::phantom::lang::Placeholder *(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

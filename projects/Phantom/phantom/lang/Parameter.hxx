@@ -40,7 +40,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::LocalVariable>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -50,8 +50,8 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, StringView, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Type*, StringView, Modifiers, uint)>()["0"]["0"]
             .method<void(StringView)>("setDefinitionName", &_::setDefinitionName)
             .method<bool() const>("hasDefaultArgument", &_::hasDefaultArgument)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files

@@ -40,8 +40,8 @@ public:
     void initialize();
     void terminate() override;
 
-    Type* getKeyType() const override final { return m_pKeyType; }
-    Type* getMappedType() const override final { return m_pMappedType; }
+    Type* getKeyType() const override final;
+    Type* getMappedType() const override final;
     void  setKeyType(Type* a_pType) { m_pKeyType = a_pType; }
     void  setMappedType(Type* a_pType) { m_pMappedType = a_pType; }
 
@@ -52,8 +52,8 @@ public:
     virtual void find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const;
 
 protected:
-    Type*           m_pKeyType = nullptr;
-    Type*           m_pMappedType = nullptr;
+    mutable Type*   m_pKeyType = nullptr;
+    mutable Type*   m_pMappedType = nullptr;
     mutable RTData* m_pData = nullptr;
 };
 

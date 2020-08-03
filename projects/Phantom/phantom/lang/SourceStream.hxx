@@ -41,10 +41,10 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringView = typedef_< phantom::StringView>;
             this_()
         .public_()
-            .staticMethod<SourceStream*(StringView)>("CreateFromUrl", &_::CreateFromUrl)
+            .staticMethod<::phantom::lang::SourceStream *(StringView)>("CreateFromUrl", &_::CreateFromUrl)
         
         .public_()
-            .method<SourceFile*(), virtual_>("asFile", &_::asFile)
+            .method<::phantom::lang::SourceFile *(), virtual_>("asFile", &_::asFile)
             .method<bool() const, pure_virtual>("exists", &_::exists)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<::std::basic_istream<char> *(), pure_virtual>("createInputStream", &_::createInputStream)
@@ -55,7 +55,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<StringView() const>("getPath", &_::getPath)
             .method<StringView() const>("getProtocol", &_::getProtocol)
             .method<String() const>("getUrl", &_::getUrl)
-            .method<SourceStream*() const, pure_virtual>("clone", &_::clone)
+            .method<::phantom::lang::SourceStream *() const, pure_virtual>("clone", &_::clone)
         
         .protected_()
             .constructor<void(StringView, StringView)>()

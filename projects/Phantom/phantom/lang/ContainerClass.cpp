@@ -40,6 +40,21 @@ void ContainerClass::terminate()
     Class::terminate();
 }
 
+Type* ContainerClass::getValueType() const
+{
+    if (!isNative() && m_pValueType == nullptr)
+    {
+        Alias* pAlias = getAlias("value_type");
+        if (pAlias && pAlias->getAliasedSymbol())
+        {
+            Symbol* pAliased = pAlias->getAliasedSymbol();
+            if (!(m_pValueType = pAliased->asType()))
+                pAlias = pAliased->asAlias();
+        }
+    }
+    return m_pValueType;
+}
+
 void ContainerClass::setValueType(Type* a_pValueType)
 {
     PHANTOM_ASSERT(a_pValueType, "container value type not reflected");

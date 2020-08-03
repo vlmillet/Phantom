@@ -36,47 +36,82 @@ void MapClass::terminate()
     ContainerClass::terminate();
 }
 
+Type* MapClass::getKeyType() const
+{
+    if (!isNative() && m_pKeyType == nullptr)
+    {
+        Alias* pAlias = getAlias("key_type");
+        if (pAlias && pAlias->getAliasedSymbol())
+        {
+            Symbol* pAliased = pAlias->getAliasedSymbol();
+            if (!(m_pKeyType = pAliased->asType()))
+                pAlias = pAliased->asAlias();
+        }
+    }
+    return m_pKeyType;
+}
+
+Type* MapClass::getMappedType() const
+{
+    if (!isNative() && m_pMappedType == nullptr)
+    {
+        Alias* pAlias = getAlias("mapped_type");
+        if (pAlias && pAlias->getAliasedSymbol())
+        {
+            Symbol* pAliased = pAlias->getAliasedSymbol();
+            if (!(m_pMappedType = pAliased->asType()))
+                pAlias = pAliased->asAlias();
+        }
+    }
+    return m_pMappedType;
+}
+
 void MapClass::eraseKey(void* a_pContainer, void const* a_pKey) const
 {
-    PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
+    auto pKeyType = getKeyType();
+    PHANTOM_ASSERT(pKeyType);
     if (!m_pData->m_pFunc_eraseKey)
-        m_pData->m_pFunc_eraseKey = getMethod("erase", {m_pKeyType->addConstLValueReference()});
+        m_pData->m_pFunc_eraseKey = getMethod("erase", {pKeyType->addConstLValueReference()});
     void* args[] = {(void*)a_pKey};
     m_pData->m_pFunc_eraseKey->invoke(a_pContainer, args);
 }
 
 void MapClass::insert(void* a_pContainer, void const* a_pPair) const
 {
-    PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
+    auto pValueType = getValueType();
+    PHANTOM_ASSERT(pValueType);
     if (!m_pData->m_pFunc_insert)
-        m_pData->m_pFunc_insert = getMethod("insert", {getValueType()->addConstLValueReference()});
+        m_pData->m_pFunc_insert = getMethod("insert", {pValueType->addConstLValueReference()});
     void* args[] = {(void*)a_pPair};
     m_pData->m_pFunc_insert->invoke(a_pContainer, args);
 }
 
 void MapClass::map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const
 {
-    PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
+    auto pKeyType = getKeyType();
+    PHANTOM_ASSERT(pKeyType);
     if (!m_pData->m_pFunc_map)
-        m_pData->m_pFunc_map = getMethod("operator[]", {m_pKeyType->addConstLValueReference()});
+        m_pData->m_pFunc_map = getMethod("operator[]", {pKeyType->addConstLValueReference()});
     void* args[] = {(void*)a_pKey};
     m_pData->m_pFunc_map->invoke(a_pContainer, args, a_pOutPairPointer);
 }
 
 void MapClass::find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const
 {
-    PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
+    auto pKeyType = getKeyType();
+    PHANTOM_ASSERT(pKeyType);
     if (!m_pData->m_pFunc_findc)
-        m_pData->m_pFunc_findc = getMethod("find", {m_pKeyType->addConstLValueReference()}, Modifier::Const);
+        m_pData->m_pFunc_findc = getMethod("find", {pKeyType->addConstLValueReference()}, Modifier::Const);
     void* args[] = {(void*)a_pKey};
     m_pData->m_pFunc_findc->invoke((void*)a_pContainer, args, a_pOutIt);
 }
 
 void MapClass::find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const
 {
-    PHANTOM_ASSERT(m_pKeyType && m_pMappedType);
+    auto pKeyType = getKeyType();
+    PHANTOM_ASSERT(pKeyType);
     if (!m_pData->m_pFunc_find)
-        m_pData->m_pFunc_find = getMethod("find", {m_pKeyType->addConstLValueReference()}, Modifier::Const);
+        m_pData->m_pFunc_find = getMethod("find", {pKeyType->addConstLValueReference()}, Modifier::Const);
     void* args[] = {(void*)a_pKey};
     m_pData->m_pFunc_find->invoke((void*)a_pContainer, args, a_pOutIt);
 }

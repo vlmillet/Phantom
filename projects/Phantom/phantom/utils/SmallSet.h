@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-template<class T, size_t S, class Pred>
+template<class T, uint32_t S, class Pred>
 class SmallSet : public SmallVectorBasedContainer<T, S>
 {
 public:
@@ -36,10 +36,7 @@ public:
     }
     explicit SmallSet(CustomAllocator const* a_pMemTraits) : BaseType(a_pMemTraits){};
 
-    T const& operator[](size_t i) const
-    {
-        return this->m_storage[i];
-    }
+    T const& operator[](size_t i) const { return this->m_storage[i]; }
 
     const_iterator find(T const& a_Val) const
     {
@@ -83,15 +80,9 @@ public:
         return std::lower_bound(this->begin(), this->end(), a_Val, Pred());
     }
 
-    iterator lower_bound(const T& a_Val)
-    {
-        return (iterator) const_cast<SelfType const*>(this)->lower_bound(a_Val);
-    }
+    iterator lower_bound(const T& a_Val) { return (iterator) const_cast<SelfType const*>(this)->lower_bound(a_Val); }
 
-    void swap(SelfType& a_Other)
-    {
-        this->m_storage.swap(a_Other.m_storage);
-    }
+    void swap(SelfType& a_Other) { this->m_storage.swap(a_Other.m_storage); }
 
 private:
     static bool _eq(T const& k0, T const& k1)

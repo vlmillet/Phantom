@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-template<class K, class V, size_t S, class Pred>
+template<class K, class V, uint32_t S, class Pred>
 class SmallMap : public SmallVectorBasedContainer<Pair<const K, V>, S>
 {
 public:

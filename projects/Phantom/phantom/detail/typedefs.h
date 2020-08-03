@@ -22,10 +22,10 @@ HAUNT_SOURCE("phantom.String");
 namespace phantom
 {
 #if !defined(PHANTOM_STRING_STATIC_SIZE)
-#    define PHANTOM_STRING_STATIC_SIZE 20
+#    define PHANTOM_STRING_STATIC_SIZE 16
 #endif
 #if !defined(PHANTOM_STRING_EXPAND_SIZE)
-#    define PHANTOM_STRING_EXPAND_SIZE 20
+#    define PHANTOM_STRING_EXPAND_SIZE 16
 #endif
 #if !defined(PHANTOM_STRINGS_STATIC_SIZE)
 #    define PHANTOM_STRINGS_STATIC_SIZE 16
@@ -49,8 +49,8 @@ HAUNT_SOURCE("phantom.Core")
 
 namespace phantom
 {
-using VoidPtrs = SmallVector<void*, 20>;
-using ConstVoidPtrs = SmallVector<const void*, 20>;
+using VoidPtrs = SmallVector<void*, 16>;
+using ConstVoidPtrs = SmallVector<const void*, 16>;
 } // namespace phantom
 
 #if defined(_LIBCPP_VERSION)
@@ -265,7 +265,7 @@ namespace lang
 {
 HAUNT_SOURCE("phantom.lang.Core");
 
-enum ABI
+enum ABI : char
 {
     CDecl,      /* Native C calling conventions */
     VarArgCall, /* Native C with optional variable arguments */

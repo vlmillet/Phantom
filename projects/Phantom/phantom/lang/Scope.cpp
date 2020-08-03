@@ -339,7 +339,7 @@ Subroutine* Scope::getSubroutine(Type* a_pReturnType, StringView a_strName, Type
     return nullptr;
 }
 
-bool Scope::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, TypesView a_Types, Modifiers, uint,
+bool Scope::acceptsSubroutine(Type* a_pReturnType, StringView a_strName, TypesView a_Types, Modifiers, uint /*a_Flags*/,
                               Subroutines* a_pOutConflictingSubroutines /*= nullptr*/) const
 {
     bool bResult = true;

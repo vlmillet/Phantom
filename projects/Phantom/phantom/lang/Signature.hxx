@@ -46,13 +46,12 @@ PHANTOM_PACKAGE("phantom.lang")
             using EState = typedef_<_::EState>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using Parameters = typedef_< phantom::lang::Parameters>;
-            using String = typedef_< phantom::String>;
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using StringViews = typedef_< phantom::StringViews>;
             using Types = typedef_< phantom::lang::Types>;
             using TypesView = typedef_< phantom::lang::TypesView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -66,8 +65,8 @@ PHANTOM_PACKAGE("phantom.lang")
                 {"eState_UnderConstruction",_::eState_UnderConstruction},
                 {"eState_Final",_::eState_Final}})
             .end()
-            .staticMethod<Signature*(LanguageElement*, Type*, TypesView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
-            .staticMethod<Signature*(LanguageElement*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
+            .staticMethod<::phantom::lang::Signature *(LanguageElement*, Type*, TypesView, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
+            .staticMethod<::phantom::lang::Signature *(LanguageElement*, Type*, Modifiers, uint)>("Create", &_::Create)["0"]["0"]
             .constructor<void(Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
             .constructor<void(Type*, const Parameters&, Modifiers, uint)>()["0"]["0"]
@@ -84,24 +83,22 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<size_t() const>("getParameterCount", &_::getParameterCount)
             .method<Parameter*(size_t) const>("getParameter", &_::getParameter)
             .method<Parameter*(StringView) const>("getParameter", &_::getParameter)
-            .method<Parameter*(Type*, StringView)>("addParameter", &_::addParameter)["\"\""]
-            .method<void(Parameter*)>("addParameter", &_::addParameter)
             .method<Type*(size_t) const>("getParameterType", &_::getParameterType)
             .method<Types() const>("getParameterTypes", &_::getParameterTypes)
             .method<Parameters const&() const>("getParameters", &_::getParameters)
             .method<StringView(size_t) const>("getParameterName", &_::getParameterName)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(size_t) const>("getParameterDefaultValueExpression", &_::getParameterDefaultValueExpression)
-            .method<void(Type*)>("setReturnType", &_::setReturnType)
-            .method<void(size_t, StringView)>("setParameterName", &_::setParameterName)
             .method<Type*() const>("getReturnType", &_::getReturnType)
             .using_("LanguageElement::getQualifiedName")
             .using_("LanguageElement::getDecoratedName")
             .using_("LanguageElement::getQualifiedDecoratedName")
+            .using_("LanguageElement::getRelativeDecoratedName")
             .using_("LanguageElement::getUniqueName")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<size_t() const>("getRequiredArgumentCount", &_::getRequiredArgumentCount)
             .method<Subroutine*() const>("getOwnerSubroutine", &_::getOwnerSubroutine)
@@ -113,7 +110,6 @@ PHANTOM_PACKAGE("phantom.lang")
         .protected_()
             .field("m_pReturnType", &_::m_pReturnType)
             .field("m_Parameters", &_::m_Parameters)
-            .field("m_pReturnTypeName", &_::m_pReturnTypeName)
             .field("m_bVariadic", &_::m_bVariadic)
             ;
         }

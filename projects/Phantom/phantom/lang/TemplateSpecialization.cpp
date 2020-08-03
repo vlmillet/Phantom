@@ -38,6 +38,7 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
         setArgument(i, arguments[i]);
     }
     PHANTOM_ASSERT(m_pTemplated);
+    PHANTOM_ASSERT(m_pTemplated->getNamingScope());
     m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
@@ -382,6 +383,9 @@ bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecializ
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
 {
+    PHANTOM_ASSERT(getOwner() != getSource() || a_pTemplated->getNamespace(),
+                   "templated symbol must be hold by a namespace if this specialization is at the source level and not "
+                   "at class level");
     PHANTOM_ASSERT(a_pTemplated);
     PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");

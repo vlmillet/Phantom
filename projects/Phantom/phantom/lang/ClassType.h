@@ -32,8 +32,8 @@ struct FunctionTypeH<R(Params...)>
 {
     static Type* ReadReturnTypeAndParameterTypes(Types& a_Params)
     {
-        a_Params = {phantom::TypeOf<Params>(phantom::TypeOfTag<Params>())...};
-        return phantom::TypeOf<R>(phantom::TypeOfTag<R>());
+        a_Params = {phantom::TypeOf<Params>(_PHNTM_TypeOfVal(Params))...};
+        return phantom::TypeOf<R>(_PHNTM_TypeOfVal(R));
     }
 };
 

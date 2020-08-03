@@ -197,12 +197,27 @@ void Enum::valueToString(StringBuffer& a_Buf, const void* a_pSrc) const
     size_t count = getConstantCount();
     for (; i < count; ++i)
     {
-        size_t          constantValue = 0;
+        long long       constantValue = 0;
         lang::Constant* pConstant = getConstant(i);
         pConstant->getValue(&constantValue);
-        if (constantValue == *((size_t*)a_pSrc))
+        switch (getUnderlyingIntType()->getSize())
         {
-            return pConstant->getQualifiedDecoratedName(a_Buf);
+        case 1:
+            if (constantValue == *((char*)a_pSrc))
+                return pConstant->getQualifiedDecoratedName(a_Buf);
+            break;
+        case 2:
+            if (constantValue == *((short*)a_pSrc))
+                return pConstant->getQualifiedDecoratedName(a_Buf);
+            break;
+        case 4:
+            if (constantValue == *((int*)a_pSrc))
+                return pConstant->getQualifiedDecoratedName(a_Buf);
+            break;
+        case 8:
+            if (constantValue == *((long long*)a_pSrc))
+                return pConstant->getQualifiedDecoratedName(a_Buf);
+            break;
         }
     }
 }

@@ -352,14 +352,6 @@ private:
     void _registerType(hash64 a_Hash, Type* a_pType);
     void _unregisterType(hash64 a_Hash, Type* a_pType);
 
-    void* _alloc(size_t size, size_t align) { return m_Allocator.allocate(size, align); }
-    void* _relloc(void* ptr, size_t size, size_t align)
-    {
-        m_Allocator.deallocate(ptr);
-        return m_Allocator.allocate(size, align);
-    }
-    void _dealloc(void* ptr) { m_Allocator.deallocate(ptr); }
-
 private: // to ensure they won't be accessible
     using LanguageElement::New;
     using LanguageElement::NewDeferred;
@@ -381,7 +373,7 @@ private:
     FuncT                   m_OnLoad = nullptr;
     FuncT                   m_OnUnload = nullptr;
     MemoryContext           m_MemoryContext;
-    ForwardHeapSequence     m_Allocator;
+    ForwardHeapSequence     m_FWH;
     bool                    m_bOutdated = false;
 };
 

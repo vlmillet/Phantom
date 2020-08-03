@@ -16,7 +16,7 @@
 
 namespace phantom
 {
-template<class K, class V, size_t S, class Pred>
+template<class K, class V, uint32_t S, class Pred>
 class SmallMultimap : public SmallVectorBasedContainer<Pair<const K, V>, S>
 {
 public:
@@ -30,14 +30,8 @@ public:
 private:
     struct PredWrapper
     {
-        bool operator()(value_type const& l, K const& r)
-        {
-            return pred(l.first, r);
-        }
-        bool operator()(K const& l, value_type const& r)
-        {
-            return pred(l, r.first);
-        }
+        bool operator()(value_type const& l, K const& r) { return pred(l.first, r); }
+        bool operator()(K const& l, value_type const& r) { return pred(l, r.first); }
         Pred pred;
     };
 
@@ -55,15 +49,9 @@ public:
         return this->m_storage.insert(it, value_type(_key, V()))->second;
     }
 
-    const_iterator find(K const& _key) const
-    {
-        return lower_bound(_key);
-    }
+    const_iterator find(K const& _key) const { return lower_bound(_key); }
 
-    iterator find(K const& _key)
-    {
-        return lower_bound(_key);
-    }
+    iterator find(K const& _key) { return lower_bound(_key); }
 
     size_t erase(K const& _key)
     {
@@ -89,10 +77,7 @@ public:
         return std::lower_bound(this->begin(), this->end(), _key, PredWrapper());
     }
 
-    iterator lower_bound(const K& _key)
-    {
-        return (iterator) const_cast<SelfType const*>(this)->lower_bound(_key);
-    }
+    iterator lower_bound(const K& _key) { return (iterator) const_cast<SelfType const*>(this)->lower_bound(_key); }
 
     const_iterator upper_bound(const K& _key) const
     {
@@ -101,10 +86,7 @@ public:
         [](value_type const& l, value_type const& r) -> bool { return Pred()(l.first, r.first); });
     }
 
-    iterator upper_bound(const K& _key)
-    {
-        return (iterator) const_cast<SelfType const*>(this)->upper_bound(_key);
-    }
+    iterator upper_bound(const K& _key) { return (iterator) const_cast<SelfType const*>(this)->upper_bound(_key); }
 
     void swap(SelfType& a_Other)
     {

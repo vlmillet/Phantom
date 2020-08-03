@@ -52,7 +52,7 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
-            .method<void const*(void const*) const, pure_virtual>("c_str", &_::c_str)
+            .method<const void*(void const*) const, pure_virtual>("c_str", &_::c_str)
             .method<void(void*, const void*, size_t) const, pure_virtual>("assign", &_::assign)
             .method<void(void*, const void*) const, pure_virtual>("append", &_::append)
             ;

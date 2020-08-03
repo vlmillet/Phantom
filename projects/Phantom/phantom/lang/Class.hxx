@@ -58,12 +58,12 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringView = typedef_< phantom::StringView>;
             this_()
         .public_()
-            .staticMethod<ClassBuilder(StringView, size_t)>("struct_", &_::struct_)["0"]
-            .staticMethod<ClassBuilder(StringView, size_t)>("class_", &_::class_)["0"]
-            .staticMethod<ClassBuilder(Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
-            .staticMethod<ClassBuilder(Scope*, StringView, size_t)>("class_", &_::class_)["0"]
-            .staticMethod<ClassBuilder(Scope*, Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
-            .staticMethod<ClassBuilder(Scope*, Scope*, StringView, size_t)>("class_", &_::class_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(StringView, size_t)>("class_", &_::class_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(Scope*, StringView, size_t)>("class_", &_::class_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(Scope*, Scope*, StringView, size_t)>("struct_", &_::struct_)["0"]
+            .staticMethod<::phantom::lang::ClassBuilder(Scope*, Scope*, StringView, size_t)>("class_", &_::class_)["0"]
         
         .public_()
             .constructor<void(Scope*, Scope*, StringView, Access, size_t)>()["0"]
@@ -95,7 +95,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
-            .staticMethod<Class*()>("MetaClass", &_::MetaClass)
+            .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
         
@@ -147,7 +147,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<size_t(size_t) const>("getVirtualMethodTableSize", &_::getVirtualMethodTableSize)
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_|override_>("acceptsSubroutine", &_::acceptsSubroutine)["NULL"]
             .method<bool(Type*, StringView, TypesView, Modifiers, uint, Subroutines*) const, virtual_>("acceptsDerivedClassSubroutine", &_::acceptsDerivedClassSubroutine)
-            .method<Class*(size_t) const>("getBaseClass", &_::getBaseClass)
+            .method<::phantom::lang::Class *(size_t) const>("getBaseClass", &_::getBaseClass)
             .method<void*(void*, size_t) const>("baseClassCast", &_::baseClassCast)
             .method<const void*(const void*, size_t) const>("baseClassCast", &_::baseClassCast)
             .method<size_t(size_t) const>("getInheritanceLevel", &_::getInheritanceLevel)
@@ -240,12 +240,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("canHaveImplicitCopyAssignmentOperator", &_::canHaveImplicitCopyAssignmentOperator)
             .method<bool() const, virtual_|override_>("canHaveImplicitMoveConstructor", &_::canHaveImplicitMoveConstructor)
             .method<bool() const, virtual_|override_>("canHaveImplicitMoveAssignmentOperator", &_::canHaveImplicitMoveAssignmentOperator)
-            .staticMethod<VirtualMethodTable*(Class*, void**, size_t)>("CreateVirtualMethodTable", &_::CreateVirtualMethodTable)
-            .staticMethod<VirtualMethodTable*(Class*, VirtualMethodTable*, size_t)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
-            .staticMethod<VirtualMethodTable*(Class*, VirtualMethodTable*)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
-            .staticMethod<Class*(VirtualMethodTable*)>("VTablePrimaryClass", &_::VTablePrimaryClass)
-            .method<VirtualMethodTable*(), virtual_>("createVirtualMethodTable", &_::createVirtualMethodTable)
-            .method<VirtualMethodTable*(VirtualMethodTable*), virtual_>("deriveVirtualMethodTable", &_::deriveVirtualMethodTable)
+            .staticMethod<::phantom::lang::VirtualMethodTable *(Class*, void**, size_t)>("CreateVirtualMethodTable", &_::CreateVirtualMethodTable)
+            .staticMethod<::phantom::lang::VirtualMethodTable *(Class*, VirtualMethodTable*, size_t)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
+            .staticMethod<::phantom::lang::VirtualMethodTable *(Class*, VirtualMethodTable*)>("DeriveVirtualMethodTable", &_::DeriveVirtualMethodTable)
+            .staticMethod<::phantom::lang::Class *(VirtualMethodTable*)>("VTablePrimaryClass", &_::VTablePrimaryClass)
+            .method<::phantom::lang::VirtualMethodTable *(), virtual_>("createVirtualMethodTable", &_::createVirtualMethodTable)
+            .method<::phantom::lang::VirtualMethodTable *(VirtualMethodTable*), virtual_>("deriveVirtualMethodTable", &_::deriveVirtualMethodTable)
             .method<SymbolExtension*(Class*, size_t) const>("getExtensionCascade", &_::getExtensionCascade)["0"]
             .method<void(void*), virtual_>("registerInstance", &_::registerInstance)
             .method<void(void*), virtual_>("unregisterInstance", &_::unregisterInstance)

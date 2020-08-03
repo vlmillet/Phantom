@@ -74,7 +74,8 @@ struct FieldHH<t_Ty, false, true>
 } // namespace detail
 
 template<typename t_Ty>
-struct FieldH : public detail::FieldHH<t_Ty, std::is_copy_assignable<t_Ty>::value, std::is_move_assignable<t_Ty>::value>
+struct FieldH : public detail::FieldHH<t_Ty, std::is_copy_assignable<std::remove_const_t<t_Ty>>::value,
+                                       std::is_move_assignable<std::remove_const_t<t_Ty>>::value>
 {
 };
 

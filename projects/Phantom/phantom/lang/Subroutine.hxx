@@ -31,6 +31,7 @@
 #include <phantom/template-only-push>
 
 #include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/Functor.hxx>
 #include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -43,6 +44,8 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Subroutine")
 
         #if PHANTOM_NOT_TEMPLATE
+        /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        // PHANTOM_REGISTER(Typedefs) { this_().typedef_<BlockBuilder>("BlockBuilder"); }
         PHANTOM_STRUCT(MemoryLocation)
         {
             this_()
@@ -116,7 +119,6 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(Subroutine)
         {
             using ApplyPointer = typedef_<_::ApplyPointer>;
-            using CallDelegate = typedef_< phantom::lang::CallDelegate>;
             using Instructions = typedef_< phantom::lang::Instructions>;
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
@@ -126,7 +128,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringViews = typedef_< phantom::StringViews>;
             using Types = typedef_< phantom::lang::Types>;
             using TypesView = typedef_< phantom::lang::TypesView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol, ::phantom::lang::Callable>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -141,24 +143,26 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(), virtual_>("terminate", &_::terminate)
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<ABI() const>("getABI", &_::getABI)
-            .method<Callable*() const, virtual_>("asCallable", &_::asCallable)
+            .method<::phantom::lang::Callable *() const, virtual_>("asCallable", &_::asCallable)
             .method<Subroutine*() const, virtual_|override_>("asSubroutine", &_::asSubroutine)
-            .method<Signature*() const>("getSignature", &_::getSignature)
+            .method<::phantom::lang::Signature *() const>("getSignature", &_::getSignature)
             .method<ESignatureRelation(StringView, Signature*, Modifiers, uint) const>("getSignatureRelationWith", &_::getSignatureRelationWith)["0"]
             .method<ESignatureRelation(Subroutine*) const>("getSignatureRelationWith", &_::getSignatureRelationWith)
             .method<ESignatureRelation(Type*, StringView, TypesView, Modifiers, uint) const>("getSignatureRelationWith", &_::getSignatureRelationWith)["0"]
             .using_("LanguageElement::getQualifiedName")
             .using_("LanguageElement::getDecoratedName")
             .using_("LanguageElement::getQualifiedDecoratedName")
+            .using_("LanguageElement::getRelativeDecoratedName")
             .using_("LanguageElement::getUniqueName")
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
             .method<Types() const, virtual_>("getParameterTypes", &_::getParameterTypes)
-            .method<Type*(size_t) const, virtual_>("getParameterType", &_::getParameterType)
+            .method<::phantom::lang::Type *(size_t) const, virtual_>("getParameterType", &_::getParameterType)
             .method<Parameters const&() const>("getParameters", &_::getParameters)
-            .method<Parameter*(StringView) const, virtual_>("getParameter", &_::getParameter)
+            .method<::phantom::lang::Parameter *(StringView) const, virtual_>("getParameter", &_::getParameter)
             .method<size_t() const, virtual_>("getRequiredArgumentCount", &_::getRequiredArgumentCount)
             .method<void(ArrayView<StringView>)>("setNativeDefaultArgumentStrings", &_::setNativeDefaultArgumentStrings)
             .method<StringViews() const>("getNativeDefaultArgumentStrings", &_::getNativeDefaultArgumentStrings)
@@ -166,8 +170,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(const LanguageElements&, TypesView, Modifiers) const, virtual_>("matches", &_::matches)["Modifiers()"]
             .method<bool(StringView, TypesView, Modifiers) const>("matches", &_::matches)["Modifiers()"]
             .method<Type*() const>("getReturnType", &_::getReturnType)
-            .method<OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
-            .method<OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<::phantom::OpaqueDelegate() const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<::phantom::OpaqueDelegate(void*) const, virtual_>("getOpaqueDelegate", &_::getOpaqueDelegate)
             .method<void(ExecutionContext&, void**) const, virtual_>("call", &_::call)
             .method<void(ExecutionContext&, void**, Types const&) const, virtual_>("callVarArg", &_::callVarArg)
             .method<void(void*, void**, void*) const, virtual_>("placementInvoke", &_::placementInvoke)
@@ -198,9 +202,14 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<Block*() const>("getBlock", &_::getBlock)
             /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Block*)>("setBlock", &_::setBlock)
+            .method<bool()>("buildBlock", &_::buildBlock)
+            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(BlockBuilder)>("setBlockBuilder", &_::setBlockBuilder)
+            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<BlockBuilder() const>("getBlockBuilder", &_::getBlockBuilder)
             .method<bool(const byte*)>("containsMemoryAddress", &_::containsMemoryAddress)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<Closure() const, virtual_>("getClosure", &_::getClosure)
+            // .method<::phantom::Closure() const, virtual_>("getClosure", &_::getClosure)
             /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(Closure)>("setClosure", &_::setClosure)
             .method<ApplyPointer() const>("getApplyPointer", &_::getApplyPointer)
@@ -225,20 +234,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(void**, size_t) const>("apply", &_::apply)
             .method<void(void**, size_t) const>("placementApply", &_::placementApply)
             .method<uint64_t() const, virtual_|override_>("getUniqueID", &_::getUniqueID)
-        
-        .protected_()
-            .field("m_pSignature", &_::m_pSignature)
-            /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_eABI", &_::m_eABI)
-            .field("m_pInstructions", &_::m_pInstructions)
-            /// missing symbol(s) reflection (phantom::lang::Block) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_pBlock", &_::m_pBlock)
-            .field("m_MemoryLocation", &_::m_MemoryLocation)
-            .field("m_CallDelegate", &_::m_CallDelegate)
-            .field("m_ApplyPointer", &_::m_ApplyPointer)
-            /// missing symbol(s) reflection (phantom::Closure) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .field("m_Closure", &_::m_Closure)
-            .field("m_uiFrameSize", &_::m_uiFrameSize)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -48,7 +48,7 @@ struct SmallVectorH<T, false>
 HAUNT_RESUME;
 } // namespace detail
 
-template<class T, size_t StaticAllocSize>
+template<class T, uint32_t StaticAllocSize>
 class SmallVector
 {
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
@@ -56,7 +56,7 @@ class SmallVector
 #endif
 
     typedef phantom::detail::SmallVectorH<T, std::is_fundamental<T>::value> Helper;
-    template<class, size_t>
+    template<class, uint32_t>
     friend class SmallVector;
 
 public:
@@ -146,7 +146,7 @@ public:
             //@ m_capacity = StaticAllocSize;
             auto        thisData = m_data;
             value_type* tempData = temp.m_data;
-            size_t      i = temp.m_size;
+            size_type   i = temp.m_size;
             while (i--)
             {
                 Helper::cmove(thisData, std::move(*tempData));
@@ -182,7 +182,7 @@ public:
         auto od = other.m_data;
         Helper::destroy(begin(), end());
         m_size = other.m_size;
-        for (size_t i = 0; i < m_size; ++i)
+        for (size_type i = 0; i < m_size; ++i)
         {
             Helper::ccopy(d + i, od[i]); // replace by other content
         }
@@ -195,13 +195,13 @@ public:
         {
             if (temp.m_capacity == StaticAllocSize) // other static
             {
-                for (size_t i = 0; i < m_size; ++i) // destroy this content
+                for (size_type i = 0; i < m_size; ++i) // destroy this content
                     Helper::destroy(m_data + i);
                 _dealloc(m_data); // deallocate dynamic buffer
                 m_data = (value_type*)&m_staticData;
                 m_size = temp.m_size;
                 m_capacity = StaticAllocSize;
-                for (size_t i = 0; i < m_size; ++i)
+                for (size_type i = 0; i < m_size; ++i)
                 {
                     Helper::cmove(m_data + i,
                                   (value_type &&) temp.m_data[i]); // replace by other content
@@ -212,7 +212,7 @@ public:
             {
                 if (m_pAlloc == temp.m_pAlloc) // same traits => classical move semantic
                 {
-                    for (size_t i = 0; i < m_size; ++i) // destroy this content
+                    for (size_type i = 0; i < m_size; ++i) // destroy this content
                         Helper::destroy(&m_data[i]);
                     _dealloc(m_data); // deallocate dynamic buffer
                     m_size = temp.m_size;
@@ -231,11 +231,11 @@ public:
         {
             if (temp.m_capacity == StaticAllocSize) // other static
             {
-                for (size_t i = 0; i < m_size; ++i)
+                for (size_type i = 0; i < m_size; ++i)
                     Helper::destroy(&m_data[i]);
 
                 m_size = temp.m_size;
-                for (size_t i = 0; i < m_size; ++i)
+                for (size_type i = 0; i < m_size; ++i)
                 {
                     Helper::ccopy(&m_data[i], temp.m_data[i]);
                     Helper::destroy(&(temp.m_data[i]));
@@ -245,7 +245,7 @@ public:
             {
                 if (m_pAlloc == temp.m_pAlloc) // same traits => classical move semantic
                 {
-                    for (size_t i = 0; i < m_size; ++i)
+                    for (size_type i = 0; i < m_size; ++i)
                         Helper::destroy(&m_data[i]);
 
                     m_size = temp.m_size;
@@ -264,7 +264,7 @@ public:
         return *this;
     }
 
-    template<size_t S>
+    template<size_type S>
     SelfType& operator=(const SmallVector<T, S>& other)
     {
         reserve(other.m_capacity);
@@ -272,7 +272,7 @@ public:
         auto od = other.m_data;
         Helper::destroy(begin(), end());
         m_size = other.m_size;
-        for (size_t i = 0; i < m_size; ++i)
+        for (size_type i = 0; i < m_size; ++i)
         {
             Helper::ccopy(d + i, od[i]); // replace by other content
         }
@@ -336,36 +336,36 @@ public:
         Helper::destroy(&back());
         m_size--;
     }
-    void reserve(size_t _capacity)
+    void reserve(size_type _capacity)
     {
         if (_capacity > m_capacity)
             _grow(_capacity);
     }
-    void resize(size_t newSize)
+    void resize(size_type newSize)
     {
         reserve(newSize);
         auto d = m_data;
         for (; m_size < newSize; ++m_size)
             Helper::cdef(&d[m_size]);
-        m_size = newSize;
+        m_size = uint32_t(newSize);
     }
 
-    void resize(size_t newSize, const value_type& init)
+    void resize(size_type newSize, const value_type& init)
     {
         reserve(newSize);
         auto d = m_data;
         for (; m_size < newSize; ++m_size)
             Helper::ccopy(&d[m_size], init);
-        m_size = newSize;
+        m_size = uint32_t(newSize);
     }
 
-    void resize(size_t newSize, value_type&& init)
+    void resize(size_type newSize, value_type&& init)
     {
         reserve(newSize);
         auto d = m_data;
         for (; m_size < newSize; ++m_size)
             Helper::cmove(&d[m_size], (value_type &&) init);
-        m_size = newSize;
+        m_size = uint32_t(newSize);
     }
 
     void push_back(const value_type& val)
@@ -416,7 +416,7 @@ public:
         auto     e = end();
         PHANTOM_ASSERT(it >= d && last <= e && last > it);
         Helper::destroy(it, last);
-        size_t count = std::distance(it, last);
+        size_type count = std::distance(it, last);
         if (last != e)
         {
             for (auto src = last; src != e; ++src)
@@ -426,7 +426,7 @@ public:
                 Helper::destroy(src);
             }
         }
-        m_size -= count;
+        m_size -= uint32_t(count);
         return (iterator)_it;
     }
 
@@ -450,13 +450,13 @@ public:
         PHANTOM_ASSERT(_where >= m_data && _where <= end());
         if (_it == _end)
             return _where;
-        size_t index = _where - begin();
-        size_t count = std::distance(_it, _end);
+        size_type index = _where - begin();
+        size_type count = size_type(std::distance(_it, _end));
         reserve(m_size + count);
         _where = begin() + index;
         auto d = m_data;
         // we need to move 'count' elements from where to where+count
-        size_t countToMove = end() - _where;
+        size_type countToMove = end() - _where;
         while (countToMove--)
         {
             auto src = _where + countToMove;
@@ -468,7 +468,7 @@ public:
         {
             Helper::ccopy(&d[index++], *_it);
         }
-        m_size += count;
+        m_size += uint32_t(count);
         return begin() + index;
     }
 
@@ -484,10 +484,10 @@ public:
         PHANTOM_ASSERT(_where >= m_data && _where <= end());
         if (_it == _end)
             return _where;
-        size_t insertIndex = _where - begin();
+        size_type insertIndex = size_type(_where - begin());
         for (; _it != _end; ++_it)
         {
-            size_t cur = _where - begin();
+            size_type cur = size_type(_where - begin());
             reserve(m_size + 1);
             _where = begin() + cur;
             auto lastToMove = end() - 1;
@@ -517,7 +517,7 @@ public:
         {
             reserve(m_size + 1);
             _where = begin() + index;
-            size_t countToMove = end() - _where;
+            size_type countToMove = size_type(end() - _where);
             while (countToMove--)
             {
                 auto src = _where + countToMove;
@@ -543,7 +543,7 @@ public:
         {
             reserve(m_size + 1);
             _where = begin() + index;
-            size_t countToMove = end() - _where;
+            size_type countToMove = size_type(end() - _where);
             while (countToMove--)
             {
                 auto src = _where + countToMove;
@@ -578,12 +578,12 @@ public:
 
     void swap(SelfType& other)
     {
-        size_t s = m_size;
-        size_t os = other.m_size;
-        size_t c = m_capacity;
-        size_t oc = other.m_capacity;
-        auto*  d = m_data;
-        auto*  od = other.m_data;
+        auto  s = m_size;
+        auto  os = other.m_size;
+        auto  c = m_capacity;
+        auto  oc = other.m_capacity;
+        auto* d = m_data;
+        auto* od = other.m_data;
         if (oc == StaticAllocSize && c != StaticAllocSize)
         {
             other.swap(*this);
@@ -596,18 +596,18 @@ public:
                 other.swap(*this);
                 return;
             }
-            for (size_t i = 0; i < s; ++i)
+            for (size_type i = 0; i < s; ++i)
             {
                 value_type v = d[i];
                 value_type ov = od[i];
                 d[i] = (value_type &&) ov;
                 od[i] = (value_type &&) v;
             }
-            for (size_t i = s; i < os; ++i)
+            for (size_type i = s; i < os; ++i)
             {
                 push_back(od[i]);
             }
-            for (size_t i = s; i < os; ++i)
+            for (size_type i = s; i < os; ++i)
             {
                 other.pop_back();
             }
@@ -627,7 +627,7 @@ public:
                 other.m_data = (value_type*)&other.m_staticData;
                 auto* osd = other.m_data;
                 m_data = od;
-                for (size_t i = 0; i < s; ++i)
+                for (size_type i = 0; i < s; ++i)
                 {
                     new (&osd[i]) value_type((value_type &&) d[i]);
                     Helper::destroy(&d[i]);
@@ -642,14 +642,14 @@ public:
     }
 
 private:
-    inline void _grow(size_t a_MinCapacity) { _reserve(a_MinCapacity << 1); }
-    void        _reserve(size_t newCapacity)
+    inline void _grow(size_type a_MinCapacity) { _reserve(a_MinCapacity << 1); }
+    void        _reserve(size_type newCapacity)
     {
         if (m_capacity == StaticAllocSize) // we were using static buffer
         {
             value_type* pNewData = _alloc(newCapacity);
             value_type* pCurrNewData = pNewData;
-            size_t      i = m_size;
+            size_type   i = m_size;
             while (i--) // copy content to dynamic buffer
             {
                 Helper::cmove(pCurrNewData++, std::move(*m_data));
@@ -662,7 +662,7 @@ private:
             value_type* pOldData = m_data;
             value_type* pNewData = _alloc(newCapacity);
             value_type* pCurrNewData = pNewData;
-            size_t      i = m_size;
+            size_type   i = m_size;
             while (i--) // copy content to dynamic buffer
             {
                 Helper::cmove(pCurrNewData++, std::move(*m_data));
@@ -671,29 +671,29 @@ private:
             _dealloc(pOldData);
             m_data = pNewData;
         }
-        m_capacity = newCapacity;
+        m_capacity = uint32_t(newCapacity);
     }
 
 private:
-    value_type* _alloc(size_t s)
+    value_type* _alloc(size_type s)
     {
         return reinterpret_cast<value_type*>(m_pAlloc->allocFunc(s * sizeof(value_type), PHANTOM_ALIGNOF(value_type)));
     }
     void _dealloc(value_type* t) { m_pAlloc->deallocFunc(t); }
 
 private:
-    size_type   m_capacity = StaticAllocSize;
-    size_type   m_size = 0;
-    value_type* m_data = (value_type*)&m_staticData;
-    byte m_staticData[(StaticAllocSize == 0) | (sizeof(value_type) * StaticAllocSize)]; // trick to avoid 0-size array
+    value_type*            m_data = (value_type*)&m_staticData;
+    uint32_t               m_capacity = StaticAllocSize;
+    uint32_t               m_size = 0;
     CustomAllocator const* m_pAlloc = &CustomAllocator::CurrentOrDefault();
+    byte m_staticData[(StaticAllocSize == 0) | (sizeof(value_type) * StaticAllocSize)]; // trick to avoid 0-size array
 };
 } // namespace phantom
 
 #include <phantom/traits/CopyTraits.h>
 #include <phantom/traits/MoveTraits.h>
 
-PHANTOM_DISABLE_TRAIT_IF_T(IsCopyAssignable, (class, size_t), (T, S), SmallVector, !IsCopyAssignable<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsMoveAssignable, (class, size_t), (T, S), SmallVector, !IsMoveAssignable<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsCopyConstructible, (class, size_t), (T, S), SmallVector, !IsCopyConstructible<T>::value);
-PHANTOM_DISABLE_TRAIT_IF_T(IsMoveConstructible, (class, size_t), (T, S), SmallVector, !IsMoveConstructible<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsCopyAssignable, (class, uint32_t), (T, S), SmallVector, !IsCopyAssignable<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsMoveAssignable, (class, uint32_t), (T, S), SmallVector, !IsMoveAssignable<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsCopyConstructible, (class, uint32_t), (T, S), SmallVector, !IsCopyConstructible<T>::value);
+PHANTOM_DISABLE_TRAIT_IF_T(IsMoveConstructible, (class, uint32_t), (T, S), SmallVector, !IsMoveConstructible<T>::value);

@@ -34,8 +34,8 @@ namespace phantom {
     template<typename t_Ty, typename>
     inline Variant::Variant(const t_Ty& a_In) 
     {
-        byte* pBuffer = (sizeof(t_Ty) > StaticBufferSize) 
-            ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(t_Ty))) 
+        void* pBuffer = (sizeof(t_Ty) > StaticBufferSize) 
+            ? (m_Buffer.dynamicBuffer = _Alloc(sizeof(t_Ty), alignof(t_Ty)))
             : m_Buffer.staticBuffer;
         m_pType = PHANTOM_VARIANT_TYPEOF(t_Ty);
         new (pBuffer) t_Ty(a_In);
@@ -45,7 +45,7 @@ namespace phantom {
     inline Variant::Variant(t_Ty&& a_In)
     {
         byte* pBuffer = (sizeof(std::remove_reference_t<t_Ty>) > StaticBufferSize)
-            ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(std::remove_reference_t<t_Ty>)))
+            ? (m_Buffer.dynamicBuffer = _Alloc(sizeof(std::remove_reference_t<t_Ty>), alignof(std::remove_reference_t<t_Ty>)))
             : m_Buffer.staticBuffer;
         m_pType = PHANTOM_VARIANT_TYPEOF(std::remove_reference_t<t_Ty>);
         new (pBuffer) std::remove_reference_t<t_Ty>(std::forward<t_Ty>(a_In));
@@ -53,7 +53,7 @@ namespace phantom {
 
     inline Variant::Variant(const char* a_Str) 
     {
-        new (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(String))) String(a_Str);
+        new (m_Buffer.dynamicBuffer = _Alloc(sizeof(String), alignof(String))) String(a_Str);
         PHANTOM_ASSERT(phantom::lang::BuiltInTypes::TYPE_STRING);
         m_pType = (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING;
     }
@@ -83,7 +83,7 @@ namespace phantom {
         if(a_Other.isValid())
         {
             byte* pBuffer = (a_Other.size() > StaticBufferSize) 
-                ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_Other.size())) 
+                ? (m_Buffer.dynamicBuffer = _Alloc(a_Other.size(), a_Other.type()->getAlignment())) 
                 : m_Buffer.staticBuffer;
             m_pType->construct(pBuffer);
             m_pType->copy(pBuffer, a_Other._buffer());
@@ -99,7 +99,7 @@ namespace phantom {
         if (a_Other.isValid())
         {
             byte* pBuffer = (a_Other.size() > StaticBufferSize)
-                ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_Other.size()))
+                ? (m_Buffer.dynamicBuffer = _Alloc(a_Other.size(), a_Other.type()->getAlignment()))
                 : m_Buffer.staticBuffer;
             m_pType = a_Other.m_pType;
             m_pType->construct(pBuffer);
@@ -139,7 +139,7 @@ namespace phantom {
         {
             _release();
         }
-        new (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(String))) String(a_Str);
+        new (m_Buffer.dynamicBuffer = _Alloc(sizeof(String), alignof(String))) String(a_Str);
         m_pType = (lang::Type*)phantom::lang::BuiltInTypes::TYPE_STRING;
         return *this;
     }
@@ -158,7 +158,7 @@ namespace phantom {
             if (m_pType)
                 _release();
             byte* pBuffer = (sizeof(t_Ty) > StaticBufferSize)
-                ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(t_Ty)))
+                ? (m_Buffer.dynamicBuffer = _Alloc(sizeof(t_Ty), alignof(t_Ty)))
                 : m_Buffer.staticBuffer;
             m_pType = pType;
             new (pBuffer) t_Ty(a_In);
@@ -180,7 +180,7 @@ namespace phantom {
             if (m_pType)
                 _release();
             byte* pBuffer = (sizeof(std::remove_reference_t<t_Ty>) > StaticBufferSize)
-                ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(sizeof(std::remove_reference_t<t_Ty>)))
+                ? (m_Buffer.dynamicBuffer = _Alloc(sizeof(std::remove_reference_t<t_Ty>), alignof(std::remove_reference_t<t_Ty>)))
                 : m_Buffer.staticBuffer;
             m_pType = pType;
             new (pBuffer) std::remove_reference_t<t_Ty>(std::forward<t_Ty>(a_In));
@@ -196,7 +196,7 @@ namespace phantom {
         }
         PHANTOM_ASSERT(a_pType->isCopyable() && a_pType->isDefaultInstanciable());
         byte* pBuffer = (a_pType->getSize() > StaticBufferSize) 
-            ? (m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize())) 
+            ? (m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment())) 
             : m_Buffer.staticBuffer;
         m_pType = a_pType;
         m_pType->construct(pBuffer);
@@ -307,7 +307,7 @@ namespace phantom {
         }
         Variant result;
         byte* pBuffer = (a_pType->getSize() > StaticBufferSize) 
-            ? (result.m_Buffer.dynamicBuffer = (byte*)PHANTOM_MALLOC(a_pType->getSize()))
+            ? (result.m_Buffer.dynamicBuffer = _Alloc(a_pType->getSize(), a_pType->getAlignment()))
             : result.m_Buffer.staticBuffer;
         result.m_pType = a_pType;
 
@@ -334,7 +334,7 @@ namespace phantom {
         if(size() > StaticBufferSize)
         {
             m_pType->destroy(m_Buffer.dynamicBuffer);
-			PHANTOM_FREE(m_Buffer.dynamicBuffer);
+			PHANTOM_FREE_ALIGNED(m_Buffer.dynamicBuffer);
         }
         else 
         {

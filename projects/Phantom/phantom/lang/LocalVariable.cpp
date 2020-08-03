@@ -52,8 +52,8 @@ void LocalVariable::setValueType(Type* a_pType)
     PHANTOM_ASSERT(m_pValueType);
     if (getBlock())
     {
-        size_t& frameSize = getSubroutine()->m_uiFrameSize;
-        frameSize += ptrdiff_t(a_pType->getSize()) - ptrdiff_t(m_pValueType->getSize());
+        int& frameSize = getSubroutine()->m_uiFrameSize;
+        frameSize += int(a_pType->getSize()) - int(m_pValueType->getSize());
     }
     removeReferencedElement(m_pValueType);
     m_pValueType = a_pType;

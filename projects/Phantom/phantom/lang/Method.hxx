@@ -55,7 +55,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using Methods = typedef_< phantom::lang::Methods>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
             using StringView = typedef_< phantom::StringView>;
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Subroutine>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
@@ -79,7 +79,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool(StringView, Signature*, Modifiers) const>("canOverride", &_::canOverride)["0"]
             .method<bool(Method*) const>("isOverridableBy", &_::isOverridableBy)
             .method<bool(StringView, Signature*, Modifiers) const>("isOverridableBy", &_::isOverridableBy)["0"]
-            .method<LanguageElement*() const, virtual_>("asLanguageElement", &_::asLanguageElement)
+            .method<::phantom::lang::LanguageElement *() const, virtual_>("asLanguageElement", &_::asLanguageElement)
             .method<Subroutine*() const, virtual_|override_>("asSubroutine", &_::asSubroutine)
             .method<Method*() const, virtual_|override_>("asMethod", &_::asMethod)
             .method<size_t(size_t) const>("getVirtualTableIndex", &_::getVirtualTableIndex)

@@ -47,7 +47,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .constructor<void(Type*, Expression*, PlaceholderConstant*)>()
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
-            .method<TemplateDependantArray*() const, virtual_>("asTemplateDependantArray", &_::asTemplateDependantArray)
+            .method<::phantom::lang::TemplateDependantArray *() const, virtual_>("asTemplateDependantArray", &_::asTemplateDependantArray)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)

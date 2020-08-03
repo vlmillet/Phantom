@@ -46,7 +46,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             using Types = typedef_< phantom::lang::Types>;
             this_()
-            .PHANTOM_T staticMethod<Type*(Types&)>("ReadReturnTypeAndParameterTypes", &_::ReadReturnTypeAndParameterTypes)
+            .PHANTOM_T staticMethod<::phantom::lang::Type *(Types&)>("ReadReturnTypeAndParameterTypes", &_::ReadReturnTypeAndParameterTypes)
             ;
         }
         #if PHANTOM_NOT_TEMPLATE
@@ -143,8 +143,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Fields&) const>("getAllFields", &_::getAllFields)
             .method<const DataElements&() const>("getDataElements", &_::getDataElements)
             .method<size_t(Field*) const>("getFieldIndex", &_::getFieldIndex)
-            .method<Field*(size_t) const, virtual_>("getFieldByOffset", &_::getFieldByOffset)
-            .method<Field*(size_t) const, virtual_>("getFieldAtOffset", &_::getFieldAtOffset)
+            .method<::phantom::lang::Field *(size_t) const, virtual_>("getFieldByOffset", &_::getFieldByOffset)
+            .method<::phantom::lang::Field *(size_t) const, virtual_>("getFieldAtOffset", &_::getFieldAtOffset)
             .method<Field*(const void*, const void*) const>("getFieldByAddress", &_::getFieldByAddress)
             .method<Field*(const void*, const void*) const>("getFieldAtAddress", &_::getFieldAtAddress)
             .method<StaticField*(StringView) const>("getStaticField", &_::getStaticField)
@@ -156,7 +156,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Method*(StringView) const>("getMethod", &_::getMethod)
             .method<Method*(StringView, TypesView, Modifiers) const>("getMethod", &_::getMethod)["0"]
             .method<Method*(Type*, StringView, TypesView, Modifiers) const>("getMethod", &_::getMethod)["0"]
-            .method<Method*(void*) const, virtual_>("getMethodByPtr", &_::getMethodByPtr)
+            .method<::phantom::lang::Method *(void*) const, virtual_>("getMethodByPtr", &_::getMethodByPtr)
             .method<const Methods&() const>("getMethods", &_::getMethods)
             .method<StaticMethod*(StringView) const>("getStaticMethod", &_::getStaticMethod)
             .method<StaticMethod*(StringView, TypesView) const>("getStaticMethod", &_::getStaticMethod)

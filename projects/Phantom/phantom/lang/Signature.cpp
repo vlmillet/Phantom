@@ -21,13 +21,10 @@ namespace lang
 Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, TypesView a_ParamTs,
                              Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
 {
-    Signature* s = a_pOwner->NewDeferred<Signature>(a_pRet, a_Modifiers, a_uiFlags);
     Parameters params;
     for (auto p : a_ParamTs)
-    {
-        s->addParameter(a_pOwner->NewDeferred<Parameter>(p));
-    }
-    return s;
+        params.push_back(a_pOwner->NewDeferred<Parameter>(p));
+    return a_pOwner->NewDeferred<Signature>(a_pRet, params, a_Modifiers, a_uiFlags);
 }
 
 Signature* Signature::Create(LanguageElement* a_pOwner, Type* a_pRet, Modifiers a_Modifiers /*= 0*/,
@@ -48,10 +45,7 @@ Signature::Signature(Type* a_pReturnType, Modifiers a_Modifiers /*= 0*/, uint a_
 
 Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0 */,
                      uint a_uiFlags /*= 0*/)
-    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
-      m_pReturnType(a_pType),
-      m_pReturnTypeName(nullptr),
-      m_Parameters(a_Parameters)
+    : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(a_pType), m_Parameters(a_Parameters)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
     PHANTOM_ASSERT(m_pReturnType &&
@@ -63,6 +57,7 @@ Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_
     {
         PHANTOM_ASSERT(!prev || !prev->hasDefaultArgument() || p->hasDefaultArgument(),
                        "parameter must have a default argument because the previous parameter had one");
+        p->addFlags(PHANTOM_R_FLAG_NATIVE * isNative());
         prev = p;
     }
 }
@@ -76,39 +71,6 @@ void Signature::initialize()
         addReferencedElement(p);
         p->setOwner(this);
     }
-}
-
-Parameter* Signature::addParameter(Type* a_pType, StringView a_strName)
-{
-    Parameter* p = NewDeferred<Parameter>(a_pType, a_strName, Modifier::None, getFlags() & PHANTOM_R_FLAG_NATIVE);
-    addParameter(p);
-    return p;
-}
-
-void Signature::addParameter(Parameter* a_pParameter)
-{
-    if (m_Parameters.size())
-    {
-        if (m_Parameters.back()->hasDefaultArgument())
-        {
-            PHANTOM_ASSERT(a_pParameter->hasDefaultArgument(),
-                           "parameter must have a default argument because the previous parameter had one");
-        }
-    }
-    PHANTOM_ASSERT(!(isVariadic()), "cannot add parameters after a variadic parameter pack");
-    PHANTOM_ASSERT(a_pParameter);
-    a_pParameter->setOwner(this);
-    m_Parameters.push_back(a_pParameter);
-}
-
-void Signature::setReturnType(Type* a_pType)
-{
-    PHANTOM_ASSERT(a_pType &&
-                   (a_pType->isTemplateDependant() || (a_pType == PHANTOM_TYPEOF(void)) || a_pType->asReference() ||
-                    a_pType->isMoveConstructible()));
-    m_pReturnType = a_pType;
-    PHANTOM_ASSERT(m_pReturnType);
-    addReferencedElement(a_pType);
 }
 
 size_t Signature::getParameterCount() const
@@ -164,54 +126,9 @@ bool Signature::separateParameters(StringView a_strText, Strings& a_OutParameter
     return false;
 }
 
-bool Signature::parseParameterTypeList(StringView a_strText, LanguageElement* a_pContextScope)
+bool Signature::parseParameterTypeList(StringView, LanguageElement*)
 {
-    if (a_strText.empty())
-        return false;
-    Strings words;
-    StringUtil::Split(words, a_strText, "()");
-    words.erase(std::remove_if(words.begin(), words.end(), std::bind(&String::empty, std::placeholders::_1)),
-                words.end());
-    if (words.empty())
-        return true;
-    if (a_strText[0] != '(')
-    {
-        words.erase(words.begin());
-    }
-    if (words.size() != 1)
-        return false;
-
-    Strings parameters;
-    if (!(separateParameters(words.front(), parameters)))
-        return false;
-    for (auto it = parameters.begin(); it != parameters.end(); ++it)
-    {
-        Type*  pType = nullptr;
-        String name;
-        StringUtil::ReplaceAll(*it, ">", "> ");
-        Symbol* pParamElement = Application::Get()->findCppSymbol(*it, a_pContextScope);
-        if (pParamElement == nullptr)
-        {
-            PHANTOM_ASSERT(!isNative());
-            return false;
-        }
-        else
-        {
-            if ((pType = pParamElement->toType())) // if alias, toType will unalias
-            {
-                addParameter(NewDeferred<Parameter>(pType, name));
-            }
-            else if (pParamElement->asParameter())
-            {
-                addParameter(static_cast<Parameter*>(pParamElement));
-            }
-            else
-            {
-                PHANTOM_ASSERT(false, "symbol is not a type or parameter");
-            }
-        }
-    }
-    return true;
+    return false;
 }
 
 bool Signature::isSame(Signature* a_pOther) const
@@ -235,6 +152,35 @@ void Signature::getQualifiedDecoratedName(StringBuffer& a_Buf) const
         if (pParam != m_Parameters[0])
             a_Buf += ',';
         pParam->getValueType()->getQualifiedDecoratedName(a_Buf);
+    }
+    a_Buf += ')';
+
+    if (testModifiers(PHANTOM_R_CONST))
+    {
+        a_Buf += " const";
+    }
+    if (testModifiers(PHANTOM_R_VOLATILE))
+    {
+        a_Buf += " volatile";
+    }
+    if (testModifiers(PHANTOM_R_LVALUEREF) || testModifiers(PHANTOM_R_RVALUEREF))
+    {
+        a_Buf += '&';
+        if (testModifiers(PHANTOM_R_RVALUEREF))
+        {
+            a_Buf += '&';
+        }
+    }
+}
+
+void Signature::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
+{
+    a_Buf += '(';
+    for (Parameter* pParam : m_Parameters)
+    {
+        if (pParam != m_Parameters[0])
+            a_Buf += ',';
+        pParam->getValueType()->getRelativeDecoratedName(a_pTo, a_Buf);
     }
     a_Buf += ')';
 
@@ -328,13 +274,12 @@ void Signature::getDecoratedName(StringBuffer& a_Buf) const
 
 Signature* Signature::clone(LanguageElement* a_pOwner) const
 {
-    Signature* pSignature = a_pOwner->NewDeferred<Signature>();
-    for (Parameter* pParameter : m_Parameters)
+    Parameters params = m_Parameters;
+    for (Parameter*& pParameter : params)
     {
-        pSignature->addParameter(static_cast<Parameter*>(pParameter->clone(pSignature)));
+        pParameter = static_cast<Parameter*>(pParameter->clone(a_pOwner));
     }
-    pSignature->setReturnType(m_pReturnType);
-    return pSignature;
+    return a_pOwner->NewDeferred<Signature>(m_pReturnType, params, getModifiers());
 }
 
 bool Signature::isSame(Symbol* a_pOther) const
@@ -352,14 +297,6 @@ StringView Signature::getParameterName(size_t a_uiParamIndex) const
 Expression* Signature::getParameterDefaultValueExpression(size_t a_uiParamIndex) const
 {
     return m_Parameters[a_uiParamIndex]->getDefaultArgumentExpression();
-}
-
-void Signature::setParameterName(size_t i, StringView a_strName)
-{
-    PHANTOM_ASSERT(!isNative());
-    PHANTOM_ASSERT(m_Parameters[i]->getName() == a_strName || m_Parameters[i]->getName().empty(),
-                   "attempt to change a non-empty parameter name");
-    m_Parameters[i]->setName(a_strName);
 }
 
 Types Signature::getParameterTypes() const

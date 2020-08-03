@@ -35,7 +35,7 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .staticMethod<void(ExecutionContext*)>("Push", &_::Push)
             .staticMethod<void()>("Pop", &_::Pop)
-            .staticMethod<ExecutionContext*()>("Current", &_::Current)
+            .staticMethod<::phantom::lang::ExecutionContext *()>("Current", &_::Current)
             .constructor<void()>()
             .enum_<>().values({
                 {"e_max_calls",_::e_max_calls}})

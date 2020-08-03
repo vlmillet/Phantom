@@ -39,8 +39,8 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Parameter(Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
+    Parameter(Type* a_pValueType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
     Parameter(Type* a_pValueType, StringView a_strName, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
-    Parameter(Type* a_pType, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
     /// \brief  Destructor.
     ~Parameter() override {}

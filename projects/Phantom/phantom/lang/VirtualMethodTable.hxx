@@ -31,7 +31,7 @@ PHANTOM_PACKAGE("phantom.lang")
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_CLASS(VirtualMethodTable)
         {
-            this_()(PHANTOM_R_FLAG_NO_COPY)
+            this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)

@@ -133,7 +133,6 @@ public:
 
 protected:
     Type*     m_pValueType = nullptr;
-    size_t    m_uiIndexInBlock = ~0ull;
     ptrdiff_t m_iEvalFrameOffset = -1;
     ptrdiff_t m_iNativeFrameOffset = -1;
 };

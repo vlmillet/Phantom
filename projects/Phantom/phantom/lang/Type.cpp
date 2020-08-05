@@ -799,6 +799,23 @@ bool Type::hasStrongDependencyOnType(Type*) const
     return false;
 }
 
+Type* Type::addConst() const
+{
+    if (isConst())
+        return const_cast<Type*>(this);
+    if (isVolatile())
+        return (Type*)m_pUnderlyingType->addConstVolatile();
+    switch (m_eTypeKind)
+    {
+    case TypeKind::Array:
+        return (Type*)m_pUnderlyingType->addConst()->makeArray(static_cast<Array const*>(this)->getItemCount());
+    case TypeKind::LValueReference:
+    case TypeKind::RValueReference:
+        return const_cast<Type*>(this);
+    }
+    return (Type*)makeConst();
+}
+
 Type* Type::addConstLValueReference() const
 {
     return addConst()->addLValueReference();

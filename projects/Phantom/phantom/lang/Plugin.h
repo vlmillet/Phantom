@@ -45,7 +45,7 @@ public:
     bool unload();
     bool loadAsDependency();
     bool unloadAsDependency();
-    bool isLoaded() const { return m_pModule != nullptr; }
+    bool isLoaded() const;
     void deleteOnDisk();
 
     Module* getModule() const { return m_pModule; }

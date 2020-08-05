@@ -486,6 +486,11 @@ bool Plugin::unloadAsDependency()
     return _unload();
 }
 
+bool Plugin::isLoaded() const
+{
+    return m_pModule != nullptr;
+}
+
 bool Plugin::_load()
 {
     PHANTOM_ASSERT(Application::Get()->getPlugin(m_strName) == this,

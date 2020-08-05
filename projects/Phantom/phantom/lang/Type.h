@@ -467,22 +467,7 @@ public:
     /// \return this type if already 'const', else the corresponding const type.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Type* addConst() const
-    {
-        if (isConst())
-            return const_cast<Type*>(this);
-        if (isVolatile())
-            return (Type*)m_pUnderlyingType->addConstVolatile();
-        switch (m_eTypeKind)
-        {
-        case TypeKind::Array:
-            return (Type*)m_pUnderlyingType->addConst()->makeArray(m_uiSize / m_pUnderlyingType->m_uiSize);
-        case TypeKind::LValueReference:
-        case TypeKind::RValueReference:
-            return const_cast<Type*>(this);
-        }
-        return (Type*)makeConst();
-    }
+    Type* addConst() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds 'volatile' to this type.

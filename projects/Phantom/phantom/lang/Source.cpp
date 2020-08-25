@@ -167,9 +167,9 @@ Package* Source::getPackage() const
     return static_cast<Package*>(getOwner());
 }
 
-void Source::getQualifiedName(StringBuffer&) const
+void Source::getQualifiedName(StringBuffer& a_Buf) const
 {
-    PHANTOM_ASSERT_NO_IMPL();
+    getName(a_Buf);
 }
 
 void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
@@ -359,8 +359,8 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 pAlias = getAlias((*it)->getName());
                 if (pAlias == nullptr)
                 {
-                    pAlias = New<Alias>((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE),
-                                        PHANTOM_R_FLAG_IMPLICIT);
+                    pAlias =
+                    New<Alias>((*it)->getName(), (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE), PHANTOM_R_FLAG_NONE);
                     pAlias->setVisibility(a_bPublic ? Visibility::Public : Visibility::Protected);
                     addAlias(pAlias);
                 }
@@ -370,13 +370,13 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
                 auto pSubAlias = pAlias->getAlias((*it)->getName());
                 if (pSubAlias == nullptr)
                 {
-                    pSubAlias = New<Alias>((*it)->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+                    pSubAlias = New<Alias>((*it)->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_NONE);
                     pAlias->addAlias(pSubAlias);
                 }
                 pAlias = pSubAlias;
             }
         }
-        auto pLastNamedAlias = New<Alias>(a_pSymbol, a_pSymbol->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_IMPLICIT);
+        auto pLastNamedAlias = New<Alias>(a_pSymbol, a_pSymbol->getName(), PHANTOM_R_NONE, PHANTOM_R_FLAG_NONE);
         if (pAlias)
             pAlias->addAlias(pLastNamedAlias);
         else
@@ -385,7 +385,7 @@ bool Source::addImport(Symbol* a_pSymbol, bool a_bStatic, bool a_bPublic)
     else
     {
         addAlias(pAlias =
-                 New<Alias>(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE), PHANTOM_R_FLAG_IMPLICIT));
+                 New<Alias>(a_pSymbol, "", (a_bStatic ? PHANTOM_R_STATIC : PHANTOM_R_NONE), PHANTOM_R_FLAG_NONE));
         pAlias->setVisibility(a_bPublic ? Visibility::Public : Visibility::Protected);
     }
     i.alias = pAlias;

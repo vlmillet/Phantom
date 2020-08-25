@@ -683,10 +683,11 @@ private:
 
 private:
     value_type*            m_data = (value_type*)&m_staticData;
+    CustomAllocator const* m_pAlloc = &CustomAllocator::CurrentOrDefault();
     uint32_t               m_capacity = StaticAllocSize;
     uint32_t               m_size = 0;
-    CustomAllocator const* m_pAlloc = &CustomAllocator::CurrentOrDefault();
-    byte m_staticData[(StaticAllocSize == 0) | (sizeof(value_type) * StaticAllocSize)]; // trick to avoid 0-size array
+    byte                   m_staticData[(StaticAllocSize == 0) ? sizeof(value_type)
+                                             : (sizeof(value_type) * StaticAllocSize)]; // avoid 0-size array
 };
 } // namespace phantom
 

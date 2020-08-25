@@ -882,7 +882,7 @@ private:
     LanguageElement* m_pOwner{}; /// Owner represents the real container of the element, not the
                                  /// naming scope (both can still be equal). For example a global
                                  /// function is owned by its source, not by the global namespace
-    SmallVector<LanguageElement*, 4> m_Elements;
+    SmallVector<LanguageElement*, 1> m_Elements;
     Source*                          m_pSource{};
     CodeRange                        m_CodeRange;
     uint                             m_uiFlags{};

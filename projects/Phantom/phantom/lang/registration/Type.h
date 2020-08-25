@@ -82,6 +82,7 @@ struct PHANTOM_EXPORT_PHANTOM MemberBuilder
 private:
     void _apply(lang::Symbol* a_pSymbol) const;
     void _apply(lang::Subroutine* a_pSubroutine) const;
+    void _apply(lang::Property* a_pProperty) const;
 };
 
 struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
@@ -153,7 +154,8 @@ struct TypeBuilderT : TypeBuilderBase
 
     TypeBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
         : TypeBuilderBase(a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
-                          _createMetaType(a_pTop->_PHNTM_getOwnerScope(), std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
+                          _createMetaType(a_pTop->_PHNTM_getOwnerScope(),
+                                          std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
                           a_Arguments),
           m_pTop(a_pTop)
     {

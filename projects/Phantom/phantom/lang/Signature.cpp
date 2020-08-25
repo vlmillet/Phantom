@@ -48,9 +48,10 @@ Signature::Signature(Type* a_pType, const Parameters& a_Parameters, Modifiers a_
     : Symbol("", a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags), m_pReturnType(a_pType), m_Parameters(a_Parameters)
 {
     PHANTOM_ASSERT((getModifiers() & ~(PHANTOM_R_METHOD_QUAL_MASK)) == 0);
-    PHANTOM_ASSERT(m_pReturnType &&
-                   (m_pReturnType->isTemplateDependant() || (m_pReturnType == PHANTOM_TYPEOF(void)) ||
-                    m_pReturnType->asReference() || m_pReturnType->isMoveConstructible()));
+    // FIXME : check assert validity
+    //     PHANTOM_ASSERT(m_pReturnType &&
+    //                    (m_pReturnType->isTemplateDependant() || (m_pReturnType == PHANTOM_TYPEOF(void)) ||
+    //                     m_pReturnType->asReference() || m_pReturnType->isMoveConstructible()));
 
     Parameter* prev = nullptr;
     for (auto p : m_Parameters)

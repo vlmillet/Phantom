@@ -996,15 +996,24 @@ auto _PHTNM_TemplateTypeOfH()
     _PHANTOM_CLASS_COMMON(TemplateSpec, TemplateSign, TemplateSign, DecoratedType, StartAccess, ExtraCode, _T,         \
                           __VA_ARGS__ _PHNTM_TEMPLATE_TYPEOF_BY_ADL(TemplateSign, DecoratedType))
 
+#define _PHANTOM_CLASS_NO_TEMPLATE(DecoratedType, StartAccess, ExtraCode, RegName, ...)                                \
+    _PHANTOM_CLASS_COMMON(                                                                                             \
+    (), (template<>), (), DecoratedType, StartAccess, ExtraCode, , PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {            \
+        _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User PHANTOM_PP_CAT(RegName, _PHANTOM_);           \
+    }) __VA_ARGS__)
+
 #define _PHANTOM_CLASS_FULL_SPEC(TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, RegName, ...)    \
-    _PHANTOM_CLASS_COMMON((), TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, ,                   \
-                          PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {                                                     \
-                              _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User PHANTOM_PP_CAT(         \
-                              RegName, _PHANTOM_);                                                                     \
-                          }) __VA_ARGS__)
+    _PHANTOM_CLASS_COMMON(                                                                                             \
+    (), TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, ,                                         \
+    PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {PHANTOM_REGISTER(ClassTypes) {                                                        \
+        auto PHANTOM_PP_CAT(RegName, _PHANTOM_) = _PHTNM_TemplateTypeOfH<PHANTOM_TYPENAME _PHNTM_Registrer<            \
+        phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::_PHNTM_User>();                     \
+    }                                                                                                                  \
+    })                                                                                                                \
+    __VA_ARGS__)
 
 #define _PHANTOM_CLASS(TypeName, StartAccess, ExtraCode)                                                               \
-    _PHANTOM_CLASS_FULL_SPEC((template<>), (), (TypeName), StartAccess, ExtraCode, TypeName)
+    _PHANTOM_CLASS_NO_TEMPLATE((TypeName), StartAccess, ExtraCode, TypeName)
 
 #define _PHANTOM_CLASS_T(TemplateTypes, TemplateParams, TypeName, StartAccess, ExtraCode)                              \
     PHANTOM_IF_NOT_TEMPLATE_ONLY(class _PHNTM_HERE; namespace {                                                        \

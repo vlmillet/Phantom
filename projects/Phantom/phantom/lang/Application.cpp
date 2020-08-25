@@ -209,7 +209,8 @@ void Application::terminate()
     Symbol::terminate();
 }
 
-static Application::CppExpressionParser s_CppExpressionParser;
+static Application::CppExpressionParser    s_CppExpressionParser;
+static Application::CppExpressionEvaluator s_CppExpressionEvaluator;
 
 void Application::setCppExpressionParser(CppExpressionParser a_Parser)
 {
@@ -221,6 +222,16 @@ Application::CppExpressionParser Application::getCppExpressionParser()
     return s_CppExpressionParser;
 }
 
+void Application::setCppExpressionEvaluator(CppExpressionEvaluator a_Eval)
+{
+    s_CppExpressionEvaluator = a_Eval;
+}
+
+Application::CppExpressionEvaluator Application::getCppExpressionEvaluator()
+{
+    return s_CppExpressionEvaluator;
+}
+
 Expression* Application::cppExpression(StringView a_strExp, LanguageElement* a_pScope) const
 {
     if (!s_CppExpressionParser.empty())
@@ -228,6 +239,15 @@ Expression* Application::cppExpression(StringView a_strExp, LanguageElement* a_p
         return s_CppExpressionParser(a_strExp, a_pScope);
     }
     return nullptr;
+}
+
+Variant Application::evalExpression(Expression* a_pExp) const
+{
+    if (!s_CppExpressionEvaluator.empty())
+    {
+        return s_CppExpressionEvaluator(a_pExp);
+    }
+    return Variant();
 }
 
 #if !defined(PHANTOM_MODULE_SUFFIX)

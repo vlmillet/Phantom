@@ -465,6 +465,7 @@ bool Class::acceptsDerivedClassSubroutine(Type* a_pReturnType, StringView a_strN
             }
         }
     }
+    if (a_pOutConflictingMethods)
     {
         auto it = prevMethods.begin();
         for (; it != prevMethods.end(); ++it)

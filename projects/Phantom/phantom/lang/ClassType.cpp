@@ -195,8 +195,12 @@ void ClassType::getFullConversionTypes(Types& out, bool a_bImplicits /*= true*/)
 
 Constructor* ClassType::getDefaultConstructor() const
 {
-    Types types;
-    return getConstructor(Types());
+    for (auto pCtor : m_Constructors)
+    {
+        if (pCtor->getSignature()->getRequiredArgumentCount() == 0)
+            return pCtor;
+    }
+    return nullptr;
 }
 
 Constructor* ClassType::getConstructor(TypesView a_Types) const
@@ -608,7 +612,25 @@ void ClassType::construct(void* a_pInstance) const
     PHANTOM_ASSERT(getSize());
     Constructor* pConstructor = getDefaultConstructor();
     PHANTOM_ASSERT(pConstructor != nullptr, "no default constructor available for this class type");
-    pConstructor->construct(a_pInstance, nullptr);
+
+    if (pConstructor->getParameters().empty())
+    {
+        pConstructor->construct(a_pInstance, nullptr);
+    }
+    else
+    {
+        SmallVector<Variant, 4> values;
+        SmallVector<void*, 4>   args;
+        for (auto pParam : pConstructor->getParameters())
+        {
+            values.push_back(Application::Get()->evalExpression(pParam->getDefaultArgumentExpression()));
+        }
+        for (auto& val : values)
+        {
+            args.push_back(val.data());
+        }
+        pConstructor->construct(a_pInstance, args.data());
+    }
 }
 
 void ClassType::destroy(void* a_pInstance) const

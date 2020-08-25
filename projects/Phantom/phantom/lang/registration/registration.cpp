@@ -6,6 +6,7 @@
 
 #include "registration.h"
 
+#include "../Property.h"
 #include "GlobalRegistrer.h"
 #include "Namespace.h"
 #include "PackageSource.h"
@@ -84,6 +85,12 @@ void MemberBuilder::_apply(lang::Subroutine* a_pSubroutine) const
     _apply(static_cast<lang::Symbol*>(a_pSubroutine));
     if (defaultArguments.size())
         a_pSubroutine->setNativeDefaultArgumentStrings(defaultArguments);
+}
+void MemberBuilder::_apply(lang::Property* a_pProperty) const
+{
+    _apply(static_cast<lang::Symbol*>(a_pProperty));
+    if (defaultArguments.size())
+        a_pProperty->setTouchedFieldNames(defaultArguments);
 }
 
 ClassType* MemberBuilder::classType() const
@@ -449,6 +456,7 @@ void TypeBuilderBase::_addProperty(lang::Symbol* a_pOwner, StringView a_Name, st
     member.name = a_Name;
     member.owner = a_pOwner;
     member.isSymbol = true;
+    member.isFunc = true;
     member.fwdArgs = a_Args;
     member.filter = a_Filter;
     m_Members.push_back(std::move(member));

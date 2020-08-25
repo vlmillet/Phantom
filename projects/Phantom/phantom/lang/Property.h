@@ -144,6 +144,10 @@ public:
     bool isWrittable() const override { return m_pSet != nullptr; }
     bool isReadable() const override { return m_pGet != nullptr; }
 
+    void              setTouchedFieldNames(StringViews _touchedFields);
+    void              setTouchedFieldNames(ArrayView<String> _touchedFields);
+    ArrayView<String> getTouchedFieldNames() const { return m_TouchedFieldNames; }
+
 private:
     virtual void onAttachedToClass(ClassType*) {}
 
@@ -152,6 +156,7 @@ private:
     Signal* m_pSignal = nullptr;
     Method* m_pSet = nullptr;
     Method* m_pGet = nullptr;
+    Strings m_TouchedFieldNames;
 };
 
 } // namespace lang

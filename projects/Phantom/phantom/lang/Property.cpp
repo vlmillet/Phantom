@@ -70,6 +70,18 @@ void Property::setGet(Method* a_pFunc)
     m_pGet = a_pFunc;
 }
 
+void Property::setTouchedFieldNames(StringViews _touchedFields)
+{
+	m_TouchedFieldNames.reserve(_touchedFields.size());
+	for (auto tf : _touchedFields)
+		m_TouchedFieldNames.push_back(tf);
+}
+
+void Property::setTouchedFieldNames(ArrayView<String> _touchedFields)
+{
+    m_TouchedFieldNames = _touchedFields;
+}
+
 void Property::getValue(void const* a_pObject, void* a_pDest) const
 {
     PHANTOM_ASSERT(m_pGet);

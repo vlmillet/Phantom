@@ -291,14 +291,14 @@ protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 private:
-	void _onAttachingToClass(ClassType* a_pClass);
-	void _onAttachedToClass(ClassType* a_pClass);
+    void _onAttachingToClass(ClassType* a_pClass);
+    void _onAttachedToClass(ClassType* a_pClass);
 
 protected:
-    LocalVariable*           m_pThis;
-    size_t                   m_uiVirtualTableIndex;
-    SmallMap<size_t, void*>* m_pVTableClosures;
-    Property*                m_pProperty;
+    LocalVariable*           m_pThis{};
+    size_t                   m_uiVirtualTableIndex = ~size_t(0);
+    SmallMap<size_t, void*>* m_pVTableClosures{};
+    Property*                m_pProperty{};
 
     /// -----------------------
 };

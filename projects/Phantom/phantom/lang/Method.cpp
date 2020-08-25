@@ -20,20 +20,12 @@ namespace phantom
 namespace lang
 {
 Method::Method(ABI a_eABI, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*=0*/)
-    : Subroutine(a_eABI, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
-      m_pThis(nullptr),
-      m_uiVirtualTableIndex(~size_t(0)),
-      m_pVTableClosures(nullptr),
-      m_pProperty(nullptr)
+    : Subroutine(a_eABI, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags)
 {
 }
 
 Method::Method(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Subroutine(a_strName, a_pSignature, ABI::MethodCall, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
-      m_pThis(nullptr),
-      m_uiVirtualTableIndex(~size_t(0)),
-      m_pVTableClosures(nullptr),
-      m_pProperty(nullptr)
+    : Subroutine(a_strName, a_pSignature, ABI::MethodCall, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags)
 {
 #if defined(PHANTOM_DEV)
 #    pragma message(PHANTOM_TODO "remove Slot concept from Phantom (get more bloat free)")
@@ -42,11 +34,7 @@ Method::Method(StringView a_strName, Signature* a_pSignature, Modifiers a_Modifi
 
 Method::Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers /*= 0*/,
                uint a_uiFlags /*= 0*/)
-    : Subroutine(a_strName, a_pSignature, a_eABI, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags),
-      m_pThis(nullptr),
-      m_uiVirtualTableIndex(~size_t(0)),
-      m_pVTableClosures(nullptr),
-      m_pProperty(nullptr)
+    : Subroutine(a_strName, a_pSignature, a_eABI, a_Modifiers & ~PHANTOM_R_NOCONST, a_uiFlags)
 {
 }
 

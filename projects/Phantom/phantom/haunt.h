@@ -6,35 +6,38 @@
 
 #pragma once
 
-#if defined(__HAUNT__)
+#define _HNT_PP_REMOVE_PARENS_APPLY(macro, args) _HNT_PP_REMOVE_PARENS_APPLY_L1(macro, args)
+#define _HNT_PP_REMOVE_PARENS_APPLY_L1(macro, args) macro args
 
-#    define _HNT_PP_REMOVE_PARENS_APPLY(macro, args) _HNT_PP_REMOVE_PARENS_APPLY_L1(macro, args)
-#    define _HNT_PP_REMOVE_PARENS_APPLY_L1(macro, args) macro args
+#define _HNT_PP_REMOVE_PARENS_EVAL(test, x) _HNT_PP_REMOVE_PARENS_EVAL_L1(test, x)
+#define _HNT_PP_REMOVE_PARENS_EVAL_L1(test, x) _HNT_PP_REMOVE_PARENS_TEST(_HNT_PP_REMOVE_PARENS_TEST_ARITY test, x)
 
-#    define _HNT_PP_REMOVE_PARENS_EVAL(test, x) _HNT_PP_REMOVE_PARENS_EVAL_L1(test, x)
-#    define _HNT_PP_REMOVE_PARENS_EVAL_L1(test, x) _HNT_PP_REMOVE_PARENS_TEST(_HNT_PP_REMOVE_PARENS_TEST_ARITY test, x)
+#define _HNT_PP_REMOVE_PARENS_TEST_ARITY(...)                                                                          \
+    _HNT_PP_REMOVE_PARENS_APPLY(_HNT_PP_REMOVE_PARENS_TEST_ARITY_L1, (__VA_ARGS__, 2, 1))
+#define _HNT_PP_REMOVE_PARENS_TEST_ARITY_L1(a, b, c, ...) c
 
-#    define _HNT_PP_REMOVE_PARENS_TEST_ARITY(...)                                                                      \
-        _HNT_PP_REMOVE_PARENS_APPLY(_HNT_PP_REMOVE_PARENS_TEST_ARITY_L1, (__VA_ARGS__, 2, 1))
-#    define _HNT_PP_REMOVE_PARENS_TEST_ARITY_L1(a, b, c, ...) c
+#define _HNT_PP_REMOVE_PARENS_TEST(cond, x) _HNT_PP_REMOVE_PARENS_TEST_L1(cond, x)
+#define _HNT_PP_REMOVE_PARENS_TEST_L1(cond, x) _HNT_PP_CAT(_HNT_PP_REMOVE_PARENS_TEST_, cond)(x)
 
-#    define _HNT_PP_REMOVE_PARENS_TEST(cond, x) _HNT_PP_REMOVE_PARENS_TEST_L1(cond, x)
-#    define _HNT_PP_REMOVE_PARENS_TEST_L1(cond, x) _HNT_PP_CAT(_HNT_PP_REMOVE_PARENS_TEST_, cond)(x)
+#define _HNT_PP_REMOVE_PARENS_TEST_1(x) x
+#define _HNT_PP_REMOVE_PARENS_TEST_2(x) _HNT_PP_REMOVE_PARENS_APPLY(_HNT_PP_REMOVE_PARENS_TEST_2_L1, x)
+#define _HNT_PP_REMOVE_PARENS_TEST_2_L1(...) __VA_ARGS__
 
-#    define _HNT_PP_REMOVE_PARENS_TEST_1(x) x
-#    define _HNT_PP_REMOVE_PARENS_TEST_2(x) _HNT_PP_REMOVE_PARENS_APPLY(_HNT_PP_REMOVE_PARENS_TEST_2_L1, x)
-#    define _HNT_PP_REMOVE_PARENS_TEST_2_L1(...) __VA_ARGS__
-
-#    define _HNT_PP_REMOVE_PARENS_L1(...) 1, 1
-#    define _HNT_PP_REMOVE_PARENS(x) _HNT_PP_REMOVE_PARENS_EVAL((_HNT_PP_REMOVE_PARENS_L1 x), x)
+#define _HNT_PP_REMOVE_PARENS_L1(...) 1, 1
+#define _HNT_PP_REMOVE_PARENS(x) _HNT_PP_REMOVE_PARENS_EVAL((_HNT_PP_REMOVE_PARENS_L1 x), x)
 
 /// utils
-#    define _HNT_PP_CAT_I(x, y) x##y
-#    define _HNT_PP_CAT(x, y) _HNT_PP_CAT_I(x, y)
+#define _HNT_PP_CAT_I(x, y) x##y
+#define _HNT_PP_CAT(x, y) _HNT_PP_CAT_I(x, y)
 
-#    define _HNT_PP_QUOTE_II(...) #    __VA_ARGS__
-#    define _HNT_PP_QUOTE_I(...) _HNT_PP_QUOTE_II(__VA_ARGS__)
-#    define _HNT_PP_QUOTE(...) _HNT_PP_QUOTE_I(__VA_ARGS__)
+#define _HNT_PP_QUOTE_II(...) #__VA_ARGS__
+#define _HNT_PP_QUOTE_I(...) _HNT_PP_QUOTE_II(__VA_ARGS__)
+#define _HNT_PP_QUOTE(...) _HNT_PP_QUOTE_I(__VA_ARGS__)
+
+#define HAUNT_IMPORT(quotedSource, ...)                                                                                \
+    HAUNT_RAW(PHANTOM_REGISTER(End) { phantom::lang::detail::currentSource()->addImport(quotedSource, __VA_ARGS__); })
+
+#if defined(__HAUNT__)
 
 /// code generation control
 

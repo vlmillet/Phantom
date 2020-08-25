@@ -69,6 +69,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .typedef_<LoadedLibraries>("LoadedLibraries")
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .typedef_<CppExpressionParser>("CppExpressionParser")
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .typedef_<CppExpressionEvaluator>("CppExpressionEvaluator")
         
         .public_()
             .staticMethod<::phantom::lang::Application *()>("Get", &_::Get)
@@ -82,8 +84,14 @@ PHANTOM_PACKAGE("phantom.lang")
             // .method<void(CppExpressionParser)>("setCppExpressionParser", &_::setCppExpressionParser)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<CppExpressionParser()>("getCppExpressionParser", &_::getCppExpressionParser)
+            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<void(CppExpressionEvaluator)>("setCppExpressionEvaluator", &_::setCppExpressionEvaluator)
+            /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<CppExpressionEvaluator()>("getCppExpressionEvaluator", &_::getCppExpressionEvaluator)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(StringView, LanguageElement*) const>("cppExpression", &_::cppExpression)
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<Variant(Expression*) const>("evalExpression", &_::evalExpression)
             .method<bool(StringView, Symbols&, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
             .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
             .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]

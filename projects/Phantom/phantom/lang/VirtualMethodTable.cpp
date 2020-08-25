@@ -323,13 +323,13 @@ void VirtualMethodTable::_construct(void* a_pInstance, SmallMap<void**, size_t, 
                 memcpy(m_ppClosures, *ppVTablePtrAddr,
                        baseVtableSize * sizeof(void*)); // extract native vtable closures for replacement
             }
-            m_pNativeRttiData = *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(ppVTablePtrAddr - 1);
+            m_pNativeRttiData = *(*reinterpret_cast<Microsoft::RTTICompleteObjectLocator***>(ppVTablePtrAddr) - 1);
         }
         else
         {
             // TODO : build RTTI Complete Object Locator
             m_pNativeRttiData = nullptr;
-            *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(ppVTablePtrAddr - 1) =
+            *reinterpret_cast<Microsoft::RTTICompleteObjectLocator**>(m_ppClosures - 1) =
             reinterpret_cast<Microsoft::RTTICompleteObjectLocator*>(m_pNativeRttiData);
         }
 

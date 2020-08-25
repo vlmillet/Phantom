@@ -25,6 +25,9 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -38,7 +41,9 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(Property)
         {
             using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using String = typedef_< phantom::String>;
             using StringView = typedef_< phantom::StringView>;
+            using StringViews = typedef_< phantom::StringViews>;
             this_()
             .inherits<::phantom::lang::ValueMember>()
         .public_()
@@ -70,6 +75,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(Method*)>("setGet", &_::setGet)
             .method<bool() const, virtual_|override_>("isWrittable", &_::isWrittable)
             .method<bool() const, virtual_|override_>("isReadable", &_::isReadable)
+            .method<void(StringViews)>("setTouchedFieldNames", &_::setTouchedFieldNames)
+            .method<void(ArrayView<String>)>("setTouchedFieldNames", &_::setTouchedFieldNames)
+            .method<ArrayView<String>() const>("getTouchedFieldNames", &_::getTouchedFieldNames)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -69,6 +69,7 @@ public:
     typedef SmallMap<Module*, size_t>                                             LoadedLibraryModules;
     typedef SmallMap<String, SmallMap<Module*, size_t> >                          LoadedLibraries;
     typedef Delegate<Expression*(StringView a_strExp, LanguageElement* a_pScope)> CppExpressionParser;
+    typedef Delegate<Variant(Expression*)>                                        CppExpressionEvaluator;
 
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +89,11 @@ public:
     void                setCppExpressionParser(CppExpressionParser a_Parser);
     CppExpressionParser getCppExpressionParser();
 
+    void                   setCppExpressionEvaluator(CppExpressionEvaluator a_Parser);
+    CppExpressionEvaluator getCppExpressionEvaluator();
+
     Expression* cppExpression(StringView a_strExp, LanguageElement* a_pScope) const;
+    Variant     evalExpression(Expression* a_pExp) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Find a c++ symbol with its full qualified name

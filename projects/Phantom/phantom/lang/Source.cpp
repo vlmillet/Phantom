@@ -176,9 +176,9 @@ void Source::onScopeSymbolAdded(Symbol* a_pSymbol)
 {
     a_pSymbol->setOwner(this);
     a_pSymbol->setVisibility(Visibility::Public);
-    if (a_pSymbol->getNamespace() == nullptr)
+    if (a_pSymbol->getNamingScope() == nullptr)
     {
-        a_pSymbol->setNamespace(getPackage()->getCounterpartNamespace());
+        getPackage()->getCounterpartNamespace()->addCustomSymbol(a_pSymbol);
     }
     if (a_pSymbol->isNative())
     {

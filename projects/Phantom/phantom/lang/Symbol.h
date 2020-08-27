@@ -361,14 +361,6 @@ public:
     Namespace* getNamespace() const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the namespace scoping this symbol.
-    ///
-    /// \return null if it fails, else the namespace.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setNamespace(Namespace* a_pNS);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template decoration constituted from unique names (see getUniqueName()).
     ///
     /// \return The unique template decoration.
@@ -456,6 +448,8 @@ protected:
     virtual void onVisibilityChanged(Visibility) {}
 
 private:
+    void setNamespace(Namespace* a_pNS);
+
     ExtraData&       _extraData();
     ExtraData const& _extraData() const
     {

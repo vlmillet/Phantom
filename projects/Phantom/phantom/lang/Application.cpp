@@ -676,7 +676,7 @@ void Application::_registerBuiltInTypes()
     PHANTOM_ASSERT(pPhantomModule->getName() == "Phantom");
     Alias* pUnsignedAlias =
     m_pDefaultSource->addAlias(PHANTOM_TYPEOF(unsigned), "unsigned", PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
-    pUnsignedAlias->setNamespace(Namespace::Global());
+    Namespace::Global()->addAlias(pUnsignedAlias);
 
     Namespace* pGlobal = Namespace::Global();
     Namespace* pPhantom = pGlobal->getNamespace("phantom");
@@ -799,7 +799,7 @@ void Application::_addBuiltInType(Type* a_pType)
     m_BuiltInTypes.push_back(a_pType);
     a_pType->setVisibility(Visibility::Public);
     a_pType->setOwner(m_pDefaultSource);
-    a_pType->setNamespace(Namespace::Global());
+    Namespace::Global()->addType(a_pType);
 }
 
 void Application::_removeBuiltInType(Type*) {}

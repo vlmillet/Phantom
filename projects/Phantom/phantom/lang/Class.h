@@ -70,9 +70,15 @@ public:
 
     Scope*        scope() const;
     ClassBuilder& inherits(Class* _class);
-    ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u);
+    ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u,
+                        StringView a_DefaultValue = {});
     ClassBuilder& access(Access a_Access);
-    Class*        finalize();
+
+    /// @brief convenient function to get the building class for cross references
+    Class* forwardDecl() const { return m_pClass; }
+
+    /// @brief finalize the class with size/align and implicit functions building
+    Class* finalize();
 
     operator Class*() { return finalize(); }
 

@@ -66,6 +66,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<Namespace*() const, virtual_|override_>("asNamespace", &_::asNamespace)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)
+            .method<void(Symbol*)>("addCustomSymbol", &_::addCustomSymbol)
             .method<Namespace*() const>("getRootNamespace", &_::getRootNamespace)
             .method<Namespace*(StringView) const>("getNamespace", &_::getNamespace)
             .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)["\":\""]

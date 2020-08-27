@@ -37,7 +37,7 @@ void ValueMember::setDefaultExpression(Expression* a_pExpression)
 
 void ValueMember::setDefaultExpression(const char* a_pExpression)
 {
-    PHANTOM_ASSERT(isNative());
+    PHANTOM_ASSERT(m_pDefaultExpression == nullptr);
     m_pNativeDefaultExpressionStr = a_pExpression;
 }
 

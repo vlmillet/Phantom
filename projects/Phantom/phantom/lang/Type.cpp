@@ -632,7 +632,7 @@ void Type::onNamespaceChanging(Namespace* /*a_pNamespace*/)
     if (!isNative() && getVisibility() == Visibility::Public && getNamespace() && !isTemplateDependant() &&
         getSource()->getVisibility() != Visibility::Private)
     {
-        getModule()->_registerType(getHash(), this);
+        getModule()->_unregisterType(getHash(), this);
     }
 }
 

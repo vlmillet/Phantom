@@ -62,7 +62,7 @@ void SolveAliasTemplate(Source* a_pSource, RegistrationStep a_Step, Template*& a
                        PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateDep));
         Alias* pAlias = a_pSource->NewDeferred<Alias>(pType, a_Name, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
         if (std::is_same<T, NamespaceBuilder>::value)
-            pAlias->setNamespace((Namespace*)a_Builder._PHNTM_getNamingScope());
+            ((Namespace*)a_Builder._PHNTM_getNamingScope())->addAlias(pAlias);
         a_rpTemplate->getEmptyTemplateSpecialization()->setTemplated(pAlias);
     }
     a_Builder._PHNTM_getRegistrer()->_PHNTM_setLastSymbol(a_rpTemplate);

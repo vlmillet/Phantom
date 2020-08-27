@@ -169,7 +169,7 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             if (pSpec == nullptr || pSpec->getModule() != detail::currentModule())
             {
                 if (auto pNS = m_pNamingScope->asNamespace())
-                    a_pType->setNamespace(pNS);
+                    pNS->addType(a_pType);
                 detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType));
             }
             else
@@ -309,7 +309,7 @@ NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
     for (auto pSymbol : symbols)
     {
         auto pAlias = _PHNTM_pSource->addAlias(pSymbol, pSymbol->getName(), Modifier::None, PHANTOM_R_FLAG_NATIVE);
-        pAlias->setNamespace(_PHNTM_pNamespace);
+        _PHNTM_pNamespace->addAlias(pAlias);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
     }
     return *this;
@@ -361,7 +361,7 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     if (a_pType)
     {
         auto pAlias = _PHNTM_pSource->addAlias(a_pType, a_Name);
-        pAlias->setNamespace(_PHNTM_pNamespace);
+        _PHNTM_pNamespace->addAlias(pAlias);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         auto foundDeferred = MultiLevelTypedefs->find(a_Hash);
@@ -376,7 +376,7 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     else
     {
         auto pAlias = _PHNTM_pSource->addAlias(phantom::lang::BuiltInTypes::TYPE_INT, a_Name);
-        pAlias->setNamespace(_PHNTM_pNamespace);
+        _PHNTM_pNamespace->addAlias(pAlias);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         (*MultiLevelTypedefs)[a_Hash].push_back(pAlias);

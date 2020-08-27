@@ -69,8 +69,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Scope*, Scope*, StringView, Access, size_t)>()["0"]
             .method<Scope*() const>("scope", &_::scope)
             .method<ClassBuilder&(Class*)>("inherits", &_::inherits)
-            .method<ClassBuilder&(Type*, StringView, size_t, uint)>("field", &_::field)["0"]["~0u"]
+            .method<ClassBuilder&(Type*, StringView, size_t, uint, StringView)>("field", &_::field)["0"]["~0u"]["{}"]
             .method<ClassBuilder&(Access)>("access", &_::access)
+            .method<Class*() const>("forwardDecl", &_::forwardDecl)
             .method<Class*()>("finalize", &_::finalize)
             .method<::phantom::lang::Class *()>("operator ::phantom::lang::Class *", &_::operator notypedef<::phantom::lang::Class *>)
             ;

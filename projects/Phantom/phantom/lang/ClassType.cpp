@@ -378,7 +378,7 @@ Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers
 {
     Signature*   pSignature = New<Signature>(PHANTOM_TYPEOF(void), a_Parameters);
     Constructor* pConstructor = New<Constructor>(getName(), pSignature, a_Modifiers, a_uiFlags);
-    pConstructor->setAccess(getDefaultAccess());
+    pConstructor->setAccess(getCurrentAccess());
     addConstructor(pConstructor);
     return pConstructor;
 }
@@ -815,6 +815,13 @@ void ClassType::setDefaultAccess(Access a_eAccess)
 {
     PHANTOM_ASSERT(a_eAccess == Access::Public || a_eAccess == Access::Protected || a_eAccess == Access::Private);
     m_DefaultAccess = a_eAccess;
+    m_CurrentAccess = a_eAccess;
+}
+
+void ClassType::setCurrentAccess(Access a_eAccess)
+{
+    PHANTOM_ASSERT(a_eAccess == Access::Public || a_eAccess == Access::Protected || a_eAccess == Access::Private);
+    m_CurrentAccess = a_eAccess;
 }
 
 void ClassType::addSubroutine(Subroutine* a_pSubroutine)
@@ -1118,7 +1125,7 @@ Method* ClassType::addDestructor(Modifiers a_Modifiers /*= 0 */, uint a_uiFlags 
     Destructor* pDestructor =
     New<Destructor>('~' + getName(), Signature::Create(this, PHANTOM_TYPEOF(void)), a_Modifiers, a_uiFlags);
     addMethod(pDestructor);
-    pDestructor->setAccess(m_pExtraData ? getDefaultAccess() : Access::Public);
+    pDestructor->setAccess(m_pExtraData ? getCurrentAccess() : Access::Public);
     return pDestructor;
 }
 

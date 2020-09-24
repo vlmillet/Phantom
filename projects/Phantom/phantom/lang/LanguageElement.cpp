@@ -556,12 +556,12 @@ void LanguageElement::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuf
 
     if (hasNamingScopeCascade(a_pTo))
     {
-        if (auto pScope = getNamingScope())
+        if (auto pNamingScope = getNamingScope())
         {
-            if (pScope != a_pTo)
+            if (pNamingScope != a_pTo)
             {
                 size_t sz = a_Buf.size();
-                pScope->getRelativeDecoratedName(a_pTo, a_Buf);
+                pNamingScope->getRelativeDecoratedName(a_pTo, a_Buf);
                 if (sz != a_Buf.size())
                     a_Buf += "::";
             }

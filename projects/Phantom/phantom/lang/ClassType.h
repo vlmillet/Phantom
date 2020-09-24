@@ -135,6 +135,22 @@ public:
     Access getDefaultAccess() const { return m_DefaultAccess; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets current access specifier.
+    ///
+    /// \param  a_Specifier    The access specifier.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void setCurrentAccess(Access a_eAccess);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets current access.
+    ///
+    /// \return The current access.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Access getCurrentAccess() const { return m_CurrentAccess; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Adds a constructor.
     ///
     /// \param  a_pConstructor  The constructor.
@@ -907,6 +923,7 @@ protected:
     void onScopeSymbolRemoving(Symbol* a_pSym) override { _removeSymbol(a_pSym); }
 
 private:
+    friend class Class;
     friend class ModuleRegistrationInfo;
     template<class, class>
     friend class ClassT;
@@ -918,7 +935,7 @@ private:
     {
         a_pSymbol->setOwner(this);
         if (a_pSymbol->getAccess() == Access::Undefined)
-            a_pSymbol->setAccess(m_DefaultAccess);
+            a_pSymbol->setAccess(m_CurrentAccess);
         a_pSymbol->setVisibility(Visibility::Public); // expose to lookup
     }
     inline void _removeSymbol(Symbol* a_pSymbol)
@@ -936,21 +953,19 @@ private:
     typedef Members<Symbols>                 FriendsList;
     typedef Members<Constructors>            ConstructorsList;
 
-    ValueMembersList            m_ValueMembers{this};
-    PropertiesList              m_Properties{this};
-    FieldsList                  m_Fields{this};
-    MethodsList                 m_Methods{this};
-    FriendsList                 m_Friends{this};
-    ConstructorsList            m_Constructors{this};
-    DataElements                m_DataElements;
-    MemberAnonymousSectionsList m_MemberAnonymousSections{this};
-    Access                      m_DefaultAccess = Access::Public;
-    ExtraData*                  m_pExtraData = nullptr;
-
-private:
-    friend class Class;
+    ValueMembersList                  m_ValueMembers{this};
+    PropertiesList                    m_Properties{this};
+    FieldsList                        m_Fields{this};
+    MethodsList                       m_Methods{this};
+    FriendsList                       m_Friends{this};
+    ConstructorsList                  m_Constructors{this};
+    DataElements                      m_DataElements;
+    MemberAnonymousSectionsList       m_MemberAnonymousSections{this};
+    ExtraData*                        m_pExtraData = nullptr;
     phantom::TypeInstallationDelegate m_OnDemandMembersFunc;
     RecursiveSpinMutex                m_OnDemandMutex;
+    Access                            m_DefaultAccess = Access::Public;
+    Access                            m_CurrentAccess = this->m_DefaultAccess;
 };
 
 template<class ClassT, class ValueT, class GetFunctor, class SetFunctor, class DontTouchThis>

@@ -190,13 +190,19 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             m_Inheritance(static_cast<lang::Class*>(a_pType));
         break;
     case TypeInstallationStep::Members:
-        for (MemberBuilder const& member : m_Members)
+    {
+        if (auto pClassType = a_pType->asClassType())
         {
-            member.registrer(member);
+            pClassType->setCurrentAccess(pClassType->getDefaultAccess());
+            for (MemberBuilder const& member : m_Members)
+            {
+                member.registrer(member);
+            }
+            if (auto pClass = pClassType->asClass())
+                pClass->finalizeNative();
         }
-        if (auto pClass = a_pType->asClass())
-            pClass->finalizeNative();
-        break;
+    }
+    break;
     default:
         break;
     }
@@ -386,8 +392,9 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
 
 void TypeBuilderBase::_addAccess(lang::Symbol* a_pOwner, Access a_Access)
 {
+    static_cast<ClassType*>(a_pOwner)->setCurrentAccess(a_Access);
     MemberBuilder member{};
-    member.registrer = [](MemberBuilder const& m) { m.classType()->setDefaultAccess(lang::Access(m.filter)); };
+    member.registrer = [](MemberBuilder const& m) { m.classType()->setCurrentAccess(lang::Access(m.filter)); };
     member.filter = uint(a_Access);
     member.owner = a_pOwner;
     m_Members.push_back(std::move(member));

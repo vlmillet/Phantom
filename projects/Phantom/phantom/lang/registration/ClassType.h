@@ -112,9 +112,10 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     using ScopeBuilderT<MostDerived>::union_;
 
     ClassTypeBuilderT(lang::Access a_StartAccess, Top* a_pTop, TemplateSpecArgumentRegistrer a_TplArguments)
-        : BaseType(a_pTop, a_TplArguments), m_CurrentAccess(a_StartAccess)
+        : BaseType(a_pTop, a_TplArguments)
     {
         m_pClassType = this->_PHNTM_getMeta();
+        m_pClassType->setDefaultAccess(a_StartAccess);
     }
 
     virtual ~ClassTypeBuilderT()

@@ -30,28 +30,24 @@ String GenerateAnonymousName()
 Enum::Enum() : PrimitiveType(TypeKind::Enum, IntType(), GenerateAnonymousName(), sizeof(int), PHANTOM_ALIGNOF(int)) {}
 
 Enum::Enum(PrimitiveType* a_pIntType)
-    : PrimitiveType(TypeKind::Enum, a_pIntType, GenerateAnonymousName(), a_pIntType->getSize(),
-                    a_pIntType->getAlignment())
+    : PrimitiveType(TypeKind::Enum, a_pIntType, "", a_pIntType->getSize(), a_pIntType->getAlignment())
 {
 }
 
 Enum::Enum(StringView a_strName, PrimitiveType* a_pIntType)
-    : PrimitiveType(TypeKind::Enum, a_pIntType, a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
-                    a_pIntType->getSize(), a_pIntType->getAlignment())
+    : PrimitiveType(TypeKind::Enum, a_pIntType, a_strName, a_pIntType->getSize(), a_pIntType->getAlignment())
 {
 }
 
 Enum::Enum(StringView a_strName)
-    : PrimitiveType(TypeKind::Enum, IntType(), a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
-                    sizeof(int), PHANTOM_ALIGNOF(int))
+    : PrimitiveType(TypeKind::Enum, IntType(), a_strName, sizeof(int), PHANTOM_ALIGNOF(int))
 {
 }
 
 // for native
 Enum::Enum(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers /*= 0*/,
            uint a_uiFlags /*= 0*/)
-    : PrimitiveType(TypeKind::Enum, IntType(), a_strName.size() ? a_strName : StringView(GenerateAnonymousName()),
-                    a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+    : PrimitiveType(TypeKind::Enum, IntType(), a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
 {
 }
 

@@ -107,6 +107,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_>("isListInitializable", &_::isListInitializable)
             .method<void(Access)>("setDefaultAccess", &_::setDefaultAccess)
             .method<Access() const>("getDefaultAccess", &_::getDefaultAccess)
+            .method<void(Access)>("setCurrentAccess", &_::setCurrentAccess)
+            .method<Access() const>("getCurrentAccess", &_::getCurrentAccess)
             .method<void(Constructor*)>("addConstructor", &_::addConstructor)
             .method<Constructor*(const Parameters&, Modifiers, uint)>("addConstructor", &_::addConstructor)["0"]["0"]
             .method<Constructor*(Modifiers, uint)>("addConstructor", &_::addConstructor)["0"]["0"]

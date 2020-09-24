@@ -484,6 +484,8 @@ void Symbol::getUniqueName(StringBuffer& a_Buf) const
     LanguageElement* pOwner = getOwner()->asTemplateSpecialization()
     ? static_cast<TemplateSpecialization*>(getOwner())->getTemplate()->getOwner()
     : getOwner();
+    while (pOwner && pOwner->getName().empty())
+        pOwner = pOwner->getOwner();
     if (pOwner == nullptr)
     {
         if (m_strName.size())
@@ -519,13 +521,18 @@ void Symbol::getQualifiedName(StringBuffer& a_Buf) const
     }
     if (pNamingScope)
     {
-        size_t prev = a_Buf.size();
-        pNamingScope->getQualifiedDecoratedName(a_Buf);
-        bool ownerEmpty = (a_Buf.size() - prev) == 0;
-        if (!ownerEmpty) // no owner name
+        while (pNamingScope && pNamingScope->getName().empty())
+            pNamingScope = pNamingScope->getNamingScope();
+        if (pNamingScope)
         {
-            a_Buf += ':';
-            a_Buf += ':';
+            size_t prev = a_Buf.size();
+            pNamingScope->getQualifiedDecoratedName(a_Buf);
+            bool ownerEmpty = (a_Buf.size() - prev) == 0;
+            if (!ownerEmpty) // no owner name
+            {
+                a_Buf += ':';
+                a_Buf += ':';
+            }
         }
     }
     if (m_strName.size())
@@ -599,13 +606,18 @@ void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
     LanguageElement* pNamingScope = getNamingScope();
     if (pNamingScope && pTo != pNamingScope)
     {
-        size_t prev = a_Buf.size();
-        pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
-        bool ownerEmpty = (a_Buf.size() - prev) == 0;
-        if (!ownerEmpty) // no owner name
+        while (pNamingScope && pNamingScope->getName().empty())
+            pNamingScope = pNamingScope->getNamingScope();
+        if (pNamingScope)
         {
-            a_Buf += ':';
-            a_Buf += ':';
+            size_t prev = a_Buf.size();
+            pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
+            bool ownerEmpty = (a_Buf.size() - prev) == 0;
+            if (!ownerEmpty) // no owner name
+            {
+                a_Buf += ':';
+                a_Buf += ':';
+            }
         }
     }
     if (m_strName.empty())
@@ -650,6 +662,9 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
     LanguageElement* pNamingScope = getNamingScope();
     if (pNamingScope && pTo != pNamingScope)
     {
+        // skip anonymous when inside a qualified name
+        while (pNamingScope && pNamingScope->getName().empty())
+            pNamingScope = pNamingScope->getNamingScope();
         size_t prev = a_Buf.size();
         pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
         bool ownerEmpty = (a_Buf.size() - prev) == 0;

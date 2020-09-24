@@ -1746,7 +1746,7 @@ ClassBuilder::ClassBuilder(Scope* a_pOwnerScope, Scope* a_pNamingScope, StringVi
     {
         m_pClass = a_pOwnerScope->asLanguageElement()->New<lang::Class>(StringView());
     }
-    m_pClass->setDefaultAccess(a_Access);
+    m_pClass->setCurrentAccess(a_Access);
 
     if (a_pNamingScope != a_pOwnerScope)
         a_pNamingScope->addType(m_pClass);
@@ -1771,13 +1771,15 @@ ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Ali
     PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
     if (a_pType->getOwner() == nullptr)
         m_pClass->addType(a_pType);
-    Field* pField = m_pClass->addField(a_pType, a_Name, a_FilterMask);
-    if (a_Align)
-        pField->setAlignment(std::max(a_pType->getAlignment(), a_Align));
-
-    if (!a_DefaultValue.empty())
+    if (Field* pField = m_pClass->addField(a_pType, a_Name, a_FilterMask))
     {
-        pField->setDefaultExpression(Application::Get()->cppExpression(a_DefaultValue, m_pClass));
+        if (a_Align)
+            pField->setAlignment(std::max(a_pType->getAlignment(), a_Align));
+
+        if (!a_DefaultValue.empty())
+        {
+            pField->setDefaultExpression(Application::Get()->cppExpression(a_DefaultValue, m_pClass));
+        }
     }
     return *this;
 }
@@ -1836,7 +1838,7 @@ Class* ClassBuilder::finalize()
 
 ClassBuilder& ClassBuilder::access(Access _access)
 {
-    m_pClass->setDefaultAccess(_access);
+    m_pClass->setCurrentAccess(_access);
     return *this;
 }
 

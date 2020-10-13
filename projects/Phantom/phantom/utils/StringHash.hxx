@@ -29,6 +29,20 @@
 
 #include <phantom/template-only-pop>
 
+namespace std {
+PHANTOM_PACKAGE("phantom.utils")
+    PHANTOM_SOURCE("StringHash")
+
+        /// missing symbol(s) reflection (std::hash) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        /* PHANTOM_STRUCT_S((phantom::StringHash), hash)
+        {
+            this_()
+            // .method<size_t(const ::phantom::StringHash &)>("operator()", &_::operator())
+            ;
+        } */
+    PHANTOM_END("StringHash")
+PHANTOM_END("phantom.utils")
+}
 namespace phantom {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("StringHash")
@@ -55,20 +69,6 @@ PHANTOM_PACKAGE("phantom.utils")
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
-    PHANTOM_END("StringHash")
-PHANTOM_END("phantom.utils")
-}
-namespace std {
-PHANTOM_PACKAGE("phantom.utils")
-    PHANTOM_SOURCE("StringHash")
-
-        /// missing symbol(s) reflection (std::hash) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-        /* PHANTOM_STRUCT_S((phantom::StringHash), hash)
-        {
-            this_()
-            // .method<size_t(const ::phantom::StringHash &)>("operator()", &_::operator())
-            ;
-        } */
     PHANTOM_END("StringHash")
 PHANTOM_END("phantom.utils")
 }

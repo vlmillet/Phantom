@@ -6,21 +6,18 @@
 
 #pragma once
 
-#include <haunt>
-
-HAUNT_STOP;
-
 #include "registration.h"
 
+#include <haunt>
 #include <phantom/lang/reflection.h>
 #include <phantom/utils/Functor.h>
+#include <phantom/utils/StringView.h>
 
 namespace phantom
 {
-using MessageReportFunc =
-Functor<bool(StringView expression, StringView file, int line, const char* format, va_list arglist)>;
+using MessageReportFunc = Functor<bool(StringView expression, StringView file, int line, StringView)>;
 
-using LogFunc = Functor<void(MessageType msgType, StringView file, int line, const char* format, va_list arglist)>;
+using LogFunc = Functor<void(MessageType msgType, StringView file, int line, StringView)>;
 
 namespace lang
 {
@@ -38,6 +35,8 @@ using ClassHookFunc = Functor<void(ClassHookOp op, Class* a_pClass, void* a_pIns
 class PHANTOM_EXPORT_PHANTOM Main
 {
 public:
+    static Main* Get();
+
     Main(int (*_mainFuncPtr)(int, char**), StringView a_strMainModuleName, int argc = 0, char** argv = nullptr,
          CustomAllocator _allocator = CustomAllocator::Default(), ClassHookFunc a_ClassHookFunc = ClassHookFunc(),
          StringView a_strMainCppFile = "", uint a_uiFlags = 0)
@@ -66,7 +65,7 @@ public:
 
     void setAssertFunc(MessageReportFunc a_func);
     void setErrorFunc(MessageReportFunc a_func);
-    void setLogFunc(LogFunc a_func);
+    void setLogFunc(LogFunc const& a_func);
     void setWarningFunc(MessageReportFunc a_func);
 };
 } // namespace lang

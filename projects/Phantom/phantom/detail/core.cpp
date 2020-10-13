@@ -114,10 +114,8 @@ void trimMsgFileName(StringView file)
         std::ostringstream out;                                                                                        \
         out << console::push << console::fg_##color << title << console::fg_white << "(" << file << "|"                \
             << console::fg_white << line << ") " << expression << (expression[0] ? " " : "");                          \
-        char buffer[512];                                                                                              \
-        buffer[511] = '\0';                                                                                            \
-        int r = vsnprintf(buffer, 511, format, args);                                                                  \
-        out << buffer << console::pop << std::endl;                                                                    \
+        out.write(text.data(), text.size());                                                                           \
+        out << console::pop << std::endl;                                                                              \
         printf("%s", out.str().c_str());
 
 #else
@@ -125,31 +123,29 @@ void trimMsgFileName(StringView file)
         trimMsgFileName(file);                                                                                         \
         std::cout << console::push << console::fg_##color << title << console::fg_white << "(" << file << "|"          \
                   << console::fg_white << line << ") " << expression << (expression[0] ? " " : "");                    \
-        char buffer[512];                                                                                              \
-        buffer[511] = '\0';                                                                                            \
-        vsnprintf(buffer, 511, format, args);                                                                          \
-        std::cout << buffer << console::pop << std::endl;
+        std::cout.write(text.data(), text.size());                                                                     \
+        std::cout << console::pop << std::endl;
 #endif
 
-bool defaultAssert(StringView expression, StringView file, int line, const char* format, va_list args)
+bool defaultAssert(StringView expression, StringView file, int line, StringView text)
 {
     common_output("ASSERT", magenta);
     return true;
 }
 
-bool defaultWarning(StringView expression, StringView file, int line, const char* format, va_list args)
+bool defaultWarning(StringView expression, StringView file, int line, StringView text)
 {
     common_output("WARNING", yellow);
     return true;
 }
 
-bool defaultError(StringView expression, StringView file, int line, const char* format, va_list args)
+bool defaultError(StringView expression, StringView file, int line, StringView text)
 {
     common_output("ERROR", red);
     return true;
 }
 
-void defaultLog(MessageType, StringView file, int line, const char* format, va_list args)
+void defaultLog(MessageType, StringView file, int line, StringView text)
 {
     StringView expression = "";
     common_output("LOG", green);
@@ -1039,12 +1035,19 @@ detail::DynamicCppInitializerH* dynamic_initializer_()
     return &*s_Singleton;
 }
 
+#define common_valist_decode(str, sz, format, args)                                                                    \
+    trimMsgFileName(file);                                                                                             \
+    char str[sz];                                                                                                      \
+    str[sz] = '\0';                                                                                                    \
+    vsnprintf(str, sz - 1, format, args);
+
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* file, int line,
                                                                          const char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    bool r = detail::g_assert_func && detail::g_assert_func(e, file, line, format, args);
+    common_valist_decode(buffer, 512, format, args);
+    bool r = detail::g_assert_func && detail::g_assert_func(e, file, line, buffer);
     va_end(args);
     return r;
 }
@@ -1054,7 +1057,8 @@ PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const cha
 {
     va_list args;
     va_start(args, format);
-    bool r = detail::g_warning_func && detail::g_warning_func(e, file, line, format, args);
+    common_valist_decode(buffer, 512, format, args);
+    bool r = detail::g_warning_func && detail::g_warning_func(e, file, line, buffer);
     va_end(args);
     return r;
 }
@@ -1064,7 +1068,8 @@ PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char*
 {
     va_list args;
     va_start(args, format);
-    bool r = detail::g_error_func && detail::g_error_func(e, file, line, format, args);
+    common_valist_decode(buffer, 512, format, args);
+    bool r = detail::g_error_func && detail::g_error_func(e, file, line, buffer);
     va_end(args);
     return r;
 }
@@ -1074,9 +1079,21 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
 {
     va_list args;
     va_start(args, format);
+    String str;
+    common_valist_decode(buffer, 512, format, args);
     if (detail::g_LogFunc)
-        detail::g_LogFunc(msgType, file, line, format, args);
+        detail::g_LogFunc(msgType, file, line, buffer);
     va_end(args);
+}
+
+namespace
+{
+phantom::lang::Main* g_PHNTM_Main;
+}
+
+phantom::lang::Main* phantom::lang::Main::Get()
+{
+    return g_PHNTM_Main;
 }
 
 void lang::Main::setAssertFunc(MessageReportFunc a_func)
@@ -1089,7 +1106,7 @@ void lang::Main::setErrorFunc(MessageReportFunc a_func)
     phantom::detail::g_error_func = a_func;
 }
 
-void lang::Main::setLogFunc(LogFunc a_func)
+void lang::Main::setLogFunc(LogFunc const& a_func)
 {
     phantom::detail::g_LogFunc = a_func;
 }
@@ -1102,6 +1119,7 @@ void lang::Main::setWarningFunc(MessageReportFunc a_func)
 lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
                  CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
 {
+    g_PHNTM_Main = this;
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
 
     phantom::detail::g_InstanceHook_func = a_ClassHookFunc;
@@ -1163,6 +1181,7 @@ lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc
 
 lang::Main::~Main()
 {
+    PHANTOM_ASSERT(g_PHNTM_Main == this);
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
     Application::Get()->_unloadMain();
     Application::Get()->m_OperationCounter++; /// to allow auto dll unloading after main(...) ends
@@ -1170,6 +1189,7 @@ lang::Main::~Main()
     dynamic_initializer_()->release(); // ensure every allocation made by the dynamic initializer are cleaned up here
 
     CustomAllocator::Pop();
+    g_PHNTM_Main = nullptr;
 }
 
 PHANTOM_EXPORT_PHANTOM uint64_t makeStringHash(StringView a_Str)

@@ -72,6 +72,7 @@ public:
     ClassBuilder& inherits(Class* _class);
     ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align = 0, uint a_FilterMask = ~0u,
                         StringView a_DefaultValue = {});
+    ClassBuilder& field(Type* a_pType, StringView a_Name, size_t a_Align, uint a_FilterMask, Expression* a_pDefaultExp);
     ClassBuilder& access(Access a_Access);
 
     /// @brief convenient function to get the building class for cross references

@@ -1768,6 +1768,18 @@ ClassBuilder& ClassBuilder::inherits(Class* _class)
 ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Align /*= 0*/, uint a_FilterMask /*= ~0u*/,
                                   StringView a_DefaultValue /* = {}*/)
 {
+    Expression* pExp = nullptr;
+    if (!a_DefaultValue.empty())
+    {
+        pExp = Application::Get()->cppExpression(a_DefaultValue, m_pClass);
+    }
+
+    return field(a_pType, a_Name, a_Align, a_FilterMask, pExp);
+}
+
+ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Align /*= 0*/, uint a_FilterMask /*= ~0u*/,
+                                  Expression* a_pDefaultExp)
+{
     PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
     if (a_pType->getOwner() == nullptr)
         m_pClass->addType(a_pType);
@@ -1776,9 +1788,9 @@ ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Ali
         if (a_Align)
             pField->setAlignment(std::max(a_pType->getAlignment(), a_Align));
 
-        if (!a_DefaultValue.empty())
+        if (a_pDefaultExp)
         {
-            pField->setDefaultExpression(Application::Get()->cppExpression(a_DefaultValue, m_pClass));
+            pField->setDefaultExpression(a_pDefaultExp);
         }
     }
     return *this;

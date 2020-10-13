@@ -70,6 +70,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Scope*() const>("scope", &_::scope)
             .method<ClassBuilder&(Class*)>("inherits", &_::inherits)
             .method<ClassBuilder&(Type*, StringView, size_t, uint, StringView)>("field", &_::field)["0"]["~0u"]["{}"]
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .method<ClassBuilder&(Type*, StringView, size_t, uint, Expression*)>("field", &_::field)
             .method<ClassBuilder&(Access)>("access", &_::access)
             .method<Class*() const>("forwardDecl", &_::forwardDecl)
             .method<Class*()>("finalize", &_::finalize)

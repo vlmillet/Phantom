@@ -49,25 +49,20 @@ ExecutionContext* ExecutionContext::Current()
 
 void ExecutionContext::pushTempDestruction(Evaluable* a_pScope, Type* a_pType, void* a_pBuffer)
 {
-    m_Temporaries.push_back(
-    TempDestruction{a_pScope, SmallVector<std::pair<Type*, void*> >{std::make_pair(a_pType, a_pBuffer)}});
+    m_Temporaries[a_pScope].push_back({std::make_pair(a_pType, a_pBuffer)});
 }
 
 void ExecutionContext::releaseTemporaries(Evaluable* a_pScope)
 {
-    for (auto it = m_Temporaries.begin(); it != m_Temporaries.end();)
+    auto found = m_Temporaries.find(a_pScope);
+    if (found != m_Temporaries.end())
     {
-        if (it->scope == a_pScope)
+        for (auto& pair : found->second)
         {
-            for (auto& pair : it->buffers)
-            {
-                pair.first->destroy(pair.second);
-                pair.first->deallocate(pair.second);
-            }
-            it = m_Temporaries.erase(it);
+            pair.first->destroy(pair.second);
+            pair.first->deallocate(pair.second);
         }
-        else
-            ++it;
+        m_Temporaries.erase(found);
     }
 }
 
@@ -75,7 +70,7 @@ void ExecutionContext::releaseTemporaries()
 {
     for (auto& temp : m_Temporaries)
     {
-        auto& vec = temp.buffers;
+        auto& vec = temp.second;
         {
             for (auto it = vec.begin(); it != vec.end(); ++it)
             {

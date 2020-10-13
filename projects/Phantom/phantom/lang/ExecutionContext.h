@@ -8,6 +8,7 @@
 
 /* ****************** Includes ******************* */
 #include <phantom/lang/reflection.h>
+#include <phantom/utils/SmallMap.h>
 #include <phantom/utils/SmallVector.h>
 /* **************** Declarations ***************** */
 /* *********************************************** */
@@ -56,12 +57,8 @@ public:
 private:
     void*  m_resultPointers[e_max_calls];
     size_t m_resultPointersIndex = 0;
-    struct TempDestruction
-    {
-        Evaluable*                            scope;
-        SmallVector<std::pair<Type*, void*> > buffers;
-    };
-    SmallVector<TempDestruction, 20> m_Temporaries;
+
+    SmallMap<Evaluable*, SmallVector<std::pair<Type*, void*> >, 20> m_Temporaries;
 };
 } // namespace lang
 } // namespace phantom

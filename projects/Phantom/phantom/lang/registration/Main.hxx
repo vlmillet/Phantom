@@ -68,6 +68,10 @@ PHANTOM_PACKAGE("phantom.lang.registration")
             .method<void(MessageReportFunc)>("setErrorFunc", &_::setErrorFunc)
             .method<void(LogFunc const&)>("setLogFunc", &_::setLogFunc)
             .method<void(MessageReportFunc)>("setWarningFunc", &_::setWarningFunc)
+            .method<MessageReportFunc const&(MessageReportFunc) const>("getAssertFunc", &_::getAssertFunc)
+            .method<MessageReportFunc const&(MessageReportFunc) const>("getErrorFunc", &_::getErrorFunc)
+            .method<LogFunc const&() const>("getLogFunc", &_::getLogFunc)
+            .method<MessageReportFunc const&() const>("getWarningFunc", &_::getWarningFunc)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

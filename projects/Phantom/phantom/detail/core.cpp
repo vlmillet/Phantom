@@ -1086,6 +1086,15 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
     va_end(args);
 }
 
+PHANTOM_EXPORT_PHANTOM void logv PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType msgType, const char* file, int line,
+	const char* format, va_list args)
+{
+	String str;
+	common_valist_decode(buffer, 512, format, args);
+	if (detail::g_LogFunc)
+		detail::g_LogFunc(msgType, file, line, buffer);
+}
+
 namespace
 {
 phantom::lang::Main* g_PHNTM_Main;
@@ -1109,6 +1118,26 @@ void lang::Main::setErrorFunc(MessageReportFunc a_func)
 void lang::Main::setLogFunc(LogFunc const& a_func)
 {
     phantom::detail::g_LogFunc = a_func;
+}
+
+phantom::MessageReportFunc const& phantom::lang::Main::getAssertFunc(MessageReportFunc a_func) const
+{
+	return phantom::detail::g_assert_func;
+}
+
+phantom::MessageReportFunc const& phantom::lang::Main::getErrorFunc(MessageReportFunc a_func) const
+{
+	return phantom::detail::g_error_func;
+}
+
+phantom::LogFunc const& phantom::lang::Main::getLogFunc() const
+{
+    return phantom::detail::g_LogFunc;
+}
+
+phantom::MessageReportFunc const& phantom::lang::Main::getWarningFunc() const
+{
+    return phantom::detail::g_warning_func;
 }
 
 void lang::Main::setWarningFunc(MessageReportFunc a_func)

@@ -661,7 +661,10 @@ struct converter<0> : public false_type
 #endif // PHANTOM_DEBUG_LEVEL
 
 #define PHANTOM_LOG(msgType, ...)                                                                                      \
-    ::phantom::log PHANTOM_PREVENT_MACRO_SUBSTITUTION(::phantom::MessageType::msgType, __FILE__, __LINE__, __VA_ARGS__)
+    ::phantom::log PHANTOM_PREVENT_MACRO_SUBSTITUTION (::phantom::MessageType::msgType, __FILE__, __LINE__, __VA_ARGS__)
+
+#define PHANTOM_LOGV(msgType, text, va_list)                                                                                      \
+    ::phantom::logv PHANTOM_PREVENT_MACRO_SUBSTITUTION (::phantom::MessageType::msgType, __FILE__, __LINE__, text, va_list)
 
 #define _PHNTM_ERROR_1(condition) _PHNTM_ERROR_X(condition, "no detail about the error")
 

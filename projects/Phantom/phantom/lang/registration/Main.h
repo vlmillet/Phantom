@@ -66,7 +66,12 @@ public:
     void setAssertFunc(MessageReportFunc a_func);
     void setErrorFunc(MessageReportFunc a_func);
     void setLogFunc(LogFunc const& a_func);
-    void setWarningFunc(MessageReportFunc a_func);
+	void setWarningFunc(MessageReportFunc a_func);
+
+    MessageReportFunc const& getAssertFunc(MessageReportFunc a_func) const;
+    MessageReportFunc const& getErrorFunc(MessageReportFunc a_func) const;
+    LogFunc const& getLogFunc() const;
+    MessageReportFunc const& getWarningFunc() const;
 };
 } // namespace lang
 } // namespace phantom

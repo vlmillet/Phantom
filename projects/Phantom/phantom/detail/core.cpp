@@ -21,6 +21,7 @@
 #    if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
 #        include <psapi.h>
 #        include <windows.h>
+#        include <winuser.h>
 #    endif
 #endif
 /* *********************************************** */
@@ -127,11 +128,59 @@ void trimMsgFileName(StringView file)
         std::cout << console::pop << std::endl;
 #endif
 
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+
+void AssertCombineHash(uint64_t& a_rSeed, uint64_t a_Value)
+{
+    a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
+}
+
+// on windows asserts are, by default, message box with YES | NO | CANCEL
+
+bool defaultAssert(StringView expression, StringView file, int line, StringView msg)
+{
+    static SpinMutex          assertIgnoreCacheMtx;
+    static SmallSet<uint64_t> assertIgnoreCache;
+
+    uint64_t hash = 0;
+    AssertCombineHash(hash, StringHash(expression).get());
+    AssertCombineHash(hash, line);
+    AssertCombineHash(hash, StringHash(file).get());
+
+    {
+        auto lock = assertIgnoreCacheMtx.autoLock();
+        if (assertIgnoreCache.find(hash) != assertIgnoreCache.end())
+            return false;
+    }
+    String finalMsg = "ASSERT(" + expression + ")\n\n" + msg + "\n\n" + "File:" + file + "\n\n" +
+    "Line:" + std::to_string(line).c_str() + "\n\nPress Yes to break, No to ignore once, Cancel to ignore always.";
+
+    int choice = MessageBoxA(0, finalMsg.c_str(), "ASSERT", MB_YESNOCANCEL | MB_ICONEXCLAMATION);
+
+    switch (choice)
+    {
+    default:
+    case IDYES:
+        return true;
+    case IDCANCEL:
+    {
+        auto lock = assertIgnoreCacheMtx.autoLock();
+        assertIgnoreCache.insert(hash);
+    }
+    case IDNO:
+        return false;
+    }
+}
+
+#else
+
 bool defaultAssert(StringView expression, StringView file, int line, StringView text)
 {
     common_output("ASSERT", magenta);
     return true;
 }
+
+#endif
 
 bool defaultWarning(StringView expression, StringView file, int line, StringView text)
 {
@@ -1087,12 +1136,12 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
 }
 
 PHANTOM_EXPORT_PHANTOM void logv PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType msgType, const char* file, int line,
-	const char* format, va_list args)
+                                                                    const char* format, va_list args)
 {
-	String str;
-	common_valist_decode(buffer, 512, format, args);
-	if (detail::g_LogFunc)
-		detail::g_LogFunc(msgType, file, line, buffer);
+    String str;
+    common_valist_decode(buffer, 512, format, args);
+    if (detail::g_LogFunc)
+        detail::g_LogFunc(msgType, file, line, buffer);
 }
 
 namespace
@@ -1122,12 +1171,12 @@ void lang::Main::setLogFunc(LogFunc const& a_func)
 
 phantom::MessageReportFunc const& phantom::lang::Main::getAssertFunc(MessageReportFunc a_func) const
 {
-	return phantom::detail::g_assert_func;
+    return phantom::detail::g_assert_func;
 }
 
 phantom::MessageReportFunc const& phantom::lang::Main::getErrorFunc(MessageReportFunc a_func) const
 {
-	return phantom::detail::g_error_func;
+    return phantom::detail::g_error_func;
 }
 
 phantom::LogFunc const& phantom::lang::Main::getLogFunc() const

@@ -26,6 +26,7 @@ class PHANTOM_EXPORT_PHANTOM MapClass : public ContainerClass
     {
         Method* m_pFunc_map = nullptr;
         Method* m_pFunc_insert = nullptr;
+        Method* m_pFunc_operatorBracket = nullptr;
         Method* m_pFunc_eraseKey = nullptr;
         Method* m_pFunc_find = nullptr;
         Method* m_pFunc_findc = nullptr;
@@ -47,6 +48,8 @@ public:
 
     virtual void eraseKey(void* a_pContainer, void const* a_pKey) const override;
     virtual void insert(void* a_pContainer, void const* a_pPair) const;
+    virtual void assign(void* a_pContainer, void const* a_pPair) const;
+    virtual void assign(void* a_pContainer, void const* a_pKey, void const* a_pValue) const;
     virtual void map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const;
     virtual void find(void const* a_pContainer, void const* a_pKey, void* a_pOutIt) const;
     virtual void find(void* a_pContainer, void const* a_pKey, void* a_pOutIt) const;

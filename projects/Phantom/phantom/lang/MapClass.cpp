@@ -86,6 +86,27 @@ void MapClass::insert(void* a_pContainer, void const* a_pPair) const
     m_pData->m_pFunc_insert->invoke(a_pContainer, args);
 }
 
+void MapClass::assign(void* a_pContainer, void const* a_pPair) const
+{
+    auto  pValueType = getValueType();
+    void* keyAddr = static_cast<Class*>(pValueType)->getField("first")->getAddress(a_pPair);
+    void* valAddr = static_cast<Class*>(pValueType)->getField("second")->getAddress(a_pPair);
+    return assign(a_pContainer, keyAddr, valAddr);
+}
+
+void MapClass::assign(void* a_pContainer, void const* a_pKey, void const* a_pValue) const
+{
+    auto pValueType = getValueType();
+    PHANTOM_ASSERT(pValueType);
+    if (!m_pData->m_pFunc_operatorBracket)
+        m_pData->m_pFunc_operatorBracket = getMethod("operator[]", {getKeyType()->addConstLValueReference()});
+
+    void* args[] = {(void*)a_pKey};
+    void* slotRef = nullptr;
+    m_pData->m_pFunc_operatorBracket->invoke(a_pContainer, args, &slotRef);
+    getMappedType()->copyAssign(slotRef, a_pValue);
+}
+
 void MapClass::map(void* a_pContainer, void const* a_pKey, void* a_pOutPairPointer) const
 {
     auto pKeyType = getKeyType();

@@ -26,6 +26,18 @@
 
 namespace phantom
 {
+namespace
+{
+int _ComparePart(const String& _s0, const String& _s1)
+{
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+    return stricmp(_s0.c_str(), _s1.c_str());
+#else
+    return strcmp(_s0.c_str(), _s1.c_str());
+#endif
+}
+} // namespace
+
 const char Path::separator;
 
 const size_t Path::npos;
@@ -47,9 +59,7 @@ Path::Path(StringView a_Path, const char a_Separator)
         parts.pop_back();
 }
 
-Path::Path(const char* a_Path) : Path(StringView(a_Path, strlen(a_Path)))
-{
-}
+Path::Path(const char* a_Path) : Path(StringView(a_Path, strlen(a_Path))) {}
 
 Path::Path(StringView a_Path)
 {
@@ -243,7 +253,7 @@ bool Path::isWindowsAbsolute() const
     if (parts.size() && parts[0].size() == 2)
     {
         char drive = parts[0][0];
-        if ((drive >= 'A' && drive <= 'Z') ||(drive >= 'a' && drive <= 'z'))
+        if ((drive >= 'A' && drive <= 'Z') || (drive >= 'a' && drive <= 'z'))
         {
             if (parts[0][1] == ':')
                 return true;
@@ -268,7 +278,7 @@ bool Path::isAbsolute() const
     if (parts.size() && parts[0].size() == 2)
     {
         char drive = parts[0][0];
-        if ((drive >= 'A' && drive <= 'Z') ||(drive >= 'a' && drive <= 'z'))
+        if ((drive >= 'A' && drive <= 'Z') || (drive >= 'a' && drive <= 'z'))
         {
             if (parts[0][1] == ':')
                 return true;
@@ -293,7 +303,7 @@ bool Path::exists() const
 
     return (dwAttrib != INVALID_FILE_ATTRIBUTES);
 #else
-    struct stat             path_stat;
+    struct stat path_stat;
     return lstat(platformString().c_str(), &path_stat) == 0;
 #endif
 }
@@ -339,7 +349,9 @@ bool Path::isRegularFile() const
 bool Path::isSymLink() const
 {
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-    return false; // no symbolic links on windows
+    DWORD dwAttrib = GetFileAttributesA(platformString().c_str());
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES) &&
+    ((dwAttrib & FILE_ATTRIBUTE_REPARSE_POINT) == FILE_ATTRIBUTE_REPARSE_POINT);
 #else
     struct stat path_stat;
     lstat(platformString().c_str(), &path_stat);
@@ -359,7 +371,7 @@ Path Path::parentPath() const
 
 Path Path::childPath(const Path& child) const
 {
-    PHANTOM_ASSERT(!child.isAbsolute());
+    PHANTOM_ASSERT(empty() || !child.isAbsolute());
     Path p;
     p.parts = parts;
     p.parts.insert(p.parts.end(), child.begin(), child.end());
@@ -375,11 +387,61 @@ Path Path::absolute() const
     return abs;
 }
 
+Path Path::finalPath() const
+{
+    if (!isSymLink())
+        return *this;
+
+    char tgt[256];
+    ZeroMemory(tgt, 256);
+
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+
+    HANDLE hFile;
+
+    if (isDirectory())
+    {
+        hFile = CreateFileA(platformString().c_str(),   // dir to open
+                            GENERIC_READ,               // open for reading
+                            FILE_SHARE_READ,            // share for reading
+                            NULL,                       // default security
+                            OPEN_EXISTING,              // existing file only
+                            FILE_FLAG_BACKUP_SEMANTICS, // directory
+                            NULL);
+    }
+    else
+    {
+        hFile = CreateFileA(platformString().c_str(), // file to open
+                            GENERIC_READ,             // open for reading
+                            FILE_SHARE_READ,          // share for reading
+                            NULL,                     // default security
+                            OPEN_EXISTING,            // existing file only
+                            FILE_ATTRIBUTE_NORMAL,    // normal file
+                            NULL);
+    } // no attr. template
+
+    if (hFile == INVALID_HANDLE_VALUE)
+        return *this;
+
+    GetFinalPathNameByHandleA(hFile, tgt, 256, VOLUME_NAME_DOS);
+    if (*tgt)
+        return tgt + 4; // remove \\?\ prefix
+
+    return *this;
+
+#else
+    readlink(platformString().c_str(), tgt, 256);
+    if (*tgt)
+        return tgt;
+    return *this;
+#endif
+}
+
 bool Path::hasChildPath(const Path& other) const
 {
     for (size_t i = 0; i < parts.size(); ++i)
     {
-        if (parts[i] != other.parts[i])
+        if (_ComparePart(parts[i], other.parts[i]) != 0)
             return false;
     }
     return true;
@@ -456,7 +518,7 @@ Path Path::_relative(const Path& to) const
         {
             if (i < parts.size())
             {
-                if (diffFound || parts[i] != to.parts[i])
+                if (diffFound || (_ComparePart(parts[i], to.parts[i]) != 0))
                 {
                     diffFound = true;
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -481,7 +543,7 @@ Path Path::_relative(const Path& to) const
         {
             if (i < to.parts.size())
             {
-                if (diffFound ||(parts[i] != to.parts[i]))
+                if (diffFound || (_ComparePart(parts[i], to.parts[i]) != 0))
                 {
                     diffFound = true;
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
@@ -518,9 +580,8 @@ bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::e
             Type type = ((findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY)
             ? Type::regular
             : Type::directory;
-            if (type ==
-                Type::directory &&(strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") ==
-                                    0))
+            if (type == Type::directory &&
+                (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0))
                 continue;
             DirectoryEntry de(p.childPath(findFileData.cFileName), type);
             entries.push_back(de);
@@ -551,7 +612,7 @@ bool Path::ListDirectoryEntries(const Path& p, DirectoryEntries& entries, std::e
             Type type = (ep->d_type == DT_DIR)
             ? Type::directory
             : (ep->d_type == DT_REG) ? Type::regular : (ep->d_type == DT_LNK) ? Type::symlink : Type::unknown;
-            if (type == Type::directory &&(strcmp(ep->d_name, ".") == 0 || strcmp(ep->d_name, "..") == 0))
+            if (type == Type::directory && (strcmp(ep->d_name, ".") == 0 || strcmp(ep->d_name, "..") == 0))
                 continue;
             entries.push_back(DirectoryEntry(p.childPath(ep->d_name), type));
             if (type == Type::directory && recursive)
@@ -688,7 +749,7 @@ bool Path::ResizeFile(const Path& p, size_t size, std::error_code& ec)
     HANDLE h(CreateFileA(p.platformString().c_str(), GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
     LARGE_INTEGER sz;
     sz.QuadPart = size;
-    result = (h != INVALID_HANDLE_VALUE) &&::SetFilePointerEx(h, sz, 0, FILE_BEGIN) &&::SetEndOfFile(h);
+    result = (h != INVALID_HANDLE_VALUE) && ::SetFilePointerEx(h, sz, 0, FILE_BEGIN) && ::SetEndOfFile(h);
     CloseHandle(h);
     if (!result)
     {
@@ -713,11 +774,11 @@ bool Path::ResizeFile(const Path& p, size_t size)
 Path Path::GetCurrentWorkingDir()
 {
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
-	char buffer[512];
-	return _getcwd(buffer, 512);
+    char buffer[512];
+    return _getcwd(buffer, 512);
 #elif PHANTOM_OPERATING_SYSTEM != PHANTOM_OPERATING_SYSTEM_ORBIS
-	char buffer[512];
-	return getcwd(buffer, 512);
+    char buffer[512];
+    return getcwd(buffer, 512);
 #else
     return "/";
 #endif
@@ -771,7 +832,7 @@ bool Path::CreateDirectories(const Path& p, std::error_code& ec)
         strpath += *it;
         BOOL result = CreateDirectoryA(strpath.c_str(), NULL);
         int  error = 0;
-        if ((result == FALSE) &&(((error = GetLastError()) != ERROR_ALREADY_EXISTS) || !(IsDirectory(strpath))))
+        if ((result == FALSE) && (((error = GetLastError()) != ERROR_ALREADY_EXISTS) || !(IsDirectory(strpath))))
         {
             ec.assign(error, std::system_category());
             return false;
@@ -794,7 +855,7 @@ bool Path::CreateDirectories(const Path& p, std::error_code& ec)
             strpath += '/';
         strpath += *it;
         int result = mkdir(strpath.c_str(), ACCESSPERMS);
-        if (result == 0 ||(errno == EEXIST && IsDirectory(strpath)))
+        if (result == 0 || (errno == EEXIST && IsDirectory(strpath)))
             continue;
         ec.assign(errno, std::system_category());
         return false;

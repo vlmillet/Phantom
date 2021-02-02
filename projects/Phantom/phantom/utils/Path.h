@@ -168,6 +168,8 @@ struct PHANTOM_EXPORT_PHANTOM Path
 
     Path absolute() const;
 
+    Path finalPath() const;
+
     inline bool operator==(const Path& other) const;
 
     inline bool operator!=(const Path& other) const { return !operator==(other); }

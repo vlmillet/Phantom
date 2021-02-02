@@ -29,7 +29,7 @@ struct _EraseOrAssert
 template<class Container, class It>
 struct _EraseOrAssert<Container, It, false>
 {
-    static void Erase(Container* a_pContainer, It const* a_It) { PHANTOM_ASSERT(false, "push_back not available"); }
+    static void Erase(Container*, It const*) { PHANTOM_ASSERT(false, "push_back not available"); }
 };
 
 template<class Container, class It>

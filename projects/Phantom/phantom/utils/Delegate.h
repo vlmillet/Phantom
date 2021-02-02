@@ -18,7 +18,7 @@
 
 namespace phantom
 {
-namespace detail
+namespace DelegateDetail
 {
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 class __single_inheritance DelegateGenericClass;
@@ -30,12 +30,12 @@ class DelegateGenericClass
 {
 }; ///< @off
 #endif
-} // namespace detail
+} // namespace DelegateDetail
 HAUNT_ON class OpaqueDelegate
 {
-    HAUNT_OFF protected : HAUNT_OFF typedef void (detail::DelegateGenericClass::*MFPtr)();
-    HAUNT_OFF detail::DelegateGenericClass* m_pThis;
-    HAUNT_OFF MFPtr                         m_pFunction;
+    HAUNT_OFF protected : HAUNT_OFF typedef void (DelegateDetail::DelegateGenericClass::*MFPtr)();
+    HAUNT_OFF DelegateDetail::DelegateGenericClass* m_pThis;
+    HAUNT_OFF MFPtr m_pFunction;
 
 public:
     OpaqueDelegate() : m_pThis(0), m_pFunction(0){};
@@ -87,7 +87,8 @@ protected:
     }
 };
 
-namespace detail
+namespace DelegateDetail
+
 {
 template<class OutputClass, class InputClass>
 inline OutputClass implicit_cast(InputClass input)
@@ -244,10 +245,6 @@ struct MFHacker<delegate_generic_class_mfptr_size>
 
 #endif
 
-} // namespace detail
-
-namespace detail
-{
 template<class t_GenericMFP, class t_StaticFP>
 class ClosurePtr : public OpaqueDelegate
 {
@@ -302,7 +299,7 @@ public:
     }
 };
 
-} // namespace detail
+} // namespace DelegateDetail
 
 template<class S>
 class Delegate
@@ -319,10 +316,10 @@ class Delegate<R(Params...)>
 
 private:
     typedef R (*FuncPtrT)(Params...);
-    typedef R (detail::DelegateGenericClass::*member_function_pointer_t)(Params...);
-    typedef detail::ClosurePtr<member_function_pointer_t, FuncPtrT> ClosurePtrType;
-    ClosurePtrType                                                  m_Closure;
-    typedef Delegate<R(Params...)>                                  SelfType;
+    typedef R (DelegateDetail::DelegateGenericClass::*member_function_pointer_t)(Params...);
+    typedef DelegateDetail::ClosurePtr<member_function_pointer_t, FuncPtrT> ClosurePtrType;
+    ClosurePtrType                                                          m_Closure;
+    typedef Delegate<R(Params...)>                                          SelfType;
 
 public:
     Delegate() { clear(); }
@@ -381,13 +378,13 @@ public:
     template<class t_Ty, class Y>
     Delegate(Y* pthis, R (t_Ty::*function_to_bind)(Params...))
     {
-        m_Closure.bindMF(detail::implicit_cast<t_Ty*>(pthis), function_to_bind);
+        m_Closure.bindMF(DelegateDetail::implicit_cast<t_Ty*>(pthis), function_to_bind);
     }
 
     template<class t_Ty, class Y>
     Delegate(const Y* pthis, R (t_Ty::*function_to_bind)(Params...) const)
     {
-        m_Closure.bindMF_const(detail::implicit_cast<const t_Ty*>(pthis), function_to_bind);
+        m_Closure.bindMF_const(DelegateDetail::implicit_cast<const t_Ty*>(pthis), function_to_bind);
     }
 
     template<class Y, class F, class = std::enable_if_t<std::is_convertible<F, R (*)(Y*, Params...)>::value>>
@@ -399,12 +396,12 @@ public:
     template<class t_Ty, class Y>
     inline void bind(Y* pthis, R (t_Ty::*function_to_bind)(Params...))
     {
-        m_Closure.bindMF(detail::implicit_cast<t_Ty*>(pthis), function_to_bind);
+        m_Closure.bindMF(DelegateDetail::implicit_cast<t_Ty*>(pthis), function_to_bind);
     }
     template<class t_Ty, class Y>
     inline void bind(const Y* pthis, R (t_Ty::*function_to_bind)(Params...) const)
     {
-        m_Closure.bindMF_const(detail::implicit_cast<const t_Ty*>(pthis), function_to_bind);
+        m_Closure.bindMF_const(DelegateDetail::implicit_cast<const t_Ty*>(pthis), function_to_bind);
     }
 
     inline void bind(R (*function_to_bind)(Params...))

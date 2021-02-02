@@ -1090,9 +1090,15 @@ detail::DynamicCppInitializerH* dynamic_initializer_()
     str[sz] = '\0';                                                                                                    \
     vsnprintf(str, sz - 1, format, args);
 
+namespace
+{
+static SpinMutex g_MsgMutex;
+}
+
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* file, int line,
                                                                          const char* format, ...)
 {
+    auto    lock = g_MsgMutex.autoLock();
     va_list args;
     va_start(args, format);
     common_valist_decode(buffer, 512, format, args);
@@ -1104,6 +1110,7 @@ PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const c
 PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* file, int line,
                                                                        const char* format, ...)
 {
+    auto    lock = g_MsgMutex.autoLock();
     va_list args;
     va_start(args, format);
     common_valist_decode(buffer, 512, format, args);
@@ -1115,6 +1122,7 @@ PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const cha
 PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* file, int line,
                                                                      const char* format, ...)
 {
+    auto    lock = g_MsgMutex.autoLock();
     va_list args;
     va_start(args, format);
     common_valist_decode(buffer, 512, format, args);
@@ -1126,6 +1134,7 @@ PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char*
 PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType msgType, const char* file, int line,
                                                                    const char* format, ...)
 {
+    auto    lock = g_MsgMutex.autoLock();
     va_list args;
     va_start(args, format);
     String str;
@@ -1138,6 +1147,7 @@ PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType m
 PHANTOM_EXPORT_PHANTOM void logv PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType msgType, const char* file, int line,
                                                                     const char* format, va_list args)
 {
+    auto   lock = g_MsgMutex.autoLock();
     String str;
     common_valist_decode(buffer, 512, format, args);
     if (detail::g_LogFunc)

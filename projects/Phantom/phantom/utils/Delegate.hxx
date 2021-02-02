@@ -24,7 +24,7 @@
 #include <phantom/constructor>
 
 namespace phantom {
-namespace detail {
+namespace DelegateDetail {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("Delegate")
 
@@ -68,7 +68,7 @@ PHANTOM_PACKAGE("phantom.utils")
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Delegate")
 PHANTOM_END("phantom.utils")
-namespace detail {
+namespace DelegateDetail {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("Delegate")
 
@@ -85,20 +85,13 @@ PHANTOM_PACKAGE("phantom.utils")
             this_()
             ;
         }
-    PHANTOM_END("Delegate")
-PHANTOM_END("phantom.utils")
-}
-namespace detail {
-PHANTOM_PACKAGE("phantom.utils")
-    PHANTOM_SOURCE("Delegate")
-
         PHANTOM_CLASS_T((class, class), (t_GenericMFP, t_StaticFP), ClosurePtr)
         {
             this_()
             .PHANTOM_T inherits<::phantom::OpaqueDelegate>()
         .public_()
-            /// missing symbol(s) reflection (phantom::detail::DelegateGenericClass, ) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<::phantom::detail::DelegateGenericClass *() const>("getThis", &_::getThis)
+            /// missing symbol(s) reflection (phantom::DelegateDetail::DelegateGenericClass, ) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            // .PHANTOM_T method<::phantom::DelegateDetail::DelegateGenericClass *() const>("getThis", &_::getThis)
             .PHANTOM_T method<t_GenericMFP() const>("getMFPtr", &_::getMFPtr)
             .PHANTOM_T method<t_StaticFP() const>("getStaticFP", &_::getStaticFP)
             .PHANTOM_T method<bool(t_StaticFP)>("contains", &_::contains)

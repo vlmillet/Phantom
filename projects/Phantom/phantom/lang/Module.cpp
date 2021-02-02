@@ -104,18 +104,14 @@ void Module::removeDependency(Module* a_pModule)
 
 bool Module::hasDependency(Module* a_pModule) const
 {
-    Modules modules;
-    fetchDependencies(modules);
-    return std::find(modules.begin(), modules.end(), a_pModule) != modules.end();
+    return std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pModule) != m_Dependencies.end();
 }
 
 bool Module::hasDependencyCascade(Module* a_pModule) const
 {
-    Modules modules;
-    fetchDependencies(modules);
-    if (std::find(modules.begin(), modules.end(), a_pModule) != modules.end())
+    if (hasDependency(a_pModule))
         return true;
-    for (auto module : modules)
+    for (auto module : m_Dependencies)
     {
         if (module->hasDependencyCascade(a_pModule))
             return true;

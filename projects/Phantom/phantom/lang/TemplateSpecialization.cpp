@@ -21,7 +21,7 @@ namespace lang
 {
 /// Full specialization constructor
 TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature,
-                                               const LanguageElements& arguments, Symbol* a_pTemplated, uint a_Flags)
+                                               const LanguageElements& a_Arguments, Symbol* a_pTemplated, uint a_Flags)
     : Symbol(a_pTemplate->getName(), a_pTemplate->getModifiers(), a_Flags),
       m_pTemplate(a_pTemplate),
       m_pTemplateSignature(a_pSignature),
@@ -32,10 +32,10 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     // revert while run-time building)
     PHANTOM_ASSERT(a_pTemplate->getSource() == nullptr || (a_pTemplate->isNative()) ||
                    !(a_pTemplate->getSource()->getVisibility() == Visibility::Private));
-    m_Arguments.resize(arguments.size());
-    for (size_t i = 0; i < arguments.size(); ++i)
+    m_Arguments.resize(a_Arguments.size());
+    for (size_t i = 0; i < a_Arguments.size(); ++i)
     {
-        setArgument(i, arguments[i]);
+        setArgument(i, a_Arguments[i]);
     }
     PHANTOM_ASSERT(m_pTemplated);
     PHANTOM_ASSERT(m_pTemplated->getNamingScope());
@@ -50,7 +50,7 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
 
 /// Partial specialization constructor
 TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature,
-                                               const LanguageElements& arguments, uint a_Flags)
+                                               const LanguageElements& a_Arguments, uint a_Flags)
     : Symbol(a_pTemplate->getName(), a_pTemplate->getModifiers(), a_Flags),
       m_pTemplate(a_pTemplate),
       m_pTemplateSignature(a_pSignature)
@@ -60,10 +60,10 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     // revert while run-time building)
     PHANTOM_ASSERT(a_pTemplate->getSource() == nullptr || (a_pTemplate->isNative()) ||
                    !(a_pTemplate->getSource()->getVisibility() == Visibility::Private));
-    m_Arguments.resize(arguments.size());
-    for (size_t i = 0; i < arguments.size(); ++i)
+    m_Arguments.resize(a_Arguments.size());
+    for (size_t i = 0; i < a_Arguments.size(); ++i)
     {
-        setArgument(i, arguments[i]);
+        setArgument(i, a_Arguments[i]);
     }
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);

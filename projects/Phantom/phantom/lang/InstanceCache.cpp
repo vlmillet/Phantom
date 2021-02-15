@@ -14,6 +14,8 @@ InstanceCache::InstanceCache(Class* a_pClass) : m_pClass(a_pClass)
 {
     PHANTOM_CONNECT(m_pClass, kindCreated, this, kindCreated);
     PHANTOM_CONNECT(m_pClass, kindDestroying, this, kindDestroying);
+    PHANTOM_ASSERT(m_pClass->getInstanceCount() == 0,
+                   "instance cache cannot be created after an instance has already been created");
 }
 
 InstanceCache::~InstanceCache()

@@ -221,16 +221,16 @@ private:
         auto pMetaClass = MetaType::MetaClass();
         if (pMetaClass == nullptr)
         {
-            PHANTOM_ASSERT((std::is_same<MetaType, PHANTOM_TYPENAME MetaTypeOf<lang::Class>::type>::value),
-                           "you probably forgot a PHANTOM_DECLARE_META_CLASS() for your derivation of Class");
+            PHANTOM_ASSERT(
+            (std::is_same<MetaType, PHANTOM_TYPENAME MetaTypeOf<lang::Class>::type>::value),
+            "you probably forgot a PHANTOM_DECLARE_META_CLASS() when inheriting from phantom::lang::Class");
             pMetaClass = Class::metaClass =
             (decltype(pMetaClass))(m_pType); /// meta meta type (the meta type of the meta type of
                                              /// 'Class' is the meta type of class itself)
+            m_pType->rtti.instance = m_pType;
+            m_pType->rtti.metaClass = pMetaClass;
         }
-        m_pType->rtti.instance = m_pType;
-        m_pType->rtti.metaClass = pMetaClass;
-        m_pType->initialize();
-        pMetaClass->registerInstance(m_pType);
+        PHANTOM_ASSERT(m_pType->rtti.instance);
     }
 
 protected:

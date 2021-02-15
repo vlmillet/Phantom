@@ -389,53 +389,57 @@ Path Path::absolute() const
 
 Path Path::finalPath() const
 {
-    if (!isSymLink())
-        return *this;
-
-    char tgt[256];
-    ZeroMemory(tgt, 256);
-
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+    if (!isAbsolute())
+        return absolute().finalPath();
 
     HANDLE hFile;
 
-    if (isDirectory())
+    bool reparsePointFound = false;
+    Path finalPath;
+    char lnk[256];
+    memset(lnk, 0, 256);
+    for (auto part : parts)
     {
-        hFile = CreateFileA(platformString().c_str(),   // dir to open
-                            GENERIC_READ,               // open for reading
-                            FILE_SHARE_READ,            // share for reading
-                            NULL,                       // default security
-                            OPEN_EXISTING,              // existing file only
-                            FILE_FLAG_BACKUP_SEMANTICS, // directory
-                            NULL);
-    }
-    else
-    {
-        hFile = CreateFileA(platformString().c_str(), // file to open
-                            GENERIC_READ,             // open for reading
-                            FILE_SHARE_READ,          // share for reading
-                            NULL,                     // default security
-                            OPEN_EXISTING,            // existing file only
-                            FILE_ATTRIBUTE_NORMAL,    // normal file
-                            NULL);
-    } // no attr. template
+        finalPath = finalPath.childPath(part);
+        String str = finalPath.platformString();
+#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+        DWORD dwAttrib = GetFileAttributesA(str.c_str());
+        if ((dwAttrib == INVALID_FILE_ATTRIBUTES))
+            return *this;
+        if (((dwAttrib & FILE_ATTRIBUTE_REPARSE_POINT) == FILE_ATTRIBUTE_REPARSE_POINT))
+        {
+            // reparse point :
+            hFile = CreateFileA(str.c_str(),     // file to open
+                                GENERIC_READ,    // open for reading
+                                FILE_SHARE_READ, // share for reading
+                                NULL,            // default security
+                                OPEN_EXISTING,   // existing file only
+                                (dwAttrib & FILE_ATTRIBUTE_DIRECTORY) ? FILE_FLAG_BACKUP_SEMANTICS
+                                                                      : FILE_ATTRIBUTE_NORMAL, // normal file
+                                NULL);
 
-    if (hFile == INVALID_HANDLE_VALUE)
-        return *this;
-
-    GetFinalPathNameByHandleA(hFile, tgt, 256, VOLUME_NAME_DOS);
-    if (*tgt)
-        return tgt + 4; // remove \\?\ prefix
-
-    return *this;
-
+            if (hFile == INVALID_HANDLE_VALUE)
+                return *this;
+            GetFinalPathNameByHandleA(hFile, lnk, 256, VOLUME_NAME_DOS);
+            ::CloseHandle(hFile);
 #else
-    readlink(platformString().c_str(), tgt, 256);
-    if (*tgt)
-        return tgt;
-    return *this;
+        struct stat path_stat;
+        lstat(str.c_str(), &path_stat);
+        if (S_ISLNK(path_stat.st_mode))
+        {
+            readlink(str.c_str(), lnk, 256);
 #endif
-}
+
+            if (*lnk)
+            {
+                reparsePointFound = true;
+                finalPath = Path(lnk + 4);
+            }
+        }
+    }
+
+    return finalPath;
+} // namespace phantom
 
 bool Path::hasChildPath(const Path& other) const
 {

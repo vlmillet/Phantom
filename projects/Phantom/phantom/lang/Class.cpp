@@ -80,7 +80,7 @@ void Class::terminate()
     if (m_InstanceCount)
     {
         PHANTOM_LOG(Warning, "%s : %d instance(s) of this class have not been deleted",
-                    getQualifiedDecoratedName().c_str(), m_InstanceCount);
+                    getQualifiedDecoratedName().c_str(), int(m_InstanceCount));
     }
 
     for (auto& bc : m_BaseClasses)
@@ -1635,7 +1635,7 @@ bool Class::hasStrongDependencyOnType(Type* a_pType) const
 void Class::registerInstance(void* a_pInstance)
 {
     _registerKind(a_pInstance);
-    m_InstanceCount++;
+    ++m_InstanceCount;
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceRegistered, this, a_pInstance);
 }
@@ -1645,7 +1645,7 @@ void Class::unregisterInstance(void* a_pInstance)
     PHANTOM_ASSERT(m_InstanceCount);
     if (phantom::detail::g_InstanceHook_func)
         phantom::detail::g_InstanceHook_func(ClassHookOp::InstanceUnregistering, this, a_pInstance);
-    m_InstanceCount--;
+    --m_InstanceCount;
     _unregisterKind(a_pInstance);
 }
 

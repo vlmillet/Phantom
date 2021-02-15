@@ -134,6 +134,7 @@ struct NullMutex
     void lock() {}
     void unlock() noexcept {}
     bool try_lock() { return true; }
+    int  autoLock() { return 0; }
 };
 
 template<class S, class Mtx = NullMutex>

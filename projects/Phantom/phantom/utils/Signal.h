@@ -303,6 +303,7 @@ private:
 
     void _connect(SlotType* a_pSlot)
     {
+        SignalLockGuardType __lck_(m_Mutex);
         PHANTOM_ASSERT(!_isConnected(a_pSlot->m_ID), "functor already connected");
         if (m_pHead == nullptr)
         {
@@ -319,6 +320,7 @@ private:
     void _disconnect(FunctorID a_ID)
     {
         // if current slot is being executed, wait until emission is finished
+        SignalLockGuardType __lck_(m_Mutex);
         PHANTOM_ASSERT(m_pHead);
         if (m_pHead->m_ID == a_ID)
         {

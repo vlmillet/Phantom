@@ -1033,11 +1033,11 @@ private:
     Classes m_RecurseDerivedClasses;
 #endif
     InstanceCache*                       m_pInstanceCache = nullptr;
-    size_t                               m_InstanceCount = 0;
     SmallMap<ValueMember*, Expression*>* m_pOverriddenDefaultExpressions = nullptr;
     mutable VirtualMethodTables          m_VirtualMethodTables;
     void*                                m_pSingleton = nullptr;
     mutable Optional<Subroutine*>        m_OpEquals;
+    std::atomic<uint32>                  m_InstanceCount = 0;
 };
 
 /// inlines

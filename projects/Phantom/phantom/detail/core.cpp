@@ -1087,8 +1087,8 @@ detail::DynamicCppInitializerH* dynamic_initializer_()
 #define common_valist_decode(str, sz, format, args)                                                                    \
     trimMsgFileName(file);                                                                                             \
     char str[sz];                                                                                                      \
-    str[sz] = '\0';                                                                                                    \
-    vsnprintf(str, sz - 1, format, args);
+    str[sz - 1] = '\0';                                                                                                \
+    vsnprintf(str, sz, format, args);
 
 namespace
 {

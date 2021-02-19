@@ -1781,8 +1781,6 @@ ClassBuilder& ClassBuilder::field(Type* a_pType, StringView a_Name, size_t a_Ali
                                   Expression* a_pDefaultExp)
 {
     PHANTOM_ASSERT(m_pClass, "ClassBuilder : class already finalized");
-    if (a_pType->getOwner() == nullptr)
-        m_pClass->addType(a_pType);
     if (Field* pField = m_pClass->addField(a_pType, a_Name, a_FilterMask))
     {
         if (a_Align)

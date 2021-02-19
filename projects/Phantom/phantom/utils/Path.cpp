@@ -31,7 +31,9 @@ namespace
 int _ComparePart(const String& _s0, const String& _s1)
 {
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+#    pragma warning(disable : 4996)
     return stricmp(_s0.c_str(), _s1.c_str());
+#    pragma warning(default : 4996)
 #else
     return strcmp(_s0.c_str(), _s1.c_str());
 #endif

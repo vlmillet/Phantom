@@ -38,6 +38,7 @@ PHANTOM_PACKAGE("phantom")
             .method<void()>("lock", &_::lock)
             .method<void()>("unlock", &_::unlock)
             .method<bool()>("try_lock", &_::try_lock)
+            .method<int()>("autoLock", &_::autoLock)
             ;
         }
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<Variants>("Variants"); }

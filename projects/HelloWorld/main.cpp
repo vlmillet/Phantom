@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     // before Phantom starts the big registration work
 
     // initializes Phantom, install all pre-main registrations, create the 'main' module (the module related to the .exe)
-    Main app(main, "MyApplication", argc, argv);
+    Main app(main, "HelloWorld", argc, argv);
 
     // find the class by full qualified name through the Application singleton (which exists only during Main scope)
     auto metaClass = Application::Get()->findCppClass("MyNamespace::MyClass");

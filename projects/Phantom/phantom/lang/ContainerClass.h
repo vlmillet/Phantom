@@ -7,7 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
-#include <phantom/lang/Class.h>
+#include "Class.h"
+#include "TypeOf.h"
 /* **************** Declarations ***************** */
 
 /* *********************************************** */

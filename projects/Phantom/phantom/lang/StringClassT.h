@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <haunt>
+
 HAUNT_STOP;
 
 #include <phantom/lang/StringClass.h>

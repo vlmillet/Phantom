@@ -693,10 +693,10 @@ Yes this really saves you a lot of time :)
 
 Just run the *Premake_vs201X.bat* under windows to build a Visual Studio solution. Under linux and other platforms, you will need to use the command line.
 
-# Phantom.Code <sub> (soon on GitHub) </sub>
+# [Phantom.Code](https://github.com/vlmillet/Phantom.Code) <sub> </sub>
 
-Provide a scripting language layer upon C++ and Phantom, building a nice and transparent native -> runtime interface for interacting with native C++.
+Extension providing C++ evaluation at run-time, an experimental C++ Lite runtime language and the ability to create custom languages from AST built upon reflection.
 
-# Phantom.JIT <sub> (soon on GitHub) </sub>
+# [Phantom.JIT](https://github.com/vlmillet/Phantom.JIT) <sub></sub>
 
-A jit compiler based on **llvm** and **MCJIT** is in development with great features (among them is on-the-fly **PDB** generation and hot reloading)
+Extension providing Just-In-Time asm x64 compilation based on LLVM and on-the-fly PDB Debugging to Phantom.Code A.S.Ts

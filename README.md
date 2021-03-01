@@ -3,18 +3,14 @@
 C++ Reflection and Scripting Library 
 
 ----
-Get **[Phantom.Code](https://github.com/vlmillet/Phantom.Code)** and **[Phantom.JIT](https://github.com/vlmillet/Phantom.JIT)** to build and execute C++ subset (or your own language) at run-time on the top of your reflection, using asm x64 JIT and on-the-fly PDB debugging.
-
-----
 Phantom is a **C++ reflection library**, feature complete, self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (reflection can be in complete separate files from your source code). 
 It has been first developed as a home-made project and then was used inside the game industry as a robust foundation for quick game engine development. 
 
 After years of use inside a professional game studio, it is now made available under a permissive license for whoever want to use it or participate to its development.
 
-It comes with bêta extensions providing scripting features : [Phantom.Code](#phantomcode--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
+Get **[Phantom.Code](https://github.com/vlmillet/Phantom.Code)** and **[Phantom.JIT](https://github.com/vlmillet/Phantom.JIT)** to build and execute C++ subset (or your own language) at run-time on the top of your reflection, using asm x64 JIT and on-the-fly PDB debugging.
 
 ----
-
 | [Compilers / Platforms](#compilers--platforms) \| [License / Support / Domations](#license--support--donations) \| [Phantom In a Nutshell](#phantom-in-a-nutshell) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
 :----------------------------------------------------------: |
 

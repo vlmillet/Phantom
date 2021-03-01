@@ -1,7 +1,7 @@
 // license [
-// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #pragma once
@@ -15,7 +15,7 @@ namespace phantom
 template<typename t_Ty>
 struct IsFunctionPointer
 {
-    static const bool value = std::is_pointer<t_Ty>::value AND !IsDataPointer<t_Ty>::value;
+    static const bool value = std::is_pointer<t_Ty>::value && !IsDataPointer<t_Ty>::value;
 };
 } // namespace phantom
 

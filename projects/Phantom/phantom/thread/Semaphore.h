@@ -1,7 +1,7 @@
 // license [
-// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #pragma once
@@ -9,12 +9,11 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
-#include <phantom/phantom.h>
+#include <phantom/detail/core.h>
 
 //--- Pause Instruction
 // To use inside spin loops to help with power consumption/scheduling/performance.
-#if PHANTOM_ARCHITECTURE == PHANTOM_ARCHITECTURE_X86_64 ||                                         \
-PHANTOM_ARCHITECTURE == PHANTOM_ARCHITECTURE_X86
+#if PHANTOM_ARCHITECTURE == PHANTOM_ARCHITECTURE_X86_64 || PHANTOM_ARCHITECTURE == PHANTOM_ARCHITECTURE_X86
 #    include <emmintrin.h>
 #    define PHANTOM_MM_PAUSE() _mm_pause()
 #else
@@ -98,8 +97,7 @@ void LWSemaphore::waitWithPartialSpinning()
     while (spin--)
     {
         oldCount = m_count.load(std::memory_order_relaxed);
-        if ((oldCount > 0) &&
-            m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire))
+        if ((oldCount > 0) && m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire))
             return;
         PHANTOM_MM_PAUSE();
         PHANTOM_COMPILER_BARRIER(); // Prevent the compiler from collapsing the loop.
@@ -114,8 +112,7 @@ void LWSemaphore::waitWithPartialSpinning()
 bool LWSemaphore::tryWait()
 {
     int oldCount = m_count.load(std::memory_order_relaxed);
-    return (oldCount > 0 &&
-            m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire));
+    return (oldCount > 0 && m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire));
 }
 
 void LWSemaphore::wait()
@@ -154,8 +151,7 @@ void SpinSemaphore::waitWithSpinning()
     while (1)
     {
         oldCount = m_count.load(std::memory_order_relaxed);
-        if ((oldCount > 0) &&
-            m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire))
+        if ((oldCount > 0) && m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire))
             return;
         PHANTOM_MM_PAUSE();
         PHANTOM_COMPILER_BARRIER(); // Prevent the compiler from collapsing the loop.
@@ -165,8 +161,7 @@ void SpinSemaphore::waitWithSpinning()
 bool SpinSemaphore::tryWait()
 {
     int oldCount = m_count.load(std::memory_order_relaxed);
-    return (oldCount > 0 &&
-            m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire));
+    return (oldCount > 0 && m_count.compare_exchange_strong(oldCount, oldCount - 1, std::memory_order_acquire));
 }
 
 void SpinSemaphore::wait()

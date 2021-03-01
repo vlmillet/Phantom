@@ -1,7 +1,7 @@
 // license [
-// This file is part of the Phantom project. Moveright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #pragma once
@@ -104,7 +104,7 @@ template<typename t_Ty>
 struct IsMoveableH<t_Ty, false>
 {
     static const bool                value =
-    IsMoveConstructible<t_Ty>::value AND IsMoveAssignable<t_Ty>::value AND NOT(
+    IsMoveConstructible<t_Ty>::value && IsMoveAssignable<t_Ty>::value && !(
     std::is_abstract<t_Ty>::value);
 };
 

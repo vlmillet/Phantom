@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "UserData.h"
 
 #if defined(_MSC_VER)
@@ -19,6 +21,12 @@
 #include <phantom/method>
 #include <phantom/constructor>
 
+#include <phantom/template-only-push>
+
+#include "utils/Delegate.hxx"
+
+#include <phantom/template-only-pop>
+
 namespace phantom {
 PHANTOM_PACKAGE("phantom")
     PHANTOM_SOURCE("UserData")
@@ -28,8 +36,7 @@ PHANTOM_PACKAGE("phantom")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .constructor<void(), default_>()
-            /// missing symbol(s) reflection (phantom::Delegate) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(void*, Delegate<void (void*)>)>()
+            .constructor<void(void*, Delegate<void (void*)>)>()
             .constructor<void(UserData&&)>()
             .method<UserData&(UserData&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
             .method<void*() const>("getData", &_::getData)
@@ -45,5 +52,7 @@ PHANTOM_END("phantom")
 #elif defined(__clang__)
 #   pragma clang diagnostic pop
 #endif
+
+// clang-format on
 
 // haunt }

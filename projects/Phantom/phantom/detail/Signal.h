@@ -1,12 +1,13 @@
 // license [
-// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #include <haunt>
 HAUNT_STOP;
 
+#include <phantom/alignof>
 #include <phantom/plugin.h>
 
 namespace phantom
@@ -18,6 +19,9 @@ PHANTOM_EXPORT_PHANTOM void* Emitter();
 
 namespace _Signal
 {
+PHANTOM_EXPORT_PHANTOM void* AllocateSlot();
+PHANTOM_EXPORT_PHANTOM void  DeallocateSlot(void*);
+
 struct Emitter;
 struct EmissionFrameStack;
 struct SlotBase
@@ -50,15 +54,10 @@ class PHANTOM_EXPORT_PHANTOM EmissionFrame
     static void           PushSlot(SlotBase** a_ppNext);
     static void           PopSlot();
 
-    void* getEmitter() const
-    {
-        return m_pEmitter;
-    }
+    void* getEmitter() const { return m_pEmitter; }
 
     inline EmissionFrame() = default;
-    inline EmissionFrame(void* a_pEmitter) : m_pEmitter(a_pEmitter)
-    {
-    }
+    inline EmissionFrame(void* a_pEmitter) : m_pEmitter(a_pEmitter) {}
 
     void*      m_pEmitter = nullptr;
     SlotBase** m_ppNext = nullptr;
@@ -66,18 +65,9 @@ class PHANTOM_EXPORT_PHANTOM EmissionFrame
 
 struct Emitter
 {
-    Emitter(void* _this)
-    {
-        EmissionFrame::PushEmitter(_this);
-    }
-    ~Emitter()
-    {
-        EmissionFrame::PopEmitter();
-    }
-    operator bool()
-    {
-        return true;
-    }
+    Emitter(void* _this) { EmissionFrame::PushEmitter(_this); }
+    ~Emitter() { EmissionFrame::PopEmitter(); }
+    operator bool() { return true; }
 };
 
 template<class SignIn, class SignOut>
@@ -398,7 +388,7 @@ struct Slot
     {
         EmissionFrame::OnSlotDestruction(reinterpret_cast<SlotBase*>(this));
         this->~ThisType();
-        PHANTOM_DEALLOCATE(this, ThisType);
+        _Signal::DeallocateSlot(this);
     }
     ThisType*               m_pNext;
     FunctorID               m_ID;
@@ -416,10 +406,10 @@ private:
         static thread_local EmissionFrameStack c;
         return c;
     }
-    EmissionFrame&                                                        top();
-    EmissionFrame&                                                        at(intptr_t i);
-    std::aligned_storage_t<sizeof(EmissionFrame), alignof(EmissionFrame)> stack[EmissionFrame::MaxStackSize];
-    intptr_t                                                              pointer = -1;
+    EmissionFrame&                                                                top();
+    EmissionFrame&                                                                at(intptr_t i);
+    std::aligned_storage_t<sizeof(EmissionFrame), PHANTOM_ALIGNOF(EmissionFrame)> stack[EmissionFrame::MaxStackSize];
+    intptr_t                                                                      pointer = -1;
 };
 
 inline EmissionFrame& EmissionFrameStack::top()
@@ -467,9 +457,7 @@ inline void EmissionFrame::OnSlotDestruction(SlotBase* a_pSlot)
     }
 }
 
-inline void EmissionFrame::PopSlot()
-{
-}
+inline void EmissionFrame::PopSlot() {}
 
 inline EmissionFrame* EmissionFrame::Top()
 {

@@ -1,0 +1,5 @@
+#pragma once
+
+#include <phantom/detail/UnionOfFwd.h>
+#include <phantom/lang/Union.h>
+#include <phantom/lang/TypeOf.h>

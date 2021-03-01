@@ -306,16 +306,27 @@ function _Phantom_get_current_includedirs()
 	return _Phantom_get_includedirs(__my_prj.Name)
 end
 
-function _Phantom_include(Name, Vars)
+function _Phantom_project_folder(Name, Vars)
 
 	for i,folder in ipairs(Vars["ProjectSearchPaths"]) do
 		if(Phantom_file_exists(folder .. "/" .. Name .. "/" .. Name .. ".premake.lua")) then
-	        include(folder .. "/" .. Name .. "/" .. Name .. ".premake")
             return folder
         end
 	end
-	error("no project '".. Name .."' found in the given search folders (project file must be like '<search-folder>/MyProject/MyProject.premake.lua'")
-	return
+	return nil
+
+end
+
+function _Phantom_include(Name, Vars)
+
+	local folder = _Phantom_project_folder(Name, Vars)
+	if(folder ~= nil) then
+		include(folder .. "/" .. Name .. "/" .. Name .. ".premake")
+	else 
+		error("no project '".. Name .."' found in the given search folders (project file must be like '<search-folder>/MyProject/MyProject.premake.lua'")
+		return
+	end
+	return folder
 
 end
 
@@ -412,6 +423,13 @@ end
 
 function Phantom_add_project(Name, Vars)
 	
+	local ProjectFolder = _Phantom_project_folder(Name, Vars)
+
+	if(ProjectFolder == nil) then
+		print("'" .. Name .. "' not found, it will not be built")
+		return
+	end
+
 	_Phantom_dbg_print("=============================================")
 	_Phantom_dbg_print(Name)
 
@@ -421,7 +439,8 @@ function Phantom_add_project(Name, Vars)
     	
 	-- folder and source path
 	
-	local ProjectFolder = _Phantom_include(Name, Vars)
+	include(ProjectFolder .. "/" .. Name .. "/" .. Name .. ".premake")
+	
 	
 	local ProjectPath = ProjectFolder .. "/" .. Name .. "/"
 	

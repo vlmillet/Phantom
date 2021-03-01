@@ -1,3 +1,9 @@
+// license [
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
+// Distributed under the MIT license. Text available here at
+// https://github.com/vlmillet/phantom
+// ]
+
 #include <iostream>
 
 /// registration includes
@@ -9,10 +15,10 @@
 
 /// use includes
 
-#include <phantom/reflection/Application.h>
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Field.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Field.h>
+#include <phantom/lang/Application.h>
 
 namespace MyNamespace
 {
@@ -45,14 +51,14 @@ PHANTOM_CLASS(MyClass) // minimal macro usage
 
 int main(int argc, char** argv)
 {
-    using namespace phantom::reflection;
+    using namespace phantom::lang;
 
     // <- at this point no heap allocation have been made, 
     // this is where you can configure allocations with MemoryTraits class 
     // before Phantom starts the big registration work
 
     // initializes Phantom, install all pre-main registrations, create the 'main' module (the module related to the .exe)
-    Main app(main, "MyApplication", argc, argv);
+    Main app(main, "HelloWorld", argc, argv);
 
     // find the class by full qualified name through the Application singleton (which exists only during Main scope)
     auto metaClass = Application::Get()->findCppClass("MyNamespace::MyClass");

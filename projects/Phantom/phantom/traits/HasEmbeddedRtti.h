@@ -1,7 +1,7 @@
 // license [
-// This file is part of the Phantom project. Copyright 2011-2019 Vivien Millet.
+// This file is part of the Phantom project. Copyright 2011-2020 Vivien Millet.
 // Distributed under the MIT license. Text available here at
-// http://www.wiwila.com/tools/phantom/license/
+// https://github.com/vlmillet/phantom
 // ]
 
 #pragma once
@@ -10,34 +10,29 @@
 
 #include <phantom/fwd.h>
 
-PHANTOM_DEFINE_HAS_FIELD_NO_BASE_MACRO_PARAM(PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD);
+PHANTOM_DEFINE_HAS_FIELD_NO_BASE_MACRO_PARAM(rtti);
 
 namespace phantom
 {
 /// @cond INTERNAL
 
 template<typename t_Ty>
-struct HasEmbeddedRtti
-    : public PHANTOM_PP_CAT(HasField_, PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)<t_Ty, EmbeddedRtti>
+struct HasEmbeddedRtti : public PHANTOM_PP_CAT(HasField_, rtti)<t_Ty, RTTI>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedProxyRtti
-    : public PHANTOM_PP_CAT(HasField_, PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)<t_Ty, EmbeddedProxyRtti>
+struct HasEmbeddedProxyRtti : public PHANTOM_PP_CAT(HasField_, rtti)<t_Ty, EmbeddedProxyRtti>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedRttiNoBase
-    : public PHANTOM_PP_CAT(HasFieldNoBase_, PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)<t_Ty, EmbeddedRtti>
+struct HasEmbeddedRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, rtti)<t_Ty, RTTI>
 {
 };
 
 template<typename t_Ty>
-struct HasEmbeddedProxyRttiNoBase
-    : public PHANTOM_PP_CAT(HasFieldNoBase_,
-                            PHANTOM_CUSTOM_EMBEDDED_RTTI_FIELD)<t_Ty, EmbeddedProxyRtti>
+struct HasEmbeddedProxyRttiNoBase : public PHANTOM_PP_CAT(HasFieldNoBase_, rtti)<t_Ty, EmbeddedProxyRtti>
 {
 };
 } // namespace phantom

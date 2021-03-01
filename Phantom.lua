@@ -51,6 +51,9 @@ solution(PhantomSolutionName)
 	group "Libraries"
 	Vars["Link"] = "Shared"
 	Phantom_add_project("Phantom", Vars)
+	Phantom_add_project("Phantom.Code", Vars)
+	Phantom_add_project("Phantom.JIT", Vars)
+	Phantom_add_project("Phantom.Serialization", Vars)
 	
 	group "Tests"
 	Vars["Exception"] = true
@@ -58,6 +61,8 @@ solution(PhantomSolutionName)
 	
 	group "Examples"
 		Phantom_add_project("HelloWorld", Vars) 
+		Phantom_add_project("HelloWorld.Code", Vars) 
+		Phantom_add_project("HelloWorld.JIT", Vars) 
 	
 	if PhantomExtraProjects ~= nil then
 		PhantomExtraProjects(Vars)

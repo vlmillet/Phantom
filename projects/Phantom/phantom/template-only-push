@@ -1,4 +1,4 @@
-#include <phantom/reflection/registration/registration.h> // ensure macros are defined
+#include <phantom/lang/registration/registration.h> // ensure macros are defined
 
 #pragma push_macro("PHANTOM_NOT_TEMPLATE")
 #pragma push_macro("PHANTOM_IF_NOT_TEMPLATE_ONLY")

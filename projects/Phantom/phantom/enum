@@ -3,4 +3,4 @@
 // Distributed under the MIT license. Text available here at http://www.wiwila.com/tools/phantom/license/ 
 // ]
 #pragma once 
-#include <phantom/reflection/registration/Enum.h>
+#include <phantom/lang/registration/Enum.h>

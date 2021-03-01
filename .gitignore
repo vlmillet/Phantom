@@ -1,1 +1,9 @@
 /build/**
+/projects/Phantom.Code
+/projects/phantom.state
+/projects/phantom.serialization
+/projects/llvmjit
+/projects/soul
+/projects/fcontext
+/projects/spell
+/tools/haunt.exe

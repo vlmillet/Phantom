@@ -1,1 +1,0 @@
-#include "TypeIndex.hxx"

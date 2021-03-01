@@ -3,5 +3,5 @@
 // Distributed under the MIT license. Text available here at http://www.wiwila.com/tools/phantom/license/ 
 // ]
 #pragma once 
-#include <phantom/reflection/registration/TemplateInstance.h>
-#include <phantom/reflection/registration/TemplateParam.h>
+#include <phantom/lang/registration/TemplateInstance.h>
+#include <phantom/lang/registration/TemplateParam.h>

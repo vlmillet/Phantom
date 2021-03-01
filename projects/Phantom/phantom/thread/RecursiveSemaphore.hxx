@@ -2,6 +2,8 @@
 
 // haunt {
 
+// clang-format off
+
 #include "RecursiveSemaphore.h"
 
 #if defined(_MSC_VER)
@@ -51,5 +53,7 @@ PHANTOM_END("phantom.thread")
 #elif defined(__clang__)
 #   pragma clang diagnostic pop
 #endif
+
+// clang-format on
 
 // haunt }

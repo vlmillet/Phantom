@@ -1,22 +1,21 @@
+
 # Phantom
 C++ Reflection and Scripting Library
 
-----
-## Phantom
 ----
 Phantom is a **C++ reflection library**, feature complete, self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (reflection can be in complete separate files from your source code). 
 It has been first developed as a home-made project and then was used inside the game industry as a robust foundation for quick game engine development. 
 
 After years of use inside a professional game studio, it is now made available under a permissive license for whoever want to use it or participate to its development.
 
-It comes with bêta extensions providing scripting features : [Phantom.Lang](#phantomlang--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
+It comes with bêta extensions providing scripting features : [Phantom.Code](#phantomcode--soon-on-github-) and  [Phantom.JIT](#phantomjit--soon-on-github-)
 
 ----
 
-| [Compilers / Platforms](#compilers--platforms) \| [Donations / Support](#support--donations) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
+| [Compilers / Platforms](#compilers--platforms) \| [License / Support / Domations](#license--support--donations) \| [Phantom In a Nutshell](#phantom-in-a-nutshell) \| [HelloWorld](#helloworld) \| [Features](#features) \| [Haunt Reflection Generator](#haunt-reflection-generator-only-available-for-windows-cross-platform-incoming) \| [Integration](#integration) |
 :----------------------------------------------------------: |
 
-### Compilers / Platforms 
+## Compilers / Platforms 
 - Microsoft Visual Studio 2015 / 2017 / 2019 (requires at least C++11)
 - Clang version  7 and greater
 
@@ -24,11 +23,38 @@ It has been tested on Windows 7/10, Ubuntu and ORBIS platforms.
 More tests are required as it's scope was limited during development.
 <sub>As being mainly used for game engine/editor development, Phantom had a poor maintenance on other platforms than Windows. But things are changing slowly but surely...</sub>
 
-### Support / Donations
+## License / Support / Donations
 
 This project is under a MIT license which is one of the highest permissive distribution license. I receive no salary or royalties for developing it and I won't, by pure believes in sharing stuff for a better world <3. Anyone willing to donate is very welcome to help me maintaining and improving it on my spare time :) 
 
-### HelloWorld
+## Phantom In A Nutshell
+
+- Classical features : **class, method, field, function, enum, constructor, property ...**
+- **Template class reflection**
+- **Automatic reflection generation** for fast iterations with *Haunt*, a ***Clang* based tool** featuring : 
+	- code comment markers
+	- dependency resolution (no reflection generated for fields or methods with missing reflected types)
+	- highly customizable input/output
+	- trivial external libraries reflection and integration 
+- **Plugins**, with user **Module/Package/Source** symbols organisation 
+- **Custom user allocator** : provide your own allocate/deallocate functions (very few allocations before main for better memory control)
+- **Modern C++ with minimal macros use** (only those to avoid unreadable code are used) 
+- **On demand registration** : if requested, even if everything is reflected, only accessed class will register members (**fast startup** and **low memory use**, no matter your codebase size)
+- **Optimized meta programming compilation time** using *meta-typedef* technique
+- **Non intrusive** (you can separate your code from reflection code, even in separate libraries)
+- **No third-party library**
+- **No RTTI**
+- Home made containers with respective *small buffer* and *views* optimizations (rare allocations when passing arguments)
+- Automatic namespace detection at registration (ask for the magic trick ;))
+- Used in the **game industry** (compiles on ORBIS)
+- **Extensions**
+	- *Phantom.Code* (soon)
+		- **Lite C++ grammar and semantic with import model (CppLite)** for building C++ like code at runtime
+		- AST objects for **building your own language above native C++**  
+	- *Phantom.Jit* (soon)
+		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation. See my related other project : https://github.com/vlmillet/llvmjitpdb)
+
+## HelloWorld
 
 Code:
 ```cp
@@ -37,16 +63,16 @@ Code:
 /// registration includes
 
 #include <phantom/class> 
-#include <phantom/field>
 #include <phantom/method>
+#include <phantom/field>
 #include <phantom/main>
 
 /// use includes
 
-#include <phantom/reflection/Application.h>
-#include <phantom/reflection/Class.h>
-#include <phantom/reflection/Method.h>
-#include <phantom/reflection/Field.h>
+#include <phantom/lang/Class.h>
+#include <phantom/lang/Method.h>
+#include <phantom/lang/Field.h>
+#include <phantom/lang/Application.h>
 
 namespace MyNamespace
 {
@@ -79,11 +105,7 @@ PHANTOM_CLASS(MyClass) // minimal macro usage
 
 int main(int argc, char** argv)
 {
-    using namespace phantom::reflection;
-
-    // <- at this point no heap allocation have been made, 
-    // this is where you can configure allocations with MemoryTraits class 
-    // before Phantom starts the big registration work
+    using namespace phantom::lang;
 
     // initializes Phantom, install all pre-main registrations, create the 'main' module (the module related to the .exe)
     Main app(main, "MyApplication", argc, argv);
@@ -106,9 +128,9 @@ int main(int argc, char** argv)
 }
 ```
 
-### Features
+## Features
 
-#### List of reflected C++ symbols 
+### List of reflected C++ symbols 
 
 Almost all C++ symbols are reflectable by Phantom. 
 
@@ -143,11 +165,11 @@ Here is a list of what is/can be introspected :
 
 Self-introspection and, then, recursive reflection are implemented (Class has a meta-class). It has some power for building self-feeding interpreted languages (such as LUA or Ruby). 
 
-#### Module > Package > Source > Symbol
+### Module > Package > Source > Symbol
 
-Phantom reflection is organized by *modules* containing *packages*, containing *sources*, containing *symbols*. This is close to the import/module model you can find in modern languages such as *Python*.  This structure ensure unicity accross different libraries. For example the unique full name of `phantom::reflection::Field` is ```Phantom:phantom.reflection.Field.Field```. 
-- ``` Phantom``` is the *module*. 
-- ```phantom.reflection``` is the *package*. 
+Phantom reflection is organized by *modules* containing *packages*, containing *sources*, containing *symbols*. This is close to the import/module model you can find in modern languages such as *Python*.  This structure ensure unicity accross different libraries. For example the unique full name of `phantom::lang::Field` is ```Phantom:phantom.lang.Field.Field```. 
+- ```Phantom``` is the *module*. 
+- ```phantom.lang``` is the *package*. 
 - ```Field``` (first) is the *source* (actual 'module' equivalent in C++20 or Python). 
 - ```Field``` (second) is the actual class *symbol*.
 
@@ -168,16 +190,194 @@ PHANTOM_CLASS("MyClass") { ... }
 PHANTOM_END("MyPackage0.MyPackage1.MySource");
 ```
 <sub>(the module will be automatically detected by the Phantom registration system)</sub>
-#### On demand member registration
-> **Only keep what you need** <sub>A thought by me</sub>
+### On demand member registration
+> **Only keep what you need** <sub>you should</sub>
 > 
 When you launch your application with Phantom, only the symbols at global or namespace scopes will be registered by default. Every class member will wait for any access in the reflection system to install. This allows to have everything reflected and still have a **very fast startup** and **low memory use** if not everything is used. 
 
 
-#### Heap allocation control
+### Heap allocation control
 99% of the time, Phantom will never perform heap allocation before entering ***main*** function ; this might happen if you really have a big module with lot of symbols registered. Once in the ***main*** you can use MemoryTraits in phantom to provide your own allocation functions.
 
-### Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
+### Template Class Reflection 
+
+Phantom reflects template classes very easily. Full, partial and variadic template specializations are supported too.
+
+Every template reflection must be isolated into its own file to be used correcly accross multiple translation units. Indeed a template reflection registration is not the same as a class reflection registration (as templates have no real existence in compiled code). 
+
+This is why they must be included wherever an instance of this template is used inside another reflection scope. To do so, template files must be included in between ```#include <phantom/template-only-push>``` and ```#include <phantom/template-only-pop>```  
+
+See below an example of ```EASTL/basic_string.hxx``` used in a game engine for better understanding (it is easier than it look likes).
+
+```cp
+#pragma once
+
+#include <EASTL/string.h>
+
+#include <phantom/class>
+#include <phantom/method>
+#include <phantom/constructor>
+#include <phantom/meta_type>
+
+#include <phantom/lang/StringClassT.h>
+
+#include <phantom/template-only-push> // < begin template includes here
+#include "allocator.hxx"
+#include <std/initializer_list.hxx>
+#include <phantom/template-only-pop> // < end template includes here
+
+// 'PHANTOM_META_TYPE_T' tells phantom to use phantom::lang::StringClassT<> instead of phantom::lang::ClassT<>
+// as the meta type for every reflected instance of basic_string.
+
+PHANTOM_META_TYPE_T((typename, typename), (T, Alloc), eastl::basic_string, phantom::lang::StringClassT);
+
+namespace eastl
+{
+    PHANTOM_CLASS_T((typename, typename), (T, Alloc), basic_string)
+    {
+        using CharT = T;
+        using AllocatorT = Alloc;
+        using ThisType = eastl::basic_string<T, Alloc>;
+        using const_iterator = typedef_<PHANTOM_TYPENAME _::const_iterator>;
+        using iterator = typedef_<PHANTOM_TYPENAME _::iterator>;
+        using size_type = typedef_<PHANTOM_TYPENAME _::size_type>;
+        using value_type = typedef_<PHANTOM_TYPENAME _::value_type>;
+
+        this_()
+            .public_()
+                .PHANTOM_T constant("npos", _::npos)
+                .PHANTOM_T typedef_<size_type>("size_type")
+                .PHANTOM_T typedef_<value_type>("value_type")
+                .PHANTOM_T typedef_<const_iterator>("const_iterator")
+                .PHANTOM_T typedef_<iterator>("iterator")
+                PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value),
+                    .PHANTOM_T constructor<void()>()
+                )
+                .PHANTOM_T constructor<void(ThisType const&), default_>()
+                .PHANTOM_T constructor<void(ThisType&&)>()
+                .PHANTOM_T constructor<void(::std::initializer_list<CharT>, const AllocatorT&)>()
+                .PHANTOM_T constructor<void(CharT const*, size_t)>()
+                .PHANTOM_T constructor<void(CharT const*)>()
+                .PHANTOM_T method<ThisType& (ThisType const&), default_>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (ThisType&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (CharT const*)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<ThisType& (CharT)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+                .PHANTOM_T method<CharT const* () const>("begin", &_::begin)
+                .PHANTOM_T method<CharT const* () const>("end", &_::end)
+                .PHANTOM_T method<CharT* ()>("begin", &_::begin)
+                .PHANTOM_T method<CharT* ()>("end", &_::end)
+                .PHANTOM_T method<size_t() const>("size", &_::size)
+                .PHANTOM_T method<size_t() const>("length", &_::length)
+                .PHANTOM_T method<void(size_t)>("resize", &_::resize)
+                .PHANTOM_T method<void(size_t, CharT)>("resize", &_::resize)
+                .PHANTOM_T method<size_t() const>("capacity", &_::capacity)
+                .PHANTOM_T method<void(size_t)>("reserve", &_::reserve)
+                .PHANTOM_T method<void()>("clear", &_::clear)
+                .PHANTOM_T method<bool() const>("empty", &_::empty)
+                .PHANTOM_T method<CharT const& (size_t) const>("operator[]", &_::operator[])
+                .PHANTOM_T method<CharT& (size_t)>("operator[]", &_::operator[])
+                .PHANTOM_T method<CharT const& () const>("back", &_::back)
+                .PHANTOM_T method<CharT& ()>("back", &_::back)
+                .PHANTOM_T method<CharT const& () const>("front", &_::front)
+                .PHANTOM_T method<CharT& ()>("front", &_::front)
+                .PHANTOM_T method<ThisType& (CharT const*)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (ThisType const&)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (CharT)>("operator+=", &_::operator+=)
+                .PHANTOM_T method<ThisType& (CharT const*)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (ThisType const&)>("append", &_::append)
+                .PHANTOM_T method<void(CharT)>("push_back", &_::push_back)
+                .PHANTOM_T method<ThisType& (CharT const*)>("assign", &_::assign)
+                .PHANTOM_T method<ThisType& (CharT const*, size_t)>("assign", &_::assign)
+                .PHANTOM_T method<ThisType& (CharT const*, size_t)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (const ThisType&, size_t, size_t)>("append", &_::append)
+                .PHANTOM_T method<ThisType& (size_t, ThisType const&)>("insert", &_::insert)
+                .PHANTOM_T method<ThisType& (size_t, CharT const*, size_t)>("insert", &_::insert)
+                .PHANTOM_T method<ThisType& (size_t, size_t)>("erase", &_::erase)
+                .PHANTOM_T method<iterator(const_iterator)>("erase", &_::erase)
+                .PHANTOM_T method<iterator(const_iterator, const_iterator)>("erase", &_::erase)
+                .PHANTOM_T method<void(ThisType&)>("swap", &_::swap)
+                .PHANTOM_T method<void()>("pop_back", &_::pop_back)
+                .PHANTOM_T method<CharT const* () const>("c_str", &_::c_str)
+                .PHANTOM_T method<CharT const* () const>("data", &_::data)
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find", &_::find)["0"]
+                .PHANTOM_T method<size_t(ThisType const&, size_t) const>("find", &_::find)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_of", &_::find_first_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_of", &_::find_first_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_of", &_::find_last_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_of", &_::find_last_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_first_not_of", &_::find_first_not_of)["0"]
+                .PHANTOM_T method<size_t(CharT, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+                .PHANTOM_T method<size_t(CharT const*, size_t) const>("find_last_not_of", &_::find_last_not_of)["npos"]
+                .PHANTOM_T method<ThisType(size_t, size_t) const>("substr", &_::substr)["npos"]
+                .PHANTOM_T method<int(ThisType const&) const>("compare", &_::compare)
+                .PHANTOM_T method<int(CharT const*) const>("compare", &_::compare)
+                .PHANTOM_T method<int(size_t, size_t, CharT const*) const>("compare", &_::compare)
+                .PHANTOM_T method<int(size_t, size_t, ThisType const&) const>("compare", &_::compare)
+        ;
+    }
+}
+```
+
+and here is an example where ```EASTL/basic_string.hxx``` is used :
+
+```cp
+#pragma once
+
+#include "String.h"
+
+#include <phantom/namespace>
+#include <phantom/package>
+#include <phantom/source>
+#include <phantom/function>
+#include <phantom/typedef>
+
+#include <phantom/template-only-push>
+
+#include <EASTL/basic_string.hxx>
+
+#include <phantom/template-only-pop>
+
+namespace GameEngine {
+PHANTOM_PACKAGE("GameEngine.Core")
+    PHANTOM_SOURCE("String")
+
+        #if PHANTOM_NOT_TEMPLATE
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<typedef_<String> >("String"); }
+        #endif // PHANTOM_NOT_TEMPLATE
+	
+    PHANTOM_END("String")
+PHANTOM_END("GameEngine.Core")
+}
+
+```
+
+### Custom Meta Types
+
+ You can customize what meta type phantom will use to register your class : 
+- for simple classes
+```cp
+...
+#include <phantom/meta_type>
+...
+PHANTOM_META_TYPE(<your-ns>::<your_type>, <your-metatype>)
+namespace <your-ns> 
+{
+    PHANTOM_CLASS(<your_type>) { ... }
+}
+``` 
+- for template classes (as seen just above in ```EASTL/basic_string.hxx```) with 
+
+```cp
+PHANTOM_META_TYPE_T(<tpl-signature>, <your-ns>::<your_type>, <your-metatype>)
+namespace <your-ns> 
+{
+    PHANTOM_CLASS_T(<tpl-signature>, <your_type>) { ... }
+}
+``` 
+these macros are in ```<phantom/meta_type>```
+
+## Haunt Reflection Generator <sub>(only available for Windows, cross platform incoming)</sub>
 
 Phantom comes with a reflection generator based on **Clang** which generates files containing fined control reflection output. This is a **boost for iterations and productivity**. 
 **Haunt** is not mandatory like **QT/moc** is. You can create a whole project without. It is just a really handy team mate for hard days of refactoring your other human team mates' code ... <sub>you know what I mean, I know you do</sub>
@@ -209,7 +409,7 @@ Quick list of features :
   
 Example of file generated with Haunt :
 ```cp
-  #pragma once
+#pragma once
 
 // haunt {
 
@@ -238,13 +438,16 @@ Example of file generated with Haunt :
 
 #include <phantom/template-only-push>
 
-#include <phantom/SmallVector.hxx>
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
+#include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
 
 namespace phantom {
-namespace reflection {
-PHANTOM_PACKAGE("phantom.reflection")
+namespace lang {
+PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("Class")
 
         #if PHANTOM_NOT_TEMPLATE
@@ -271,33 +474,32 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         PHANTOM_CLASS(Class)
         {
-            using AggregateFields = typedef_< phantom::reflection::AggregateFields>;
-            using Classes = typedef_< phantom::reflection::Classes>;
+            using AggregateFields = typedef_< phantom::lang::AggregateFields>;
+            using Classes = typedef_< phantom::lang::Classes>;
             using ExtraData = typedef_<_::ExtraData>;
-            using Methods = typedef_< phantom::reflection::Methods>;
-            using Modifiers = typedef_< phantom::reflection::Modifiers>;
-            using Signals = typedef_< phantom::reflection::Signals>;
+            using Methods = typedef_< phantom::lang::Methods>;
+            using Modifiers = typedef_< phantom::lang::Modifiers>;
+            using Signals = typedef_< phantom::lang::Signals>;
             using StringView = typedef_< phantom::StringView>;
             using Strings = typedef_< phantom::Strings>;
-            using Subroutines = typedef_< phantom::reflection::Subroutines>;
-            using TypesView = typedef_< phantom::reflection::TypesView>;
-            using ValueMembers = typedef_< phantom::reflection::ValueMembers>;
+            using Subroutines = typedef_< phantom::lang::Subroutines>;
+            using TypesView = typedef_< phantom::lang::TypesView>;
+            using ValueMembers = typedef_< phantom::lang::ValueMembers>;
             using Variants = typedef_< phantom::Variants>;
-            using VirtualMethodTables = typedef_< phantom::reflection::VirtualMethodTables>;
+            using VirtualMethodTables = typedef_< phantom::lang::VirtualMethodTables>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
-            .inherits<::phantom::reflection::ClassType>()
+            .inherits<::phantom::lang::ClassType>()
         .public_()
-            .method<void(::phantom::reflection::LanguageElementVisitor *, ::phantom::reflection::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
         .public_()
             .staticMethod<Class*()>("MetaClass", &_::MetaClass)
-            .staticMethod<StringView()>("GetEmbeddedRttiFieldName", &_::GetEmbeddedRttiFieldName)
         
         .public_()
         
         .public_()
             .struct_<ExtraData>()
-                .inherits<::phantom::reflection::ClassType::ExtraData>()
+                .inherits<::phantom::lang::ClassType::ExtraData>()
                 .method<void(), virtual_|override_>("PHANTOM_CUSTOM_VIRTUAL_DELETE", &_::ExtraData::PHANTOM_CUSTOM_VIRTUAL_DELETE)
                 .constructor<void()>()
                 .field("m_uiFieldMemoryOffset", &_::ExtraData::m_uiFieldMemoryOffset)
@@ -378,8 +580,7 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<bool() const>("isRootClass", &_::isRootClass)
             .method<bool(Class*) const>("isA", &_::isA)
             .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
-            .method<ERelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
-            .method<bool(void*, void*) const>("doesInstanceDependOn", &_::doesInstanceDependOn)
+            .method<TypeRelation(Type*) const, virtual_|override_>("getRelationWith", &_::getRelationWith)
             .method<void(Method*), virtual_|override_>("addMethod", &_::addMethod)
             .method<void(Signal*), virtual_>("addSignal", &_::addSignal)
             .method<void(Signal*), virtual_>("removeSignal", &_::removeSignal)
@@ -388,17 +589,13 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<Signal*(StringView) const>("getSignalCascade", &_::getSignalCascade)
             .method<Method*(StringView) const>("getSlot", &_::getSlot)
             .method<Method*(StringView) const>("getSlotCascade", &_::getSlotCascade)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(ValueMember*, Expression*)>("setOverriddenDefaultExpression", &_::setOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpression", &_::getOverriddenDefaultExpression)
-            /// missing symbol(s) reflection (phantom::reflection::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(ValueMember*) const>("getOverriddenDefaultExpressionCascade", &_::getOverriddenDefaultExpressionCascade)
             .method<bool() const, virtual_|override_>("isPolymorphic", &_::isPolymorphic)
-            .method<void(void const*) const, virtual_>("mapRtti", &_::mapRtti)
-            .method<void(void const*) const, virtual_>("unmapRtti", &_::unmapRtti)
-            .method<void(void const*) const, virtual_>("installRtti", &_::installRtti)
-            .method<void(void const*) const, virtual_>("uninstallRtti", &_::uninstallRtti)
             .using_("Type::allocate")
             .using_("Type::deallocate")
             .method<void*() const, virtual_|override_>("allocate", &_::allocate)
@@ -424,11 +621,12 @@ PHANTOM_PACKAGE("phantom.reflection")
             .method<void*(void*) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void*(void*, Constructor*, void**) const, virtual_|override_>("placementNewInstance", &_::placementNewInstance)
             .method<void(void*) const, virtual_|override_>("placementDeleteInstance", &_::placementDeleteInstance)
-            .method<const Variant&(StringView) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<const Variant&(StringHash) const>("getMetaDataCascade", &_::getMetaDataCascade)
-            .method<void(StringView, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<void(StringHash, Variants&) const>("getMetaDatasCascade", &_::getMetaDatasCascade)
-            .method<bool(StringView) const>("hasMetaDataCascade", &_::hasMetaDataCascade)
+            .method<const Variant&(StringView) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<const Variant&(StringWithHash) const>("getMetaDataIncludingBases", &_::getMetaDataIncludingBases)
+            .method<void(StringView, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<void(StringWithHash, Variants&) const>("getMetaDatasIncludingBases", &_::getMetaDatasIncludingBases)
+            .method<bool(StringWithHash) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
+            .method<bool(StringView) const>("hasMetaDataIncludingBases", &_::hasMetaDataIncludingBases)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isCopyConstructible", &_::isCopyConstructible)
             .method<bool() const, virtual_|override_>("isMoveConstructible", &_::isMoveConstructible)
@@ -472,7 +670,7 @@ PHANTOM_PACKAGE("phantom.reflection")
         }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("Class")
-PHANTOM_END("phantom.reflection")
+PHANTOM_END("phantom.lang")
 }
 }
 
@@ -487,7 +685,7 @@ PHANTOM_END("phantom.reflection")
 ```
 Yes this really saves you a lot of time :)
   
-### Integration
+## Integration
 
 [Premake](https://premake.github.io/) is used as my cross platform project generator.
 
@@ -495,10 +693,10 @@ Yes this really saves you a lot of time :)
 
 Just run the *Premake_vs201X.bat* under windows to build a Visual Studio solution. Under linux and other platforms, you will need to use the command line.
 
-## Phantom.Lang <sub> (soon on GitHub) </sub>
+# Phantom.Code <sub> (soon on GitHub) </sub>
 
 Provide a scripting language layer upon C++ and Phantom, building a nice and transparent native -> runtime interface for interacting with native C++.
 
-## Phantom.JIT <sub> (soon on GitHub) </sub>
+# Phantom.JIT <sub> (soon on GitHub) </sub>
 
 A jit compiler based on **llvm** and **MCJIT** is in development with great features (among them is on-the-fly **PDB** generation and hot reloading)

@@ -3,7 +3,7 @@
 C++ Reflection and Scripting Library 
 
 ----
-Get [Phantom.Code](https://github.com/vlmillet/Phantom.Code) and [Phantom.JIT](https://github.com/vlmillet/Phantom.JIT) to build and execute C++ subset (or your own language) at run-time on the top of your reflection, using asm x64 JIT and on-the-fly PDB debugging.
+Get **[Phantom.Code](https://github.com/vlmillet/Phantom.Code)** and **[Phantom.JIT](https://github.com/vlmillet/Phantom.JIT)** to build and execute C++ subset (or your own language) at run-time on the top of your reflection, using asm x64 JIT and on-the-fly PDB debugging.
 
 ----
 Phantom is a **C++ reflection library**, feature complete, self-contained (no stl container or other library dependency), highly customizable (allocations, reflection generation) and non intrusive (reflection can be in complete separate files from your source code). 

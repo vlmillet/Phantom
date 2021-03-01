@@ -136,6 +136,11 @@ bool Module::isPlugin() const
     return Application::Get()->getMainModule() != this;
 }
 
+bool Module::isInstalled() const
+{
+    return dynamic_initializer_()->getModuleRegistrationInfo((size_t)m_pBaseAddress)->m_bInstalled;
+}
+
 StringView Module::getLibraryFullName() const
 {
     return m_LibraryFullName;

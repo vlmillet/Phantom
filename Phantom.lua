@@ -61,6 +61,8 @@ solution(PhantomSolutionName)
 	
 	group "Examples"
 		Phantom_add_project("HelloWorld", Vars) 
+		Phantom_add_project("HelloWorld.Code", Vars) 
+		Phantom_add_project("HelloWorld.JIT", Vars) 
 	
 	if PhantomExtraProjects ~= nil then
 		PhantomExtraProjects(Vars)

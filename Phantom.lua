@@ -51,8 +51,6 @@ solution(PhantomSolutionName)
 	group "Libraries"
 	Vars["Link"] = "Shared"
 	Phantom_add_project("Phantom", Vars)
-
-	group "Extensions"
 	Phantom_add_project("Phantom.Code", Vars)
 	Phantom_add_project("Phantom.JIT", Vars)
 	Phantom_add_project("Phantom.Serialization", Vars)

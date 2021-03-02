@@ -14,8 +14,6 @@
 
 #ifndef __DOXYGEN__
 
-#    define _CRT_SECURE_NO_WARNINGS 1
-
 /* ************** PHANTOM CONFIGURATION *********** */
 #    include <phantom/customize.h>
 #    include <phantom/detail/config.h>
@@ -134,12 +132,12 @@ enum class MessageType
 
 PHANTOM_EXPORT_PHANTOM bool assertion PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
                                                                          const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool warning   PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                         const char* format, ...);
-PHANTOM_EXPORT_PHANTOM bool error     PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
-                                                                         const char* format, ...);
-PHANTOM_EXPORT_PHANTOM void log       PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
-                                                                         const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool warning PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                       const char* format, ...);
+PHANTOM_EXPORT_PHANTOM bool error PHANTOM_PREVENT_MACRO_SUBSTITUTION(const char* e, const char* f, int l,
+                                                                     const char* format, ...);
+PHANTOM_EXPORT_PHANTOM void log PHANTOM_PREVENT_MACRO_SUBSTITUTION(MessageType level, const char* file, int line,
+                                                                   const char* format, ...);
 
 PHANTOM_EXPORT_PHANTOM bool isMainThread();
 

@@ -33,20 +33,25 @@ public:
 
     const void* c_str(const void* a_pString) const override
     {
-        const T* pContainer = static_cast<const T*>(a_pString);
+        const T* pContainer = reinterpret_cast<const T*>(a_pString);
         return pContainer->c_str();
     }
 
     void assign(void* a_pString, const void* a_pChars, size_t a_Len) const override
     {
-        T* pContainer = static_cast<T*>(a_pString);
+        T* pContainer = reinterpret_cast<T*>(a_pString);
         pContainer->assign((const CharType*)a_pChars, a_Len);
     }
 
     void append(void* a_pString, const void* a_pChars) const override
     {
-        T* pContainer = static_cast<T*>(a_pString);
+        T* pContainer = reinterpret_cast<T*>(a_pString);
         pContainer->append((const CharType*)a_pChars);
+    }
+
+    bool equal(const void* a_pS0, const void* a_pS1) const override
+    {
+        return *reinterpret_cast<T const*>(a_pS0) == *reinterpret_cast<T const*>(a_pS1);
     }
 };
 

@@ -1615,6 +1615,13 @@ bool Class::equal(void const* a_pInstance0, void const* a_pInstance1) const
             return static_cast<Function*>(*m_OpEquals)->call<bool>(*(int*)a_pInstance0, *(int*)a_pInstance1);
         }
     }
+    if (!m_BaseClasses.empty()) // look up for equality function in direct base class
+    {
+        auto base = m_BaseClasses.front();
+        a_pInstance0 = reinterpret_cast<const char*>(a_pInstance0) + base.offset;
+        a_pInstance1 = reinterpret_cast<const char*>(a_pInstance1) + base.offset;
+        return base.baseClass->equal(a_pInstance0, a_pInstance1);
+    }
     return false;
 }
 

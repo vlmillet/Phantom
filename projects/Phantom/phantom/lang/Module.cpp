@@ -65,6 +65,7 @@ Module::~Module()
 void Module::initialize()
 {
     Symbol::initialize();
+    getOrCreatePackage("default");
     Package* pDefaultPackage = newPackage(getName());
     if (isNative())
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
@@ -85,8 +86,7 @@ bool Module::canBeUnloaded() const
 
 Package* Module::getDefaultPackage() const
 {
-    PHANTOM_ASSERT(m_Packages.size() && m_Packages.front()->getName() == getName());
-    return m_Packages.front();
+    return getPackage("default");
 }
 
 void Module::addDependency(Module* a_pModule)

@@ -599,6 +599,35 @@ void DynamicCppInitializerH::installModules()
 
     /// BEGIN MODULES INSTALLATION
 
+    for (lang::ModuleRegistrationInfo* it : infos)
+    {
+        if (it->m_bInstalled)
+            continue;
+
+        for (auto dep : it->m_Dependencies)
+        {
+            lang::Module* pDep = lang::Application::Get()->getModule(dep);
+            if (!pDep)
+            {
+                for (lang::ModuleRegistrationInfo* it2 : infos)
+                {
+                    if (it2->m_Name == dep)
+                    {
+                        pDep = it2->m_pModule;
+                        break;
+                    }
+                }
+                if (!pDep)
+                {
+                    PHANTOM_LOG(Error, "module '%s' is a dependency of module '%s' and has not been loaded", dep,
+                                it->m_Name);
+                    continue;
+                }
+            }
+            it->m_pModule->addDependency(pDep);
+        }
+    }
+
     /// Install BuiltInTypes and Templates
     stepRegistration(RegistrationStep::_Reserved);
 
@@ -693,13 +722,6 @@ void DynamicCppInitializerH::installModules()
             continue;
         /// END OF INSTALLATION
         it->m_pModule->checkCompleteness();
-
-        for (auto dep : it->m_Dependencies)
-        {
-            lang::Module* pDep = lang::Application::Get()->getModule(dep);
-            PHANTOM_ASSERT(pDep, "module '%s' is a dependency of module '%s' and has not been loaded", dep, it->m_Name);
-            it->m_pModule->addDependency(pDep);
-        }
 
         it->m_bInstalled = true;
         if (it->m_pModule->getOnLoadFunc())

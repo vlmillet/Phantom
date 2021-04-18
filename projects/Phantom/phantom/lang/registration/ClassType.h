@@ -965,11 +965,20 @@ struct ClassTypeCtorOnCall
     _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(                          \
     phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
+PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep);
+
 template<class RegistrerType>
 auto _PHTNM_TemplateTypeOfH()
 {
-    static RegistrerType                         re(true);
-    static decltype(re.this_()._PHNTM_getMeta()) meta = nullptr;
+    using MetaPtr = decltype(reinterpret_cast<RegistrerType*>(nullptr)->this_()._PHNTM_getMeta());
+    using Meta = std::remove_pointer_t<MetaPtr>;
+    if (auto inAnotherModule = phantom::lang::TypeOfUndefined<typename RegistrerType::_PHNTM_ThisType>::object())
+    {
+        if (_PHTNM_moduleHasDependency(phantom::lang::detail::currentModule(), inAnotherModule->getModule()))
+            return static_cast<MetaPtr>(inAnotherModule);
+    }
+    static RegistrerType re(true);
+    static MetaPtr       meta = nullptr;
     if (meta == nullptr)
     {
         meta = re.this_()._PHNTM_getMeta();

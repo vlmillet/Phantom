@@ -921,6 +921,11 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
 } // namespace lang
 } // namespace phantom
 
+PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep)
+{
+    return _module && _module->hasDependencyCascade(_dep);
+}
+
 PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement()
 {
     return phantom::lang::detail::currentSource();

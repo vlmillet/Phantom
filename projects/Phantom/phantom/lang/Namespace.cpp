@@ -174,6 +174,17 @@ void Namespace::onNamespaceChanged(Namespace* /*a_pNamespace*/)
     setVisibility(Visibility::Public);
 }
 
+void Namespace::addCustomSymbol(Symbol* a_pSymbol)
+{
+    a_pSymbol->setNamespace(this);
+}
+
+void Namespace::removeCustomSymbol(Symbol* a_pSymbol)
+{
+    PHANTOM_ASSERT(a_pSymbol->getNamespace() == this);
+    a_pSymbol->setNamespace(nullptr);
+}
+
 Namespace* Namespace::getRootNamespace() const
 {
     if (getOwner() == nullptr || getOwner() == Namespace::Global())

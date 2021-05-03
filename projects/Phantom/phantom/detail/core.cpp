@@ -619,8 +619,8 @@ void DynamicCppInitializerH::installModules()
                 }
                 if (!pDep)
                 {
-                    PHANTOM_LOG(Error, "module '%s' is a dependency of module '%s' and has not been loaded", dep,
-                                it->m_Name);
+                    PHANTOM_LOG(Error, "module '%s' is a dependency of module '%s' and has not been loaded", dep.data(),
+                                it->m_Name.data());
                     continue;
                 }
             }
@@ -1226,8 +1226,9 @@ void lang::Main::setWarningFunc(MessageReportFunc a_func)
     phantom::detail::g_warning_func = a_func;
 }
 
-lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
-                 CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
+lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, std::initializer_list<StringView> _dependencies,
+                 int argc, char** argv, CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile,
+                 uint a_uiFlags)
 {
     g_PHNTM_Main = this;
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
@@ -1277,7 +1278,8 @@ lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc
     PHANTOM_LOG_NATIVE_REFLECTION("loading main lang...");
     if (argv)
     {
-        Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, argv[0], a_strFile, a_uiFlags);
+        Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, argv[0], a_strFile, a_uiFlags,
+                                      _dependencies);
     }
     else
     {
@@ -1285,7 +1287,8 @@ lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
         GetModuleFileNameA(0, buffer, 1024);
 #endif
-        lang::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags);
+        lang::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags,
+                                            _dependencies);
     }
 }
 

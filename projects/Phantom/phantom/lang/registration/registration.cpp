@@ -170,7 +170,9 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             {
                 if (auto pNS = m_pNamingScope->asNamespace())
                     pNS->addType(a_pType);
-                detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType));
+                detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType),
+                                                  (_PHNTM_isFullSpec() ? 0 : PHANTOM_R_FLAG_IMPLICIT) |
+                                                  PHANTOM_R_FLAG_NATIVE);
             }
             else
             {
@@ -556,6 +558,85 @@ void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
     }
 }
 
+TemplatePartialRegistrer::TemplatePartialRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
+    : _PHNTM_StaticGlobalRegistrer(PHANTOM_MODULE_HANDLE(this), dynamic_initializer_()->currentPackage(),
+                                   dynamic_initializer_()->currentSource(), a_strFile, line, tag,
+                                   {::phantom::RegistrationStep::TemplateSignatures}),
+      m_func(func)
+{
+    _PHNTM_attach();
+}
+
+void TemplatePartialRegistrer::_PHNTM_process(phantom::RegistrationStep)
+{
+    phantom::lang::Symbol* pNamingScope =
+    (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->getOrCreateNamespace(m_func(0));
+    PHANTOM_ASSERT(pNamingScope,
+                   "template scope has not been registered => ensure that the nesting class of "
+                   "your template is registered before it (above in the translation unit)");
+    Scope* pScope = pNamingScope->asScope();
+    PHANTOM_ASSERT(pScope);
+    Template* pTemplate = pScope->getTemplate(m_func(3));
+    PHANTOM_ASSERT(pTemplate, "partial specialization of unknown template");
+    if (pTemplate)
+    {
+        auto pSource = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
+
+        auto pTSign = TemplateSignature::Parse(pSource, m_func(1), m_func(2), pNamingScope, PHANTOM_R_FLAG_NATIVE);
+
+        StringView argListStr = m_func(4);
+
+        Strings argList;
+
+        String buff{""};
+        int    tpl = 0;
+        for (auto ch : argListStr)
+        {
+            if (ch == ',' && tpl == 0) // found a sep
+            {
+                PHANTOM_ASSERT(!buff.empty());
+                argList.push_back(std::move(buff));
+                buff.clear();
+            }
+            else
+            {
+                if (ch == '>')
+                {
+                    tpl--;
+                }
+                else if (ch == '<')
+                {
+                    tpl++;
+                }
+                buff += ch;
+            }
+        }
+        if (!buff.empty())
+            argList.push_back(std::move(buff));
+
+        Namespace* ns = pNamingScope->asNamespace();
+        if (!ns)
+            ns = pNamingScope->getEnclosingNamespace();
+        PHANTOM_ASSERT(ns);
+
+        ns->addCustomSymbol(pTSign);
+
+        LanguageElements args;
+        for (auto& arg : argList)
+        {
+            Symbol* pArg = phantom::lang::Application::Get()->findCppSymbol(arg, pTSign);
+            PHANTOM_ASSERT(pArg);
+            args.push_back(pArg);
+        }
+
+        ns->removeCustomSymbol(pTSign);
+
+        TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(pTemplate, pTSign, args);
+        pSpec->setFlags(PHANTOM_R_FLAG_NATIVE); // every native TemplateSpecialization is an instantiation
+        pScope->addTemplateSpecialization(pSpec);
+    }
+}
+
 namespace detail
 {
 struct PerThreadScope
@@ -621,7 +702,7 @@ void ReleaseGlobals()
 }
 
 PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, const LanguageElements& a_Arguments,
-                                                      Symbol* a_pBody)
+                                                      Symbol* a_pBody, uint a_uiFlags)
 {
     _PHNTM_R_MTX_GUARD();
     PHANTOM_ASSERT(a_pTemplate->getTemplateSignature()->getTemplateParameters().size() == a_Arguments.size() ||
@@ -637,8 +718,7 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
     PHANTOM_ASSERT(a_pTemplate->isNative());
     TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(
     a_pTemplate, pSource->New<TemplateSignature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
-    pSpec->setFlags(PHANTOM_R_FLAG_NATIVE | PHANTOM_R_FLAG_IMPLICIT |
-                    pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
+    pSpec->setFlags(a_uiFlags | pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }
 
 PHANTOM_EXPORT_PHANTOM lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource)

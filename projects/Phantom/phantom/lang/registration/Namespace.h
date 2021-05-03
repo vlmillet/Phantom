@@ -221,7 +221,9 @@ struct NamespaceBuilderConstructOnCall
         }                                                                                                              \
         virtual void _PHNTM_process(phantom::RegistrationStep a_Step)                                                  \
         {                                                                                                              \
+            _PHNTM_forwardSourcePackagePush();                                                                         \
             _PHNTM_processUserCode(a_Step);                                                                            \
+            _PHNTM_forwardSourcePackagePop();                                                                          \
             namespace_().end();                                                                                        \
         }                                                                                                              \
         inline void _PHNTM_processUserCode(phantom::RegistrationStep);                                                 \

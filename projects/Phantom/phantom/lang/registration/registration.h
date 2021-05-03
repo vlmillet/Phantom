@@ -30,7 +30,7 @@ namespace detail
 // redirections to avoid includes of Application essentially
 PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template*               a_pTemplate,
                                                       const LanguageElements& arguments,
-                                                      Symbol*                 a_pBody);
+                                                      Symbol*                 a_pBody, uint a_uiFlags);
 PHANTOM_EXPORT_PHANTOM Enum* newAnonEnum(PrimitiveType* a_pUnderlyingIntType);
 PHANTOM_EXPORT_PHANTOM Alias* newAlias(Symbol* a_pElement, StringView a_strAlias,
                                        Modifiers a_Modifiers = 0, uint a_uiFlags = 0);

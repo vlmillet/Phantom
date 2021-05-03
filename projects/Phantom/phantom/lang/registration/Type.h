@@ -89,6 +89,10 @@ struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
 {
     _PHNTM_REG_FRIENDS;
 
+public:
+    void _PHNTM_setFullSpec() { m_isFullSpec = true; }
+    bool _PHNTM_isFullSpec() const { return m_isFullSpec; }
+
 protected:
     TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
                     TemplateSpecArgumentRegistrer a_Arguments);
@@ -136,10 +140,10 @@ protected:
     TypeInstallationInfo           m_TypeInstallationInfo;
     MetaDatas                      m_MetaDatas;
     Strings                        m_Annotations;
-    uint                           m_Flags = 0;
-    lang::Modifiers                m_Modifiers = 0;
     TemplateSpecArgumentRegistrer  m_TemplateSpecArgumentRegistrer;
     InheritanceRegistrer           m_Inheritance = nullptr;
+    lang::Modifiers                m_Modifiers = 0;
+    bool                           m_isFullSpec = false;
 };
 
 template<class T, class Top, class MostDerived, class Meta = PHANTOM_TYPENAME MetaTypeOf<T>::type>

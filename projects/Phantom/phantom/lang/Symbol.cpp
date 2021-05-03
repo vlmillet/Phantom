@@ -637,10 +637,6 @@ void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 
 void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
 {
-    if (m_strName == "ReviveSide" && a_pTo->getName() == "TurretComponentGD")
-    {
-        printf("");
-    }
     if (TemplateSpecialization* pSpec = getTemplateSpecialization())
     {
         return pSpec->getRelativeDecoratedName(a_pTo, a_Buf);

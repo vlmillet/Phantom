@@ -21,12 +21,10 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
-#include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
-#include <phantom/utils/SmallString.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -40,11 +38,9 @@ PHANTOM_PACKAGE("phantom.lang")
         PHANTOM_CLASS(TemplateSignature)
         {
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
-            using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using TemplateParameters = typedef_< phantom::lang::TemplateParameters>;
             this_()
-            .inherits<::phantom::lang::LanguageElement>()
         .public_()
             .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
         
@@ -56,7 +52,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::TemplateSignature *(LanguageElement*, const TemplateParameters&, bool, uint)>("Create", &_::Create)["false"]["PHANTOM_R_FLAG_NONE"]
             .staticMethod<::phantom::lang::TemplateSignature *(LanguageElement*, StringView, StringView, LanguageElement*, uint)>("Parse", &_::Parse)["PHANTOM_R_NONE"]
             .method<void()>("initialize", &_::initialize)
-            .method<TemplateSignature*() const, virtual_|override_>("asTemplateSignature", &_::asTemplateSignature)
+            .method<TemplateSignature*() const>("asTemplateSignature", &_::asTemplateSignature)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<TemplateParameter*(Type*, StringView)>("addTemplateValueParameter", &_::addTemplateValueParameter)
@@ -77,12 +73,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateParameter*(StringView) const>("getTemplateParameter", &_::getTemplateParameter)
             .method<bool(const LanguageElements&) const>("acceptsArguments", &_::acceptsArguments)
             .method<bool(Symbol*) const, virtual_>("isSame", &_::isSame)
-            .using_("LanguageElement::isSame")
             .method<bool(TemplateSignature*) const>("isSame", &_::isSame)
             .method<bool() const>("isVariadic", &_::isVariadic)
             .method<void(bool)>("setVariadic", &_::setVariadic)
             .method<TemplateSignature*(LanguageElement*, uint) const>("clone", &_::clone)["0"]
-            .method<void(StringBuffer&) const, virtual_|override_>("getName", &_::getName)
             .method<hash64() const, virtual_>("computeLocalHash", &_::computeLocalHash)
             ;
         }

@@ -193,7 +193,12 @@ void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
 {
     PHANTOM_ASSERT(a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate() == this);
     TemplateSpecialization* pEqual = getTemplateSpecialization(a_pTemplateSpecialization->getArguments());
-    PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule());
+
+    /// if you get an assert here, it problably mean you included a "<template>.hxx" in two or more different places
+    /// without <phantom/template-only-push> / <phantom/template-only-pop> enclosing
+
+    PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule(),
+                   "duplicate template specialization found");
     if (getNamespace()) /// template specialization belongs so same namespace as their template (even
                         /// if they can belong to different owners)
     {

@@ -38,7 +38,7 @@ namespace detail
 template<typename T, class Sign>
 struct MethodPointerSimplifier;
 PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, const LanguageElements& arguments,
-                                                      Symbol* a_pBody);
+                                                      Symbol* a_pBody, uint a_uiFlags);
 } // namespace detail
 } // namespace lang
 namespace lang
@@ -854,42 +854,6 @@ struct ClassTypeCtorOnCall
 } // namespace lang
 } // namespace phantom
 
-#if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__)), (__VA_ARGS__))
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#else
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))(__VA_ARGS__)
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#endif
-
-#define _PHNTM_MK_CLASS_T_SIGN_1(t0) t0 _PHNTM_0
-#define _PHNTM_MK_CLASS_T_SIGN_2(t0, t1) _PHNTM_MK_CLASS_T_SIGN_1(t0), t1 _PHNTM_1
-#define _PHNTM_MK_CLASS_T_SIGN_3(t0, t1, t2) _PHNTM_MK_CLASS_T_SIGN_2(t0, t1), t2 _PHNTM_2
-#define _PHNTM_MK_CLASS_T_SIGN_4(t0, t1, t2, t3) _PHNTM_MK_CLASS_T_SIGN_3(t0, t1, t2), t3 _PHNTM_3
-#define _PHNTM_MK_CLASS_T_SIGN_5(t0, t1, t2, t3, t4) _PHNTM_MK_CLASS_T_SIGN_4(t0, t1, t2, t3), t4 _PHNTM_4
-#define _PHNTM_MK_CLASS_T_SIGN_6(t0, t1, t2, t3, t4, t5) _PHNTM_MK_CLASS_T_SIGN_5(t0, t1, t2, t3, t4), t5 _PHNTM_5
-#define _PHNTM_MK_CLASS_T_SIGN_7(t0, t1, t2, t3, t4, t5, t6)                                                           \
-    _PHNTM_MK_CLASS_T_SIGN_6(t0, t1, t2, t3, t4, t5), t6 _PHNTM_6
-#define _PHNTM_MK_CLASS_T_SIGN_8(t0, t1, t2, t3, t4, t5, t6, t7)                                                       \
-    _PHNTM_MK_CLASS_T_SIGN_7(t0, t1, t2, t3, t4, t5, t6), t7 _PHNTM_7
-#define _PHNTM_MK_CLASS_T_SIGN_9(t0, t1, t2, t3, t4, t5, t6, t7, t8)                                                   \
-    _PHNTM_MK_CLASS_T_SIGN_8(t0, t1, t2, t3, t4, t5, t6, t7), t8 _PHNTM_8
-#define _PHNTM_MK_CLASS_T_SIGN_10(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9)                                              \
-    _PHNTM_MK_CLASS_T_SIGN_9(t0, t1, t2, t3, t4, t5, t6, t7, t8), t9 _PHNTM_9
-
-#define _PHNTM_MK_CLASS_T_ARGS_1 _PHNTM_0
-#define _PHNTM_MK_CLASS_T_ARGS_2 _PHNTM_MK_CLASS_T_SIGN_1, _PHNTM_1
-#define _PHNTM_MK_CLASS_T_ARGS_3 _PHNTM_MK_CLASS_T_SIGN_2, _PHNTM_2
-#define _PHNTM_MK_CLASS_T_ARGS_4 _PHNTM_MK_CLASS_T_SIGN_3, _PHNTM_3
-#define _PHNTM_MK_CLASS_T_ARGS_5 _PHNTM_MK_CLASS_T_SIGN_4, _PHNTM_4
-#define _PHNTM_MK_CLASS_T_ARGS_6 _PHNTM_MK_CLASS_T_SIGN_5, _PHNTM_5
-#define _PHNTM_MK_CLASS_T_ARGS_7 _PHNTM_MK_CLASS_T_SIGN_6, _PHNTM_6
-#define _PHNTM_MK_CLASS_T_ARGS_8 _PHNTM_MK_CLASS_T_SIGN_7, _PHNTM_7
-#define _PHNTM_MK_CLASS_T_ARGS_9 _PHNTM_MK_CLASS_T_SIGN_8, _PHNTM_8
-#define _PHNTM_MK_CLASS_T_ARGS_10 _PHNTM_MK_CLASS_T_SIGN_9, _PHNTM_9
-
 #define _PHNTM_ADL_WORKAROUND_VS // PHANTOM_IF_COMPILER_VISUAL_STUDIO(inline void
                                  // _PHNTM_TypeOf(...);)
 
@@ -974,7 +938,8 @@ auto _PHTNM_TemplateTypeOfH()
     using Meta = std::remove_pointer_t<MetaPtr>;
     if (auto inAnotherModule = phantom::lang::TypeOfUndefined<typename RegistrerType::_PHNTM_ThisType>::object())
     {
-        if (_PHTNM_moduleHasDependency(phantom::lang::detail::currentModule(), inAnotherModule->getModule()))
+        if (phantom::lang::detail::currentModule() == inAnotherModule->getModule() ||
+            _PHTNM_moduleHasDependency(phantom::lang::detail::currentModule(), inAnotherModule->getModule()))
             return static_cast<MetaPtr>(inAnotherModule);
     }
     static RegistrerType re(true);
@@ -1015,9 +980,9 @@ auto _PHTNM_TemplateTypeOfH()
 #define _PHANTOM_CLASS_FULL_SPEC(TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, RegName, ...)    \
     _PHANTOM_CLASS_COMMON(                                                                                             \
     (), TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, ,                                         \
-    PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {PHANTOM_REGISTER(ClassTypes) {                                                        \
-        auto PHANTOM_PP_CAT(RegName, _PHANTOM_) = _PHTNM_TemplateTypeOfH<PHANTOM_TYPENAME _PHNTM_Registrer<            \
-        phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::_PHNTM_User>();                     \
+    PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {PHANTOM_REGISTER(ClassTypes) {                                          \
+        static _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User PHANTOM_PP_CAT(RegName, _PHANTOM_);    \
+PHANTOM_PP_CAT(RegName, _PHANTOM_).this_()._PHNTM_setFullSpec();                                                       \
     }                                                                                                                  \
     })                                                                                                                \
     __VA_ARGS__)
@@ -1062,6 +1027,26 @@ auto _PHTNM_TemplateTypeOfH()
     _PHNTM_TEMPLATE_TYPEOF_BY_UNDEFINED((template<>), (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>)))
 
 #define _PHANTOM_CLASS_TS(TemplateTypes, TemplateParams, TemplateArgs, TypeName, StartAccess, ExtraCode)               \
+    PHANTOM_IF_NOT_TEMPLATE_ONLY(class _PHNTM_HERE; namespace {                                                        \
+        ::phantom::lang::TemplatePartialRegistrer PHANTOM_PP_CAT(_PHNTM_TplRegistrer_, __COUNTER__)(                   \
+        [](int id) -> phantom::StringView {                                                                            \
+            switch (id)                                                                                                \
+            {                                                                                                          \
+            case 0:                                                                                                    \
+                return phantom::lang::TypeInfosOf<_PHNTM_HERE>::object().scope();                                      \
+            case 1:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateTypes;                                                                 \
+            case 2:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateParams;                                                                \
+            case 3:                                                                                                    \
+                return PHANTOM_PP_QUOTE(TypeName);                                                                     \
+            case 4:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateArgs;                                                                  \
+            }                                                                                                          \
+            return phantom::StringView();                                                                              \
+        },                                                                                                             \
+        __FILE__, __LINE__, __COUNTER__);                                                                              \
+    })                                                                                                                 \
     _PHANTOM_CLASS_T_COMMON((), (template<PHANTOM_PP_MIX(TemplateTypes, TemplateParams)>),                             \
                             (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>), TypeName, StartAccess, ExtraCode)
 

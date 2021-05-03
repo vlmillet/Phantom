@@ -652,7 +652,7 @@ private:
     void    _uninstallNativeModule(Module* a_pModule);
 
     void _loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                   StringView a_strSourceFile, uint a_uiFlags);
+                   StringView a_strSourceFile, uint a_uiFlags, std::initializer_list<StringView> _dependencies);
     void _unloadMain();
 
     void _addModule(Module* a_pModule);

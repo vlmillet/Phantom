@@ -37,11 +37,11 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Modifiers, uint)>()({"modifiers","a_uiFlags"})["0"]["0"]
             .method<MemberAnonymousStruct*() const, virtual_|override_>("asMemberAnonymousStruct", &_::asMemberAnonymousStruct)
         
         .protected_()
-            .method<void(size_t&, size_t&) const, virtual_|override_>("computeSizeAndAlignment", &_::computeSizeAndAlignment)
+            .method<void(size_t&, size_t&) const, virtual_|override_>("computeSizeAndAlignment", &_::computeSizeAndAlignment)({"a_uiSize","a_uiAlignment"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

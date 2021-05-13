@@ -42,21 +42,21 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Template, ::phantom::lang::Placeholder>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
-            .constructor<void(StringView, TemplateSignature*)>()
-            .method<bool(LanguageElement*) const, virtual_|override_>("accepts", &_::accepts)
-            .method<bool(Type*) const, virtual_>("isA", &_::isA)
+            .constructor<void(StringView, TemplateSignature*)>()({"a_strName","a_pSignature"})
+            .method<bool(LanguageElement*) const, virtual_|override_>("accepts", &_::accepts)({"a_pLanguageElement"})
+            .method<bool(Type*) const, virtual_>("isA", &_::isA)({""})
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Placeholder*() const, virtual_|override_>("asPlaceholder", &_::asPlaceholder)
             .method<PlaceholderTemplate*() const, virtual_|override_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
-            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)["0"]
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
+            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)({"a_pOwner","a_Flags"})["0"]
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)({"a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"","a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)({"","a_Buf"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

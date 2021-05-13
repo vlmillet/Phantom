@@ -45,27 +45,27 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Type, ::phantom::lang::Placeholder>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
-            .method<bool(LanguageElement*) const, virtual_|override_>("accepts", &_::accepts)
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .method<bool(LanguageElement*) const, virtual_|override_>("accepts", &_::accepts)({"a_pLanguageElement"})
             .method<Symbol*() const, virtual_|override_>("asSymbol", &_::asSymbol)
             .method<Placeholder*() const, virtual_|override_>("asPlaceholder", &_::asPlaceholder)
             .method<Class*() const>("toClass", &_::toClass)
             .method<ClassType*() const>("toClassType", &_::toClassType)
             .method<PlaceholderType*() const, virtual_|override_>("asPlaceholderType", &_::asPlaceholderType)
-            .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)
+            .method<bool(Type*) const, virtual_|override_>("isA", &_::isA)({""})
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
-            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)["0"]
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
+            .method<Placeholder*(LanguageElement*, uint) const, virtual_|override_>("clone", &_::clone)({"a_pOwner","a_Flags"})["0"]
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)({"a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"","a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)({"","a_Buf"})
         
         .protected_()
             .field("m_pAsClass", &_::m_pAsClass)

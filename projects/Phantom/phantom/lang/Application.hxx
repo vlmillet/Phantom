@@ -59,7 +59,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
@@ -81,89 +81,89 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(), virtual_>("terminate", &_::terminate)
             .method<Source*() const>("getDefaultSource", &_::getDefaultSource)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(CppExpressionParser)>("setCppExpressionParser", &_::setCppExpressionParser)
+            // .method<void(CppExpressionParser)>("setCppExpressionParser", &_::setCppExpressionParser)({"a_Parser"})
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<CppExpressionParser()>("getCppExpressionParser", &_::getCppExpressionParser)
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(CppExpressionEvaluator)>("setCppExpressionEvaluator", &_::setCppExpressionEvaluator)
+            // .method<void(CppExpressionEvaluator)>("setCppExpressionEvaluator", &_::setCppExpressionEvaluator)({"a_Parser"})
             /// missing symbol(s) reflection () -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<CppExpressionEvaluator()>("getCppExpressionEvaluator", &_::getCppExpressionEvaluator)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<Expression*(StringView, LanguageElement*) const>("cppExpression", &_::cppExpression)
+            // .method<Expression*(StringView, LanguageElement*) const>("cppExpression", &_::cppExpression)({"a_strExp","a_pScope"})
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<Variant(Expression*) const>("evalExpression", &_::evalExpression)
-            .method<bool(StringView, Symbols&, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
-            .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)["nullptr"]
-            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
-            .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppType", &_::findCppType)["nullptr"]
-            .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)["nullptr"]
-            .method<Template*(StringView, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)["nullptr"]
-            .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClass", &_::findCppClass)["nullptr"]
-            .method<Symbol*(StringView, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)["nullptr"]
-            .method<Type*(StringView, StringBuffer*)>("findCppType", &_::findCppType)["nullptr"]
-            .method<Class*(StringView, StringBuffer*)>("findCppClass", &_::findCppClass)["nullptr"]
-            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)["nullptr"]
-            .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)["nullptr"]
-            .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)["nullptr"]
-            .method<Template*(StringView, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)["nullptr"]
-            .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)["nullptr"]
-            .method<Symbol*(StringView, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)["nullptr"]
-            .method<Type*(StringView, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)["nullptr"]
-            .method<Class*(StringView, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)["nullptr"]
+            // .method<Variant(Expression*) const>("evalExpression", &_::evalExpression)({"a_pExp"})
+            .method<bool(StringView, Symbols&, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)({"a_Text","a_Symbols","a_pLastError"})["nullptr"]
+            .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("findCppSymbols", &_::findCppSymbols)({"a_Text","a_Symbols","a_pScope","a_pLastError"})["nullptr"]
+            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppType", &_::findCppType)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Template*(StringView, StringBuffer*)>("findCppTemplate", &_::findCppTemplate)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClass", &_::findCppClass)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Symbol*(StringView, StringBuffer*)>("findCppSymbol", &_::findCppSymbol)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Type*(StringView, StringBuffer*)>("findCppType", &_::findCppType)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Class*(StringView, StringBuffer*)>("findCppClass", &_::findCppClass)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Type*(StringView, LanguageElement*, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Template*(StringView, LanguageElement*, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Template*(StringView, StringBuffer*)>("findCppTemplateCached", &_::findCppTemplateCached)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Class*(StringView, LanguageElement*, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<Symbol*(StringView, StringBuffer*)>("findCppSymbolCached", &_::findCppSymbolCached)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Type*(StringView, StringBuffer*)>("findCppTypeCached", &_::findCppTypeCached)({"a_Text","a_pLastError"})["nullptr"]
+            .method<Class*(StringView, StringBuffer*)>("findCppClassCached", &_::findCppClassCached)({"a_Text","a_pLastError"})["nullptr"]
             .method<Module*() const>("getMainModule", &_::getMainModule)
-            .method<Module*(StringView)>("getOrCreateModule", &_::getOrCreateModule)
+            .method<Module*(StringView)>("getOrCreateModule", &_::getOrCreateModule)({"a_name"})
             .method<Modules() const>("getNativeModules", &_::getNativeModules)
-            .method<Module*(StringView) const>("getSharedLibraryModule", &_::getSharedLibraryModule)
-            .method<Module*(const byte*, uint, byte*)>("nativeModuleFromStackContext", &_::nativeModuleFromStackContext)["1"]["nullptr"]
-            .method<Module*(const byte*)>("nativeModuleFromProgramCounter", &_::nativeModuleFromProgramCounter)
-            .method<bool(StringView)>("setDefaultExportPath", &_::setDefaultExportPath)
+            .method<Module*(StringView) const>("getSharedLibraryModule", &_::getSharedLibraryModule)({"a_strPath"})
+            .method<Module*(const byte*, uint, byte*)>("nativeModuleFromStackContext", &_::nativeModuleFromStackContext)({"ebp","stackLevel","epc"})["1"]["nullptr"]
+            .method<Module*(const byte*)>("nativeModuleFromProgramCounter", &_::nativeModuleFromProgramCounter)({"pc"})
+            .method<bool(StringView)>("setDefaultExportPath", &_::setDefaultExportPath)({"a_strPath"})
             .method<StringView() const>("getDefaultExportPath", &_::getDefaultExportPath)
-            .method<bool(StringView)>("setDefaultPluginPath", &_::setDefaultPluginPath)
+            .method<bool(StringView)>("setDefaultPluginPath", &_::setDefaultPluginPath)({"a_strPath"})
             .method<StringView() const>("getDefaultPluginPath", &_::getDefaultPluginPath)
-            .method<bool(StringView)>("addPluginPath", &_::addPluginPath)
-            .method<bool(StringView)>("removePluginPath", &_::removePluginPath)
-            .method<bool(StringView) const>("hasPluginPath", &_::hasPluginPath)
-            .method<bool(StringView)>("setDefaultBinaryPath", &_::setDefaultBinaryPath)
+            .method<bool(StringView)>("addPluginPath", &_::addPluginPath)({"a_strPath"})
+            .method<bool(StringView)>("removePluginPath", &_::removePluginPath)({"a_strPath"})
+            .method<bool(StringView) const>("hasPluginPath", &_::hasPluginPath)({"a_strPath"})
+            .method<bool(StringView)>("setDefaultBinaryPath", &_::setDefaultBinaryPath)({"a_strPath"})
             .method<StringView() const>("getDefaultBinaryPath", &_::getDefaultBinaryPath)
-            .method<bool(StringView)>("addBinaryPath", &_::addBinaryPath)
-            .method<bool(StringView)>("removeBinaryPath", &_::removeBinaryPath)
-            .method<bool(StringView) const>("hasBinaryPath", &_::hasBinaryPath)
-            .method<Type*(StringView) const>("getBuiltInType", &_::getBuiltInType)
+            .method<bool(StringView)>("addBinaryPath", &_::addBinaryPath)({"a_strPath"})
+            .method<bool(StringView)>("removeBinaryPath", &_::removeBinaryPath)({"a_strPath"})
+            .method<bool(StringView) const>("hasBinaryPath", &_::hasBinaryPath)({"a_strPath"})
+            .method<Type*(StringView) const>("getBuiltInType", &_::getBuiltInType)({"a_strDecoratedName"})
             .method<Types const&() const>("getBuiltInTypes", &_::getBuiltInTypes)
-            .method<Module*(StringView) const>("getModule", &_::getModule)
+            .method<Module*(StringView) const>("getModule", &_::getModule)({"a_strName"})
             .method<Modules const&() const>("getModules", &_::getModules)
             .method<Modules const&() const>("getStartupModules", &_::getStartupModules)
-            .method<Module*(size_t) const>("getModuleByHandle", &_::getModuleByHandle)
-            .method<Plugin*(StringView) const>("getPlugin", &_::getPlugin)
+            .method<Module*(size_t) const>("getModuleByHandle", &_::getModuleByHandle)({"a_ModuleHandle"})
+            .method<Plugin*(StringView) const>("getPlugin", &_::getPlugin)({"a_strName"})
             .method<Plugins const&() const>("getPlugins", &_::getPlugins)
-            .method<void(Plugin*)>("addPlugin", &_::addPlugin)
-            .method<void(Plugin*)>("removePlugin", &_::removePlugin)
-            .method<Module*(StringView)>("newModule", &_::newModule)
-            .method<void(Module*)>("deleteModule", &_::deleteModule)
-            .method<void(Module*)>("addModule", &_::addModule)
-            .method<void(Module*)>("removeModule", &_::removeModule)
-            .method<void(Sources&) const>("getSources", &_::getSources)
+            .method<void(Plugin*)>("addPlugin", &_::addPlugin)({"a_pPlugin"})
+            .method<void(Plugin*)>("removePlugin", &_::removePlugin)({"a_pPlugin"})
+            .method<Module*(StringView)>("newModule", &_::newModule)({"a_strName"})
+            .method<void(Module*)>("deleteModule", &_::deleteModule)({"a_pMod"})
+            .method<void(Module*)>("addModule", &_::addModule)({"a_pModule"})
+            .method<void(Module*)>("removeModule", &_::removeModule)({"a_pModule"})
+            .method<void(Sources&) const>("getSources", &_::getSources)({"a_Sources"})
             .method<const Strings&() const>("getSourcePaths", &_::getSourcePaths)
             .method<StringView() const>("getDefaultSourcePath", &_::getDefaultSourcePath)
-            .method<bool(StringView)>("setDefaultSourcePath", &_::setDefaultSourcePath)
-            .method<bool(StringView)>("addSourcePath", &_::addSourcePath)
-            .method<bool(StringView)>("removeSourcePath", &_::removeSourcePath)
+            .method<bool(StringView)>("setDefaultSourcePath", &_::setDefaultSourcePath)({"a_strPath"})
+            .method<bool(StringView)>("addSourcePath", &_::addSourcePath)({"a_strPath"})
+            .method<bool(StringView)>("removeSourcePath", &_::removeSourcePath)({"a_strPath"})
             .method<PackageFolder*() const>("rootPackageFolder", &_::rootPackageFolder)
-            .method<Source*(StringView) const>("getSource", &_::getSource)
-            .method<PackageFolder*(StringView) const>("getPackageFolder", &_::getPackageFolder)
-            .method<PackageFolder*(StringView)>("getOrCreatePackageFolder", &_::getOrCreatePackageFolder)
-            .method<String(StringView) const>("findPluginPath", &_::findPluginPath)
-            .method<void(StringView, Strings&) const>("findPlugins", &_::findPlugins)
+            .method<Source*(StringView) const>("getSource", &_::getSource)({"a_strUniqueName"})
+            .method<PackageFolder*(StringView) const>("getPackageFolder", &_::getPackageFolder)({"a_strUniqueName"})
+            .method<PackageFolder*(StringView)>("getOrCreatePackageFolder", &_::getOrCreatePackageFolder)({"a_strUniqueName"})
+            .method<String(StringView) const>("findPluginPath", &_::findPluginPath)({"a_strName"})
+            .method<void(StringView, Strings&) const>("findPlugins", &_::findPlugins)({"a_strPath","a_PluginNames"})
             .method<Strings const&() const>("getPluginPaths", &_::getPluginPaths)
-            .method<Type*(hash64) const>("findType", &_::findType)
-            .method<Symbol*(StringView, LanguageElement*) const>("findSymbol", &_::findSymbol)["nullptr"]
-            .method<Type*(StringView, LanguageElement*) const>("findType", &_::findType)["nullptr"]
-            .method<void(Classes&, ::phantom::lang::Class *, bool) const>("findClasses", &_::findClasses)["nullptr"]["false"]
-            .method<Undefineds*(StringView) const>("getUndefineds", &_::getUndefineds)
-            .method<Undefineds*(StringView)>("undefineds", &_::undefineds)
+            .method<Type*(hash64) const>("findType", &_::findType)({"a_Hash"})
+            .method<Symbol*(StringView, LanguageElement*) const>("findSymbol", &_::findSymbol)({"a_strUniqueName","a_pScope"})["nullptr"]
+            .method<Type*(StringView, LanguageElement*) const>("findType", &_::findType)({"a_strUniqueName","a_pScope"})["nullptr"]
+            .method<void(Classes&, ::phantom::lang::Class *, bool) const>("findClasses", &_::findClasses)({"a_Classes","a_pBaseClass","a_bDefaultInstanciable"})["nullptr"]["false"]
+            .method<Undefineds*(StringView) const>("getUndefineds", &_::getUndefineds)({"a_TypeName"})
+            .method<Undefineds*(StringView)>("undefineds", &_::undefineds)({"a_TypeName"})
             .method<Constant*() const>("getNullptr", &_::getNullptr)
             .method<Type*() const>("getAuto", &_::getAuto)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)({"a_Buf"})
             /// missing symbol(s) reflection (phantom::MemoryContext) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<MemoryContext&()>("getMemoryContext", &_::getMemoryContext)
             .method<CustomAllocator const*() const, virtual_|override_>("getAllocator", &_::getAllocator)

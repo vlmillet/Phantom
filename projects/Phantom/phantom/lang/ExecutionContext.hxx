@@ -33,7 +33,7 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             this_()
         .public_()
-            .staticMethod<void(ExecutionContext*)>("Push", &_::Push)
+            .staticMethod<void(ExecutionContext*)>("Push", &_::Push)({"a_pExecutionContext"})
             .staticMethod<void()>("Pop", &_::Pop)
             .staticMethod<::phantom::lang::ExecutionContext *()>("Current", &_::Current)
             .constructor<void()>()
@@ -41,21 +41,21 @@ PHANTOM_PACKAGE("phantom.lang")
                 {"e_max_calls",_::e_max_calls}})
             .end()
             .method<void*()>("resultPointer", &_::resultPointer)
-            .method<void(void*)>("pushResultPointer", &_::pushResultPointer)
+            .method<void(void*)>("pushResultPointer", &_::pushResultPointer)({"a_pAddress"})
             .method<void()>("popResultPointer", &_::popResultPointer)
             /// missing symbol(s) reflection (phantom::lang::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Evaluable*, Type*, void*)>("pushTempDestruction", &_::pushTempDestruction)
+            // .method<void(Evaluable*, Type*, void*)>("pushTempDestruction", &_::pushTempDestruction)({"a_pScope","a_pType","a_pBuffer"})
             /// missing symbol(s) reflection (phantom::lang::Evaluable) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Evaluable*)>("releaseTemporaries", &_::releaseTemporaries)
+            // .method<void(Evaluable*)>("releaseTemporaries", &_::releaseTemporaries)({"a_pScope"})
             .method<void()>("releaseTemporaries", &_::releaseTemporaries)
-            .method<bool(Subroutine*, void**, size_t), pure_virtual>("call", &_::call)
+            .method<bool(Subroutine*, void**, size_t), pure_virtual>("call", &_::call)({"a_pSubroutine","a_ppArgs","a_uiCount"})
             /// missing symbol(s) reflection (phantom::lang::Statement) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Statement*), pure_virtual>("setNextStatement", &_::setNextStatement)
+            // .method<void(Statement*), pure_virtual>("setNextStatement", &_::setNextStatement)({"a_pStatement"})
             .method<byte*() const, pure_virtual>("getStackPointer", &_::getStackPointer)
             .method<byte*() const, pure_virtual>("getBasePointer", &_::getBasePointer)
             .method<void*() const, pure_virtual>("getReturnAddress", &_::getReturnAddress)
             .method<byte*() const, pure_virtual>("addressOfThis", &_::addressOfThis)
-            .method<byte*(LocalVariable*) const, pure_virtual>("addressOf", &_::addressOf)
+            .method<byte*(LocalVariable*) const, pure_virtual>("addressOf", &_::addressOf)({"a_pLocalVariable"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

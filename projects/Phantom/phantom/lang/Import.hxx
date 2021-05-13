@@ -43,13 +43,13 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Source*, StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Source*, StringView, Modifiers, uint)>()({"a_pSource","a_strSymbolName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<::phantom::lang::Import *() const, virtual_>("asImport", &_::asImport)
             .method<Source*() const>("getImportedSource", &_::getImportedSource)

@@ -45,15 +45,15 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
             .typedef_<SetFunctor>("SetFunctor")
             .typedef_<GetFunctor>("GetFunctor")
-            .constructor<void(Type*, StringView, uint)>()["PHANTOM_R_FILTER_PROPERTY"]
-            .constructor<void(Type*, StringView, GetFunctor const&, SetFunctor const&, uint)>()["PHANTOM_R_FILTER_PROPERTY"]
-            .constructor<void(Type*, StringView, GetFunctor const&, uint)>()["PHANTOM_R_FILTER_PROPERTY"]
+            .constructor<void(Type*, StringView, uint)>()({"a_pType","a_Name","a_uiFilterMask"})["PHANTOM_R_FILTER_PROPERTY"]
+            .constructor<void(Type*, StringView, GetFunctor const&, SetFunctor const&, uint)>()({"a_pType","a_Name","a_Get","a_Set","a_uiFilterMask"})["PHANTOM_R_FILTER_PROPERTY"]
+            .constructor<void(Type*, StringView, GetFunctor const&, uint)>()({"a_pType","a_Name","a_Get","a_uiFilterMask"})["PHANTOM_R_FILTER_PROPERTY"]
             .method<SetFunctor const&() const>("getSet", &_::getSet)
             .method<GetFunctor const&() const>("getGet", &_::getGet)
-            .method<void(SetFunctor const&)>("setSet", &_::setSet)
-            .method<void(GetFunctor const&)>("setGet", &_::setGet)
-            .method<void(void const*, void*) const, virtual_|override_>("getValue", &_::getValue)
-            .method<void(void*, void const*) const, virtual_|override_>("setValue", &_::setValue)
+            .method<void(SetFunctor const&)>("setSet", &_::setSet)({"a_Set"})
+            .method<void(GetFunctor const&)>("setGet", &_::setGet)({"a_Get"})
+            .method<void(void const*, void*) const, virtual_|override_>("getValue", &_::getValue)({"a_pObject","a_pDest"})
+            .method<void(void*, void const*) const, virtual_|override_>("setValue", &_::setValue)({"a_pObject","a_pSrc"})
             .method<bool() const, virtual_|override_>("isWrittable", &_::isWrittable)
             .method<bool() const, virtual_|override_>("isReadable", &_::isReadable)
             ;

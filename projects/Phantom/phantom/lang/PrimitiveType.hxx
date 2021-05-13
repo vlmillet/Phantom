@@ -44,7 +44,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Type>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
@@ -55,17 +55,17 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
             .method<bool() const, virtual_|override_>("isSignedInteger", &_::isSignedInteger)
             .method<bool() const, virtual_|override_>("isUnsignedInteger", &_::isUnsignedInteger)
-            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
-            .method<::phantom::lang::Constant *(LanguageElement*, void*, StringView, PrimitiveType*) const, virtual_>("createConstant", &_::createConstant)["\"\""]["nullptr"]
-            .method<Constant*(void*, StringView, PrimitiveType*) const>("createConstant", &_::createConstant)["\"\""]["nullptr"]
+            .method<void(StringBuffer&) const, virtual_|override_>("getUniqueName", &_::getUniqueName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getDecoratedName", &_::getDecoratedName)({"a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)({"a_Buf"})
+            .method<::phantom::lang::Constant *(LanguageElement*, void*, StringView, PrimitiveType*) const, virtual_>("createConstant", &_::createConstant)({"a_pOwner","a_pSrc","a_strName","a_pPrimitiveType"})["\"\""]["nullptr"]
+            .method<Constant*(void*, StringView, PrimitiveType*) const>("createConstant", &_::createConstant)({"a_pSrc","a_strName","a_pPrimitiveType"})["\"\""]["nullptr"]
         
         .protected_()
-            .constructor<void(TypeKind)>()
-            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind)>()({"a_eTypeKind"})
+            .constructor<void(TypeKind, Type*, StringView, size_t, size_t, Modifiers, uint)>()({"a_eTypeKind","a_pUnderlyingType","a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()({"a_eTypeKind","a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})["0"]["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

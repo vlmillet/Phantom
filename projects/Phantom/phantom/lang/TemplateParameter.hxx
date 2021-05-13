@@ -43,29 +43,29 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Placeholder*, LanguageElement*, uint)>()["nullptr"]["0"]
+            .constructor<void(Placeholder*, LanguageElement*, uint)>()({"a_pPlaceholder","a_pDefaultArgument","a_uiFlags"})["nullptr"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<TemplateParameter*() const, virtual_|override_>("asTemplateParameter", &_::asTemplateParameter)
             .method<size_t() const>("getIndex", &_::getIndex)
-            .method<TemplateParameter*(LanguageElement*) const>("clone", &_::clone)
+            .method<TemplateParameter*(LanguageElement*) const>("clone", &_::clone)({"a_pOwner"})
             .method<TemplateSignature*() const>("getTemplateSignature", &_::getTemplateSignature)
             .method<Template*() const>("getTemplate", &_::getTemplate)
             .method<TemplateSpecialization*() const>("getTemplateSpecialization", &_::getTemplateSpecialization)
             .method<LanguageElement*() const>("getDefaultArgument", &_::getDefaultArgument)
-            .method<void(LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)
+            .method<void(LanguageElement*)>("setDefaultArgument", &_::setDefaultArgument)({"a_pElement"})
             .method<Placeholder*() const>("getPlaceholder", &_::getPlaceholder)
-            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
-            .method<bool(LanguageElement*) const>("acceptsArgument", &_::acceptsArgument)
+            .method<bool(LanguageElement*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)({"a_pLanguageElement","a_Score","a_Deductions"})
+            .method<bool(LanguageElement*) const>("acceptsArgument", &_::acceptsArgument)({"a_pLanguageElement"})
             .method<bool() const>("isPack", &_::isPack)
-            .method<TemplateParameter*(LanguageElement*, uint) const>("clone", &_::clone)["0"]
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeName", &_::getRelativeName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
+            .method<TemplateParameter*(LanguageElement*, uint) const>("clone", &_::clone)({"a_pOwner","a_Flags"})["0"]
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeName", &_::getRelativeName)({"a_pTo","a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"a_pTo","a_Buf"})
         
         .protected_()
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)

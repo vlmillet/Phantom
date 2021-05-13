@@ -26,7 +26,7 @@ PHANTOM_PACKAGE("phantom.utils")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Variables) { this_().variable("crc64_tab", &crc64_tab); }
-        PHANTOM_REGISTER(Functions) { this_().function<uint64_t(uint64_t, const unsigned char*, uint64_t)>("crc64", crc64);}
+        PHANTOM_REGISTER(Functions) { this_().function<uint64_t(uint64_t, const unsigned char*, uint64_t)>("crc64", crc64)({"crc","s","l"});}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("crc64")
 PHANTOM_END("phantom.utils")

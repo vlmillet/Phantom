@@ -27,7 +27,7 @@ PHANTOM_PACKAGE("phantom.thread")
         PHANTOM_STRUCT_T((class), (MutexT), LockGuard)
         {
             this_()
-            .PHANTOM_T constructor<void(MutexT&)>()
+            .PHANTOM_T constructor<void(MutexT&)>()({"_m"})
             ;
         }
     PHANTOM_END("LockGuard")

@@ -30,9 +30,9 @@ PHANTOM_PACKAGE("phantom.thread")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
         .public_()
-            .constructor<void(uint, int)>()["0"]["0"]
+            .constructor<void(uint, int)>()({"initialValue","unused"})["0"]["0"]
             .method<void()>("wait", &_::wait)
-            .method<void(int)>("signal", &_::signal)["1"]
+            .method<void(int)>("signal", &_::signal)({"count"})["1"]
             .method<int() const>("getWaitingCountRelaxed", &_::getWaitingCountRelaxed)
             ;
         }
@@ -40,10 +40,10 @@ PHANTOM_PACKAGE("phantom.thread")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
         .public_()
-            .constructor<void(int, int)>()["0"]["10000"]
+            .constructor<void(int, int)>()({"initialCount","spinCount"})["0"]["10000"]
             .method<bool()>("tryWait", &_::tryWait)
             .method<void()>("wait", &_::wait)
-            .method<void(int)>("signal", &_::signal)["1"]
+            .method<void(int)>("signal", &_::signal)({"count"})["1"]
             .method<int() const>("getWaitingCountRelaxed", &_::getWaitingCountRelaxed)
             ;
         }
@@ -51,10 +51,10 @@ PHANTOM_PACKAGE("phantom.thread")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
         .public_()
-            .constructor<void(int, int)>()["0"]["0"]
+            .constructor<void(int, int)>()({"initialCount","unused"})["0"]["0"]
             .method<bool()>("tryWait", &_::tryWait)
             .method<void()>("wait", &_::wait)
-            .method<void(int)>("signal", &_::signal)["1"]
+            .method<void(int)>("signal", &_::signal)({"count"})["1"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

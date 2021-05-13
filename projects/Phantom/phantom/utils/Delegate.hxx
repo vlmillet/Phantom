@@ -43,8 +43,8 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<void()>("clear", &_::clear)
         
         .public_()
-            .method<bool(const OpaqueDelegate&) const>("operator==", &_::operator==)
-            .method<bool(const OpaqueDelegate&) const>("operator!=", &_::operator!=)
+            .method<bool(const OpaqueDelegate&) const>("operator==", &_::operator==)({"other"})
+            .method<bool(const OpaqueDelegate&) const>("operator!=", &_::operator!=)({"other"})
             .method<bool() const>("operator!", &_::operator!)
             .method<bool() const>("empty", &_::empty)
             .method<bool() const>("operator bool", &_::operator notypedef<bool>)
@@ -56,13 +56,13 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<FunctorID() const>("getID", &_::getID)
         
         .public_()
-            .method<OpaqueDelegate&(const OpaqueDelegate&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            .method<bool(const OpaqueDelegate&) const>("operator<", &_::operator<)
-            .method<bool(const OpaqueDelegate&) const>("operator>", &_::operator>)
-            .constructor<void(const OpaqueDelegate&)>()
+            .method<OpaqueDelegate&(const OpaqueDelegate&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)({"right"})
+            .method<bool(const OpaqueDelegate&) const>("operator<", &_::operator<)({"right"})
+            .method<bool(const OpaqueDelegate&) const>("operator>", &_::operator>)({"right"})
+            .constructor<void(const OpaqueDelegate&)>()({"right"})
         
         .protected_()
-            .method<void(const OpaqueDelegate&)>("setOpaqueFrom", &_::setOpaqueFrom)
+            .method<void(const OpaqueDelegate&)>("setOpaqueFrom", &_::setOpaqueFrom)({"right"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
@@ -94,7 +94,7 @@ PHANTOM_PACKAGE("phantom.utils")
             // .PHANTOM_T method<::phantom::DelegateDetail::DelegateGenericClass *() const>("getThis", &_::getThis)
             .PHANTOM_T method<t_GenericMFP() const>("getMFPtr", &_::getMFPtr)
             .PHANTOM_T method<t_StaticFP() const>("getStaticFP", &_::getStaticFP)
-            .PHANTOM_T method<bool(t_StaticFP)>("contains", &_::contains)
+            .PHANTOM_T method<bool(t_StaticFP)>("contains", &_::contains)({"funcptr"})
             ;
         }
     PHANTOM_END("Delegate")
@@ -111,20 +111,20 @@ PHANTOM_PACKAGE("phantom.utils")
         PHANTOM_CLASS_TVS((class), (R), (class, Params), (R(Params...)), Delegate)
         {
             this_()
-            .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())
+            .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())({"ps"})
             .PHANTOM_T method<FunctorID() const>("getID", &_::getID)
         
         .public_()
             /// missing symbol(s) reflection (phantom::Delegate::FuncPtrT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(phantom::Delegate<type-parameter-0-0 (type-parameter-0-1...)>::FuncPtrT)>("operator==", &_::operator==)
+            // .PHANTOM_T method<bool(phantom::Delegate<type-parameter-0-0 (type-parameter-0-1...)>::FuncPtrT)>("operator==", &_::operator==)({"funcptr"})
             /// missing symbol(s) reflection (phantom::Delegate::FuncPtrT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .PHANTOM_T method<bool(phantom::Delegate<type-parameter-0-0 (type-parameter-0-1...)>::FuncPtrT)>("operator!=", &_::operator!=)
+            // .PHANTOM_T method<bool(phantom::Delegate<type-parameter-0-0 (type-parameter-0-1...)>::FuncPtrT)>("operator!=", &_::operator!=)({"funcptr"})
             .PHANTOM_T method<bool() const>("operator!", &_::operator!)
             .PHANTOM_T method<bool() const>("operator bool", &_::operator notypedef<bool>)
             .PHANTOM_T method<bool() const>("empty", &_::empty)
             .PHANTOM_T method<void()>("clear", &_::clear)
             .PHANTOM_T method<const ::phantom::OpaqueDelegate &() const>("getOpaque", &_::getOpaque)
-            .PHANTOM_T method<void(const OpaqueDelegate&)>("setOpaque", &_::setOpaque)
+            .PHANTOM_T method<void(const OpaqueDelegate&)>("setOpaque", &_::setOpaque)({"any"})
             ;
         }
     PHANTOM_END("Delegate")

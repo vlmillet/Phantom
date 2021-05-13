@@ -42,21 +42,21 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::ClassType>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .protected_()
-            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()
+            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()({"a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})
         
         .public_()
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<Type*() const, virtual_|override_>("asPOD", &_::asPOD)
             .method<Structure*() const, virtual_|override_>("asStructure", &_::asStructure)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
-            .method<void(void*, void const*) const, virtual_|override_>("copyConstruct", &_::copyConstruct)
+            .method<void(void*, void const*) const, virtual_|override_>("copyConstruct", &_::copyConstruct)({"a_pDest","a_pSrc"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

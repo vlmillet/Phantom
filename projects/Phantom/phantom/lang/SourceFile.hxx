@@ -44,21 +44,21 @@ PHANTOM_PACKAGE("phantom.lang")
             .inherits<::phantom::lang::SourceStream>()
         
         .public_()
-            .staticMethod<::phantom::lang::SourceFile *(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)
+            .staticMethod<::phantom::lang::SourceFile *(StringView, bool)>("CreateOnDisk", &_::CreateOnDisk)({"a_strPath","a_bOverwrite"})
         
         .public_()
-            .constructor<void(StringView)>()
+            .constructor<void(StringView)>()({"a_strAbsolutePath"})
             .method<SourceFile*(), virtual_|override_>("asFile", &_::asFile)
             .method<bool() const, virtual_>("exists", &_::exists)
             .method<bool()>("deleteFile", &_::deleteFile)
-            .method<void(String&)>("read", &_::read)
-            .method<void(StringView)>("write", &_::write)
+            .method<void(String&)>("read", &_::read)({"a_Out"})
+            .method<void(StringView)>("write", &_::write)({"a_In"})
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<time_t() const, virtual_|override_>("getLastChangeTime", &_::getLastChangeTime)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<::std::basic_istream<char> *(), virtual_|override_>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::std::basic_istream<char> *), virtual_|override_>("destroyInputStream", &_::destroyInputStream)
+            // .method<void(::std::basic_istream<char> *), virtual_|override_>("destroyInputStream", &_::destroyInputStream)({""})
             .method<SourceFile*() const, virtual_|override_>("clone", &_::clone)
             ;
         }

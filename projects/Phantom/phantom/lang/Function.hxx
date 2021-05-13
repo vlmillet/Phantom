@@ -42,7 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Subroutine>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
         
@@ -51,13 +51,13 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(StringView, ABI, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
+            // .constructor<void(StringView, ABI, Modifiers, uint)>()({"a_strName","a_eABI","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(StringView, Signature*, Modifiers, uint)>()({"a_strName","a_pSignature","a_Modifiers","a_uiFlags"})["0"]["0"]
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()["0"]["0"]
+            // .constructor<void(StringView, Signature*, ABI, Modifiers, uint)>()({"a_strName","a_pSignature","a_eABI","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<Function*() const, virtual_|override_>("asFunction", &_::asFunction)
-            .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)
-            .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)
+            .method<void(void*, void**) const, virtual_|override_>("invoke", &_::invoke)({"","a_pArgs"})
+            .method<void(void*, void**, void*) const, virtual_|override_>("invoke", &_::invoke)({"","a_pArgs","a_pReturnAddress"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

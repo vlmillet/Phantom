@@ -40,27 +40,27 @@ PHANTOM_PACKAGE("phantom.utils")
             using StringViews = typedef_< phantom::StringViews>;
             using Strings = typedef_< phantom::Strings>;
             this_()
-            .staticMethod<void(String&, StringView, StringView)>("ReplaceAll", &_::ReplaceAll)
-            .staticMethod<void(Strings&, StringView, const char*, bool)>("Split", &_::Split)["true"]
-            .staticMethod<void(StringViews&, StringView, const char*, bool)>("Split", &_::Split)["true"]
-            .staticMethod<StringView(StringView)>("RemoveExtraBlanks", &_::RemoveExtraBlanks)
-            .staticMethod<bool(char)>("IsBlank", &_::IsBlank)
-            .staticMethod<String(float, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(double, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(char, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(sint8, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(uint8, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(sint16, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(uint16, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(sint32, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(uint32, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(longlong, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(ulonglong, const char*)>("ToString", &_::ToString)["nullptr"]
+            .staticMethod<void(String&, StringView, StringView)>("ReplaceAll", &_::ReplaceAll)({"source","from","to"})
+            .staticMethod<void(Strings&, StringView, const char*, bool)>("Split", &_::Split)({"a_Words","a_Str","a_Separators","a_bRemoveEmptyTokens"})["true"]
+            .staticMethod<void(StringViews&, StringView, const char*, bool)>("Split", &_::Split)({"a_Words","a_Str","a_Separators","a_bRemoveEmptyTokens"})["true"]
+            .staticMethod<StringView(StringView)>("RemoveExtraBlanks", &_::RemoveExtraBlanks)({"_str"})
+            .staticMethod<bool(char)>("IsBlank", &_::IsBlank)({"a_c"})
+            .staticMethod<String(float, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(double, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(char, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(sint8, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(uint8, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(sint16, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(uint16, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(sint32, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(uint32, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(longlong, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(ulonglong, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .staticMethod<String(sint64, const char*)>("ToString", &_::ToString)["nullptr"]
+            // .staticMethod<String(sint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .staticMethod<String(uint64, const char*)>("ToString", &_::ToString)["nullptr"]
-            .staticMethod<String(long double, const char*)>("ToString", &_::ToString)["nullptr"]
+            // .staticMethod<String(uint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(long double, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

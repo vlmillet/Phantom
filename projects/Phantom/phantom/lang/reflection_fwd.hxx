@@ -417,7 +417,7 @@ PHANTOM_PACKAGE("phantom.lang")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<CallDelegate>("CallDelegate"); }
-        PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate);}
+        PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate)({"","",""});}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection_fwd")
 PHANTOM_END("phantom.lang")

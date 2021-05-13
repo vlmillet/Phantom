@@ -36,9 +36,9 @@ PHANTOM_PACKAGE("phantom")
         {
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .constructor<void(), default_>()
-            .constructor<void(void*, Delegate<void (void*)>)>()
-            .constructor<void(UserData&&)>()
-            .method<UserData&(UserData&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
+            .constructor<void(void*, Delegate<void (void*)>)>()({"a_pData","a_Destroy"})
+            .constructor<void(UserData&&)>()({"a_Temp"})
+            .method<UserData&(UserData&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)({"a_Temp"})
             .method<void*() const>("getData", &_::getData)
             ;
         }

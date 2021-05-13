@@ -42,25 +42,25 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::SequentialContainerClass>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
-            .method<const void*(void const*) const, virtual_>("data", &_::data)
-            .method<void*(void*) const, virtual_>("data", &_::data)
-            .method<void(void*, size_t) const, virtual_>("resize", &_::resize)
-            .method<const void*(void const*, size_t) const, virtual_|override_>("referenceAt", &_::referenceAt)
-            .method<void*(void*, size_t) const, virtual_|override_>("referenceAt", &_::referenceAt)
+            .method<const void*(void const*) const, virtual_>("data", &_::data)({"a_pContainer"})
+            .method<void*(void*) const, virtual_>("data", &_::data)({"a_pContainer"})
+            .method<void(void*, size_t) const, virtual_>("resize", &_::resize)({"a_pContainer","a_Size"})
+            .method<const void*(void const*, size_t) const, virtual_|override_>("referenceAt", &_::referenceAt)({"a_pContainer","a_uiIndex"})
+            .method<void*(void*, size_t) const, virtual_|override_>("referenceAt", &_::referenceAt)({"a_pContainer","a_uiIndex"})
         
         .protected_()
-            .constructor<void(TypeKind, StringView, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()
-            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()
+            .constructor<void(TypeKind, StringView, Modifiers, uint)>()({"a_TypeKind","a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()({"a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})
+            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()({"a_TypeKind","a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

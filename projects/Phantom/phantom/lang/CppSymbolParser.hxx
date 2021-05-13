@@ -39,8 +39,8 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
             this_()
-            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
-            .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("parse", &_::parse)["nullptr"]
+            .method<Symbol*(StringView, LanguageElement*, StringBuffer*)>("parse", &_::parse)({"a_Text","a_pScope","a_pLastError"})["nullptr"]
+            .method<bool(StringView, Symbols&, LanguageElement*, StringBuffer*)>("parse", &_::parse)({"a_Text","a_Symbols","a_pScope","a_pLastError"})["nullptr"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

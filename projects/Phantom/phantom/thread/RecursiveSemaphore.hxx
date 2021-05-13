@@ -36,7 +36,7 @@ PHANTOM_PACKAGE("phantom.thread")
             this_()(PHANTOM_R_FLAG_NO_COPY)
         .public_()
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
-            .PHANTOM_T constructor<void(int)>()["10000"]
+            .PHANTOM_T constructor<void(int)>()({"_spinCount"})["10000"]
             )
             .PHANTOM_T method<void()>("lock", &_::lock)
             .PHANTOM_T method<bool()>("tryLock", &_::tryLock)

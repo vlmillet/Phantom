@@ -43,10 +43,10 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<::phantom::lang::PlaceholderConstant *() const, virtual_>("asPlaceholderConstant", &_::asPlaceholderConstant)
             .method<::phantom::lang::PlaceholderClass *() const, virtual_>("asPlaceholderClass", &_::asPlaceholderClass)
             .method<::phantom::lang::PlaceholderTemplate *() const, virtual_>("asPlaceholderTemplate", &_::asPlaceholderTemplate)
-            .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)
-            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
-            .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)
-            .method<::phantom::lang::Placeholder *(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)["0"]
+            .method<hash64(LanguageElement*) const>("getRelativeHash", &_::getRelativeHash)({"a_pTo"})
+            .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"","a_Buf"})
+            .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)({""})
+            .method<::phantom::lang::Placeholder *(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)({"a_pElem","a_Flags"})["0"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

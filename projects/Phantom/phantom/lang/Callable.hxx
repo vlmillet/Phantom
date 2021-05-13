@@ -36,12 +36,12 @@ PHANTOM_PACKAGE("phantom.lang")
         {
             this_()
         .public_()
-            .method<void(void**) const, pure_virtual>("call", &_::call)
-            .method<void(void**, void*) const, pure_virtual>("call", &_::call)
-            .method<void(void*, void**) const, pure_virtual>("invoke", &_::invoke)
-            .method<void(void*, void**, void*) const, pure_virtual>("invoke", &_::invoke)
+            .method<void(void**) const, pure_virtual>("call", &_::call)({"a_pArgs"})
+            .method<void(void**, void*) const, pure_virtual>("call", &_::call)({"a_pArgs","a_pReturnAddress"})
+            .method<void(void*, void**) const, pure_virtual>("invoke", &_::invoke)({"a_pThis","a_pArgs"})
+            .method<void(void*, void**, void*) const, pure_virtual>("invoke", &_::invoke)({"a_pThis","a_pArgs","a_pReturnAddress"})
             .method<uint64_t() const, pure_virtual>("getUniqueID", &_::getUniqueID)
-            .method<void(void**, SmallVector<Variant, 10>&) const, pure_virtual>("saveArgs", &_::saveArgs)
+            .method<void(void**, SmallVector<Variant, 10>&) const, pure_virtual>("saveArgs", &_::saveArgs)({"a_pArgs","a_variants"})
             .method<void(), virtual_>("onDisconnect", &_::onDisconnect)
             ;
         }

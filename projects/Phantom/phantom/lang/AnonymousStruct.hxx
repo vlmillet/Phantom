@@ -37,7 +37,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Modifiers, uint)>()({"modifiers","a_uiFlags"})["0"]["0"]
             .method<AnonymousStruct*() const, virtual_|override_>("asAnonymousStruct", &_::asAnonymousStruct)
             ;
         }

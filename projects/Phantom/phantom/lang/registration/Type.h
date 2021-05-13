@@ -62,6 +62,7 @@ struct PHANTOM_EXPORT_PHANTOM MemberBuilder
     MetaDatas              metaDatas;
     Strings                annotations;
     StringViews            defaultArguments;
+    StringViews            paramNames;
     SmallVector<ArgFwd, 4> fwdArgs;
     uint                   filter;
     bool                   isSymbol;
@@ -112,6 +113,7 @@ protected:
     void operator()(StringView a_Annot);
     void operator()(uint a_Flags);
     void operator()(lang::Modifiers a_Modifiers);
+    void operator()(std::initializer_list<const char*> a_ParamNames);
 
     void addMember(lang::Symbol* a_pOwner, MemberBuilder&& a_Member);
     void addMember(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args, uint a_UserInt,
@@ -212,6 +214,12 @@ struct TypeBuilderT : TypeBuilderBase
     MostDerived& operator()(uint a_Flags)
     {
         BaseType::operator()(a_Flags);
+        return static_cast<MostDerived&>(*this);
+    }
+
+    MostDerived& operator()(std::initializer_list<const char*> a_ParamNames)
+    {
+        BaseType::operator()(a_ParamNames);
         return static_cast<MostDerived&>(*this);
     }
 

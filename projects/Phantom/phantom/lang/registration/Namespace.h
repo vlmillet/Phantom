@@ -150,6 +150,8 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         return *this;
     }
 
+    NamespaceBuilder& operator()(std::initializer_list<const char*> a_ParamNames);
+
     lang::Namespace* _PHNTM_getMeta() const { return _PHNTM_pNamespace; }
 
     lang::Source*    _PHNTM_getSource();

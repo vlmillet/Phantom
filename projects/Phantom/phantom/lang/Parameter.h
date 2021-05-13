@@ -24,6 +24,9 @@ class PHANTOM_EXPORT_PHANTOM Parameter : public LocalVariable
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
     friend class Signature;
+    friend struct TypeBuilderBase;
+    friend struct MemberBuilder;
+    friend struct NamespaceBuilder;
 
     PHANTOM_DECLARE_META_CLASS(Parameter);
 
@@ -96,13 +99,17 @@ public:
 
     Parameter* cloneImpl(LanguageElement* a_pOwner) const override;
 
+    StringView getNativeName() const { return m_NativeName; }
+
 private:
     void setNativeDefaultArgumentStr(StringView a_DefaultArgument);
+    void setNativeName(StringView a_Name);
 
 protected:
     mutable Expression* m_pDefaultArgumentExpression = nullptr;
 
 private:
+    mutable StringView m_NativeName;
     mutable StringView m_NativeDefaultArgumentStr;
 };
 

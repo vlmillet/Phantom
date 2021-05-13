@@ -85,6 +85,12 @@ void MemberBuilder::_apply(lang::Subroutine* a_pSubroutine) const
     _apply(static_cast<lang::Symbol*>(a_pSubroutine));
     if (defaultArguments.size())
         a_pSubroutine->setNativeDefaultArgumentStrings(defaultArguments);
+    auto& params = a_pSubroutine->getParameters();
+    auto  paramNameIt = paramNames.begin();
+    for (size_t i = 0; i < std::min(params.size(), paramNames.size()); ++i)
+    {
+        params[i]->setNativeName(*paramNameIt++);
+    }
 }
 void MemberBuilder::_apply(lang::Property* a_pProperty) const
 {
@@ -273,6 +279,17 @@ void TypeBuilderBase::operator()(lang::MetaDatas&& a_MD)
     }
 }
 
+void TypeBuilderBase::operator()(std::initializer_list<const char*> a_ParamNames)
+{
+    PHANTOM_ASSERT(!m_Members.empty() && m_Members.back().isFunc, "last declaration does not accept parameter names");
+    m_Members.back().paramNames.resize(a_ParamNames.size());
+    auto it = a_ParamNames.begin();
+    for (size_t i = 0; i < a_ParamNames.size(); ++i)
+    {
+        m_Members.back().paramNames[i] = *it++;
+    }
+}
+
 void TypeBuilderBase::operator()(uint a_Flags)
 {
     m_TypeInstallationInfo.type->addFlags(a_Flags);
@@ -360,6 +377,18 @@ void NamespaceBuilder::_addVariable(Variable* a_pVar)
     _PHNTM_pNamespace->addVariable(a_pVar);
     _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pVar);
     m_Symbols.push_back(a_pVar);
+}
+
+phantom::lang::NamespaceBuilder& NamespaceBuilder::operator()(std::initializer_list<const char*> a_ParamNames)
+{
+    PHANTOM_ASSERT(!m_Symbols.empty() && m_Symbols.back()->asSubroutine());
+    auto& params = static_cast<Subroutine*>(m_Symbols.back())->getParameters();
+    auto  paramNameIt = a_ParamNames.begin();
+    for (size_t i = 0; i < std::min(params.size(), a_ParamNames.size()); ++i)
+    {
+        params[i]->setNativeName(*paramNameIt++);
+    }
+    return *this;
 }
 
 NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType)

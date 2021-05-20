@@ -197,9 +197,10 @@ void FunctionType::getQualifiedDecoratedName(StringBuffer& a_Buf) const
 {
     m_pReturnType->getQualifiedDecoratedName(a_Buf);
     a_Buf += '(';
+    size_t c = 0;
     for (Type* pType : m_ParameterTypes)
     {
-        if (pType != m_ParameterTypes[0])
+        if (c++)
             a_Buf += ',';
         pType->getQualifiedDecoratedName(a_Buf);
     }
@@ -228,9 +229,10 @@ void FunctionType::getQualifiedName(StringBuffer& a_Buf) const
 {
     m_pReturnType->getQualifiedName(a_Buf);
     a_Buf += '(';
+    size_t c = 0;
     for (Type* pType : m_ParameterTypes)
     {
-        if (pType != m_ParameterTypes[0])
+        if (c++)
             a_Buf += ',';
         pType->getQualifiedName(a_Buf);
     }
@@ -259,9 +261,10 @@ void FunctionType::getDecoratedName(StringBuffer& a_Buf) const
 {
     m_pReturnType->getDecoratedName(a_Buf);
     a_Buf += '(';
+    size_t c = 0;
     for (Type* pType : m_ParameterTypes)
     {
-        if (pType != m_ParameterTypes[0])
+        if (c++)
             a_Buf += ',';
         pType->getDecoratedName(a_Buf);
     }
@@ -290,9 +293,10 @@ void FunctionType::getUniqueName(StringBuffer& a_Buf) const
 {
     m_pReturnType->getUniqueName(a_Buf);
     a_Buf += '(';
+    size_t c = 0;
     for (Type* pType : m_ParameterTypes)
     {
-        if (pType != m_ParameterTypes[0])
+        if (c++)
             a_Buf += ',';
         pType->getUniqueName(a_Buf);
     }

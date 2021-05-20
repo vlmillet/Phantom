@@ -533,7 +533,9 @@ bool Source::hasImported(Symbol* a_pSource) const
 
 Module* Source::getModule() const
 {
-    return getPackage()->getModule();
+    if (auto package = getPackage())
+        return package->getModule();
+    return nullptr;
 }
 
 } // namespace lang

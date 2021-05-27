@@ -463,6 +463,8 @@ function Phantom_add_project(Name, Vars)
 		filter {"configurations:Debug or DebugOpt"}
 			runtime "Debug"
 		filter {}
+
+		cppdialect "C++17"
 	
 		Phantom_current_project_ = Name
 		
@@ -558,6 +560,7 @@ function Phantom_add_project(Name, Vars)
 		
 		filter { "action:vs*", "platforms:Win32 or x64" }
 			buildoptions {"/bigobj /vmg /vmv"}
+			buildoptions {"/Zc:__cplusplus"} -- ensure __cplusplus holds the most recent value
 			-- editandcontinue requires IncrementalLink
 			if(Vars["Link"] == "Static") then
 				flags { "NoIncrementalLink" }

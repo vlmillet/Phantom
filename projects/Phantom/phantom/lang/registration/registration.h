@@ -150,6 +150,8 @@ struct ScopeBuilderT;
 
 using TypeInfosGetter = TypeInfos const& (*)();
 
+struct ReleasableBuilder;
+
 struct PHANTOM_EXPORT_PHANTOM PhantomBuilderBase
 {
 public:
@@ -157,17 +159,41 @@ public:
 
 	virtual ~PhantomBuilderBase()
 	{
-		for (PhantomBuilderBase* pType : _PHNTM_SubRegistrers)
+		for (PhantomBuilderBase* pType : _PHNTM_SubBuilders)
 		{
 			phantom::deleteVirtual(pType);
 		}
 	}
+    virtual ReleasableBuilder* AsReleasable() { return nullptr; }
+
+	void addSubBuilder(PhantomBuilderBase* a_pSub);
+	void removeAndDestroySubBuilder(PhantomBuilderBase* a_pSub);
 
 protected:
-    void addSubPhantomBuilderBase(PhantomBuilderBase* a_pSub);
+    SmallVector<PhantomBuilderBase*> _PHNTM_SubBuilders;
+};
+
+using BuilderReleaser = Delegate<void()>;
+
+struct PHANTOM_EXPORT_PHANTOM ReleasableBuilder : public PhantomBuilderBase
+{
+    ReleasableBuilder(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop) 
+        : m_Releaser(_releaser ? _releaser : BuilderReleaser(this, &ReleasableBuilder::_releaseFromTop))
+        , m_pTop(a_pTop)
+    {
+	}
+
+	ReleasableBuilder* AsReleasable() override { return this; }
+	void release();
 
 private:
-    SmallVector<PhantomBuilderBase*> _PHNTM_SubRegistrers;
+	void _releaseFromTop();
+
+private:
+	BuilderReleaser m_Releaser;
+    PhantomBuilderBase* m_pTop = nullptr;
+    bool m_ReleaseDelayed = false;
+	bool m_Released = false;
 };
 
 template<class EndableReg>

@@ -346,6 +346,7 @@ void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, 
         PHANTOM_ASSERT(pNamingScope->asScope(), "'%.*s' is not a valid C++ scope (class, namespace, etc...)",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_ScopeName));
         /// Only add type if it's not a template instance
+
         pNamingScope->asScope()->addType(a_pType);
     }
 }
@@ -416,8 +417,10 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 
     bool alreadyRegistered = false;
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-    for (auto pTii : info->m_TypeInstallationInfos)
+    size_t count = info->m_TypeInstallationInfos.size();
+    for (size_t i = 0; i < count; ++i)
     {
+        auto pTii = info->m_TypeInstallationInfos[i];
         if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
         {
             PHANTOM_ASSERT(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM),
@@ -431,8 +434,10 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 #else
     if (a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM))
     {
-        for (auto pTii : info->m_TypeInstallationInfos)
+        size_t count = info->m_TypeInstallationInfos.size();
+        for (size_t i = 0; i < count; ++i)
         {
+            auto pTii = info->m_TypeInstallationInfos[i];
             if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
             {
                 alreadyRegistered = true;
@@ -673,8 +678,6 @@ void DynamicCppInitializerH::installModules()
     stepTypeInstallation(TypeInstallationStep::Inheritance);
     PHANTOM_LOG_NATIVE_REFLECTION("class members installation...");
     stepTypeInstallation(TypeInstallationStep::Members);
-    PHANTOM_LOG_NATIVE_REFLECTION("statecharts installation...");
-    stepTypeInstallation(TypeInstallationStep::Installed);
 
     m_bPhantomInstalled = true; // at this point we are able to use phantom core features
 
@@ -728,6 +731,10 @@ void DynamicCppInitializerH::installModules()
             it->m_pModule->getOnLoadFunc()();
         lang::Application::Get()->_moduleAdded(it->m_pModule);
     }
+
+    // TODO : we release member memory in a thread to avoid stalling the main thread
+    PHANTOM_LOG_NATIVE_REFLECTION("releasing some type builder memory...");
+    stepTypeInstallation(TypeInstallationStep::Release);
 }
 
 lang::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(StringView name)

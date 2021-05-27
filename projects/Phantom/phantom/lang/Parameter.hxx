@@ -52,7 +52,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .constructor<void(Modifiers, uint)>()({"a_Modifiers","a_uiFlags"})["0"]["0"]
             .constructor<void(Type*, Modifiers, uint)>()({"a_pValueType","a_Modifiers","a_uiFlags"})["0"]["0"]
             .constructor<void(Type*, StringView, Modifiers, uint)>()({"a_pValueType","a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
-            .method<void(StringView)>("setDefinitionName", &_::setDefinitionName)({"a_strName"})
             .method<bool() const>("hasDefaultArgument", &_::hasDefaultArgument)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*() const>("getDefaultArgumentExpression", &_::getDefaultArgumentExpression)
@@ -62,7 +61,6 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<bool() const>("isEllipsis", &_::isEllipsis)
             .method<Parameter*() const, virtual_|override_>("asParameter", &_::asParameter)
             .method<Parameter*(LanguageElement*) const, virtual_|override_>("cloneImpl", &_::cloneImpl)({"a_pOwner"})
-            .method<StringView() const>("getNativeName", &_::getNativeName)
         
         .protected_()
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files

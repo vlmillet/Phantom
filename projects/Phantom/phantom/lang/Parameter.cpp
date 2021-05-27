@@ -44,16 +44,6 @@ void Parameter::setNativeDefaultArgumentStr(StringView a_DefaultArgument)
     m_NativeDefaultArgumentStr = a_DefaultArgument;
 }
 
-void Parameter::setNativeName(StringView a_ParamName)
-{
-    m_NativeName = a_ParamName;
-}
-
-void Parameter::setDefinitionName(StringView a_strName)
-{
-    setName(a_strName);
-}
-
 bool Parameter::hasDefaultArgument() const
 {
     return m_NativeDefaultArgumentStr.size() || m_pDefaultArgumentExpression != nullptr;

@@ -16,6 +16,7 @@
 #include "LValueReference.h"
 #include "MemberAnonymousStruct.h"
 #include "MemberAnonymousUnion.h"
+#include "Module.h"
 #include "Namespace.h"
 #include "Pointer.h"
 #include "Property.h"
@@ -23,6 +24,7 @@
 #include "Signature.h"
 #include "TemplateSpecialization.h"
 #include "Variable.h"
+#include "phantom/detail/core_internal.h"
 #include "registration/registration.h"
 /* *********************************************** */
 namespace phantom
@@ -707,6 +709,9 @@ void ClassType::_onNativeElementsAccessImpl()
     phantom::TypeInstallationDelegate func = m_OnDemandMembersFunc;
     m_OnDemandMembersFunc = nullptr;
     func(phantom::TypeInstallationStep::Members);
+    // TODO : check we have not released the module registration infos yet
+    if (dynamic_initializer_()->getModuleRegistrationInfo(getModule()->getName())->m_bInstalled)
+        func(phantom::TypeInstallationStep::Release);
     if (!wasActive)
         phantom::lang::detail::popInstallation();
     if (!pCurrentSource)

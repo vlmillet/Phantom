@@ -29,8 +29,8 @@ public:
     using BaseType = ClassTypeBuilderT<T, Top, MostDerived>;
     using TopType = Top;
 
-    UnionBuilderT(Top* a_pTop, phantom::lang::TemplateSpecArgumentRegistrer a_TArgs)
-        : BaseType(lang::Access::Public, a_pTop, a_TArgs)
+    UnionBuilderT(BuilderReleaser _releaser, Top* a_pTop, phantom::lang::TemplateSpecArgumentRegistrer a_TArgs)
+        : BaseType(_releaser, lang::Access::Public, a_pTop, a_TArgs)
     {
         m_pUnion = this->_PHNTM_getMeta();
     }
@@ -43,8 +43,8 @@ template<class Top, class MostDerived>
 struct UnionBuilderT<AnonymousUnionProxy, Top, MostDerived>
     : MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, Top>
 {
-    UnionBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer)
-        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, Top>(a_pTop)
+    UnionBuilderT(BuilderReleaser _releaser, Top* a_pTop, TemplateSpecArgumentRegistrer)
+        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, Top>(_releaser, a_pTop)
     {
     }
 };
@@ -53,7 +53,10 @@ template<class T, class Top>
 struct DefaultUnionBuilderT : UnionBuilderT<T, Top, DefaultUnionBuilderT<T, Top>>
 {
     using BaseType = UnionBuilderT<T, Top, DefaultUnionBuilderT<T, Top>>;
-    DefaultUnionBuilderT(Top* a_pTop, Access, TemplateSpecArgumentRegistrer a_TArgs) : BaseType(a_pTop, a_TArgs) {}
+    DefaultUnionBuilderT(BuilderReleaser _releaser, Top* a_pTop, Access, TemplateSpecArgumentRegistrer a_TArgs)
+        : BaseType(_releaser, a_pTop, a_TArgs)
+    {
+    }
 };
 
 } // namespace lang

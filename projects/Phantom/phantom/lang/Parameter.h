@@ -49,14 +49,6 @@ public:
     ~Parameter() override {}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the definition name of this parameter (by opposition to declaration name).
-    ///
-    /// \param  a_strName   The name.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setDefinitionName(StringView a_strName);
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets if this parameter has a default argument defined (either as a native string, or
     /// an expression).
     ///
@@ -99,17 +91,13 @@ public:
 
     Parameter* cloneImpl(LanguageElement* a_pOwner) const override;
 
-    StringView getNativeName() const { return m_NativeName; }
-
 private:
     void setNativeDefaultArgumentStr(StringView a_DefaultArgument);
-    void setNativeName(StringView a_Name);
 
 protected:
     mutable Expression* m_pDefaultArgumentExpression = nullptr;
 
 private:
-    mutable StringView m_NativeName;
     mutable StringView m_NativeDefaultArgumentStr;
 };
 

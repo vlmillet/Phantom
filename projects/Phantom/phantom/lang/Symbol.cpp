@@ -687,7 +687,7 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
 
 void Symbol::setName(StringView a_strName)
 {
-    PHANTOM_ASSERT(getOwner() == nullptr,
+    PHANTOM_ASSERT(m_strName.empty() || getOwner() == nullptr,
                    "changing symbol name while attached to an owner leads to undefined behavior");
     m_strName = a_strName;
 }

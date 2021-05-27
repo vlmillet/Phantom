@@ -125,8 +125,9 @@ public:
     using BaseType = ClassTypeBuilderT<T, Top, MostDerived>;
     using TopType = Top;
 
-    ClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer a_Arguments)
-        : BaseType(a_StartAccess, a_pTop, a_Arguments)
+    ClassBuilderT(BuilderReleaser _releaser, Top* a_pTop, lang::Access a_StartAccess,
+                  TemplateSpecArgumentRegistrer a_Arguments)
+        : BaseType(_releaser, a_StartAccess, a_pTop, a_Arguments)
     {
         m_pClass = this->_PHNTM_getMeta();
     }
@@ -178,8 +179,8 @@ template<class Top, class MostDerived>
 struct ClassBuilderT<AnonymousStructProxy, Top, MostDerived>
     : MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, Top>
 {
-    ClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer)
-        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, Top>(a_pTop)
+    ClassBuilderT(BuilderReleaser _releaser, Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer)
+        : MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, Top>(_releaser, a_pTop)
     {
     }
 };
@@ -188,8 +189,9 @@ template<class T, class Top>
 struct DefaultClassBuilderT : ClassBuilderT<T, Top, DefaultClassBuilderT<T, Top>>
 {
     using BaseType = ClassBuilderT<T, Top, DefaultClassBuilderT<T, Top>>;
-    DefaultClassBuilderT(Top* a_pTop, lang::Access a_StartAccess, TemplateSpecArgumentRegistrer a_TArgs)
-        : BaseType(a_pTop, a_StartAccess, a_TArgs)
+    DefaultClassBuilderT(BuilderReleaser _releaser, Top* a_pTop, lang::Access a_StartAccess,
+                         TemplateSpecArgumentRegistrer a_TArgs)
+        : BaseType(_releaser, a_pTop, a_StartAccess, a_TArgs)
     {
     }
 };

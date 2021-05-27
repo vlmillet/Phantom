@@ -111,19 +111,12 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     using ScopeBuilderT<MostDerived>::struct_;
     using ScopeBuilderT<MostDerived>::union_;
 
-    ClassTypeBuilderT(lang::Access a_StartAccess, Top* a_pTop, TemplateSpecArgumentRegistrer a_TplArguments)
-        : BaseType(a_pTop, a_TplArguments)
+    ClassTypeBuilderT(BuilderReleaser _releaser, lang::Access a_StartAccess, Top* a_pTop,
+                      TemplateSpecArgumentRegistrer a_TplArguments)
+        : BaseType(_releaser, a_pTop, a_TplArguments)
     {
         m_pClassType = this->_PHNTM_getMeta();
         m_pClassType->setDefaultAccess(a_StartAccess);
-    }
-
-    virtual ~ClassTypeBuilderT()
-    {
-        for (auto pSec : m_MASections)
-        {
-            phantom::deleteVirtual(pSec);
-        }
     }
 
     template<class ConstantT>
@@ -789,7 +782,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                                  "AddOnType must derived from PhantomBuilderBase");
         auto pType =
         phantom::new_<AddOnType<T, MostDerived>>(static_cast<MostDerived*>(this), std::forward<Args>(a_Args)...);
-        this->addSubPhantomBuilderBase(pType);
+        this->addSubBuilder(pType);
         return *pType;
     }
 
@@ -799,7 +792,6 @@ private:
     };
     SmallVector<MemberRegistrer, 10> m_TemplateParams;
     lang::LanguageElements           m_TemplateArguments;
-    SmallVector<PhantomBuilderBase*> m_MASections;
     lang::Access                     m_CurrentAccess;
 };
 
@@ -833,8 +825,14 @@ struct ClassTypeCtorOnCall
     T& operator()()
     {
         if (!place)
-            place.construct(m_pTop, m_Access, m_SpecReg);
+            place.construct(Delegate<void()>(this, &ClassTypeCtorOnCall<T>::release), m_pTop, m_Access, m_SpecReg);
         return *place;
+    }
+
+    void release()
+    {
+        if (place)
+            place.destroy();
     }
 
     StaticGlobal<T>  place;
@@ -926,8 +924,8 @@ struct ClassTypeCtorOnCall
     _PHNTM_ADL_WORKAROUND_VS                                                                                           \
     __VA_ARGS__                                                                                                        \
     PHANTOM_PP_IDENTITY TemplateSign1 inline void                                                                      \
-    _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(                          \
-    phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
+                        _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(      \
+    PHANTOM_MAYBE_UNUSED phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
 PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep);
 

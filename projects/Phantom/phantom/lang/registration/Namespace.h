@@ -233,10 +233,18 @@ struct NamespaceBuilderConstructOnCall
         decltype(namespace_)&                                                           this_ = namespace_;            \
     } PHANTOM_PP_CAT(_PHNTM_i_, Counter);                                                                              \
     }                                                                                                                  \
-    void PHANTOM_PP_CAT(_PHNTM_, Counter)::_PHNTM_processUserCode(phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
+    void PHANTOM_PP_CAT(_PHNTM_, Counter)::_PHNTM_processUserCode(                                                     \
+    PHANTOM_MAYBE_UNUSED phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
 #define _PHNTM_REGISTER_0()                                                                                            \
     _PHNTM_REGISTER_X(Start, Namespaces, Enums, ClassTypes, PostClassTypes, TemplateSignatures, Typedefs,              \
                       PostTypedefs, PostTypes, Variables, PostVariables, Functions, End)
 
 #define PHANTOM_NAMESPACE PHANTOM_REGISTER()
+
+#define PHANTOM_STATIC_INIT(Type, Name, /*Value*/...)                                                                  \
+    namespace                                                                                                          \
+    {                                                                                                                  \
+    PHANTOM_PP_REMOVE_PARENS(Type) Name;                                                                               \
+    }                                                                                                                  \
+    PHANTOM_REGISTER(End) { Name = __VA_ARGS__; }\

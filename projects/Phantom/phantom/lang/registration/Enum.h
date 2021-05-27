@@ -35,7 +35,10 @@ public:
     using TopType = Top;
     using BuilderProxyType = PHANTOM_TYPENAME Top::_PHNTM_Proxy;
 
-    EnumBuilderT(Top* a_pTop) : BaseType(a_pTop, nullptr) { m_pEnum = this->_PHNTM_getMeta(); }
+    EnumBuilderT(BuilderReleaser _releaser, Top* a_pTop) : BaseType(_releaser, a_pTop, nullptr)
+    {
+        m_pEnum = this->_PHNTM_getMeta();
+    }
 
     MostDerived& value(StringView a_Name, T a_Val)
     {

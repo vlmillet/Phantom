@@ -89,7 +89,7 @@ void MemberBuilder::_apply(lang::Subroutine* a_pSubroutine) const
     auto  paramNameIt = paramNames.begin();
     for (size_t i = 0; i < std::min(params.size(), paramNames.size()); ++i)
     {
-        params[i]->setNativeName(*paramNameIt++);
+        params[i]->setName(*paramNameIt++);
     }
 }
 void MemberBuilder::_apply(lang::Property* a_pProperty) const
@@ -109,9 +109,10 @@ Class* MemberBuilder::class_() const
     return static_cast<lang::Class*>(owner);
 }
 
-TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
-                                 TemplateSpecArgumentRegistrer a_Arguments)
-    : m_pNamingScope(a_pNamingScope),
+TypeBuilderBase::TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Source* a_pSource,
+                                 Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments)
+    : ReleasableBuilder(_releaser, a_pTop),
+      m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, a_pSource, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
       m_TemplateSpecArgumentRegistrer(a_Arguments)
 {
@@ -124,9 +125,11 @@ TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope,
             a_pNamingScope->addType(a_pType);
     }
 }
-TypeBuilderBase::TypeBuilderBase(lang::Scope* a_pOwner, Scope* a_pNamingScope, Type* a_pType,
-                                 TemplateSpecArgumentRegistrer a_Arguments)
-    : m_pNamingScope(a_pNamingScope),
+
+TypeBuilderBase::TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Scope* a_pOwner,
+                                 Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments)
+    : ReleasableBuilder(_releaser, a_pTop),
+      m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, nullptr, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
       m_TemplateSpecArgumentRegistrer(a_Arguments)
 {
@@ -209,6 +212,11 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             if (auto pClass = pClassType->asClass())
                 pClass->finalizeNative();
         }
+    }
+    break;
+    case TypeInstallationStep::Release:
+    {
+        release();
     }
     break;
     default:
@@ -386,7 +394,7 @@ phantom::lang::NamespaceBuilder& NamespaceBuilder::operator()(std::initializer_l
     auto  paramNameIt = a_ParamNames.begin();
     for (size_t i = 0; i < std::min(params.size(), a_ParamNames.size()); ++i)
     {
-        params[i]->setNativeName(*paramNameIt++);
+        params[i]->setName(*paramNameIt++);
     }
     return *this;
 }
@@ -542,9 +550,15 @@ phantom::lang::SymbolWrapper& SymbolWrapper::operator()(StringView a_Annot)
     return *this;
 }
 
-void PhantomBuilderBase::addSubPhantomBuilderBase(PhantomBuilderBase* a_pSub)
+void PhantomBuilderBase::addSubBuilder(PhantomBuilderBase* a_pSub)
 {
-    _PHNTM_SubRegistrers.push_back(a_pSub);
+    _PHNTM_SubBuilders.push_back(a_pSub);
+}
+
+void PhantomBuilderBase::removeAndDestroySubBuilder(PhantomBuilderBase* a_pSub)
+{
+    phantom::deleteVirtual(a_pSub);
+    _PHNTM_SubBuilders.erase_unsorted(std::find(_PHNTM_SubBuilders.begin(), _PHNTM_SubBuilders.end(), a_pSub));
 }
 
 TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
@@ -1024,6 +1038,37 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
             PHANTOM_ASSERT(sym);
             params[params.size() - defaultParams.size() + i]->setDefaultArgument(sym);
         }
+    }
+}
+
+void ReleasableBuilder::release()
+{
+    PHANTOM_ASSERT(!m_Released);
+    if (m_Releaser)
+    {
+        if (_PHNTM_SubBuilders.empty())
+        {
+            m_Releaser();
+            m_Released = true;
+        }
+        else
+        {
+            m_ReleaseDelayed = true;
+        }
+    }
+    else
+    {
+        m_Released = true;
+    }
+}
+
+void ReleasableBuilder::_releaseFromTop()
+{
+    m_pTop->removeAndDestroySubBuilder(this);
+    if (auto topAsReleasable = m_pTop->AsReleasable())
+    {
+        if (topAsReleasable->m_ReleaseDelayed)
+            topAsReleasable->release();
     }
 }
 

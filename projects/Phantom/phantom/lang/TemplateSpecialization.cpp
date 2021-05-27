@@ -261,7 +261,6 @@ void TemplateSpecialization::setDefaultArgument(StringView a_strParameterName, L
 void TemplateSpecialization::setDefaultArgument(size_t index, LanguageElement* a_pElement)
 {
     PHANTOM_ASSERT(index < getArgumentCount());
-    PHANTOM_ASSERT(isFull() && isNative(), "can only set default arguments for native full specializations");
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(getDefaultArgument(index) == nullptr, "default argument already defined");
     if (m_pDefaultArguments == nullptr)

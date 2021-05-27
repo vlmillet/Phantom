@@ -86,7 +86,7 @@ private:
     void _apply(lang::Property* a_pProperty) const;
 };
 
-struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
+struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : ReleasableBuilder
 {
     _PHNTM_REG_FRIENDS;
 
@@ -95,9 +95,10 @@ public:
     bool _PHNTM_isFullSpec() const { return m_isFullSpec; }
 
 protected:
-    TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
-                    TemplateSpecArgumentRegistrer a_Arguments);
-    TypeBuilderBase(lang::Scope*, Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
+    TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Source* a_pSource,
+                    Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
+    TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Scope*, Scope* a_pNamingScope,
+                    Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
 
     virtual void _installFunc(lang::Type* a_pType, TypeInstallationStep a_Step);
     void         _registerTypeInstallationInfo(TypeInstallationInfo* a_pTii);
@@ -158,11 +159,14 @@ struct TypeBuilderT : TypeBuilderBase
     using SelfType = TypeBuilderT<T, Top, MostDerived, Meta>;
     using ReflectedType = T;
 
-    TypeBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
-        : TypeBuilderBase(a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
-                          _createMetaType(a_pTop->_PHNTM_getOwnerScope(),
-                                          std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
-                          a_Arguments),
+    TypeBuilderT(BuilderReleaser _releaser, Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
+        : TypeBuilderBase(
+          _releaser,
+          std::is_base_of<PhantomBuilderBase, Top>::value ? reinterpret_cast<PhantomBuilderBase*>(a_pTop) : nullptr,
+          a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
+          _createMetaType(a_pTop->_PHNTM_getOwnerScope(),
+                          std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
+          a_Arguments),
           m_pTop(a_pTop)
     {
         _installRtti();

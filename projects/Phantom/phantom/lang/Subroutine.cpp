@@ -246,8 +246,8 @@ bool Subroutine::buildBlock()
 
 void Subroutine::setBlockBuilder(BlockBuilder a_BlockBuilder)
 {
-    PHANTOM_ASSERT(!m_BlockBuilder);
-    if (testFlags(PHANTOM_R_FLAG_COMPILATION_REQUESTED))
+    PHANTOM_ASSERT(!m_BlockBuilder && a_BlockBuilder || !a_BlockBuilder && m_BlockBuilder);
+    if (testFlags(PHANTOM_R_FLAG_COMPILATION_REQUESTED) && a_BlockBuilder)
     {
         Block* pBlock = getBlock();
         PHANTOM_ASSERT(pBlock);

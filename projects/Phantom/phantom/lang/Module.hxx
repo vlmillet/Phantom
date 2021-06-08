@@ -28,6 +28,7 @@
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/ArrayView.hxx>
 #include <phantom/utils/Signal.hxx>
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/StringView.hxx>
@@ -86,7 +87,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Package*(StringView) const>("getPackage", &_::getPackage)({"a_strName"})
             .method<Package*(StringView)>("getOrCreatePackage", &_::getOrCreatePackage)({"a_strName"})
             .method<Package*(StringView)>("newPackage", &_::newPackage)({"a_strName"})
-            .method<Modules const&() const>("getDependencies", &_::getDependencies)
+            .method<ArrayView<Module*>() const>("getDependencies", &_::getDependencies)
             .method<void(Module*)>("addDependency", &_::addDependency)({"a_pModule"})
             .method<void(Module*)>("removeDependency", &_::removeDependency)({"a_pModule"})
             .method<bool(Module*) const>("hasDependency", &_::hasDependency)({"a_pModule"})

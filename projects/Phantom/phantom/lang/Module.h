@@ -219,7 +219,10 @@ public:
     /// \brief  Gets the dependencies of this module.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Modules const& getDependencies() const { return m_Dependencies; }
+    ArrayView<Module*> getDependencies() const
+    {
+        return ArrayView<Module*>(m_Dependencies.data(), m_Dependencies.size());
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add a dependency to this module.
@@ -359,6 +362,8 @@ private:
 
     void _registerType(hash64 a_Hash, Type* a_pType);
     void _unregisterType(hash64 a_Hash, Type* a_pType);
+    void _addDependencyRecursive(Module* a_pDependency);
+    void _removeDependencyRecursive(Module* a_pDependency);
 
 private: // to ensure they won't be accessible
     using LanguageElement::New;
@@ -373,7 +378,9 @@ private:
     size_t                  m_ImageSize = 0;
     StringBuffer            m_LibraryFullName;
     StringBuffer            m_DeclarationCppFullName;
-    Modules                 m_Dependencies;
+    SmallSet<Module*, 8>    m_Dependencies;
+    SmallSet<Module*, 32>   m_Dependencies_Recursive;
+    SmallSet<Module*, 32>   m_Dependents;
     Package*                m_pAnonymousPackage = nullptr;
     Source*                 m_pAnonymousSource = nullptr;
     Plugin*                 m_pPlugin = nullptr;

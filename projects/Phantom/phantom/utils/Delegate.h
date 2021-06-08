@@ -35,7 +35,7 @@ HAUNT_ON class OpaqueDelegate
 {
     HAUNT_OFF protected : HAUNT_OFF typedef void (DelegateDetail::DelegateGenericClass::*MFPtr)();
     HAUNT_OFF DelegateDetail::DelegateGenericClass* m_pThis;
-    HAUNT_OFF MFPtr m_pFunction;
+    HAUNT_OFF MFPtr                                 m_pFunction;
 
 public:
     OpaqueDelegate() : m_pThis(0), m_pFunction(0){};
@@ -78,6 +78,9 @@ public:
     }
     inline bool operator>(const OpaqueDelegate& right) const { return right.operator<(*this); }
     OpaqueDelegate(const OpaqueDelegate& right) : m_pThis(right.m_pThis), m_pFunction(right.m_pFunction) {}
+
+    ///  disclaimer : do this only if you know what you are doing
+    void setThis(void* a_pThis) { m_pThis = reinterpret_cast<DelegateDetail::DelegateGenericClass*>(a_pThis); }
 
 protected:
     void setOpaqueFrom(const OpaqueDelegate& right)
@@ -423,6 +426,7 @@ public:
     inline bool           empty() const { return !m_Closure; }
     void                  clear() { m_Closure.clear(); }
     const OpaqueDelegate& getOpaque() const { return m_Closure; }
+    OpaqueDelegate&       getOpaque() { return m_Closure; }
     void                  setOpaque(const OpaqueDelegate& any) { m_Closure.copyFrom(this, any); }
 
 private:

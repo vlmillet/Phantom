@@ -60,6 +60,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<bool(const OpaqueDelegate&) const>("operator<", &_::operator<)({"right"})
             .method<bool(const OpaqueDelegate&) const>("operator>", &_::operator>)({"right"})
             .constructor<void(const OpaqueDelegate&)>()({"right"})
+            .method<void(void*)>("setThis", &_::setThis)({"a_pThis"})
         
         .protected_()
             .method<void(const OpaqueDelegate&)>("setOpaqueFrom", &_::setOpaqueFrom)({"right"})
@@ -124,6 +125,7 @@ PHANTOM_PACKAGE("phantom.utils")
             .PHANTOM_T method<bool() const>("empty", &_::empty)
             .PHANTOM_T method<void()>("clear", &_::clear)
             .PHANTOM_T method<const ::phantom::OpaqueDelegate &() const>("getOpaque", &_::getOpaque)
+            .PHANTOM_T method<OpaqueDelegate&()>("getOpaque", &_::getOpaque)
             .PHANTOM_T method<void(const OpaqueDelegate&)>("setOpaque", &_::setOpaque)({"any"})
             ;
         }

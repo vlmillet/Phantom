@@ -51,7 +51,7 @@ public:
 
     bool operator!=(const OpaqueDynDelegate& a_Other) const { return !operator==(a_Other); }
 
-    FunctorID getID() const { return FunctorID(m_pThis, m_pMethod); }
+    FunctorID getID() const { return m_OpaqueDelegate ? m_OpaqueDelegate.getID() : FunctorID(m_pThis, m_pMethod); }
 
     void call(void** a_pArgs) const;
 

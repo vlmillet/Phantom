@@ -115,7 +115,9 @@ void TemplateSpecialization::initialize()
         m_pTemplateSignature->setOwner(this);
     m_pTemplate->addTemplateSpecialization(this);
     if (m_pTemplated)
+    {
         m_pTemplated->setOwner(this);
+    }
     for (auto pArg : m_Arguments)
         addReferencedElement(pArg);
     addReferencedElement(m_pTemplate);
@@ -382,9 +384,6 @@ bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecializ
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
 {
-    PHANTOM_ASSERT(getOwner() != getSource() || a_pTemplated->getNamespace(),
-                   "templated symbol must be hold by a namespace if this specialization is at the source level and not "
-                   "at class level");
     PHANTOM_ASSERT(a_pTemplated);
     PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");
@@ -395,6 +394,7 @@ void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
         m_pTemplated->setTemplateDependant();
     }
     m_pTemplated->setOwner(this);
+    m_pTemplated->setVisibility(Visibility::Public);
 }
 
 TemplateSpecialization* TemplateSpecialization::clone(LanguageElement* a_pOwner, uint a_Flags) const

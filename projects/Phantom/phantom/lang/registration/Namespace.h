@@ -83,6 +83,25 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         _PHNTM_REG_STATIC_ASSERT(
         IsTypeDefined<lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
         "missing #include <phantom/function>");
+        if (a_Name.back() == '>')
+        {
+            size_t findStart = 0;
+            if (a_Name.find("operator<") == 0)
+            {
+                findStart += 9;
+                if (a_Name.find("operator<<") == 0)
+                {
+                    if (a_Name[findStart] == '<')
+                        a_Name = a_Name.substr(0, findStart + 1);
+                    else
+                        a_Name = a_Name.substr(0, findStart);
+                }
+            }
+            else
+            {
+                a_Name = a_Name.substr(0, a_Name.find_first_of("<", findStart));
+            }
+        }
         auto pFunc =
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
         _PHNTM_pSource, a_Name, lang::SignatureH<Sign>::Create(_PHNTM_pSource), a_Ptr);

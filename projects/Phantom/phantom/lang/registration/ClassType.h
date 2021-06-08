@@ -292,6 +292,25 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<RemoveForwardT<Sign>>::type>;
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<FuncProviderNoFwd>::value, "missing #include <phantom/static_method>");
         using FuncPtrT = decltype(a_Ptr);
+        if (a_Name.back() == '>')
+        {
+            size_t findStart = 0;
+            if (a_Name.find("operator<") == 0)
+            {
+                findStart += 9;
+                if (a_Name.find("operator<<") == 0)
+                {
+                    if (a_Name[findStart] == '<')
+                        a_Name = a_Name.substr(0, findStart + 1);
+                    else
+                        a_Name = a_Name.substr(0, findStart);
+                }
+            }
+            else
+            {
+                a_Name = a_Name.substr(0, a_Name.find_first_of("<", findStart));
+            }
+        }
         this->_addFunc(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_Ptr), [](MemberBuilder const& a_Member) {
             auto pFunc = FuncProviderNoFwd::CreateFunction(
             a_Member.classType(), a_Member.name, lang::SignatureH<Sign>::Create(a_Member.classType()->getSource()),
@@ -479,6 +498,9 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         "missing #include <phantom/method>");
         auto simplified = ::phantom::lang::detail::MethodPointerSimplifier<T, SignNoFwd>::Simplify(a_MPtr);
         using SimplifiedType = decltype(simplified);
+
+        if (a_Name.back() == '>')
+            a_Name = a_Name.substr(0, a_Name.find_first_of("<"));
         this->_addMethod(
         m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(simplified), [](MemberBuilder const& a_Member) {
             auto pMethod = a_Member.classType()->NewMeta<::phantom::lang::MethodT<SimplifiedType>>(
@@ -924,7 +946,7 @@ struct ClassTypeCtorOnCall
     _PHNTM_ADL_WORKAROUND_VS                                                                                           \
     __VA_ARGS__                                                                                                        \
     PHANTOM_PP_IDENTITY TemplateSign1 inline void                                                                      \
-                        _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(      \
+    _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(                          \
     PHANTOM_MAYBE_UNUSED phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
 PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep);

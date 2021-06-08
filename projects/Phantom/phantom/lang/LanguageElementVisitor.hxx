@@ -119,7 +119,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(VolatileType*, VisitorData), virtual_>("visit", &_::visit)({"a_pInput","a_Data"})
             /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(FundamentalTypeT<void>*, VisitorData), virtual_>("visit", &_::visit)({"a_pInput","a_Data"})
-            /// missing symbol(s) reflection (std::nullptr_t, phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+            /// missing symbol(s) reflection (phantom::lang::FundamentalTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(::phantom::lang::FundamentalTypeT<std::nullptr_t> *, VisitorData), virtual_>("visit", &_::visit)({"a_pInput","a_Data"})
             /// missing symbol(s) reflection (phantom::lang::IntegralTypeT) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<void(IntegralTypeT<bool>*, VisitorData), virtual_>("visit", &_::visit)({"a_pInput","a_Data"})

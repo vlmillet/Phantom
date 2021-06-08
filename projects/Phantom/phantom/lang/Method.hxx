@@ -94,6 +94,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<LocalVariable*() const>("getThis", &_::getThis)
             .method<OpaqueDelegate(void*) const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)({"a_pThis"})
             .method<OpaqueDelegate() const, virtual_|override_>("getOpaqueDelegate", &_::getOpaqueDelegate)
+            .method<void(ClassType*)>("createThis", &_::createThis)({"a_pClass"})
         
         .protected_()
             /// missing symbol(s) reflection (phantom::lang::ABI) -> use the 'haunt.bind' to bind symbols with your custom haunt files

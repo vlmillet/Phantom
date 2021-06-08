@@ -268,6 +268,12 @@ public:
 
     OpaqueDelegate getOpaqueDelegate() const override;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  creates a 'this' implicit local for this method.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void createThis(ClassType* a_pClass);
+
 protected:
     Method(StringView a_strName, Signature* a_pSignature, ABI a_eABI, Modifiers a_Modifiers = 0, uint a_uiFlags = 0);
 
@@ -291,8 +297,7 @@ protected:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 private:
-    void _onAttachingToClass(ClassType* a_pClass);
-    void _onAttachedToClass(ClassType* a_pClass);
+    void _normalizeNativeName(ClassType* a_pClass);
 
 protected:
     LocalVariable*           m_pThis{};

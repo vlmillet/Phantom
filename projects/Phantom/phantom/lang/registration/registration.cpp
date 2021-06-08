@@ -1064,8 +1064,9 @@ void ReleasableBuilder::release()
 
 void ReleasableBuilder::_releaseFromTop()
 {
-    m_pTop->removeAndDestroySubBuilder(this);
-    if (auto topAsReleasable = m_pTop->AsReleasable())
+    auto pTop = m_pTop;
+    pTop->removeAndDestroySubBuilder(this);
+    if (auto topAsReleasable = pTop->AsReleasable())
     {
         if (topAsReleasable->m_ReleaseDelayed)
             topAsReleasable->release();

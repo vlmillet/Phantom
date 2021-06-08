@@ -93,7 +93,7 @@ public:
     /// \return  The access (Access::Undefined, Access::Public, Access::Protected, Access::Private).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Access getAccess() const { return m_eAccess; }
+    PHANTOM_FORCEINLINE Access getAccess() const { return m_eAccess; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the visibility during lookup of this symbol.
@@ -105,7 +105,7 @@ public:
     /// \brief  Gets the visibility during lookup of this symbol.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Visibility getVisibility() const { return m_eVisibility; }
+    PHANTOM_FORCEINLINE Visibility getVisibility() const { return m_eVisibility; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the modifiers of this symbol.

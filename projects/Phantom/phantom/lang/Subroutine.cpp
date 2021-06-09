@@ -231,7 +231,9 @@ bool Subroutine::buildBlock()
     {
         if (m_BlockBuilder)
         {
-            bool res = m_BlockBuilder(pBlock);
+            auto bb = m_BlockBuilder; // backup because might be in the call itself to avoid cyclic builds
+                                      // setBlockBuilder(nullptr)
+            bool res = bb(pBlock);
             m_BlockBuilder = BlockBuilder{};
             return res;
         }
@@ -246,7 +248,6 @@ bool Subroutine::buildBlock()
 
 void Subroutine::setBlockBuilder(BlockBuilder a_BlockBuilder)
 {
-    PHANTOM_ASSERT(!m_BlockBuilder && a_BlockBuilder || !a_BlockBuilder && m_BlockBuilder);
     if (testFlags(PHANTOM_R_FLAG_COMPILATION_REQUESTED) && a_BlockBuilder)
     {
         Block* pBlock = getBlock();

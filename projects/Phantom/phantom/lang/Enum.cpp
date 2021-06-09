@@ -216,6 +216,10 @@ void Enum::valueToString(StringBuffer& a_Buf, const void* a_pSrc) const
             break;
         }
     }
+    getQualifiedDecoratedName(a_Buf);
+    a_Buf += '(';
+    getUnderlyingIntType()->valueToString(a_Buf, a_pSrc);
+    a_Buf += ')';
 }
 
 void Enum::findConstantsWithValue(void* a_pSrc, Constants& out) const

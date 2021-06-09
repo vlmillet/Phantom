@@ -384,6 +384,9 @@ bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecializ
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
 {
+    if (m_pTemplated == a_pTemplated)
+        return; // TODO : remove this, this is done for template functions which need to be setTemplated before
+                // "Semantic::instantiateTemplate" setTemplated call
     PHANTOM_ASSERT(a_pTemplated);
     PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");

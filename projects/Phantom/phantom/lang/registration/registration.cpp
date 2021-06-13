@@ -216,7 +216,7 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
     break;
     case TypeInstallationStep::Release:
     {
-        release();
+        // release(); // TODO : fix release
     }
     break;
     default:

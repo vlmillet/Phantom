@@ -277,12 +277,12 @@ bool TemplateSignature::isSame(Symbol* a_pLanguageElement) const
 
 bool TemplateSignature::isVariadic() const
 {
-    return m_TemplateParameters.size() && m_TemplateParameters.back()->isPack();
+    return !m_TemplateParameters.empty() && m_TemplateParameters.back()->isPack();
 }
 
 void TemplateSignature::setVariadic(bool a_bValue)
 {
-    PHANTOM_ASSERT(a_bValue != isVariadic() && m_TemplateParameters.size());
+    PHANTOM_ASSERT(a_bValue != isVariadic() && !m_TemplateParameters.empty());
     m_TemplateParameters.back()->m_bPack = a_bValue;
 }
 

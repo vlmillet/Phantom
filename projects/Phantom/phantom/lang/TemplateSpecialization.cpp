@@ -38,7 +38,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
         setArgument(i, a_Arguments[i]);
     }
     PHANTOM_ASSERT(m_pTemplated);
-    PHANTOM_ASSERT(m_pTemplated->getNamingScope());
     m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
@@ -69,35 +68,41 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     PHANTOM_ASSERT(m_pTemplate);
 }
 
-TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization,
-                                               const LanguageElements& a_Arguments,
-                                               const PlaceholderMap&   a_PlaceholderSubstitutions)
+TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pInstantiationSpecialization,
+                                               const LanguageElements&     a_Arguments,
+                                               const TemplateSubstitution& a_ArgumentSubstitution)
     : Symbol(a_pInstantiationSpecialization->getTemplate()->getName(), 0,
              PHANTOM_R_FLAG_IMPLICIT) // instantiations are considered implicit
       ,
       m_pTemplate(a_pInstantiationSpecialization->getTemplate()),
       m_pInstantiationSpecialization(a_pInstantiationSpecialization),
-      m_PlaceholderSubstitutions(a_PlaceholderSubstitutions)
+      m_ArgumentSubstitution(a_ArgumentSubstitution)
 {
+    m_ArgumentSubstitution.setInstantiation(this);
 #if PHANTOM_DEBUG_LEVEL
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times
     {
         SmallSet<Placeholder*> encountered;
-        for (auto& pair : a_PlaceholderSubstitutions)
+        auto                   substCount = a_ArgumentSubstitution.size();
+        for (size_t i = 0; i < substCount; ++i)
         {
-            bool  found = false;
-            auto& params = a_pInstantiationSpecialization->getTemplateParameters();
-            for (size_t i = 0; i < params.size(); ++i)
+            bool   found = false;
+            auto&  params = a_pInstantiationSpecialization->getTemplateParameters();
+            size_t j = 0;
+            for (; j < params.size(); ++j)
             {
-                if (params[i]->getPlaceholder()->asSymbol()->isSame(pair.first->asSymbol()))
+                if (params[j]->getPlaceholder()->asSymbol()->isSame(
+                    a_ArgumentSubstitution.getPlaceholder(i)->asSymbol()))
                 {
                     found = true;
                     break;
                 }
             }
-            PHANTOM_ASSERT(encountered.insert(pair.first).second == true, "duplicate of placeholder");
             PHANTOM_ASSERT(found);
+            PHANTOM_ASSERT(params[j]->isPack() ||
+                           encountered.insert(a_ArgumentSubstitution.getPlaceholder(i)).second == true,
+                           "duplicate of placeholder");
         }
     }
 #endif
@@ -397,7 +402,6 @@ void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
         m_pTemplated->setTemplateDependant();
     }
     m_pTemplated->setOwner(this);
-    m_pTemplated->setVisibility(Visibility::Public);
 }
 
 TemplateSpecialization* TemplateSpecialization::clone(LanguageElement* a_pOwner, uint a_Flags) const

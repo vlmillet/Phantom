@@ -44,7 +44,6 @@ PHANTOM_PACKAGE("phantom.lang")
             using Functions = typedef_< phantom::lang::Functions>;
             using LanguageElements = typedef_< phantom::lang::LanguageElements>;
             using Modifiers = typedef_< phantom::lang::Modifiers>;
-            using PlaceholderMap = typedef_< phantom::lang::PlaceholderMap>;
             using StringView = typedef_< phantom::StringView>;
             using Subroutines = typedef_< phantom::lang::Subroutines>;
             using Symbols = typedef_< phantom::lang::Symbols>;
@@ -79,7 +78,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(TemplateSpecialization*)>("addTemplateSpecialization", &_::addTemplateSpecialization)({"a_pTemplateSpecialization"})
             .method<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&)>("addTemplateSpecialization", &_::addTemplateSpecialization)({"a_pTemplate","a_pTemplateSignature","a_Arguments"})
             .method<TemplateSpecialization*(Template*, TemplateSignature*, const LanguageElements&, Symbol*)>("addTemplateSpecialization", &_::addTemplateSpecialization)({"a_pTemplate","a_pTemplateSignature","a_Arguments","a_pBody"})
-            .method<TemplateSpecialization*(TemplateSpecialization*, const LanguageElements&, const PlaceholderMap&)>("addTemplateInstantiation", &_::addTemplateInstantiation)({"a_pInstantiationSpecialization","a_Arguments","a_PartialSpecializationParameterDeductions"})
+            .method<TemplateSpecialization*(TemplateSpecialization*, const LanguageElements&, const TemplateSubstitution&)>("addTemplateInstantiation", &_::addTemplateInstantiation)({"a_pInstantiationSpecialization","a_Arguments","a_Substitutions"})
             .method<TemplateSpecializations const&() const>("getTemplateSpecializations", &_::getTemplateSpecializations)
             .method<TemplateSpecialization*(StringView, const LanguageElements&) const>("getTemplateSpecialization", &_::getTemplateSpecialization)({"a_strName","a_Arguments"})
             .method<void(Variable*)>("addVariable", &_::addVariable)({"a_pVariable"})

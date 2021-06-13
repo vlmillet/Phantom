@@ -122,8 +122,9 @@ void Template::addTemplateParameterAliasName(size_t a_uiIndex, StringView a_strA
 
 void Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature)
 {
-    a_pTemplateSignature->NewDeferred<TemplateSpecialization>(
+    auto pSpec = a_pTemplateSignature->NewDeferred<TemplateSpecialization>(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), getFlags() & PHANTOM_R_FLAG_NATIVE);
+    pSpec->setVisibility(Visibility::Private);
 }
 
 TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature,
@@ -132,6 +133,7 @@ TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSign
     PHANTOM_ASSERT(a_pBody && !isNative());
     TemplateSpecialization* pSpec = a_pTemplateSignature->New<TemplateSpecialization>(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), a_pBody, getFlags() & PHANTOM_R_FLAG_NATIVE);
+    pSpec->setVisibility(Visibility::Private);
     return pSpec;
 }
 

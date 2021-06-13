@@ -7,6 +7,8 @@
 #pragma once
 
 /* ****************** Includes ******************* */
+#include "TemplateSubstitution.h"
+
 #include <phantom/lang/Symbol.h>
 #include <phantom/utils/SmallMap.h>
 /* **************** Declarations ***************** */
@@ -32,7 +34,7 @@ public:
     TemplateSpecialization(Template* a_pTemplate, TemplateSignature* a_pSignature, const LanguageElements& arguments,
                            Symbol* a_pTemplated, uint a_Flags);
     TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization, const LanguageElements& arguments,
-                           const PlaceholderMap& a_PlaceholderSubstitutions);
+                           TemplateSubstitution const& a_ArgumentSubstitutions);
 
     void initialize();
     void terminate();
@@ -175,7 +177,7 @@ public:
 
     TemplateSpecialization* getInstantiationSpecialization() const { return m_pInstantiationSpecialization; }
 
-    PlaceholderMap const& getPlaceholderSubstitutions() const { return m_PlaceholderSubstitutions; }
+    TemplateSubstitution const& getArgumentSubstitution() const { return m_ArgumentSubstitution; }
 
     Source* getCodeLocationSource() const override;
 
@@ -190,7 +192,7 @@ private:
     LanguageElements*       m_pDefaultArguments{};
     TemplateSpecialization* m_pExtendedSpecialization{};
     TemplateSpecialization* m_pInstantiationSpecialization{};
-    PlaceholderMap          m_PlaceholderSubstitutions;
+    TemplateSubstitution    m_ArgumentSubstitution;
 };
 
 } // namespace lang

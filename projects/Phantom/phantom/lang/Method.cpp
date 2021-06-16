@@ -203,6 +203,7 @@ void Method::createThis(ClassType* a_pClass)
                    (getOwner() == nullptr || getOwner()->asClass() == nullptr || getOwner() == a_pClass));
     m_pThis = New<LocalVariable>(
     isConst() ? a_pClass->makeConst()->makePointer()->makeConst() : a_pClass->makePointer()->makeConst(), "this");
+    m_pThis->setOwner(this);
 }
 
 LocalVariable* Method::getThis() const

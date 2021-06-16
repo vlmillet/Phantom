@@ -51,6 +51,8 @@ PHANTOM_PACKAGE("phantom.lang")
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<int*() const>("getInstantiation", &_::getInstantiation)
             .method<size_t() const>("size", &_::size)
+            .method<TemplateSubstitution const*() const>("getEnclosingSubstitution", &_::getEnclosingSubstitution)
+            .method<void(TemplateSubstitution const*)>("setEnclosingSubstitution", &_::setEnclosingSubstitution)({"a_pSubs"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

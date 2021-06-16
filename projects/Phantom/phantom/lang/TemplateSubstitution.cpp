@@ -65,6 +65,8 @@ LanguageElement* TemplateSubstitution::getArgument(Placeholder* a_pPlaceholder) 
         if (pTP1->getIndex() == pTP2->getIndex())
             return m_Arguments[i];
     }
+    if (m_pEnclosingSubstitution)
+        return m_pEnclosingSubstitution->getArgument(a_pPlaceholder);
     return nullptr;
 }
 

@@ -78,7 +78,6 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pIn
       m_pInstantiationSpecialization(a_pInstantiationSpecialization),
       m_ArgumentSubstitution(a_ArgumentSubstitution)
 {
-    m_ArgumentSubstitution.setInstantiation(this);
 #if PHANTOM_DEBUG_LEVEL
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times
@@ -116,6 +115,7 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pIn
 void TemplateSpecialization::initialize()
 {
     Symbol::initialize();
+    m_ArgumentSubstitution.setInstantiation(this);
     if (m_pTemplateSignature)
         m_pTemplateSignature->setOwner(this);
     m_pTemplate->addTemplateSpecialization(this);

@@ -30,10 +30,14 @@ public:
 
     size_t size() const { return m_Arguments.size(); }
 
+    TemplateSubstitution const* getEnclosingSubstitution() const { return m_pEnclosingSubstitution; }
+    void setEnclosingSubstitution(TemplateSubstitution const* a_pSubs) { m_pEnclosingSubstitution = a_pSubs; }
+
 private:
-    TemplateSpecialization* m_pInstantiation;
-    Placeholders            m_Placeholders;
-    LanguageElements        m_Arguments;
+    TemplateSpecialization*     m_pInstantiation;
+    Placeholders                m_Placeholders;
+    LanguageElements            m_Arguments;
+    TemplateSubstitution const* m_pEnclosingSubstitution{};
 };
 } // namespace lang
 } // namespace phantom

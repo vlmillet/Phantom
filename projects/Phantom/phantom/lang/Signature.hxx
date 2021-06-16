@@ -90,6 +90,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*(size_t) const>("getParameterDefaultValueExpression", &_::getParameterDefaultValueExpression)({"a_uiParamIndex"})
             .method<Type*() const>("getReturnType", &_::getReturnType)
+            .method<void(Type*)>("setReturnType", &_::setReturnType)({"a_pRetType"})
             .using_("LanguageElement::getQualifiedName")
             .using_("LanguageElement::getDecoratedName")
             .using_("LanguageElement::getQualifiedDecoratedName")

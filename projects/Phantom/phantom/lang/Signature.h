@@ -220,6 +220,11 @@ public:
 
     Type* getReturnType() const;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Sets the return type of this signature.
+
+    void setReturnType(Type* a_pRetType);
+
     using LanguageElement::getQualifiedName;
     using LanguageElement::getDecoratedName;
     using LanguageElement::getQualifiedDecoratedName;

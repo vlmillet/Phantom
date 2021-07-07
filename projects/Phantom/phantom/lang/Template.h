@@ -204,6 +204,17 @@ public:
     TemplateSpecialization* getTemplateSpecialization(LanguageElementsView a_Arguments) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the template specialization matching the given template arguments.
+    ///
+    /// \param  a_Arguments The arguments.
+    ///
+    /// \return null if no specialization found, else the specialization.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    TemplateSpecialization* getTemplateSpecializationForModule(LanguageElementsView a_Arguments, Module* a_pModule,
+                                                               bool _acceptsDependencies = true) const;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template instantiation matching the given template arguments. The
     /// difference
     ///         with getTemplateSpecialization is that it can accept less arguments than parameters

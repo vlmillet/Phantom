@@ -74,6 +74,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateSpecialization*(LanguageElement*, ClassType*, TemplateSignature*)>("createTemplateSpecialization", &_::createTemplateSpecialization)({"a_pArgument","a_pBody","a_pTemplateSignature"})["nullptr"]["nullptr"]
             .method<void(size_t, StringView)>("addTemplateParameterAliasName", &_::addTemplateParameterAliasName)({"a_uiIndex","a_strAlias"})
             .method<TemplateSpecialization*(LanguageElementsView) const>("getTemplateSpecialization", &_::getTemplateSpecialization)({"a_Arguments"})
+            .method<TemplateSpecialization*(LanguageElementsView, Module*, bool) const>("getTemplateSpecializationForModule", &_::getTemplateSpecializationForModule)({"a_Arguments","a_pModule","_acceptsDependencies"})["true"]
             .method<TemplateSpecialization*(LanguageElementsView) const>("getTemplateInstantiation", &_::getTemplateInstantiation)({"a_Arguments"})
             .method<TemplateSpecialization*(const PlaceholderMap&) const>("getTemplateSpecialization", &_::getTemplateSpecialization)({"arguments"})
             .method<TemplateSpecialization*(TemplateSpecialization*) const>("getTemplateSpecialization", &_::getTemplateSpecialization)({"a_pTemplateSpecialization"})

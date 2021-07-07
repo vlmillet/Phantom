@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "Constant.h"
+#include "Module.h"
 #include "Placeholder.h"
 #include "Source.h"
 #include "TemplateParameter.h"
@@ -50,9 +51,11 @@ Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTyp
                           StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
                           uint a_uiFlags /*= 0*/)
 {
-    return a_pOwner->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes, a_strTemplateParam,
-                                                                    a_pContextScope, a_uiFlags & PHANTOM_R_FLAG_NATIVE),
-                                           a_strName, a_Modifiers, a_uiFlags);
+    auto pTS = TemplateSignature::Parse(a_pOwner, a_strTemplateTypes, a_strTemplateParam, a_pContextScope,
+                                        a_uiFlags & PHANTOM_R_FLAG_NATIVE);
+    if (!pTS)
+        return nullptr;
+    return a_pOwner->NewDeferred<Template>(pTS, a_strName, a_Modifiers, a_uiFlags);
 }
 
 Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -169,6 +172,23 @@ TemplateSpecialization* Template::getTemplateSpecialization(const PlaceholderMap
         contiguous[static_cast<TemplateParameter*>(it->first->asSymbol()->getOwner())->getIndex()] = it->second;
     }
     return getTemplateSpecialization(contiguous);
+}
+
+TemplateSpecialization* Template::getTemplateSpecializationForModule(LanguageElementsView a_Arguments,
+                                                                     Module*              a_pModule,
+                                                                     bool _acceptsDependencies /*= true*/) const
+{
+    for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
+    {
+        auto pSrc = pSpec->getSource();
+        if (pSrc && pSrc->getVisibility() == Visibility::Private)
+            continue;
+        auto pMod = pSrc->getModule();
+        if (pSpec->isNative() || a_pModule == pMod || (_acceptsDependencies && a_pModule->hasDependencyCascade(pMod)))
+            if (pSpec->matches(a_Arguments))
+                return pSpec;
+    }
+    return nullptr;
 }
 
 TemplateSpecialization* Template::getTemplateInstantiation(LanguageElementsView a_Arguments) const

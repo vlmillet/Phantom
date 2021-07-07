@@ -73,6 +73,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)({"qualifiedName","a_SeparatorList"})["\":\""]
             .method<Namespace*() const>("getParentNamespace", &_::getParentNamespace)
             .method<Namespace*(StringView, const char*)>("getOrCreateNamespace", &_::getOrCreateNamespace)({"a_strNamespaceName","separatorPattern"})["\":\""]
+            .method<Scope*(StringView, const char*)>("getScopeOrCreateNamespace", &_::getScopeOrCreateNamespace)({"a_strScopeName","separatorPattern"})
             .method<Namespace*(StringView)>("newNamespace", &_::newNamespace)({"a_strNamespace"})
             .method<Alias*(StringView, Namespace*)>("addNamespaceAlias", &_::addNamespaceAlias)({"a_strAlias","a_pNamespace"})
             .method<void(StringView)>("removeNamespaceAlias", &_::removeNamespaceAlias)({"a_strAlias"})

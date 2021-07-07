@@ -247,6 +247,8 @@ Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Namespac
 Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Scope* a_pScope)
 {
     PHANTOM_ASSERT(a_pScope);
+    if (auto pTemplate = a_pClass->getTemplate())
+        return pTemplate;
     auto name = a_pClass->getName();
     for (Template* pTemplate : a_pScope->getTemplates())
     {
@@ -330,7 +332,7 @@ void TypeBuilderBase::operator()(lang::Modifiers a_Modifiers)
 
 NamespaceBuilder::NamespaceBuilder(_PHNTM_GlobalRegistrer* a_pRegistrer) : _PHNTM_pRegistrer(a_pRegistrer)
 {
-    _PHNTM_pNamespace = a_pRegistrer->_PHNTM_getNamingScope();
+    _PHNTM_pNamespace = static_cast<Namespace*>(a_pRegistrer->_PHNTM_getNamingScope());
     _PHNTM_pSource = a_pRegistrer->_PHNTM_getOwnerScope();
 }
 
@@ -564,37 +566,72 @@ void PhantomBuilderBase::removeAndDestroySubBuilder(PhantomBuilderBase* a_pSub)
 TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
     : _PHNTM_StaticGlobalRegistrer(PHANTOM_MODULE_HANDLE(this), dynamic_initializer_()->currentPackage(),
                                    dynamic_initializer_()->currentSource(), a_strFile, line, tag,
-                                   {::phantom::RegistrationStep::Templates}),
+                                   {::phantom::RegistrationStep::Templates, ::phantom::RegistrationStep::ClassTypes,
+                                    ::phantom::RegistrationStep::PostTypedefs}),
       m_func(func)
 {
     _PHNTM_attach();
 }
 
-void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
+// TODO : optimize : cache pTemplate in TemplateRegistrer itself
+
+void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep _step)
 {
-    phantom::lang::Symbol* pNamingScope =
+    phantom::lang::Symbol* pNamingScopeSym =
     (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->getOrCreateNamespace(m_func(0));
-    PHANTOM_ASSERT(pNamingScope,
+    PHANTOM_ASSERT(pNamingScopeSym,
                    "template scope has not been registered => ensure that the nesting class of "
                    "your template is registered before it (above in the translation unit)");
-    PHANTOM_ASSERT(pNamingScope->asScope());
-    if (pNamingScope->asScope()->getTemplate(m_func(3)) == nullptr)
+    auto pNamingScope = pNamingScopeSym->asScope();
+    PHANTOM_ASSERT(pNamingScope);
+
+    StringView  name = m_func(3);
+    StringViews nameWords;
+    StringUtil::Split(nameWords, name, ":", true);
+
+    if (nameWords.size() > 1 && _step == ::phantom::RegistrationStep::Templates)
+        return; // skip
+
+    for (size_t i = 0; i < nameWords.size() - 1; ++i)
     {
-        auto            pSource = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
-        lang::Template* pTemplate =
-        Template::Parse(pSource, m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
+        auto pType = pNamingScope->getType(nameWords[i]);
+        PHANTOM_ASSERT(pType, "%.*s not found in %.*s", PHANTOM_STRING_AS_PRINTF_ARG(nameWords[i]),
+                       PHANTOM_STRING_AS_PRINTF_ARG(pNamingScope->asSymbol()->getQualifiedName()));
+        pNamingScope = static_cast<ClassType*>(pType);
+    }
+    name = nameWords.back();
+
+    if (pNamingScope->getTemplate(name) == nullptr)
+    {
+        Scope* pOwnerScope{};
+        if (nameWords.size() == 1)
+            pOwnerScope = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
+        else
+            pOwnerScope = pNamingScope;
+
+        lang::Template* pTemplate = Template::Parse(pOwnerScope->asSymbol(), m_func(1), m_func(2), name,
+                                                    pNamingScope->asSymbol(), 0, PHANTOM_R_FLAG_NATIVE);
+        if (pTemplate == nullptr && _step != RegistrationStep::PostTypedefs)
+            return; // skip => try again in the ClassTypes and PostTypedefs step (template value parameter might need
+                    // some type(def) registration happening later)
+
+        PHANTOM_ASSERT(
+        pTemplate,
+        "failed to parse template signature, maybe due to missing type(def) registration used as template "
+        "value parameter type");
+
         // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
         if (pTemplate->getOwner() == nullptr)
         {
             /// At source scope
-            pSource->addTemplate(pTemplate);
-            pNamingScope->asScope()->addTemplate(pTemplate);
-            detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source)
-            ->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
+            if (pOwnerScope != pNamingScope)
+                pOwnerScope->addTemplate(pTemplate);
+            pNamingScope->addTemplate(pTemplate);
+            pOwnerScope->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }
         else
         {
-            pNamingScope->asScope()->addTemplate(pTemplate);
+            pNamingScope->addTemplate(pTemplate);
             /// At class type scope
             pTemplate->getOwner()->asScope()->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }

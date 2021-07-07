@@ -31,6 +31,9 @@ PHANTOM_PACKAGE("phantom.thread")
             using const_iterator = typedef_<PHANTOM_TYPENAME _::const_iterator>;
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .PHANTOM_T typedef_<const_iterator>("const_iterator")
+            PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
+            .PHANTOM_T constructor<void(), default_>()
+            )
             .PHANTOM_T constructor<void(T const*, size_t, Mutex&)>()({"a_Data","a_Size","a_Mutex"})
             .PHANTOM_T constructor<void(ThreadSafeArrayView<T, Mutex>&&)>()({"a_Tmp"})
             .PHANTOM_T method<T const*() const>("data", &_::data)

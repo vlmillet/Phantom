@@ -8,8 +8,8 @@
 
 HAUNT_STOP;
 
-#include <phantom/lang/SetClass.h>
 #include <phantom/lang/ContainerClassT.h>
+#include <phantom/lang/SetClass.h>
 
 namespace phantom
 {
@@ -30,18 +30,25 @@ public:
         this->setValueType(PHANTOM_TYPEOF(ContainerValueType));
     }
 
-    virtual void insert(void* a_pContainer, void const* a_pKey) const override
+    void insert(void* a_pContainer, void const* a_pKey) const override
     {
         ContainerValueType const* pKey = static_cast<ContainerValueType const*>(a_pKey);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         pContainer->insert(*pKey);
     }
 
-    virtual void eraseKey(void* a_pContainer, void const* a_pKey) const override
+    void eraseKey(void* a_pContainer, void const* a_pKey) const override
     {
         ContainerValueType const* pKey = static_cast<ContainerValueType const*>(a_pKey);
-        T*                     pContainer = static_cast<T*>(a_pContainer);
+        T*                        pContainer = static_cast<T*>(a_pContainer);
         pContainer->erase(pContainer->find(*pKey));
+    }
+
+    void find(void const* a_pContainer, void const* a_pKey, void* a_pIt) const override
+    {
+        ContainerValueType const* pKey = static_cast<ContainerValueType const*>(a_pKey);
+        T const*                  pContainer = static_cast<T const*>(a_pContainer);
+        *reinterpret_cast<ContainerConstIterator*>(a_pIt) = pContainer->find(*pKey);
     }
 };
 } // namespace lang

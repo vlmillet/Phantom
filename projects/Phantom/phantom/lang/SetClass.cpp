@@ -28,6 +28,10 @@ void SetClass::initialize()
     ContainerClass::initialize();
     if (!isNative())
         m_pData = new_<RTData>();
+
+    // TODO remove m_pKeyType && m_pMappedType
+    m_pKeyType = getValueType();
+    m_pMappedType = getValueType();
 }
 void SetClass::terminate()
 {

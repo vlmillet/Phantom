@@ -63,12 +63,16 @@ void Property::setSet(Method* a_pFunc)
     !a_pFunc ||
     a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers()->isSame(getValueType()));
     m_pSet = a_pFunc;
+    if (m_pSet)
+        m_pSet->m_pProperty = this;
 }
 
 void Property::setGet(Method* a_pFunc)
 {
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers()->isSame(getValueType()));
     m_pGet = a_pFunc;
+    if (m_pGet)
+        m_pGet->m_pProperty = this;
 }
 
 void Property::setTouchedFieldNames(StringViews _touchedFields)

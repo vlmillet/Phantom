@@ -26,6 +26,8 @@
 
 #define PHANTOM_ALIAS_TEMPLATE(...) PHANTOM_PP_VARARG(_PHANTOM_ALIAS_TEMPLATE_, ##__VA_ARGS__)
 
+#define PHANTOM_ALIAS_TEMPLATE_V(...) PHANTOM_PP_VARARG(_PHANTOM_ALIAS_TEMPLATE_V_, ##__VA_ARGS__)
+
 namespace phantom
 {
 namespace lang
@@ -82,3 +84,14 @@ void SolveAliasTemplate(Source* a_pSource, RegistrationStep a_Step, Template*& a
 
 #define _PHANTOM_ALIAS_TEMPLATE_4(TemplateTypes, TemplateParams, Name, Aliased)                                        \
     _PHANTOM_ALIAS_TEMPLATE_5(TemplateTypes, TemplateParams, ($), Name, Aliased)
+
+#define _PHANTOM_ALIAS_TEMPLATE_V_3(VariadicPair, Name, Aliased)                                                       \
+    PHANTOM_REGISTER(Typedefs, PostTypes)                                                                              \
+    {                                                                                                                  \
+        static phantom::lang::Template* pAliasT = nullptr;                                                             \
+        SolveAliasTemplate(namespace_()._PHNTM_getSource(), PHANTOM_REGISTRATION_STEP, pAliasT, this_(),               \
+                           PHANTOM_PP_QUOTE_ARG_0 VariadicPair "...", PHANTOM_PP_QUOTE_ARG_1 VariadicPair,             \
+                           PHANTOM_PP_QUOTE(Name),                                                                     \
+                           PHANTOM_PP_IDENTITY(PHANTOM_PP_QUOTE)(PHANTOM_PP_REMOVE_PARENS(Aliased)), "$");             \
+    }                                                                                                                  \
+    _PHNTM_PRE_TRAILING_METADATA _PHNTM_TRAILING_METADATA_COUNTER_MINUS_1

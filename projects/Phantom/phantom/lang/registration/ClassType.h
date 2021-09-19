@@ -1089,17 +1089,17 @@ PHANTOM_PP_CAT(RegName, _PHANTOM_).this_()._PHNTM_setFullSpec();                
         },                                                                                                             \
         __FILE__, __LINE__, __COUNTER__);                                                                              \
     })                                                                                                                 \
-    _PHANTOM_CLASS_T_COMMON((template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                  \
-                             phantom::lang::TemplateSpecArgumentRegistrer _PHNTM_TemplateArgsADL(                      \
-                             TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**) {                                           \
-                                 return _PHNTM_CREATE_TPL_SPEC_V(TemplateTypes, (PHANTOM_PP_ARG_1 VariadicPair));      \
-                             }),                                                                                       \
-                            (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),                \
-                            (TypeName<PHANTOM_PP_ARG_1 VariadicPair...>), TypeName, StartAccess, ExtraCode,            \
-                            template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                   \
-                            TypeName<_PHNTM_SURROUND_TPLARG(PHANTOM_REMOVE_FWD, (PHANTOM_PP_ARG_0 VariadicPair),       \
-                                                            (PHANTOM_PP_ARG_1 VariadicPair))...>*                      \
-                            _PHNTM_RemoveTemplateForwardADL(TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**);)
+    _PHANTOM_CLASS_T_COMMON(                                                                                           \
+    (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                                          \
+     phantom::lang::TemplateSpecArgumentRegistrer _PHNTM_TemplateArgsADL(                                              \
+     TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**) {                                                                   \
+         return _PHNTM_CREATE_TPL_SPEC_V((PHANTOM_PP_ARG_0 VariadicPair), (PHANTOM_PP_ARG_1 VariadicPair));            \
+     }),                                                                                                               \
+    (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),                                        \
+    (TypeName<PHANTOM_PP_ARG_1 VariadicPair...>), TypeName, StartAccess, ExtraCode,                                    \
+    template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair> TypeName<_PHNTM_SURROUND_TPLARG(          \
+    PHANTOM_REMOVE_FWD, (PHANTOM_PP_ARG_0 VariadicPair), (PHANTOM_PP_ARG_1 VariadicPair))...>*                         \
+    _PHNTM_RemoveTemplateForwardADL(TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**);)
 
 #define _PHANTOM_CLASS_VS(VariadicPair, TemplateArgs, TypeName, StartAccess, ExtraCode)                                \
     _PHANTOM_CLASS_T_COMMON((), (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),            \

@@ -82,6 +82,8 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pIn
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times
     {
+        if (getTemplate()->getName() == "VariantT")
+            printf("");
         SmallSet<Placeholder*> encountered;
         auto                   substCount = a_ArgumentSubstitution.size();
         for (size_t i = 0; i < substCount; ++i)
@@ -362,7 +364,9 @@ bool TemplateSpecialization::isEmpty() const
         if (!((*it)->asPlaceholder()))
             return false; // not a placeholder => partial or full specialization
     }
-    return true;
+    return !getTemplate()->getTemplateSignature()->isVariadic() ||
+    m_Arguments.back()->asPlaceholder()->asSymbol()->isSame(
+    getTemplate()->getTemplateParameters().back()->getPlaceholder()->asSymbol());
 }
 
 bool TemplateSpecialization::isPartial() const

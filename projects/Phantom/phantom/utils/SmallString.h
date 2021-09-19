@@ -270,6 +270,14 @@ public:
         return *this;
     }
 
+    SelfType& insert(size_t a_Pos, CharT a_C)
+    {
+        _beginChange();
+        m_Chars.insert(begin() + a_Pos, a_C);
+        _endChange();
+        return *this;
+    }
+
     iterator insert(const_iterator a_Where, std::initializer_list<CharT> a_IL)
     {
         _beginChange();

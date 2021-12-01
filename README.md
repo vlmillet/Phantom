@@ -47,10 +47,10 @@ This project is under a MIT license which is one of the highest permissive distr
 - Automatic namespace detection at registration (ask for the magic trick ;))
 - Used in the **game industry** (compiles on ORBIS)
 - **Extensions**
-	- *Phantom.Code* (soon)
+	- [Phantom.Code](https://github.com/vlmillet/Phantom.Code)
 		- **Lite C++ grammar and semantic with import model (CppLite)** for building C++ like code at runtime
 		- AST objects for **building your own language above native C++**  
-	- *Phantom.Jit* (soon)
+	- [Phantom.JIT](https://github.com/vlmillet/Phantom.JIT)
 		- ***LLVM* based JIT** to run your own language at high performance and debug it inside Visual Studio (on the fly PDB generation. See my related other project : https://github.com/vlmillet/llvmjitpdb)
 
 ## HelloWorld

@@ -42,18 +42,18 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::ClassType>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<Union*() const, virtual_|override_>("asUnion", &_::asUnion)
         
         .protected_()
-            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()
+            .constructor<void(StringView, size_t, size_t, Modifiers, uint)>()({"a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

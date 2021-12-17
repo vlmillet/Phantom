@@ -90,6 +90,12 @@ Type* Signature::getReturnType() const
     return m_pReturnType;
 }
 
+void Signature::setReturnType(Type* a_pRetType)
+{
+    PHANTOM_ASSERT(m_pReturnType == nullptr || m_pReturnType->isTemplateDependant());
+    m_pReturnType = a_pRetType;
+}
+
 bool Signature::separateParameters(StringView a_strText, Strings& a_OutParameters)
 {
     String parameter;

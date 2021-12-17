@@ -6,6 +6,8 @@
 
 /* ******************* Includes ****************** */
 #include "Variant.h"
+
+#include "VariantT.h"
 /* *********************************************** */
 namespace phantom
 {
@@ -89,5 +91,14 @@ void Variant::moveConstruct(lang::Type* a_pType, void* a_pValue)
 }
 
 const Variant Variant::null;
+
+// VariantT<int, float, Variant*> varT;
+//
+// void func()
+// {
+//     varT = 0;
+//     varT = 0.f;
+//     varT = nullptr;
+// }
 
 } // namespace phantom

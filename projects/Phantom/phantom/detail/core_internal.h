@@ -65,10 +65,10 @@ public:
     {
         return moduleRegistrationInfo(a_ModuleHandle)->registeredTypeByHash(a_Hash);
     }
-    size_t         findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
-    lang::Module*  findSourceInModules(StringView a_strFilePath, Strings& words);
-    lang::Source*  nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
-    void           pushSource(StringView a_strSource)
+    size_t        findSourceInModule(StringView a_strFilePath, Strings& words, lang::Module* a_pModule);
+    lang::Module* findSourceInModules(StringView a_strFilePath, Strings& words);
+    lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource);
+    void          pushSource(StringView a_strSource)
     {
         PHANTOM_ASSERT(m_source.empty());
         m_source = a_strSource;
@@ -97,6 +97,7 @@ public:
     void       registerTypeHash(size_t a_ModuleHandle, hash64 a_Hash, lang::Type* a_pType);
     void       registerType(size_t a_ModuleHandle, hash64 a_Hash, StringView a_ScopeName, lang::Type* a_pType);
     void       registerTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo);
+    void       unregisterTypeInstallationInfo(lang::TypeInstallationInfo* a_pTypeInstallInfo);
     void       registerType(size_t a_ModuleHandle, hash64 a_Hash, lang::Type* a_pType);
     void       stepTypeInstallation(lang::Type* a_pType);
     void       stepTemplateInstanceInstallation(size_t a_ModuleHandle, lang::Type* a_pType);

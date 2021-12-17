@@ -13,6 +13,8 @@
 #include "Pointer.h"
 #include "RValueReference.h"
 #include "Signature.h"
+#include "Template.h"
+#include "TemplateSpecialization.h"
 #include "VirtualMethodTable.h"
 /* *********************************************** */
 namespace phantom
@@ -59,12 +61,18 @@ Method::~Method()
 
 lang::ClassType* Method::getOwnerClassType() const
 {
-    return static_cast<lang::ClassType*>(getOwner());
+    auto owner = getOwner();
+    if (auto ts = owner->asTemplateSpecialization())
+        return static_cast<lang::ClassType*>(ts->getTemplate()->getOwner());
+    return static_cast<lang::ClassType*>(owner);
 }
 
 lang::Class* Method::getOwnerClass() const
 {
-    return static_cast<lang::ClassType*>(getOwner())->asClass();
+    auto owner = getOwner();
+    if (auto ts = owner->asTemplateSpecialization())
+        return static_cast<lang::Class*>(ts->getTemplate()->getOwner());
+    return static_cast<lang::Class*>(owner);
 }
 
 bool Method::canOverride(Method* a_pMethod) const
@@ -168,7 +176,7 @@ bool Method::acceptsCallerExpressionQualifiers(Modifiers a_CallerQualifiers) con
 
 Type* Method::getImplicitObjectParameterType() const
 {
-    Type* pImplicitObjectParameterType = getOwner()->asClassType();
+    Type* pImplicitObjectParameterType = getOwnerClassType();
     if (getSignature()->testModifiers(PHANTOM_R_CONST))
     {
         pImplicitObjectParameterType = pImplicitObjectParameterType->makeConst();
@@ -180,23 +188,22 @@ Type* Method::getImplicitObjectParameterType() const
     return pImplicitObjectParameterType->makeLValueReference();
 }
 
-void Method::_onAttachingToClass(ClassType* a_pClass)
+void Method::_normalizeNativeName(ClassType* a_pClass)
 {
     // normalize conversion function name (only if native)
-    if (isNative())
-    {
-        StringBuffer buffer;
-        conversionOperatorNameNormalizer(getName(), buffer, a_pClass);
-        setName(buffer);
-    }
+    StringBuffer buffer;
+    conversionOperatorNameNormalizer(getName(), buffer, a_pClass);
+    setName(buffer);
 }
 
-void Method::_onAttachedToClass(ClassType* a_pClass)
+void Method::createThis(ClassType* a_pClass)
 {
     // create this
-    PHANTOM_ASSERT(m_pThis == nullptr); // ASSERT_DEBUG
+    PHANTOM_ASSERT(m_pThis == nullptr &&
+                   (getOwner() == nullptr || getOwner()->asClass() == nullptr || getOwner() == a_pClass));
     m_pThis = New<LocalVariable>(
     isConst() ? a_pClass->makeConst()->makePointer()->makeConst() : a_pClass->makePointer()->makeConst(), "this");
+    m_pThis->setOwner(this);
 }
 
 LocalVariable* Method::getThis() const

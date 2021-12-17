@@ -38,7 +38,6 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
         setArgument(i, a_Arguments[i]);
     }
     PHANTOM_ASSERT(m_pTemplated);
-    PHANTOM_ASSERT(m_pTemplated->getNamingScope());
     m_pTemplated->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     PHANTOM_ASSERT(m_pTemplateSignature);
     PHANTOM_ASSERT(m_pTemplate);
@@ -69,35 +68,40 @@ TemplateSpecialization::TemplateSpecialization(Template* a_pTemplate, TemplateSi
     PHANTOM_ASSERT(m_pTemplate);
 }
 
-TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstantiationSpecialization,
-                                               const LanguageElements& a_Arguments,
-                                               const PlaceholderMap&   a_PlaceholderSubstitutions)
+TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pInstantiationSpecialization,
+                                               const LanguageElements&     a_Arguments,
+                                               const TemplateSubstitution& a_ArgumentSubstitution)
     : Symbol(a_pInstantiationSpecialization->getTemplate()->getName(), 0,
              PHANTOM_R_FLAG_IMPLICIT) // instantiations are considered implicit
       ,
       m_pTemplate(a_pInstantiationSpecialization->getTemplate()),
       m_pInstantiationSpecialization(a_pInstantiationSpecialization),
-      m_PlaceholderSubstitutions(a_PlaceholderSubstitutions)
+      m_ArgumentSubstitution(a_ArgumentSubstitution)
 {
 #if PHANTOM_DEBUG_LEVEL
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times
     {
         SmallSet<Placeholder*> encountered;
-        for (auto& pair : a_PlaceholderSubstitutions)
+        auto                   substCount = a_ArgumentSubstitution.size();
+        for (size_t i = 0; i < substCount; ++i)
         {
-            bool  found = false;
-            auto& params = a_pInstantiationSpecialization->getTemplateParameters();
-            for (size_t i = 0; i < params.size(); ++i)
+            bool   found = false;
+            auto&  params = a_pInstantiationSpecialization->getTemplateParameters();
+            size_t j = 0;
+            for (; j < params.size(); ++j)
             {
-                if (params[i]->getPlaceholder()->asSymbol()->isSame(pair.first->asSymbol()))
+                if (params[j]->getPlaceholder()->asSymbol()->isSame(
+                    a_ArgumentSubstitution.getPlaceholder(i)->asSymbol()))
                 {
                     found = true;
                     break;
                 }
             }
-            PHANTOM_ASSERT(encountered.insert(pair.first).second == true, "duplicate of placeholder");
             PHANTOM_ASSERT(found);
+            PHANTOM_ASSERT(params[j]->isPack() ||
+                           encountered.insert(a_ArgumentSubstitution.getPlaceholder(i)).second == true,
+                           "duplicate of placeholder");
         }
     }
 #endif
@@ -111,11 +115,14 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization* a_pInstan
 void TemplateSpecialization::initialize()
 {
     Symbol::initialize();
+    m_ArgumentSubstitution.setInstantiation(this);
     if (m_pTemplateSignature)
         m_pTemplateSignature->setOwner(this);
     m_pTemplate->addTemplateSpecialization(this);
     if (m_pTemplated)
+    {
         m_pTemplated->setOwner(this);
+    }
     for (auto pArg : m_Arguments)
         addReferencedElement(pArg);
     addReferencedElement(m_pTemplate);
@@ -261,7 +268,6 @@ void TemplateSpecialization::setDefaultArgument(StringView a_strParameterName, L
 void TemplateSpecialization::setDefaultArgument(size_t index, LanguageElement* a_pElement)
 {
     PHANTOM_ASSERT(index < getArgumentCount());
-    PHANTOM_ASSERT(isFull() && isNative(), "can only set default arguments for native full specializations");
     PHANTOM_ASSERT(a_pElement);
     PHANTOM_ASSERT(getDefaultArgument(index) == nullptr, "default argument already defined");
     if (m_pDefaultArguments == nullptr)
@@ -356,7 +362,9 @@ bool TemplateSpecialization::isEmpty() const
         if (!((*it)->asPlaceholder()))
             return false; // not a placeholder => partial or full specialization
     }
-    return true;
+    return !getTemplate()->getTemplateSignature()->isVariadic() ||
+    m_Arguments.back()->asPlaceholder()->asSymbol()->isSame(
+    getTemplate()->getTemplateParameters().back()->getPlaceholder()->asSymbol());
 }
 
 bool TemplateSpecialization::isPartial() const
@@ -383,9 +391,9 @@ bool TemplateSpecialization::isSame(TemplateSpecialization* a_pTemplateSpecializ
 
 void TemplateSpecialization::setTemplated(Symbol* a_pTemplated)
 {
-    PHANTOM_ASSERT(getOwner() != getSource() || a_pTemplated->getNamespace(),
-                   "templated symbol must be hold by a namespace if this specialization is at the source level and not "
-                   "at class level");
+    if (m_pTemplated == a_pTemplated)
+        return; // TODO : remove this, this is done for template functions which need to be setTemplated before
+                // "Semantic::instantiateTemplate" setTemplated call
     PHANTOM_ASSERT(a_pTemplated);
     PHANTOM_ASSERT(!(isNative()) || m_pTemplated == nullptr);
     PHANTOM_ASSERT(m_pTemplated == nullptr, "template body has already been defined");

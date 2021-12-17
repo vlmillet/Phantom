@@ -346,6 +346,7 @@ void DynamicCppInitializerH::registerType(size_t a_ModuleHandle, hash64 a_Hash, 
         PHANTOM_ASSERT(pNamingScope->asScope(), "'%.*s' is not a valid C++ scope (class, namespace, etc...)",
                        PHANTOM_STRING_AS_PRINTF_ARG(a_ScopeName));
         /// Only add type if it's not a template instance
+
         pNamingScope->asScope()->addType(a_pType);
     }
 }
@@ -416,8 +417,10 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 
     bool alreadyRegistered = false;
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-    for (auto pTii : info->m_TypeInstallationInfos)
+    size_t count = info->m_TypeInstallationInfos.size();
+    for (size_t i = 0; i < count; ++i)
     {
+        auto pTii = info->m_TypeInstallationInfos[i];
         if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
         {
             PHANTOM_ASSERT(a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM),
@@ -431,8 +434,10 @@ void DynamicCppInitializerH::registerTypeInstallationInfo(lang::TypeInstallation
 #else
     if (a_pTypeInstallInfo->type->testFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM))
     {
-        for (auto pTii : info->m_TypeInstallationInfos)
+        size_t count = info->m_TypeInstallationInfos.size();
+        for (size_t i = 0; i < count; ++i)
         {
+            auto pTii = info->m_TypeInstallationInfos[i];
             if (a_pTypeInstallInfo->installFunc == pTii->installFunc || pTii->type == a_pTypeInstallInfo->type)
             {
                 alreadyRegistered = true;
@@ -599,6 +604,35 @@ void DynamicCppInitializerH::installModules()
 
     /// BEGIN MODULES INSTALLATION
 
+    for (lang::ModuleRegistrationInfo* it : infos)
+    {
+        if (it->m_bInstalled)
+            continue;
+
+        for (auto dep : it->m_Dependencies)
+        {
+            lang::Module* pDep = lang::Application::Get()->getModule(dep);
+            if (!pDep)
+            {
+                for (lang::ModuleRegistrationInfo* it2 : infos)
+                {
+                    if (it2->m_Name == dep)
+                    {
+                        pDep = it2->m_pModule;
+                        break;
+                    }
+                }
+                if (!pDep)
+                {
+                    PHANTOM_LOG(Error, "module '%s' is a dependency of module '%s' and has not been loaded", dep.data(),
+                                it->m_Name.data());
+                    continue;
+                }
+            }
+            it->m_pModule->addDependency(pDep);
+        }
+    }
+
     /// Install BuiltInTypes and Templates
     stepRegistration(RegistrationStep::_Reserved);
 
@@ -644,8 +678,6 @@ void DynamicCppInitializerH::installModules()
     stepTypeInstallation(TypeInstallationStep::Inheritance);
     PHANTOM_LOG_NATIVE_REFLECTION("class members installation...");
     stepTypeInstallation(TypeInstallationStep::Members);
-    PHANTOM_LOG_NATIVE_REFLECTION("statecharts installation...");
-    stepTypeInstallation(TypeInstallationStep::Installed);
 
     m_bPhantomInstalled = true; // at this point we are able to use phantom core features
 
@@ -694,18 +726,15 @@ void DynamicCppInitializerH::installModules()
         /// END OF INSTALLATION
         it->m_pModule->checkCompleteness();
 
-        for (auto dep : it->m_Dependencies)
-        {
-            lang::Module* pDep = lang::Application::Get()->getModule(dep);
-            PHANTOM_ASSERT(pDep, "module '%s' is a dependency of module '%s' and has not been loaded", dep, it->m_Name);
-            it->m_pModule->addDependency(pDep);
-        }
-
         it->m_bInstalled = true;
         if (it->m_pModule->getOnLoadFunc())
             it->m_pModule->getOnLoadFunc()();
         lang::Application::Get()->_moduleAdded(it->m_pModule);
     }
+
+    // TODO : we release member memory in a thread to avoid stalling the main thread
+    PHANTOM_LOG_NATIVE_REFLECTION("releasing some type builder memory...");
+    stepTypeInstallation(TypeInstallationStep::Release);
 }
 
 lang::ModuleRegistrationInfo* DynamicCppInitializerH::getModuleRegistrationInfo(StringView name)
@@ -1204,8 +1233,9 @@ void lang::Main::setWarningFunc(MessageReportFunc a_func)
     phantom::detail::g_warning_func = a_func;
 }
 
-lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc, char** argv,
-                 CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile, uint a_uiFlags)
+lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, std::initializer_list<StringView> _dependencies,
+                 int argc, char** argv, CustomAllocator _allocator, ClassHookFunc a_ClassHookFunc, StringView a_strFile,
+                 uint a_uiFlags)
 {
     g_PHNTM_Main = this;
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
@@ -1255,7 +1285,8 @@ lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc
     PHANTOM_LOG_NATIVE_REFLECTION("loading main lang...");
     if (argv)
     {
-        Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, argv[0], a_strFile, a_uiFlags);
+        Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, argv[0], a_strFile, a_uiFlags,
+                                      _dependencies);
     }
     else
     {
@@ -1263,7 +1294,8 @@ lang::Main::Main(size_t a_ModuleHandle, StringView a_strMainModuleName, int argc
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
         GetModuleFileNameA(0, buffer, 1024);
 #endif
-        lang::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags);
+        lang::Application::Get()->_loadMain(a_ModuleHandle, a_strMainModuleName, buffer, a_strFile, a_uiFlags,
+                                            _dependencies);
     }
 }
 

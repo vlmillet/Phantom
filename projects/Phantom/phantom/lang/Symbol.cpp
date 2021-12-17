@@ -595,6 +595,15 @@ void Symbol::getRelativeName(LanguageElement* a_pTo, StringBuffer& a_Buf) const
     {
         if (pTo == this)
             return getName(a_Buf);
+
+        Symbols homonymous;
+        pTo->getSymbolsWithName(m_strName, homonymous);
+        if (!homonymous.empty() &&
+            homonymous.front()->getNamingScope() !=
+            getNamingScope()) // if any symbol matches the same name in between the current relative scope and this
+                              // symbols scope, we interrupt look up and return full qualified name to avoid collisions
+            return getQualifiedName(a_Buf);
+
         if (hasNamingScopeCascade(pTo))
             break;
         pTo = pTo->getNamingScope();
@@ -637,22 +646,17 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
     {
         if (pTo == this)
             return getDecoratedName(a_Buf);
+
+        Symbols homonymous;
+        pTo->getSymbolsWithName(m_strName, homonymous);
+        if (!homonymous.empty() &&
+            homonymous.front()->getNamingScope() != getNamingScope()) // if any symbol matches the same name in between
+                                                                      // the current relative scope and this symbols
+            // scope, we interrupt look up and return full qualified name to avoid collisions
+            return getQualifiedDecoratedName(a_Buf);
+
         if (hasNamingScopeCascade(pTo))
             break;
-        //         if (auto pSym = pTo->asSymbol())
-        //         {
-        //             if (auto pSpec = pSym->getTemplateSpecialization())
-        //             {
-        //                 if (!pSpec->testFlags(PHANTOM_R_FLAG_IMPLICIT))
-        //                 {
-        //                     if (pSpec->getNamespace())
-        //                     {
-        //                         pTo = pSpec->getOwner();
-        //                         continue;
-        //                     }
-        //                 }
-        //             }
-        //         }
         pTo = pTo->getNamingScope();
     }
 
@@ -665,6 +669,7 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
         // skip anonymous when inside a qualified name
         while (pNamingScope && pNamingScope->getName().empty())
             pNamingScope = pNamingScope->getNamingScope();
+
         size_t prev = a_Buf.size();
         pNamingScope->getRelativeDecoratedName(pTo, a_Buf);
         bool ownerEmpty = (a_Buf.size() - prev) == 0;
@@ -682,7 +687,7 @@ void Symbol::getRelativeDecoratedName(LanguageElement* a_pTo, StringBuffer& a_Bu
 
 void Symbol::setName(StringView a_strName)
 {
-    PHANTOM_ASSERT(getOwner() == nullptr,
+    PHANTOM_ASSERT(m_strName.empty() || getOwner() == nullptr,
                    "changing symbol name while attached to an owner leads to undefined behavior");
     m_strName = a_strName;
 }

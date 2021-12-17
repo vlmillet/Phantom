@@ -42,23 +42,23 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::ContainerClass>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .protected_()
-            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()
-            .constructor<void(TypeKind, StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(TypeKind, StringView, size_t, size_t, Modifiers, uint)>()({"a_eTypeKind","a_strName","a_uiSize","a_uiAlignment","a_Modifiers","a_uiFlags"})
+            .constructor<void(TypeKind, StringView, Modifiers, uint)>()({"a_eTypeKind","a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
         
         .public_()
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<SequentialContainerClass*() const, virtual_|override_>("asSequentialContainerClass", &_::asSequentialContainerClass)
-            .method<void(void*, void const*) const, virtual_>("push_back", &_::push_back)
+            .method<void(void*, void const*) const, virtual_>("push_back", &_::push_back)({"a_pContainer","a_pValue"})
             /// missing symbol(s) reflection (phantom::MoveArg) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(void*, MoveArg) const, virtual_>("push_back", &_::push_back)
-            .method<void(void*) const, virtual_>("pop_back", &_::pop_back)
+            // .method<void(void*, MoveArg) const, virtual_>("push_back", &_::push_back)({"a_pContainer","a_pValue"})
+            .method<void(void*) const, virtual_>("pop_back", &_::pop_back)({"a_pContainer"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

@@ -24,7 +24,7 @@ namespace phantom
 {
 namespace lang
 {
-TemplateSignature::TemplateSignature(uint a_uiFlags) : LanguageElement(a_uiFlags) {}
+TemplateSignature::TemplateSignature(uint a_uiFlags) : Symbol("$", {}, a_uiFlags) {}
 
 TemplateSignature* TemplateSignature::Create(LanguageElement* a_pOwner, const TemplateParameters& a_Parameters,
                                              bool a_bVariadic, uint a_Flags /*= PHANTOM_R_NONE*/)
@@ -277,12 +277,12 @@ bool TemplateSignature::isSame(Symbol* a_pLanguageElement) const
 
 bool TemplateSignature::isVariadic() const
 {
-    return m_TemplateParameters.size() && m_TemplateParameters.back()->isPack();
+    return !m_TemplateParameters.empty() && m_TemplateParameters.back()->isPack();
 }
 
 void TemplateSignature::setVariadic(bool a_bValue)
 {
-    PHANTOM_ASSERT(a_bValue != isVariadic() && m_TemplateParameters.size());
+    PHANTOM_ASSERT(a_bValue != isVariadic() && !m_TemplateParameters.empty());
     m_TemplateParameters.back()->m_bPack = a_bValue;
 }
 
@@ -294,11 +294,6 @@ TemplateSignature* TemplateSignature::clone(LanguageElement* a_pOwner, uint a_Fl
         params[i] = m_TemplateParameters[i]->clone(a_pOwner, a_Flags);
     }
     return Create(a_pOwner, params, isVariadic(), a_Flags);
-}
-
-void TemplateSignature::getName(StringBuffer& a_Buf) const
-{
-    a_Buf += '$';
 }
 
 } // namespace lang

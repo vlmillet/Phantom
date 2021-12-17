@@ -93,7 +93,7 @@ public:
     /// \return  The access (Access::Undefined, Access::Public, Access::Protected, Access::Private).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Access getAccess() const { return m_eAccess; }
+    PHANTOM_FORCEINLINE Access getAccess() const { return m_eAccess; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the visibility during lookup of this symbol.
@@ -105,7 +105,7 @@ public:
     /// \brief  Gets the visibility during lookup of this symbol.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Visibility getVisibility() const { return m_eVisibility; }
+    PHANTOM_FORCEINLINE Visibility getVisibility() const { return m_eVisibility; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Sets the modifiers of this symbol.
@@ -159,6 +159,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     PHANTOM_FORCEINLINE StringView getName() const { return m_strName; }
+    void                           setName(StringView a_strName);
 
     hash64 getHash() const;
     hash64 getLocalHash() const;
@@ -429,7 +430,6 @@ public:
     void getUniqueName(StringBuffer& a_Buf) const override;
 
 protected:
-    void                     setName(StringView a_strName);
     PHANTOM_FORCEINLINE void setImportable(bool a_bValue)
     {
         if (a_bValue)

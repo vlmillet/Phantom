@@ -24,6 +24,9 @@ class PHANTOM_EXPORT_PHANTOM Parameter : public LocalVariable
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
     friend class Signature;
+    friend struct TypeBuilderBase;
+    friend struct MemberBuilder;
+    friend struct NamespaceBuilder;
 
     PHANTOM_DECLARE_META_CLASS(Parameter);
 
@@ -44,14 +47,6 @@ public:
 
     /// \brief  Destructor.
     ~Parameter() override {}
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// \brief  Sets the definition name of this parameter (by opposition to declaration name).
-    ///
-    /// \param  a_strName   The name.
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    void setDefinitionName(StringView a_strName);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets if this parameter has a default argument defined (either as a native string, or

@@ -42,7 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Method>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
         
@@ -50,9 +50,9 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
-            .method<void(void*) const>("destroy", &_::destroy)
-            .method<void(size_t, void*)>("destroy", &_::destroy)
+            .constructor<void(StringView, Signature*, Modifiers, uint)>()({"a_strName","a_pSignature","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .method<void(void*) const>("destroy", &_::destroy)({"a_pAddress"})
+            .method<void(size_t, void*)>("destroy", &_::destroy)({"a_uiCount","a_pAddress"})
             .method<Destructor*() const, virtual_|override_>("asDestructor", &_::asDestructor)
         
         .protected_()

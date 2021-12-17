@@ -48,11 +48,11 @@ PHANTOM_PACKAGE("phantom.utils")
         
         .public_()
             .constructor<void(), default_>()
-            .constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()
-            .constructor<void(::phantom::lang::Class *, StringView)>()
-            .constructor<void(::phantom::lang::Method *)>()
-            .constructor<void(::phantom::lang::Function *)>()
-            .constructor<void(void*, ::phantom::lang::Class *, StringView)>()
+            .constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()({"a_pInstance","a_pClass","a_pMethod"})
+            .constructor<void(::phantom::lang::Class *, StringView)>()({"a_pClass","a_MethodName"})
+            .constructor<void(::phantom::lang::Method *)>()({"a_pMethod"})
+            .constructor<void(::phantom::lang::Function *)>()({"a_pFunction"})
+            .constructor<void(void*, ::phantom::lang::Class *, StringView)>()({"a_pInstance","a_pClass","a_MethodName"})
             .method<void*() const>("getThis", &_::getThis)
             .method<::phantom::lang::Function *() const>("getFunction", &_::getFunction)
             .method<::phantom::lang::Method *() const>("getMethod", &_::getMethod)
@@ -61,11 +61,11 @@ PHANTOM_PACKAGE("phantom.utils")
             .method<OpaqueDelegate&&()&&>("getOpaqueDelegate", &_::getOpaqueDelegate)
             .method<bool() const>("isEmpty", &_::isEmpty)
             .method<bool() const>("operator bool", &_::operator notypedef<bool>)
-            .method<bool(const OpaqueDynDelegate&) const>("operator==", &_::operator==)
-            .method<bool(const OpaqueDynDelegate&) const>("operator!=", &_::operator!=)
+            .method<bool(const OpaqueDynDelegate&) const>("operator==", &_::operator==)({"a_Other"})
+            .method<bool(const OpaqueDynDelegate&) const>("operator!=", &_::operator!=)({"a_Other"})
             .method<FunctorID() const>("getID", &_::getID)
-            .method<void(void**) const>("call", &_::call)
-            .method<void(void**, void*) const>("call", &_::call)
+            .method<void(void**) const>("call", &_::call)({"a_pArgs"})
+            .method<void(void**, void*) const>("call", &_::call)({"a_pArgs","a_pReturnAddress"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE
@@ -78,13 +78,13 @@ PHANTOM_PACKAGE("phantom.utils")
         PHANTOM_STRUCT_TV((class), (R), (class, Params), Caller)
         {
             this_()
-            .PHANTOM_T staticMethod<R(OpaqueDynDelegate const&, Params...)>("Call", &_::Call)
+            .PHANTOM_T staticMethod<R(OpaqueDynDelegate const&, Params...)>("Call", &_::Call)({"a_Dgt","a_Args"})
             ;
         }
         PHANTOM_STRUCT_VS((class, Params), (void, Params...), Caller)
         {
             this_()
-            .PHANTOM_T staticMethod<void(OpaqueDynDelegate const&, Params...)>("Call", &_::Call)
+            .PHANTOM_T staticMethod<void(OpaqueDynDelegate const&, Params...)>("Call", &_::Call)({"a_Dgt","a_Args"})
             ;
         }
     PHANTOM_END("DynDelegate")
@@ -106,11 +106,11 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(::phantom::lang::Function *)>()
-            .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()
-            .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, StringView)>()
-            .PHANTOM_T constructor<void(OpaqueDynDelegate const&)>()
-            .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())
+            .PHANTOM_T constructor<void(::phantom::lang::Function *)>()({"a_pFunction"})
+            .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, ::phantom::lang::Method *)>()({"a_pInstance","a_pClass","a_pMethod"})
+            .PHANTOM_T constructor<void(void*, ::phantom::lang::Class *, StringView)>()({"a_pInstance","a_pClass","a_MethodName"})
+            .PHANTOM_T constructor<void(OpaqueDynDelegate const&)>()({"a_Dgt"})
+            .PHANTOM_T method<R(Params...) const>("operator()", &_::operator())({"a_Args"})
             ;
         }
     PHANTOM_END("DynDelegate")

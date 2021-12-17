@@ -83,18 +83,18 @@ Namespace* Namespace::getNamespaceCascade(Strings& a_HierarchyWords) const
     return NULL;
 }
 
-Namespace* Namespace::getOrCreateNamespace(Strings* a_HierarchyWords)
+Namespace* Namespace::getOrCreateNamespace(StringViews& a_HierarchyWords)
 {
-    if (a_HierarchyWords->empty())
+    if (a_HierarchyWords.empty())
         return this;
-    String str = a_HierarchyWords->front();
-    a_HierarchyWords->erase(a_HierarchyWords->begin());
+    String str = a_HierarchyWords.front();
+    a_HierarchyWords.erase(a_HierarchyWords.begin());
     Namespace* pChildNamespace = getNamespace(str);
-    if (!(pChildNamespace))
+    if (pChildNamespace == nullptr)
     {
         pChildNamespace = newNamespace(str);
     }
-    if (a_HierarchyWords->empty())
+    if (a_HierarchyWords.empty())
     {
         return pChildNamespace;
     }
@@ -102,18 +102,52 @@ Namespace* Namespace::getOrCreateNamespace(Strings* a_HierarchyWords)
     {
         return pChildNamespace->getOrCreateNamespace(a_HierarchyWords);
     }
-    return NULL;
+}
+
+Scope* Namespace::getScopeOrCreateNamespace(StringViews& a_HierarchyWords)
+{
+    if (a_HierarchyWords.empty())
+        return this;
+    String str = a_HierarchyWords.front();
+    a_HierarchyWords.erase(a_HierarchyWords.begin());
+    Namespace* pChildNamespace = getNamespace(str);
+    if (pChildNamespace == nullptr)
+    {
+        if (auto pType = getType(str))
+            return pType->asClassType();
+        pChildNamespace = newNamespace(str);
+    }
+    if (a_HierarchyWords.empty())
+    {
+        return pChildNamespace;
+    }
+    else
+    {
+        return pChildNamespace->getScopeOrCreateNamespace(a_HierarchyWords);
+    }
 }
 
 Namespace* Namespace::getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern)
 {
-    Strings words;
+    StringViews words;
     StringUtil::Split(words, a_strNamespaceName, separatorPattern);
-    return getOrCreateNamespace(&words);
+    return getOrCreateNamespace(words);
+}
+
+Scope* Namespace::getScopeOrCreateNamespace(StringView a_strScopeName, const char* separatorPattern)
+{
+    StringViews words;
+    StringUtil::Split(words, a_strScopeName, separatorPattern);
+    return getScopeOrCreateNamespace(words);
 }
 
 Namespace* Namespace::newNamespace(StringView a_strName)
 {
+#if PHANTOM_DEBUG_LEVEL
+    for (auto pSym : m_Symbols)
+        PHANTOM_ASSERT(pSym->getName() != a_strName, "namespace name '%.*s' collides with previous symbol",
+                       PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
+#endif
     Namespace* pNS = phantom::new_<Namespace>(a_strName);
     pNS->m_pSource = m_pSource;
     pNS->rtti.instance = pNS;
@@ -172,6 +206,17 @@ void Namespace::onNamespaceChanged(Namespace* /*a_pNamespace*/)
                    "Namespace not found");
     pParentNamespace->m_Namespaces.push_back(this);
     setVisibility(Visibility::Public);
+}
+
+void Namespace::addCustomSymbol(Symbol* a_pSymbol)
+{
+    a_pSymbol->setNamespace(this);
+}
+
+void Namespace::removeCustomSymbol(Symbol* a_pSymbol)
+{
+    PHANTOM_ASSERT(a_pSymbol->getNamespace() == this);
+    a_pSymbol->setNamespace(nullptr);
 }
 
 Namespace* Namespace::getRootNamespace() const

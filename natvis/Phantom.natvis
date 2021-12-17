@@ -62,31 +62,54 @@
     </Type>
 
     <Type Name="phantom::Functor&lt;*&gt;">
-        <Expand>
-            <Item Name="DynDelegate" Condition="m_Type == phantom::_FunctorInternalType::DynDelegate">
-                *(phantom::Functor&lt;$T1&gt;::DynDelegateType*)&amp;m_DynDelegate
-            </Item>
-            <Item Name="Delegate" Condition="m_Type == phantom::_FunctorInternalType::Delegate">
-                *(phantom::Functor&lt;$T1&gt;::DelegateType*)&amp;m_Delegate
-            </Item>
-            <Item Name="StdFunction" Condition="m_Type == phantom::_FunctorInternalType::StdFunction">
-                *(phantom::Functor&lt;$T1&gt;::StdFuncType*)&amp;m_StdFunction
-            </Item>
-        </Expand>
+      <DisplayString Condition="m_size == 0 &amp;&amp; m_align != 0">
+        Moved (non valid)
+      </DisplayString>
+      <DisplayString Condition="(m_size &amp; 0x80000000) != 0">
+        Reflective | {m_dyndgt}
+      </DisplayString>
+      <DisplayString Condition="m_size == 0 &amp;&amp; m_align == 0  &amp;&amp; (m_dgt.m_Closure.m_pThis != 0 || m_dgt.m_Closure.m_pFunction != 0)">
+        Delegate | {m_dgt}
+      </DisplayString>
+      <DisplayString Condition="m_dgt.m_Closure.m_pThis == 0 &amp;&amp; m_dgt.m_Closure.m_pFunction == 0">
+        Empty
+      </DisplayString>
+      <DisplayString Condition="((m_size &amp; 0x7fffffff) != 0) &amp;&amp; (m_size &lt;= SmallBufferSize) &amp;&amp; (m_align &lt;= 8)">
+        Lambda/Struct (noalloc) | {m_dgt}
+      </DisplayString>
+      <DisplayString Condition="((m_size &amp; 0x7fffffff) != 0) &amp;&amp; (m_size &gt; SmallBufferSize) || (m_align &gt; 8)">
+        Lambda/Struct ( alloc ) | {m_dgt}
+      </DisplayString>
+    </Type>
+  
+    <Type Name="phantom::OpaqueDynDelegate">
+      <DisplayString Condition="m_pMethod != nullptr  &amp;&amp;  m_pThis == nullptr">Method[no-this] | {m_pMethod, na}</DisplayString>
+      <DisplayString Condition="m_pMethod != nullptr  &amp;&amp;  m_pThis != nullptr">Method[this] | {m_pMethod, na}</DisplayString>
+      <DisplayString Condition="m_pMethod == nullptr  &amp;&amp;  m_pFunction != nullptr">Function | {m_pFunction, na}</DisplayString>
+      <DisplayString Condition="m_pFunction == nullptr &amp;&amp; m_pMethod == nullptr">Empty</DisplayString>
     </Type>
 
     <Type Name="phantom::Delegate&lt;*&gt;">
-        <Expand>
-            <Item Name="Function" Condition="m_Closure.m_pFunction == nullptr">
-                m_Closure.m_pThis
-            </Item>
-            <Item Name="This" Condition="m_Closure.m_pFunction != nullptr">
-                m_Closure.m_pThis
-            </Item>
-            <Item Name="Method" Condition="m_Closure.m_pFunction != nullptr">
-                m_Closure.m_pFunction
-            </Item>
-        </Expand>
+      <DisplayString Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000)" >
+        Function | {m_Closure.m_pThis}
+      </DisplayString>
+      <DisplayString Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr">
+          ThisCall | ({m_Closure.m_pThis})->[{m_Closure.m_pFunction, na}]
+      </DisplayString>
+      <DisplayString Condition="m_Closure.m_pFunction == nullptr &amp;&amp; m_Closure.m_pThis == nullptr">
+          Empty
+      </DisplayString>
+      <Expand>
+        <Item Name="Function" Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000)">
+          m_Closure.m_pThis
+        </Item>
+        <Item Name="This" Condition="!(m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000))">
+          m_Closure.m_pThis
+        </Item>
+        <Item Name="Method" Condition="!(m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000))">
+          m_Closure.m_pFunction
+        </Item>
+      </Expand>
     </Type>
  
     <Type Name="phantom::lang::ConstantT&lt;*&gt;">

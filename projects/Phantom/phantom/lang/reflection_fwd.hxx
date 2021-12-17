@@ -258,21 +258,21 @@ PHANTOM_PACKAGE("phantom.lang")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticField>("StaticField"); }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticFields>("StaticFields"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<typedef_<StaticFields> >("StaticFields"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("StaticField")
     PHANTOM_SOURCE("StaticVariable")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticVariable>("StaticVariable"); }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticVariables>("StaticVariables"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<typedef_<StaticVariables> >("StaticVariables"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("StaticVariable")
     PHANTOM_SOURCE("StaticMethod")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticMethod>("StaticMethod"); }
-        PHANTOM_REGISTER(Typedefs) { this_().typedef_<StaticMethods>("StaticMethods"); }
+        PHANTOM_REGISTER(Typedefs) { this_().typedef_<typedef_<StaticMethods> >("StaticMethods"); }
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("StaticMethod")
     PHANTOM_SOURCE("Property")
@@ -417,7 +417,7 @@ PHANTOM_PACKAGE("phantom.lang")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Typedefs) { this_().typedef_<CallDelegate>("CallDelegate"); }
-        PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate);}
+        PHANTOM_REGISTER(Functions) { this_().function<void(ExecutionContext&, void**, ::size_t)>("SilentCallDelegate", SilentCallDelegate)({"","",""});}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("reflection_fwd")
 PHANTOM_END("phantom.lang")

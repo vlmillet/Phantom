@@ -40,18 +40,7 @@ public:
                 this->construct();
         });
     }
-    ~StaticGlobal()
-    {
-        if (StaticGlobals::TryUnregisterForCleanup(&m_Data))
-        {
-            if (m_Data)
-                m_Data.destroy();
-        }
-        else
-        {
-            PHANTOM_ASSERT(!StaticGlobals::ReleaseInProgress((void*)(PHANTOM_MODULE_HANDLE(&m_Data))) || !m_Data);
-        }
-    }
+    ~StaticGlobal() { destroy(); }
 
     T& operator*() { return *m_Data; }
 
@@ -72,6 +61,22 @@ public:
         StaticGlobals::RegisterForCleanup(
         &m_Data, (void*)(PHANTOM_MODULE_HANDLE(&m_Data)),
         CleanupDelegate([](void* p) -> void { reinterpret_cast<RawPlacement<T>*>(p)->destroy(); }));
+    }
+
+    void destroy()
+    {
+        if (StaticGlobals::TryUnregisterForCleanup(&m_Data))
+        {
+            if (m_Data)
+            {
+                m_Data.destroy();
+                memset(&m_Data, 0, sizeof(T)); // ensure static memory back to full zero (as it is when initialized)
+            }
+        }
+        else
+        {
+            PHANTOM_ASSERT(!StaticGlobals::ReleaseInProgress((void*)(PHANTOM_MODULE_HANDLE(&m_Data))) || !m_Data);
+        }
     }
 
 private:

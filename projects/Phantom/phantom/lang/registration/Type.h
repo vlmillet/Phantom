@@ -62,6 +62,7 @@ struct PHANTOM_EXPORT_PHANTOM MemberBuilder
     MetaDatas              metaDatas;
     Strings                annotations;
     StringViews            defaultArguments;
+    StringViews            paramNames;
     SmallVector<ArgFwd, 4> fwdArgs;
     uint                   filter;
     bool                   isSymbol;
@@ -85,14 +86,19 @@ private:
     void _apply(lang::Property* a_pProperty) const;
 };
 
-struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : PhantomBuilderBase
+struct PHANTOM_EXPORT_PHANTOM TypeBuilderBase : ReleasableBuilder
 {
     _PHNTM_REG_FRIENDS;
 
+public:
+    void _PHNTM_setFullSpec() { m_isFullSpec = true; }
+    bool _PHNTM_isFullSpec() const { return m_isFullSpec; }
+
 protected:
-    TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
-                    TemplateSpecArgumentRegistrer a_Arguments);
-    TypeBuilderBase(lang::Scope*, Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
+    TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Source* a_pSource,
+                    Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
+    TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Scope*, Scope* a_pNamingScope,
+                    Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments);
 
     virtual void _installFunc(lang::Type* a_pType, TypeInstallationStep a_Step);
     void         _registerTypeInstallationInfo(TypeInstallationInfo* a_pTii);
@@ -108,6 +114,7 @@ protected:
     void operator()(StringView a_Annot);
     void operator()(uint a_Flags);
     void operator()(lang::Modifiers a_Modifiers);
+    void operator()(std::initializer_list<const char*> a_ParamNames);
 
     void addMember(lang::Symbol* a_pOwner, MemberBuilder&& a_Member);
     void addMember(lang::Symbol* a_pOwner, StringView a_Name, std::initializer_list<ArgFwd> a_Args, uint a_UserInt,
@@ -136,10 +143,10 @@ protected:
     TypeInstallationInfo           m_TypeInstallationInfo;
     MetaDatas                      m_MetaDatas;
     Strings                        m_Annotations;
-    uint                           m_Flags = 0;
-    lang::Modifiers                m_Modifiers = 0;
     TemplateSpecArgumentRegistrer  m_TemplateSpecArgumentRegistrer;
     InheritanceRegistrer           m_Inheritance = nullptr;
+    lang::Modifiers                m_Modifiers = 0;
+    bool                           m_isFullSpec = false;
 };
 
 template<class T, class Top, class MostDerived, class Meta = PHANTOM_TYPENAME MetaTypeOf<T>::type>
@@ -152,11 +159,14 @@ struct TypeBuilderT : TypeBuilderBase
     using SelfType = TypeBuilderT<T, Top, MostDerived, Meta>;
     using ReflectedType = T;
 
-    TypeBuilderT(Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
-        : TypeBuilderBase(a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
-                          _createMetaType(a_pTop->_PHNTM_getOwnerScope(),
-                                          std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
-                          a_Arguments),
+    TypeBuilderT(BuilderReleaser _releaser, Top* a_pTop, TemplateSpecArgumentRegistrer a_Arguments)
+        : TypeBuilderBase(
+          _releaser,
+          std::is_base_of<PhantomBuilderBase, Top>::value ? reinterpret_cast<PhantomBuilderBase*>(a_pTop) : nullptr,
+          a_pTop->_PHNTM_getOwnerScope(), a_pTop->_PHNTM_getNamingScope(),
+          _createMetaType(a_pTop->_PHNTM_getOwnerScope(),
+                          std::is_fundamental<T>::value ? "" : TypeInfosOf<T>::object().name()),
+          a_Arguments),
           m_pTop(a_pTop)
     {
         _installRtti();
@@ -208,6 +218,12 @@ struct TypeBuilderT : TypeBuilderBase
     MostDerived& operator()(uint a_Flags)
     {
         BaseType::operator()(a_Flags);
+        return static_cast<MostDerived&>(*this);
+    }
+
+    MostDerived& operator()(std::initializer_list<const char*> a_ParamNames)
+    {
+        BaseType::operator()(a_ParamNames);
         return static_cast<MostDerived&>(*this);
     }
 

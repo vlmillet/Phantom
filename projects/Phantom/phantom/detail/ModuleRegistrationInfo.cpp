@@ -126,7 +126,7 @@ void ModuleRegistrationInfo::addTypeInstallationInfos(TypeInstallationInfo* a_pT
                 static_cast<lang::ClassType*>(a_pTii->type),
                 TypeInstallationDelegate(a_pTii, &TypeInstallationInfo::exec));
             }
-            if (i == int(TypeInstallationStep::Members))
+            if (i == int(TypeInstallationStep::Members) || i == int(TypeInstallationStep::Release))
             {
 #if !defined(PHANTOM_CUSTOM_PLUGIN_ALWAYS_REGISTER_CLASS_MEMBERS)
                 if ((m_uiFlags & PHANTOM_PLUGIN_REGISTER_CLASS_MEMBERS_ON_ACCESS) == 0)
@@ -161,7 +161,7 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
             }
         }
     }
-    if (step == TypeInstallationStep::Members)
+    if (step == TypeInstallationStep::Members || step == TypeInstallationStep::Release)
     {
 #if !defined(PHANTOM_CUSTOM_PLUGIN_ALWAYS_REGISTER_CLASS_MEMBERS)
         if (((m_uiFlags & PHANTOM_PLUGIN_REGISTER_CLASS_MEMBERS_ON_ACCESS) == 0))
@@ -174,12 +174,17 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
                 TypeInstallationInfo* pTii = m_TypeInstallationInfos[i];
                 if (pTii->type->getTypeKind() != lang::TypeKind::Enum)
                 {
-                    struct FakeClassType : public lang::ClassType
+                    if (step == TypeInstallationStep::Members)
                     {
-                    public:
-                        using ClassType::_onElementsAccess;
-                    };
-                    static_cast<FakeClassType*>(pTii->type)->_onElementsAccess();
+                        struct FakeClassType : public lang::ClassType
+                        {
+                        public:
+                            using ClassType::_onElementsAccess;
+                        };
+                        static_cast<FakeClassType*>(pTii->type)->_onElementsAccess();
+                    }
+                    else
+                        pTii->exec(step);
                 }
                 else
                     pTii->exec(step);

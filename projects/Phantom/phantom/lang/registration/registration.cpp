@@ -85,6 +85,12 @@ void MemberBuilder::_apply(lang::Subroutine* a_pSubroutine) const
     _apply(static_cast<lang::Symbol*>(a_pSubroutine));
     if (defaultArguments.size())
         a_pSubroutine->setNativeDefaultArgumentStrings(defaultArguments);
+    auto& params = a_pSubroutine->getParameters();
+    auto  paramNameIt = paramNames.begin();
+    for (size_t i = 0; i < std::min(params.size(), paramNames.size()); ++i)
+    {
+        params[i]->setName(*paramNameIt++);
+    }
 }
 void MemberBuilder::_apply(lang::Property* a_pProperty) const
 {
@@ -103,9 +109,10 @@ Class* MemberBuilder::class_() const
     return static_cast<lang::Class*>(owner);
 }
 
-TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope, Type* a_pType,
-                                 TemplateSpecArgumentRegistrer a_Arguments)
-    : m_pNamingScope(a_pNamingScope),
+TypeBuilderBase::TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Source* a_pSource,
+                                 Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments)
+    : ReleasableBuilder(_releaser, a_pTop),
+      m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, a_pSource, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
       m_TemplateSpecArgumentRegistrer(a_Arguments)
 {
@@ -118,9 +125,11 @@ TypeBuilderBase::TypeBuilderBase(lang::Source* a_pSource, Scope* a_pNamingScope,
             a_pNamingScope->addType(a_pType);
     }
 }
-TypeBuilderBase::TypeBuilderBase(lang::Scope* a_pOwner, Scope* a_pNamingScope, Type* a_pType,
-                                 TemplateSpecArgumentRegistrer a_Arguments)
-    : m_pNamingScope(a_pNamingScope),
+
+TypeBuilderBase::TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* a_pTop, lang::Scope* a_pOwner,
+                                 Scope* a_pNamingScope, Type* a_pType, TemplateSpecArgumentRegistrer a_Arguments)
+    : ReleasableBuilder(_releaser, a_pTop),
+      m_pNamingScope(a_pNamingScope),
       m_TypeInstallationInfo(a_pType, nullptr, TypeInstallFunc(this, &TypeBuilderBase::_installFunc)),
       m_TemplateSpecArgumentRegistrer(a_Arguments)
 {
@@ -170,7 +179,9 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
             {
                 if (auto pNS = m_pNamingScope->asNamespace())
                     pNS->addType(a_pType);
-                detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType));
+                detail::newTemplateSpecialization(pTemplate, args, static_cast<lang::ClassType*>(a_pType),
+                                                  (_PHNTM_isFullSpec() ? 0 : PHANTOM_R_FLAG_IMPLICIT) |
+                                                  PHANTOM_R_FLAG_NATIVE);
             }
             else
             {
@@ -203,6 +214,11 @@ void TypeBuilderBase::_installFunc(lang::Type* a_pType, TypeInstallationStep a_S
         }
     }
     break;
+    case TypeInstallationStep::Release:
+    {
+        // release(); // TODO : fix release
+    }
+    break;
     default:
         break;
     }
@@ -231,6 +247,8 @@ Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Namespac
 Template* TypeBuilderBase::_getClassTemplate(lang::ClassType* a_pClass, Scope* a_pScope)
 {
     PHANTOM_ASSERT(a_pScope);
+    if (auto pTemplate = a_pClass->getTemplate())
+        return pTemplate;
     auto name = a_pClass->getName();
     for (Template* pTemplate : a_pScope->getTemplates())
     {
@@ -271,6 +289,17 @@ void TypeBuilderBase::operator()(lang::MetaDatas&& a_MD)
     }
 }
 
+void TypeBuilderBase::operator()(std::initializer_list<const char*> a_ParamNames)
+{
+    PHANTOM_ASSERT(!m_Members.empty() && m_Members.back().isFunc, "last declaration does not accept parameter names");
+    m_Members.back().paramNames.resize(a_ParamNames.size());
+    auto it = a_ParamNames.begin();
+    for (size_t i = 0; i < a_ParamNames.size(); ++i)
+    {
+        m_Members.back().paramNames[i] = *it++;
+    }
+}
+
 void TypeBuilderBase::operator()(uint a_Flags)
 {
     m_TypeInstallationInfo.type->addFlags(a_Flags);
@@ -303,7 +332,7 @@ void TypeBuilderBase::operator()(lang::Modifiers a_Modifiers)
 
 NamespaceBuilder::NamespaceBuilder(_PHNTM_GlobalRegistrer* a_pRegistrer) : _PHNTM_pRegistrer(a_pRegistrer)
 {
-    _PHNTM_pNamespace = a_pRegistrer->_PHNTM_getNamingScope();
+    _PHNTM_pNamespace = static_cast<Namespace*>(a_pRegistrer->_PHNTM_getNamingScope());
     _PHNTM_pSource = a_pRegistrer->_PHNTM_getOwnerScope();
 }
 
@@ -358,6 +387,18 @@ void NamespaceBuilder::_addVariable(Variable* a_pVar)
     _PHNTM_pNamespace->addVariable(a_pVar);
     _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pVar);
     m_Symbols.push_back(a_pVar);
+}
+
+phantom::lang::NamespaceBuilder& NamespaceBuilder::operator()(std::initializer_list<const char*> a_ParamNames)
+{
+    PHANTOM_ASSERT(!m_Symbols.empty() && m_Symbols.back()->asSubroutine());
+    auto& params = static_cast<Subroutine*>(m_Symbols.back())->getParameters();
+    auto  paramNameIt = a_ParamNames.begin();
+    for (size_t i = 0; i < std::min(params.size(), a_ParamNames.size()); ++i)
+    {
+        params[i]->setName(*paramNameIt++);
+    }
+    return *this;
 }
 
 NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a_Hash, Type* a_pType)
@@ -511,48 +552,168 @@ phantom::lang::SymbolWrapper& SymbolWrapper::operator()(StringView a_Annot)
     return *this;
 }
 
-void PhantomBuilderBase::addSubPhantomBuilderBase(PhantomBuilderBase* a_pSub)
+void PhantomBuilderBase::addSubBuilder(PhantomBuilderBase* a_pSub)
 {
-    _PHNTM_SubRegistrers.push_back(a_pSub);
+    _PHNTM_SubBuilders.push_back(a_pSub);
+}
+
+void PhantomBuilderBase::removeAndDestroySubBuilder(PhantomBuilderBase* a_pSub)
+{
+    phantom::deleteVirtual(a_pSub);
+    _PHNTM_SubBuilders.erase_unsorted(std::find(_PHNTM_SubBuilders.begin(), _PHNTM_SubBuilders.end(), a_pSub));
 }
 
 TemplateRegistrer::TemplateRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
     : _PHNTM_StaticGlobalRegistrer(PHANTOM_MODULE_HANDLE(this), dynamic_initializer_()->currentPackage(),
                                    dynamic_initializer_()->currentSource(), a_strFile, line, tag,
-                                   {::phantom::RegistrationStep::Templates}),
+                                   {::phantom::RegistrationStep::Templates, ::phantom::RegistrationStep::ClassTypes,
+                                    ::phantom::RegistrationStep::PostTypedefs}),
       m_func(func)
 {
     _PHNTM_attach();
 }
 
-void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep)
+// TODO : optimize : cache pTemplate in TemplateRegistrer itself
+
+void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep _step)
+{
+    phantom::lang::Symbol* pNamingScopeSym =
+    (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->getOrCreateNamespace(m_func(0));
+    PHANTOM_ASSERT(pNamingScopeSym,
+                   "template scope has not been registered => ensure that the nesting class of "
+                   "your template is registered before it (above in the translation unit)");
+    auto pNamingScope = pNamingScopeSym->asScope();
+    PHANTOM_ASSERT(pNamingScope);
+
+    StringView  name = m_func(3);
+    StringViews nameWords;
+    StringUtil::Split(nameWords, name, ":", true);
+
+    if (nameWords.size() > 1 && _step == ::phantom::RegistrationStep::Templates)
+        return; // skip
+
+    for (size_t i = 0; i < nameWords.size() - 1; ++i)
+    {
+        auto pType = pNamingScope->getType(nameWords[i]);
+        PHANTOM_ASSERT(pType, "%.*s not found in %.*s", PHANTOM_STRING_AS_PRINTF_ARG(nameWords[i]),
+                       PHANTOM_STRING_AS_PRINTF_ARG(pNamingScope->asSymbol()->getQualifiedName()));
+        pNamingScope = static_cast<ClassType*>(pType);
+    }
+    name = nameWords.back();
+
+    if (pNamingScope->getTemplate(name) == nullptr)
+    {
+        Scope* pOwnerScope{};
+        if (nameWords.size() == 1)
+            pOwnerScope = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
+        else
+            pOwnerScope = pNamingScope;
+
+        lang::Template* pTemplate = Template::Parse(pOwnerScope->asSymbol(), m_func(1), m_func(2), name,
+                                                    pNamingScope->asSymbol(), 0, PHANTOM_R_FLAG_NATIVE);
+        if (pTemplate == nullptr && _step != RegistrationStep::PostTypedefs)
+            return; // skip => try again in the ClassTypes and PostTypedefs step (template value parameter might need
+                    // some type(def) registration happening later)
+
+        PHANTOM_ASSERT(
+        pTemplate,
+        "failed to parse template signature, maybe due to missing type(def) registration used as template "
+        "value parameter type");
+
+        // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
+        if (pTemplate->getOwner() == nullptr)
+        {
+            /// At source scope
+            if (pOwnerScope != pNamingScope)
+                pOwnerScope->addTemplate(pTemplate);
+            pNamingScope->addTemplate(pTemplate);
+            pOwnerScope->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
+        }
+        else
+        {
+            pNamingScope->addTemplate(pTemplate);
+            /// At class type scope
+            pTemplate->getOwner()->asScope()->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
+        }
+    }
+}
+
+TemplatePartialRegistrer::TemplatePartialRegistrer(StringView (*func)(int), const char* a_strFile, int line, int tag)
+    : _PHNTM_StaticGlobalRegistrer(PHANTOM_MODULE_HANDLE(this), dynamic_initializer_()->currentPackage(),
+                                   dynamic_initializer_()->currentSource(), a_strFile, line, tag,
+                                   {::phantom::RegistrationStep::TemplateSignatures}),
+      m_func(func)
+{
+    _PHNTM_attach();
+}
+
+void TemplatePartialRegistrer::_PHNTM_process(phantom::RegistrationStep)
 {
     phantom::lang::Symbol* pNamingScope =
     (m_func(0).empty()) ? Namespace::Global() : Namespace::Global()->getOrCreateNamespace(m_func(0));
     PHANTOM_ASSERT(pNamingScope,
                    "template scope has not been registered => ensure that the nesting class of "
                    "your template is registered before it (above in the translation unit)");
-    PHANTOM_ASSERT(pNamingScope->asScope());
-    if (pNamingScope->asScope()->getTemplate(m_func(3)) == nullptr)
+    Scope* pScope = pNamingScope->asScope();
+    PHANTOM_ASSERT(pScope);
+    Template* pTemplate = pScope->getTemplate(m_func(3));
+    PHANTOM_ASSERT(pTemplate, "partial specialization of unknown template");
+    if (pTemplate)
     {
-        auto            pSource = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
-        lang::Template* pTemplate =
-        Template::Parse(pSource, m_func(1), m_func(2), m_func(3), pNamingScope, 0, PHANTOM_R_FLAG_NATIVE);
-        // for(auto e : _PHNTM_EXTENDERS) e(pTemplate);
-        if (pTemplate->getOwner() == nullptr)
+        auto pSource = detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source);
+
+        auto pTSign = TemplateSignature::Parse(pSource, m_func(1), m_func(2), pNamingScope, PHANTOM_R_FLAG_NATIVE);
+
+        StringView argListStr = m_func(4);
+
+        Strings argList;
+
+        String buff{""};
+        int    tpl = 0;
+        for (auto ch : argListStr)
         {
-            /// At source scope
-            pSource->addTemplate(pTemplate);
-            pNamingScope->asScope()->addTemplate(pTemplate);
-            detail::nativeSource(_PHNTM_file, _PHNTM_package, _PHNTM_source)
-            ->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
+            if (ch == ',' && tpl == 0) // found a sep
+            {
+                PHANTOM_ASSERT(!buff.empty());
+                argList.push_back(std::move(buff));
+                buff.clear();
+            }
+            else
+            {
+                if (ch == '>')
+                {
+                    tpl--;
+                }
+                else if (ch == '<')
+                {
+                    tpl++;
+                }
+                buff += ch;
+            }
         }
-        else
+        if (!buff.empty())
+            argList.push_back(std::move(buff));
+
+        Namespace* ns = pNamingScope->asNamespace();
+        if (!ns)
+            ns = pNamingScope->getEnclosingNamespace();
+        PHANTOM_ASSERT(ns);
+
+        ns->addCustomSymbol(pTSign);
+
+        LanguageElements args;
+        for (auto& arg : argList)
         {
-            pNamingScope->asScope()->addTemplate(pTemplate);
-            /// At class type scope
-            pTemplate->getOwner()->asScope()->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
+            Symbol* pArg = phantom::lang::Application::Get()->findCppSymbol(arg, pTSign);
+            PHANTOM_ASSERT(pArg);
+            args.push_back(pArg);
         }
+
+        ns->removeCustomSymbol(pTSign);
+
+        TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(pTemplate, pTSign, args);
+        pSpec->setFlags(PHANTOM_R_FLAG_NATIVE); // every native TemplateSpecialization is an instantiation
+        pScope->addTemplateSpecialization(pSpec);
     }
 }
 
@@ -621,7 +782,7 @@ void ReleaseGlobals()
 }
 
 PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, const LanguageElements& a_Arguments,
-                                                      Symbol* a_pBody)
+                                                      Symbol* a_pBody, uint a_uiFlags)
 {
     _PHNTM_R_MTX_GUARD();
     PHANTOM_ASSERT(a_pTemplate->getTemplateSignature()->getTemplateParameters().size() == a_Arguments.size() ||
@@ -637,8 +798,7 @@ PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, con
     PHANTOM_ASSERT(a_pTemplate->isNative());
     TemplateSpecialization* pSpec = pSource->addTemplateSpecialization(
     a_pTemplate, pSource->New<TemplateSignature>(PHANTOM_R_FLAG_NATIVE), a_Arguments, a_pBody);
-    pSpec->setFlags(PHANTOM_R_FLAG_NATIVE | PHANTOM_R_FLAG_IMPLICIT |
-                    pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
+    pSpec->setFlags(a_uiFlags | pSpec->getFlags()); // every native TemplateSpecialization is an instantiation
 }
 
 PHANTOM_EXPORT_PHANTOM lang::Source* nativeSource(StringView a_strFile, StringView a_strPackage, StringView a_strSource)
@@ -918,8 +1078,45 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
     }
 }
 
+void ReleasableBuilder::release()
+{
+    PHANTOM_ASSERT(!m_Released);
+    if (m_Releaser)
+    {
+        if (_PHNTM_SubBuilders.empty())
+        {
+            m_Releaser();
+            m_Released = true;
+        }
+        else
+        {
+            m_ReleaseDelayed = true;
+        }
+    }
+    else
+    {
+        m_Released = true;
+    }
+}
+
+void ReleasableBuilder::_releaseFromTop()
+{
+    auto pTop = m_pTop;
+    pTop->removeAndDestroySubBuilder(this);
+    if (auto topAsReleasable = pTop->AsReleasable())
+    {
+        if (topAsReleasable->m_ReleaseDelayed)
+            topAsReleasable->release();
+    }
+}
+
 } // namespace lang
 } // namespace phantom
+
+PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep)
+{
+    return _module && _module->hasDependencyCascade(_dep);
+}
 
 PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement()
 {

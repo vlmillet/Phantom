@@ -38,7 +38,7 @@ namespace detail
 template<typename T, class Sign>
 struct MethodPointerSimplifier;
 PHANTOM_EXPORT_PHANTOM void newTemplateSpecialization(Template* a_pTemplate, const LanguageElements& arguments,
-                                                      Symbol* a_pBody);
+                                                      Symbol* a_pBody, uint a_uiFlags);
 } // namespace detail
 } // namespace lang
 namespace lang
@@ -111,19 +111,12 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     using ScopeBuilderT<MostDerived>::struct_;
     using ScopeBuilderT<MostDerived>::union_;
 
-    ClassTypeBuilderT(lang::Access a_StartAccess, Top* a_pTop, TemplateSpecArgumentRegistrer a_TplArguments)
-        : BaseType(a_pTop, a_TplArguments)
+    ClassTypeBuilderT(BuilderReleaser _releaser, lang::Access a_StartAccess, Top* a_pTop,
+                      TemplateSpecArgumentRegistrer a_TplArguments)
+        : BaseType(_releaser, a_pTop, a_TplArguments)
     {
         m_pClassType = this->_PHNTM_getMeta();
         m_pClassType->setDefaultAccess(a_StartAccess);
-    }
-
-    virtual ~ClassTypeBuilderT()
-    {
-        for (auto pSec : m_MASections)
-        {
-            phantom::deleteVirtual(pSec);
-        }
     }
 
     template<class ConstantT>
@@ -299,6 +292,25 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<RemoveForwardT<Sign>>::type>;
         _PHNTM_REG_STATIC_ASSERT(IsTypeDefined<FuncProviderNoFwd>::value, "missing #include <phantom/static_method>");
         using FuncPtrT = decltype(a_Ptr);
+        if (a_Name.back() == '>')
+        {
+            size_t findStart = 0;
+            if (a_Name.find("operator<") == 0)
+            {
+                findStart += 9;
+                if (a_Name.find("operator<<") == 0)
+                {
+                    if (a_Name[findStart] == '<')
+                        a_Name = a_Name.substr(0, findStart + 1);
+                    else
+                        a_Name = a_Name.substr(0, findStart);
+                }
+            }
+            else
+            {
+                a_Name = a_Name.substr(0, a_Name.find_first_of("<", findStart));
+            }
+        }
         this->_addFunc(m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(a_Ptr), [](MemberBuilder const& a_Member) {
             auto pFunc = FuncProviderNoFwd::CreateFunction(
             a_Member.classType(), a_Member.name, lang::SignatureH<Sign>::Create(a_Member.classType()->getSource()),
@@ -486,6 +498,9 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
         "missing #include <phantom/method>");
         auto simplified = ::phantom::lang::detail::MethodPointerSimplifier<T, SignNoFwd>::Simplify(a_MPtr);
         using SimplifiedType = decltype(simplified);
+
+        if (a_Name.back() == '>')
+            a_Name = a_Name.substr(0, a_Name.find_first_of("<"));
         this->_addMethod(
         m_pClassType, a_Name, PHANTOM_REG_MEMBER_FORWARD_ARG(simplified), [](MemberBuilder const& a_Member) {
             auto pMethod = a_Member.classType()->NewMeta<::phantom::lang::MethodT<SimplifiedType>>(
@@ -789,7 +804,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
                                  "AddOnType must derived from PhantomBuilderBase");
         auto pType =
         phantom::new_<AddOnType<T, MostDerived>>(static_cast<MostDerived*>(this), std::forward<Args>(a_Args)...);
-        this->addSubPhantomBuilderBase(pType);
+        this->addSubBuilder(pType);
         return *pType;
     }
 
@@ -799,7 +814,6 @@ private:
     };
     SmallVector<MemberRegistrer, 10> m_TemplateParams;
     lang::LanguageElements           m_TemplateArguments;
-    SmallVector<PhantomBuilderBase*> m_MASections;
     lang::Access                     m_CurrentAccess;
 };
 
@@ -833,8 +847,14 @@ struct ClassTypeCtorOnCall
     T& operator()()
     {
         if (!place)
-            place.construct(m_pTop, m_Access, m_SpecReg);
+            place.construct(Delegate<void()>(this, &ClassTypeCtorOnCall<T>::release), m_pTop, m_Access, m_SpecReg);
         return *place;
+    }
+
+    void release()
+    {
+        if (place)
+            place.destroy();
     }
 
     StaticGlobal<T>  place;
@@ -853,42 +873,6 @@ struct ClassTypeCtorOnCall
 
 } // namespace lang
 } // namespace phantom
-
-#if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__)), (__VA_ARGS__))
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#else
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))(__VA_ARGS__)
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#endif
-
-#define _PHNTM_MK_CLASS_T_SIGN_1(t0) t0 _PHNTM_0
-#define _PHNTM_MK_CLASS_T_SIGN_2(t0, t1) _PHNTM_MK_CLASS_T_SIGN_1(t0), t1 _PHNTM_1
-#define _PHNTM_MK_CLASS_T_SIGN_3(t0, t1, t2) _PHNTM_MK_CLASS_T_SIGN_2(t0, t1), t2 _PHNTM_2
-#define _PHNTM_MK_CLASS_T_SIGN_4(t0, t1, t2, t3) _PHNTM_MK_CLASS_T_SIGN_3(t0, t1, t2), t3 _PHNTM_3
-#define _PHNTM_MK_CLASS_T_SIGN_5(t0, t1, t2, t3, t4) _PHNTM_MK_CLASS_T_SIGN_4(t0, t1, t2, t3), t4 _PHNTM_4
-#define _PHNTM_MK_CLASS_T_SIGN_6(t0, t1, t2, t3, t4, t5) _PHNTM_MK_CLASS_T_SIGN_5(t0, t1, t2, t3, t4), t5 _PHNTM_5
-#define _PHNTM_MK_CLASS_T_SIGN_7(t0, t1, t2, t3, t4, t5, t6)                                                           \
-    _PHNTM_MK_CLASS_T_SIGN_6(t0, t1, t2, t3, t4, t5), t6 _PHNTM_6
-#define _PHNTM_MK_CLASS_T_SIGN_8(t0, t1, t2, t3, t4, t5, t6, t7)                                                       \
-    _PHNTM_MK_CLASS_T_SIGN_7(t0, t1, t2, t3, t4, t5, t6), t7 _PHNTM_7
-#define _PHNTM_MK_CLASS_T_SIGN_9(t0, t1, t2, t3, t4, t5, t6, t7, t8)                                                   \
-    _PHNTM_MK_CLASS_T_SIGN_8(t0, t1, t2, t3, t4, t5, t6, t7), t8 _PHNTM_8
-#define _PHNTM_MK_CLASS_T_SIGN_10(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9)                                              \
-    _PHNTM_MK_CLASS_T_SIGN_9(t0, t1, t2, t3, t4, t5, t6, t7, t8), t9 _PHNTM_9
-
-#define _PHNTM_MK_CLASS_T_ARGS_1 _PHNTM_0
-#define _PHNTM_MK_CLASS_T_ARGS_2 _PHNTM_MK_CLASS_T_SIGN_1, _PHNTM_1
-#define _PHNTM_MK_CLASS_T_ARGS_3 _PHNTM_MK_CLASS_T_SIGN_2, _PHNTM_2
-#define _PHNTM_MK_CLASS_T_ARGS_4 _PHNTM_MK_CLASS_T_SIGN_3, _PHNTM_3
-#define _PHNTM_MK_CLASS_T_ARGS_5 _PHNTM_MK_CLASS_T_SIGN_4, _PHNTM_4
-#define _PHNTM_MK_CLASS_T_ARGS_6 _PHNTM_MK_CLASS_T_SIGN_5, _PHNTM_5
-#define _PHNTM_MK_CLASS_T_ARGS_7 _PHNTM_MK_CLASS_T_SIGN_6, _PHNTM_6
-#define _PHNTM_MK_CLASS_T_ARGS_8 _PHNTM_MK_CLASS_T_SIGN_7, _PHNTM_7
-#define _PHNTM_MK_CLASS_T_ARGS_9 _PHNTM_MK_CLASS_T_SIGN_8, _PHNTM_8
-#define _PHNTM_MK_CLASS_T_ARGS_10 _PHNTM_MK_CLASS_T_SIGN_9, _PHNTM_9
 
 #define _PHNTM_ADL_WORKAROUND_VS // PHANTOM_IF_COMPILER_VISUAL_STUDIO(inline void
                                  // _PHNTM_TypeOf(...);)
@@ -963,13 +947,23 @@ struct ClassTypeCtorOnCall
     __VA_ARGS__                                                                                                        \
     PHANTOM_PP_IDENTITY TemplateSign1 inline void                                                                      \
     _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User::_PHNTM_processUserCode(                          \
-    phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
+    PHANTOM_MAYBE_UNUSED phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
+
+PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _module, phantom::lang::Module* _dep);
 
 template<class RegistrerType>
 auto _PHTNM_TemplateTypeOfH()
 {
-    static RegistrerType                         re(true);
-    static decltype(re.this_()._PHNTM_getMeta()) meta = nullptr;
+    using MetaPtr = decltype(reinterpret_cast<RegistrerType*>(nullptr)->this_()._PHNTM_getMeta());
+    using Meta = std::remove_pointer_t<MetaPtr>;
+    if (auto inAnotherModule = phantom::lang::TypeOfUndefined<typename RegistrerType::_PHNTM_ThisType>::object())
+    {
+        if (phantom::lang::detail::currentModule() == inAnotherModule->getModule() ||
+            _PHTNM_moduleHasDependency(phantom::lang::detail::currentModule(), inAnotherModule->getModule()))
+            return static_cast<MetaPtr>(inAnotherModule);
+    }
+    static RegistrerType re(true);
+    static MetaPtr       meta = nullptr;
     if (meta == nullptr)
     {
         meta = re.this_()._PHNTM_getMeta();
@@ -1006,9 +1000,9 @@ auto _PHTNM_TemplateTypeOfH()
 #define _PHANTOM_CLASS_FULL_SPEC(TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, RegName, ...)    \
     _PHANTOM_CLASS_COMMON(                                                                                             \
     (), TemplateSign0, TemplateSign1, DecoratedType, StartAccess, ExtraCode, ,                                         \
-    PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {PHANTOM_REGISTER(ClassTypes) {                                                        \
-        auto PHANTOM_PP_CAT(RegName, _PHANTOM_) = _PHTNM_TemplateTypeOfH<PHANTOM_TYPENAME _PHNTM_Registrer<            \
-        phantom::lang::RemoveForwardTemplateT<PHANTOM_PP_IDENTITY DecoratedType>>::_PHNTM_User>();                     \
+    PHANTOM_IF_NOT_TEMPLATE_ONLY(namespace {PHANTOM_REGISTER(ClassTypes) {                                          \
+        static _PHNTM_Registrer<PHANTOM_PP_IDENTITY DecoratedType>::_PHNTM_User PHANTOM_PP_CAT(RegName, _PHANTOM_);    \
+PHANTOM_PP_CAT(RegName, _PHANTOM_).this_()._PHNTM_setFullSpec();                                                       \
     }                                                                                                                  \
     })                                                                                                                \
     __VA_ARGS__)
@@ -1053,6 +1047,26 @@ auto _PHTNM_TemplateTypeOfH()
     _PHNTM_TEMPLATE_TYPEOF_BY_UNDEFINED((template<>), (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>)))
 
 #define _PHANTOM_CLASS_TS(TemplateTypes, TemplateParams, TemplateArgs, TypeName, StartAccess, ExtraCode)               \
+    PHANTOM_IF_NOT_TEMPLATE_ONLY(class _PHNTM_HERE; namespace {                                                        \
+        ::phantom::lang::TemplatePartialRegistrer PHANTOM_PP_CAT(_PHNTM_TplRegistrer_, __COUNTER__)(                   \
+        [](int id) -> phantom::StringView {                                                                            \
+            switch (id)                                                                                                \
+            {                                                                                                          \
+            case 0:                                                                                                    \
+                return phantom::lang::TypeInfosOf<_PHNTM_HERE>::object().scope();                                      \
+            case 1:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateTypes;                                                                 \
+            case 2:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateParams;                                                                \
+            case 3:                                                                                                    \
+                return PHANTOM_PP_QUOTE(TypeName);                                                                     \
+            case 4:                                                                                                    \
+                return PHANTOM_PP_QUOTE TemplateArgs;                                                                  \
+            }                                                                                                          \
+            return phantom::StringView();                                                                              \
+        },                                                                                                             \
+        __FILE__, __LINE__, __COUNTER__);                                                                              \
+    })                                                                                                                 \
     _PHANTOM_CLASS_T_COMMON((), (template<PHANTOM_PP_MIX(TemplateTypes, TemplateParams)>),                             \
                             (TypeName<PHANTOM_PP_IDENTITY TemplateArgs>), TypeName, StartAccess, ExtraCode)
 
@@ -1075,17 +1089,17 @@ auto _PHTNM_TemplateTypeOfH()
         },                                                                                                             \
         __FILE__, __LINE__, __COUNTER__);                                                                              \
     })                                                                                                                 \
-    _PHANTOM_CLASS_T_COMMON((template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                  \
-                             phantom::lang::TemplateSpecArgumentRegistrer _PHNTM_TemplateArgsADL(                      \
-                             TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**) {                                           \
-                                 return _PHNTM_CREATE_TPL_SPEC_V(TemplateTypes, (PHANTOM_PP_ARG_1 VariadicPair));      \
-                             }),                                                                                       \
-                            (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),                \
-                            (TypeName<PHANTOM_PP_ARG_1 VariadicPair...>), TypeName, StartAccess, ExtraCode,            \
-                            template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                   \
-                            TypeName<_PHNTM_SURROUND_TPLARG(PHANTOM_REMOVE_FWD, (PHANTOM_PP_ARG_0 VariadicPair),       \
-                                                            (PHANTOM_PP_ARG_1 VariadicPair))...>*                      \
-                            _PHNTM_RemoveTemplateForwardADL(TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**);)
+    _PHANTOM_CLASS_T_COMMON(                                                                                           \
+    (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>                                          \
+     phantom::lang::TemplateSpecArgumentRegistrer _PHNTM_TemplateArgsADL(                                              \
+     TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**) {                                                                   \
+         return _PHNTM_CREATE_TPL_SPEC_V((PHANTOM_PP_ARG_0 VariadicPair), (PHANTOM_PP_ARG_1 VariadicPair));            \
+     }),                                                                                                               \
+    (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),                                        \
+    (TypeName<PHANTOM_PP_ARG_1 VariadicPair...>), TypeName, StartAccess, ExtraCode,                                    \
+    template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair> TypeName<_PHNTM_SURROUND_TPLARG(          \
+    PHANTOM_REMOVE_FWD, (PHANTOM_PP_ARG_0 VariadicPair), (PHANTOM_PP_ARG_1 VariadicPair))...>*                         \
+    _PHNTM_RemoveTemplateForwardADL(TypeName<PHANTOM_PP_ARG_1 VariadicPair...>**);)
 
 #define _PHANTOM_CLASS_VS(VariadicPair, TemplateArgs, TypeName, StartAccess, ExtraCode)                                \
     _PHANTOM_CLASS_T_COMMON((), (template<PHANTOM_PP_ARG_0 VariadicPair... PHANTOM_PP_ARG_1 VariadicPair>),            \

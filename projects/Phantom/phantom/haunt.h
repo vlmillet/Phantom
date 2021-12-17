@@ -35,7 +35,9 @@
 #define _HNT_PP_QUOTE(...) _HNT_PP_QUOTE_I(__VA_ARGS__)
 
 #define HAUNT_IMPORT(quotedSource, ...)                                                                                \
-    HAUNT_RAW(PHANTOM_REGISTER(End) { phantom::lang::detail::currentSource()->addImport(quotedSource, __VA_ARGS__); })
+    HAUNT_TEXT("#if PHANTOM_NOT_TEMPLATE")                                                                             \
+    HAUNT_RAW(PHANTOM_REGISTER(End) { phantom::lang::detail::currentSource()->addImport(quotedSource, __VA_ARGS__); }) \
+    HAUNT_TEXT("#endif")
 
 #if defined(__HAUNT__)
 

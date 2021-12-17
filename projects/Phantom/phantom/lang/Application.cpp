@@ -449,12 +449,12 @@ Class* Application::findCppClassCached(StringView a_Text, StringBuffer* a_pLastE
 }
 
 void Application::_loadMain(size_t a_MainHandle, StringView a_strModuleName, StringView a_strFileName,
-                            StringView a_strSourceFile, uint a_uiFlags)
+                            StringView a_strSourceFile, uint a_uiFlags, std::initializer_list<StringView> _dependencies)
 {
     // PHANTOM_ASSERT_ON_MAIN_THREAD();
     PHANTOM_ASSERT(m_OperationCounter == 1);
-    detail::registerModule(a_MainHandle, a_strModuleName, a_strFileName, a_strSourceFile, a_uiFlags, {}, nullptr,
-                           nullptr);
+    detail::registerModule(a_MainHandle, a_strModuleName, a_strFileName, a_strSourceFile, a_uiFlags, _dependencies,
+                           nullptr, nullptr);
     detail::pushInstallation();
     detail::installModules();
     detail::popInstallation();

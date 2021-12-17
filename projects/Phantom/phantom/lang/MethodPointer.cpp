@@ -23,7 +23,6 @@ MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunction
                     a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_IMPLICIT),
       m_pFunctionType(a_pFunctionType)
 {
-    PHANTOM_ASSERT(!isNative());
 }
 
 MethodPointer::MethodPointer(ClassType* a_pObjectType, FunctionType* a_pFunctionType, size_t a_Size, size_t a_Alignment,

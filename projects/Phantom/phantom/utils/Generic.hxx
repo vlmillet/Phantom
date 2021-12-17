@@ -45,7 +45,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()
+            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()({"a_pType"})
             .PHANTOM_T method<::phantom::lang::Type *() const>("operator ::phantom::lang::Type *", &_::operator notypedef<::phantom::lang::Type *>)
             .PHANTOM_T method<::phantom::lang::Type *() const>("getType", &_::getType)
             .PHANTOM_T method<::phantom::lang::Class *() const>("getClass", &_::getClass)
@@ -58,7 +58,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()
+            .PHANTOM_T constructor<void(::phantom::lang::Type *)>()({"a_pType"})
             ;
         }
         PHANTOM_STRUCT_T((class), (TypeRef), ConstructorParams)
@@ -67,7 +67,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(void**)>()
+            .PHANTOM_T constructor<void(void**)>()({"a_pArgs"})
             .PHANTOM_T method<void**() const>("operator void**", &_::operator notypedef<void**>)
             ;
         }
@@ -78,7 +78,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(ReturnType)>()
+            .PHANTOM_T constructor<void(ReturnType)>()({"a_Return"})
             .PHANTOM_T method<ReturnType() const>("operator ReturnType", &_::operator notypedef<ReturnType>)
             ;
         }
@@ -88,7 +88,7 @@ PHANTOM_PACKAGE("phantom.utils")
             PHANTOM_IF((phantom::IsDefaultConstructible<PHANTOM_REFLECTED_TYPE>::value), 
             .PHANTOM_T constructor<void(), default_>()
             )
-            .PHANTOM_T constructor<void(ArgType)>()
+            .PHANTOM_T constructor<void(ArgType)>()({"a_Arg"})
             .PHANTOM_T method<ArgType() const>("operator ArgType", &_::operator notypedef<ArgType>)
             .PHANTOM_T method<ArgType() const>("getValue", &_::getValue)
             ;

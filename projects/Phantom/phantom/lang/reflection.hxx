@@ -45,7 +45,7 @@ PHANTOM_PACKAGE("phantom.lang")
     PHANTOM_SOURCE("reflection")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Functions) { this_().function<void(StringView, StringBuffer&, ::phantom::lang::LanguageElement *)>("conversionOperatorNameNormalizer", conversionOperatorNameNormalizer);}
+        PHANTOM_REGISTER(Functions) { this_().function<void(StringView, StringBuffer&, ::phantom::lang::LanguageElement *)>("conversionOperatorNameNormalizer", conversionOperatorNameNormalizer)({"a_strName","a_Buf","a_pScope"});}
         PHANTOM_REGISTER(Enums) { this_().enum_<Access>().values({
             {"Undefined",Access::Undefined},
             {"Public",Access::Public},

@@ -112,7 +112,7 @@ enum class TypeInstallationStep
     TemplateDefaultArgs,
     Inheritance,
     Members,
-    Installed,
+    Release
 };
 
 using TypeInstallationDelegate = Delegate<void(TypeInstallationStep)>;

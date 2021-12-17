@@ -83,6 +83,25 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
         _PHNTM_REG_STATIC_ASSERT(
         IsTypeDefined<lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>>::value,
         "missing #include <phantom/function>");
+        if (a_Name.back() == '>')
+        {
+            size_t findStart = 0;
+            if (a_Name.find("operator<") == 0)
+            {
+                findStart += 9;
+                if (a_Name.find("operator<<") == 0)
+                {
+                    if (a_Name[findStart] == '<')
+                        a_Name = a_Name.substr(0, findStart + 1);
+                    else
+                        a_Name = a_Name.substr(0, findStart);
+                }
+            }
+            else
+            {
+                a_Name = a_Name.substr(0, a_Name.find_first_of("<", findStart));
+            }
+        }
         auto pFunc =
         lang::FunctionProviderT<PHANTOM_TYPENAME FunctionTypeToFunctionPointerType<Sign>::type>::CreateFunction(
         _PHNTM_pSource, a_Name, lang::SignatureH<Sign>::Create(_PHNTM_pSource), a_Ptr);
@@ -149,6 +168,8 @@ struct PHANTOM_EXPORT_PHANTOM NamespaceBuilder : PhantomBuilderBase,
             m_Symbols.back()->addMetaDatas(a_Metas);
         return *this;
     }
+
+    NamespaceBuilder& operator()(std::initializer_list<const char*> a_ParamNames);
 
     lang::Namespace* _PHNTM_getMeta() const { return _PHNTM_pNamespace; }
 
@@ -221,7 +242,9 @@ struct NamespaceBuilderConstructOnCall
         }                                                                                                              \
         virtual void _PHNTM_process(phantom::RegistrationStep a_Step)                                                  \
         {                                                                                                              \
+            _PHNTM_forwardSourcePackagePush();                                                                         \
             _PHNTM_processUserCode(a_Step);                                                                            \
+            _PHNTM_forwardSourcePackagePop();                                                                          \
             namespace_().end();                                                                                        \
         }                                                                                                              \
         inline void _PHNTM_processUserCode(phantom::RegistrationStep);                                                 \
@@ -229,10 +252,18 @@ struct NamespaceBuilderConstructOnCall
         decltype(namespace_)&                                                           this_ = namespace_;            \
     } PHANTOM_PP_CAT(_PHNTM_i_, Counter);                                                                              \
     }                                                                                                                  \
-    void PHANTOM_PP_CAT(_PHNTM_, Counter)::_PHNTM_processUserCode(phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
+    void PHANTOM_PP_CAT(_PHNTM_, Counter)::_PHNTM_processUserCode(                                                     \
+    PHANTOM_MAYBE_UNUSED phantom::RegistrationStep PHANTOM_REGISTRATION_STEP)
 
 #define _PHNTM_REGISTER_0()                                                                                            \
     _PHNTM_REGISTER_X(Start, Namespaces, Enums, ClassTypes, PostClassTypes, TemplateSignatures, Typedefs,              \
                       PostTypedefs, PostTypes, Variables, PostVariables, Functions, End)
 
 #define PHANTOM_NAMESPACE PHANTOM_REGISTER()
+
+#define PHANTOM_STATIC_INIT(Type, Name, /*Value*/...)                                                                  \
+    namespace                                                                                                          \
+    {                                                                                                                  \
+    PHANTOM_PP_REMOVE_PARENS(Type) Name;                                                                               \
+    }                                                                                                                  \
+    PHANTOM_REGISTER(End) { Name = __VA_ARGS__; }\

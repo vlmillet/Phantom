@@ -35,18 +35,18 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::QualifiedType>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Type*)>()
+            .constructor<void(Type*)>()({"a_pType"})
             .method<Type*() const>("getConstVolatiledType", &_::getConstVolatiledType)
-            .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
+            .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)({"a_pSource"})
             .method<::phantom::lang::ConstVolatileType *() const, virtual_>("asConstVolatileClass", &_::asConstVolatileClass)
-            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
-            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
+            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)({"a_pType","a_Score","a_Deductions"})
+            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)({"a_pOther"})
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             ;
         }

@@ -25,10 +25,12 @@ struct PHANTOM_EXPORT_PHANTOM _PHNTM_StaticGlobalRegistrer
     ~_PHNTM_StaticGlobalRegistrer();
     void                              __PHNTM_process(RegistrationStep);
     virtual void                      _PHNTM_process(RegistrationStep) = 0;
-    lang::Source*               _PHNTM_getSource() const;
-    lang::Module*               _PHNTM_getModule() const;
+    lang::Source*                     _PHNTM_getSource() const;
+    lang::Module*                     _PHNTM_getModule() const;
     void                              _PHNTM_attach();
     void                              _PHNTM_detach();
+    void                              _PHNTM_forwardSourcePackagePush();
+    void                              _PHNTM_forwardSourcePackagePop();
     StringView                        _PHNTM_file;
     StringView                        _PHNTM_package;
     StringView                        _PHNTM_source;

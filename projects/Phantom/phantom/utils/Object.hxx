@@ -38,8 +38,8 @@ PHANTOM_PACKAGE("phantom.utils")
         .public_()
             .method<void*() const>("getMostDerived", &_::getMostDerived)
             .method<::phantom::lang::Class *() const>("getMetaClass", &_::getMetaClass)
-            .method<void const*(::phantom::lang::Class *) const>("as", &_::as)
-            .method<void*(::phantom::lang::Class *)>("as", &_::as)
+            .method<void const*(::phantom::lang::Class *) const>("as", &_::as)({"a_pClass"})
+            .method<void*(::phantom::lang::Class *)>("as", &_::as)({"a_pClass"})
             .method<void(), virtual_>("terminate", &_::terminate)
             ;
         }

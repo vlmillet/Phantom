@@ -43,32 +43,32 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Type*, StringView, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, void*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, StringView, void*, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Type*, StringView, Modifiers, uint)>()({"a_pValueType","a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(Type*, void*, Modifiers, uint)>()({"a_pValueType","a_pAddress","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(Type*, StringView, void*, Modifiers, uint)>()({"a_pValueType","a_strName","a_pAddress","a_Modifiers","a_uiFlags"})["0"]["0"]
         
         .public_()
             .method<void()>("initialize", &_::initialize)
             .method<void*() const>("getAddress", &_::getAddress)
             .method<Type*() const>("getValueType", &_::getValueType)
-            .method<void(void const*) const>("setValue", &_::setValue)
-            .method<void(void*) const>("getValue", &_::getValue)
+            .method<void(void const*) const>("setValue", &_::setValue)({"a_pInputBuffer"})
+            .method<void(void*) const>("getValue", &_::getValue)({"a_pOutputBuffer"})
             .method<Variable*() const, virtual_|override_>("asVariable", &_::asVariable)
             .method<StaticField*() const, virtual_|override_>("asStaticField", &_::asStaticField)
-            .method<void(Type*)>("setValueType", &_::setValueType)
+            .method<void(Type*)>("setValueType", &_::setValueType)({"a_pType"})
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Expression*)>("setInitializationExpression", &_::setInitializationExpression)
+            // .method<void(Expression*)>("setInitializationExpression", &_::setInitializationExpression)({"a_pExpression"})
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*() const>("getInitializationExpression", &_::getInitializationExpression)
         
         .protected_()
-            .method<void(void*)>("setAddress", &_::setAddress)
+            .method<void(void*)>("setAddress", &_::setAddress)({"a_pAddress"})
         
         .protected_()
             .method<void(), virtual_>("finalize", &_::finalize)

@@ -38,7 +38,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Type*()>("makeConst", &_::makeConst)
             .method<Type*()>("makeVolatile", &_::makeVolatile)
             .method<Type*()>("makeConstVolatile", &_::makeConstVolatile)
-            .method<Type*(size_t)>("makeArray", &_::makeArray)
+            .method<Type*(size_t)>("makeArray", &_::makeArray)({"s"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

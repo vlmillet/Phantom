@@ -9,6 +9,7 @@
 #include "macros.h"
 
 #include <haunt>
+#include <initializer_list>
 
 HAUNT_STOP;
 
@@ -112,5 +113,15 @@ template<class T>
 auto StaticTypeOf()
 {
     return _TypeOf::StaticTypeOf<T>::Get();
+}
+
+namespace lang
+{
+class Type;
+}
+template<class... Args>
+std::initializer_list<lang::Type*> TypesOf()
+{
+    return {static_cast<lang::Type*>(PHANTOM_TYPEOF(Args))...};
 }
 } // namespace phantom

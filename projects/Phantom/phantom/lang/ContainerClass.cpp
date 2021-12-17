@@ -176,13 +176,13 @@ void ContainerClass::advanceIterator(void* a_pIt, size_t a_N) const
         PHANTOM_ASSERT(pIteratorType->removeAllQualifiers() == m_pValueType->removeAllQualifiers()->addPointer());
     }
 
-    while (a_N--)
-    {
-        if (pMethodInc)
+    if (pMethodInc)
+        while (a_N--)
+        {
             pMethodInc->invoke(a_pIt, nullptr);
-        else
-            *(char**)a_pIt += m_pValueType->getSize(); // built in pointer ++
-    }
+        }
+    else
+        *(char**)a_pIt += m_pValueType->getSize() * a_N; // built in pointer += N
 }
 
 bool ContainerClass::compareIterators(void* a_pIt1, void* a_pIt2) const

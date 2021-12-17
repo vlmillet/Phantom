@@ -86,6 +86,7 @@ class ContainerClass;
 class SequentialContainerClass;
 class MapClass;
 class SetClass;
+class ArrayClass;
 class VectorClass;
 class StringClass;
 class ArrayClass;

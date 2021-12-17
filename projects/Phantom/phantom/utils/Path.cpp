@@ -396,7 +396,6 @@ Path Path::finalPath() const
 
     HANDLE hFile;
 
-    bool reparsePointFound = false;
     Path finalPath;
     char lnk[256];
     memset(lnk, 0, 256);
@@ -434,7 +433,6 @@ Path Path::finalPath() const
 
             if (*lnk)
             {
-                reparsePointFound = true;
                 finalPath = Path(lnk + 4);
             }
         }

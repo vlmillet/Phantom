@@ -65,6 +65,7 @@ Module::~Module()
 void Module::initialize()
 {
     Symbol::initialize();
+    getOrCreatePackage("default");
     Package* pDefaultPackage = newPackage(getName());
     if (isNative())
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
@@ -85,38 +86,60 @@ bool Module::canBeUnloaded() const
 
 Package* Module::getDefaultPackage() const
 {
-    PHANTOM_ASSERT(m_Packages.size() && m_Packages.front()->getName() == getName());
-    return m_Packages.front();
+    return getPackage("default");
 }
 
 void Module::addDependency(Module* a_pModule)
 {
     PHANTOM_ASSERT(!hasDependency(a_pModule), "dependency already exists");
     PHANTOM_ASSERT(!a_pModule->hasDependencyCascade((Module*)this), "cyclic module dependency detected");
-    m_Dependencies.push_back(a_pModule);
+    m_Dependencies.insert(a_pModule);
+    a_pModule->m_Dependents.insert(this);
+    _addDependencyRecursive(a_pModule);
 }
 
 void Module::removeDependency(Module* a_pModule)
 {
+    _removeDependencyRecursive(a_pModule);
+    a_pModule->m_Dependents.erase(this);
     PHANTOM_ASSERT(hasDependency(a_pModule), "dependency does not exist");
-    m_Dependencies.erase(std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pModule));
+    m_Dependencies.erase(a_pModule);
+}
+
+void Module::_addDependencyRecursive(Module* a_pDependency)
+{
+    m_Dependencies_Recursive.insert(a_pDependency);
+    for (auto pDerived : a_pDependency->m_Dependencies_Recursive)
+    {
+        m_Dependencies_Recursive.insert(pDerived);
+    }
+    for (auto pDependent : m_Dependents)
+    {
+        pDependent->_addDependencyRecursive(a_pDependency);
+    }
+}
+
+void Module::_removeDependencyRecursive(Module* a_pDependency)
+{
+    for (auto pDependent : m_Dependents)
+    {
+        pDependent->_removeDependencyRecursive(a_pDependency);
+    }
+    for (auto pDep : a_pDependency->m_Dependencies_Recursive)
+    {
+        m_Dependencies_Recursive.erase(pDep);
+    }
+    m_Dependencies_Recursive.erase(a_pDependency);
 }
 
 bool Module::hasDependency(Module* a_pModule) const
 {
-    return std::find(m_Dependencies.begin(), m_Dependencies.end(), a_pModule) != m_Dependencies.end();
+    return m_Dependencies.find(a_pModule) != m_Dependencies.end();
 }
 
 bool Module::hasDependencyCascade(Module* a_pModule) const
 {
-    if (hasDependency(a_pModule))
-        return true;
-    for (auto module : m_Dependencies)
-    {
-        if (module->hasDependencyCascade(a_pModule))
-            return true;
-    }
-    return false;
+    return m_Dependencies_Recursive.find(a_pModule) != m_Dependencies_Recursive.end();
 }
 
 int Module::getDependencyLevel() const

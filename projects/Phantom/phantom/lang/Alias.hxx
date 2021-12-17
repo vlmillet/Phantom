@@ -42,7 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Symbol>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
         
@@ -50,19 +50,19 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Symbol*, StringView, Modifiers, uint)>()["\"\""]["0"]["0"]
+            .constructor<void(Modifiers, uint)>()({"a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(Symbol*, StringView, Modifiers, uint)>()({"a_pSymbol","a_strName","a_Modifiers","a_uiFlags"})["\"\""]["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<void(), virtual_|override_>("terminate", &_::terminate)
             .method<Type*() const, virtual_|override_>("toType", &_::toType)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)
             .method<Alias*() const, virtual_|override_>("asAlias", &_::asAlias)
             .method<Symbol*() const>("getAliasedSymbol", &_::getAliasedSymbol)
-            .method<void(Symbol*)>("setAliasedSymbol", &_::setAliasedSymbol)
-            .method<void(Alias*)>("addAlias", &_::addAlias)
-            .method<Alias*(StringView) const>("getAlias", &_::getAlias)
-            .method<void(Symbols&, bool) const, virtual_>("fetchAccessibleSymbols", &_::fetchAccessibleSymbols)["true"]
+            .method<void(Symbol*)>("setAliasedSymbol", &_::setAliasedSymbol)({"a_pElement"})
+            .method<void(Alias*)>("addAlias", &_::addAlias)({"a_pAlias"})
+            .method<Alias*(StringView) const>("getAlias", &_::getAlias)({"a_strName"})
+            .method<void(Symbols&, bool) const, virtual_>("fetchAccessibleSymbols", &_::fetchAccessibleSymbols)({"a_Symbols","a_bIncludeUnamedSubSymbols"})["true"]
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

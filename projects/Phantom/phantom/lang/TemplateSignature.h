@@ -16,7 +16,7 @@ namespace phantom
 {
 namespace lang
 {
-class PHANTOM_EXPORT_PHANTOM TemplateSignature : public LanguageElement
+class PHANTOM_EXPORT_PHANTOM TemplateSignature : public Symbol
 {
     PHANTOM_DECLARE_LANGUAGE_ELEMENT_VISIT;
 
@@ -266,8 +266,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     TemplateSignature* clone(LanguageElement* a_pOwner, uint a_Flags = 0) const;
-
-    void getName(StringBuffer& a_Buf) const override;
 
     virtual hash64 computeLocalHash() const
     {

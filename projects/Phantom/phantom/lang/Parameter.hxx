@@ -43,25 +43,24 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::LocalVariable>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, Modifiers, uint)>()["0"]["0"]
-            .constructor<void(Type*, StringView, Modifiers, uint)>()["0"]["0"]
-            .method<void(StringView)>("setDefinitionName", &_::setDefinitionName)
+            .constructor<void(Modifiers, uint)>()({"a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(Type*, Modifiers, uint)>()({"a_pValueType","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(Type*, StringView, Modifiers, uint)>()({"a_pValueType","a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<bool() const>("hasDefaultArgument", &_::hasDefaultArgument)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Expression*() const>("getDefaultArgumentExpression", &_::getDefaultArgumentExpression)
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(Expression*)>("setDefaultArgumentExpression", &_::setDefaultArgumentExpression)
+            // .method<void(Expression*)>("setDefaultArgumentExpression", &_::setDefaultArgumentExpression)({"a_pDefaultArgumentExpression"})
             .method<StringView() const>("getNativeDefaultArgumentString", &_::getNativeDefaultArgumentString)
             .method<bool() const>("isEllipsis", &_::isEllipsis)
             .method<Parameter*() const, virtual_|override_>("asParameter", &_::asParameter)
-            .method<Parameter*(LanguageElement*) const, virtual_|override_>("cloneImpl", &_::cloneImpl)
+            .method<Parameter*(LanguageElement*) const, virtual_|override_>("cloneImpl", &_::cloneImpl)({"a_pOwner"})
         
         .protected_()
             /// missing symbol(s) reflection (phantom::lang::Expression) -> use the 'haunt.bind' to bind symbols with your custom haunt files

@@ -20,8 +20,10 @@ class VectorClassT : public SequentialContainerClassT<T, Base>
 {
     using SelfType = VectorClassT<T, Base>;
     using BaseType = SequentialContainerClassT<T, Base>;
-    typedef T                ContainerType;
-    typedef PHANTOM_TYPENAME T::value_type ContainerValueType;
+    typedef T                                       ContainerType;
+    using ContainerConstIterator = PHANTOM_TYPENAME ContainerType::const_iterator;
+    using ContainerIterator = PHANTOM_TYPENAME      ContainerType::iterator;
+    using ContainerValueType = PHANTOM_TYPENAME     ContainerType::value_type;
 
 public:
     VectorClassT(StringView a_strName, Modifiers a_Modifiers = 0) : BaseType(a_strName, a_Modifiers)
@@ -39,6 +41,13 @@ public:
     {
         const T* pContainer = static_cast<const T*>(a_pContainer);
         return (const void*)pContainer->data();
+    }
+    void insert(void* a_pContainer, void const* a_pIt, void const* a_pValue, void* a_pOutIt) const override
+    {
+        ContainerType* pContainer = static_cast<ContainerType*>(a_pContainer);
+        auto           pIt = reinterpret_cast<ContainerIterator const*>(a_pIt);
+        *reinterpret_cast<ContainerIterator*>(a_pOutIt) =
+        pContainer->insert(*pIt, *reinterpret_cast<ContainerValueType const*>(a_pValue));
     }
 };
 

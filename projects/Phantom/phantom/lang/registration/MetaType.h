@@ -11,7 +11,7 @@
 #define PHANTOM_META_TYPE(attached_type, MetaType)                                                                     \
     namespace phantom                                                                                                  \
     {                                                                                                                  \
-    namespace lang                                                                                               \
+    namespace lang                                                                                                     \
     {                                                                                                                  \
     template<>                                                                                                         \
     struct MetaTypeOf<attached_type>                                                                                   \
@@ -26,20 +26,25 @@
     }                                                                                                                  \
     }
 
-#define PHANTOM_META_TYPE_T(template_types, template_params, attached_type, MetaType)                                  \
+#define PHANTOM_META_TYPE_T(...) PHANTOM_PP_VARARG(PHANTOM_META_TYPE_T_, ##__VA_ARGS__)
+
+#define PHANTOM_META_TYPE_T_4(template_types, template_params, attached_type, MetaType)                                \
+    PHANTOM_META_TYPE_T_5(template_types, template_params, attached_type, MetaType,                                    \
+                          (attached_type<PHANTOM_PP_IDENTITY template_params>))
+#define PHANTOM_META_TYPE_T_5(template_types, template_params, attached_type, MetaType, MetaTypeTArgs)                 \
     namespace phantom                                                                                                  \
     {                                                                                                                  \
-    namespace lang                                                                                               \
+    namespace lang                                                                                                     \
     {                                                                                                                  \
     template<PHANTOM_PP_MIX(template_types, template_params)>                                                          \
     struct MetaTypeOf<attached_type<PHANTOM_PP_IDENTITY template_params> >                                             \
     {                                                                                                                  \
-        typedef MetaType<attached_type<PHANTOM_PP_IDENTITY template_params> > type;                                    \
+        using type = MetaType<PHANTOM_PP_IDENTITY MetaTypeTArgs>;                                                      \
     };                                                                                                                 \
     template<PHANTOM_PP_MIX(template_types, template_params)>                                                          \
-    struct MetaTypeOf<MetaType<attached_type<PHANTOM_PP_IDENTITY template_params> > >                                  \
+    struct MetaTypeOf<MetaType<PHANTOM_PP_IDENTITY MetaTypeTArgs> >                                                    \
     {                                                                                                                  \
-        typedef Class type;                                                                                            \
+        using type = Class;                                                                                            \
     };                                                                                                                 \
     }                                                                                                                  \
     }

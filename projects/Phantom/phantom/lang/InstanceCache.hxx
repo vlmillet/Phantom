@@ -39,7 +39,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
         
         .public_()
-            .constructor<void(Class*)>()
+            .constructor<void(Class*)>()({"a_pClass"})
         
         .public_()
             .method<ThreadSafeArrayView<void*, SpinMutex>() const>("getInstances", &_::getInstances)

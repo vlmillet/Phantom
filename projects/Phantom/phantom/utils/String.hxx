@@ -30,7 +30,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("String")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Functions) { this_().function<const char*(const String&)>("cstr", cstr);}
+        PHANTOM_REGISTER(Functions) { this_().function<const char*(const String&)>("cstr", cstr)({"str"});}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("String")
 PHANTOM_END("phantom.utils")

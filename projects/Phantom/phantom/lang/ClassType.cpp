@@ -16,6 +16,7 @@
 #include "LValueReference.h"
 #include "MemberAnonymousStruct.h"
 #include "MemberAnonymousUnion.h"
+#include "Module.h"
 #include "Namespace.h"
 #include "Pointer.h"
 #include "Property.h"
@@ -23,6 +24,7 @@
 #include "Signature.h"
 #include "TemplateSpecialization.h"
 #include "Variable.h"
+#include "phantom/detail/core_internal.h"
 #include "registration/registration.h"
 /* *********************************************** */
 namespace phantom
@@ -366,11 +368,10 @@ ValueMember* ClassType::getValueMember(StringView a_strName) const
 
 void ClassType::addConstructor(Constructor* a_pConstructor)
 {
-    // TODO rename these internal calls will more precise names (more what they do)
-    // a_pConstructor->_onAttachingToClass(this);
     _addSymbol(a_pConstructor);
     m_Constructors.push_back(a_pConstructor);
-    a_pConstructor->_onAttachedToClass(this);
+    if (a_pConstructor->getThis() == nullptr)
+        a_pConstructor->createThis(this);
 }
 
 Constructor* ClassType::addConstructor(const Parameters& a_Parameters, Modifiers a_Modifiers /*= 0*/,
@@ -464,14 +465,16 @@ Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFi
 
 void ClassType::addMethod(Method* a_pMethod)
 {
-    a_pMethod->_onAttachingToClass(this);
+    if (a_pMethod->isNative())
+        a_pMethod->_normalizeNativeName(this);
     _addSymbol(a_pMethod);
     PHANTOM_ASSERT(isNative() || !isSized() || !(a_pMethod->isVirtual()),
                    "type sized, cannot add virtual member functions anymore or the memory "
                    "consistency would be messed up");
     PHANTOM_ASSERT(isNative() || Scope::acceptsSubroutine(a_pMethod));
     m_Methods.push_back(a_pMethod);
-    a_pMethod->_onAttachedToClass(this);
+    if (a_pMethod->getThis() == nullptr)
+        a_pMethod->createThis(this);
 }
 
 void ClassType::addStaticMethod(StaticMethod* a_pStaticMethod)
@@ -707,6 +710,9 @@ void ClassType::_onNativeElementsAccessImpl()
     phantom::TypeInstallationDelegate func = m_OnDemandMembersFunc;
     m_OnDemandMembersFunc = nullptr;
     func(phantom::TypeInstallationStep::Members);
+    // TODO : check we have not released the module registration infos yet
+    if (dynamic_initializer_()->getModuleRegistrationInfo(getModule()->getName())->m_bInstalled)
+        func(phantom::TypeInstallationStep::Release);
     if (!wasActive)
         phantom::lang::detail::popInstallation();
     if (!pCurrentSource)

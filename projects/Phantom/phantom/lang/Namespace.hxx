@@ -49,7 +49,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Symbol, ::phantom::lang::Scope>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
@@ -60,43 +60,45 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Namespace *()>("Global", &_::Global)
         
         .public_()
-            .constructor<void(Modifiers, uint)>()["0"]["0"]
-            .constructor<void(StringView, Modifiers, uint)>()["0"]["0"]
+            .constructor<void(Modifiers, uint)>()({"a_Modifiers","a_uiFlags"})["0"]["0"]
+            .constructor<void(StringView, Modifiers, uint)>()({"a_strName","a_Modifiers","a_uiFlags"})["0"]["0"]
             .method<void()>("initialize", &_::initialize)
             .method<Scope*() const, virtual_|override_>("asScope", &_::asScope)
             .method<Namespace*() const, virtual_|override_>("asNamespace", &_::asNamespace)
             .method<Namespace*() const, virtual_|override_>("toNamespace", &_::toNamespace)
-            .method<void(Symbol*)>("addCustomSymbol", &_::addCustomSymbol)
+            .method<void(Symbol*)>("addCustomSymbol", &_::addCustomSymbol)({"a_pSymbol"})
+            .method<void(Symbol*)>("removeCustomSymbol", &_::removeCustomSymbol)({"a_pSymbol"})
             .method<Namespace*() const>("getRootNamespace", &_::getRootNamespace)
-            .method<Namespace*(StringView) const>("getNamespace", &_::getNamespace)
-            .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)["\":\""]
+            .method<Namespace*(StringView) const>("getNamespace", &_::getNamespace)({"a_strName"})
+            .method<Namespace*(StringView, const char*) const>("getNamespaceCascade", &_::getNamespaceCascade)({"qualifiedName","a_SeparatorList"})["\":\""]
             .method<Namespace*() const>("getParentNamespace", &_::getParentNamespace)
-            .method<Namespace*(StringView, const char*)>("getOrCreateNamespace", &_::getOrCreateNamespace)["\":\""]
-            .method<Namespace*(StringView)>("newNamespace", &_::newNamespace)
-            .method<Alias*(StringView, Namespace*)>("addNamespaceAlias", &_::addNamespaceAlias)
-            .method<void(StringView)>("removeNamespaceAlias", &_::removeNamespaceAlias)
-            .method<Alias*(StringView) const>("getNamespaceAlias", &_::getNamespaceAlias)
-            .method<Namespace*(StringView) const>("getNamespaceAliased", &_::getNamespaceAliased)
+            .method<Namespace*(StringView, const char*)>("getOrCreateNamespace", &_::getOrCreateNamespace)({"a_strNamespaceName","separatorPattern"})["\":\""]
+            .method<Scope*(StringView, const char*)>("getScopeOrCreateNamespace", &_::getScopeOrCreateNamespace)({"a_strScopeName","separatorPattern"})
+            .method<Namespace*(StringView)>("newNamespace", &_::newNamespace)({"a_strNamespace"})
+            .method<Alias*(StringView, Namespace*)>("addNamespaceAlias", &_::addNamespaceAlias)({"a_strAlias","a_pNamespace"})
+            .method<void(StringView)>("removeNamespaceAlias", &_::removeNamespaceAlias)({"a_strAlias"})
+            .method<Alias*(StringView) const>("getNamespaceAlias", &_::getNamespaceAlias)({"a_strName"})
+            .method<Namespace*(StringView) const>("getNamespaceAliased", &_::getNamespaceAliased)({"a_strAlias"})
             .method<Namespaces const&() const>("getNamespaces", &_::getNamespaces)
             .method<Aliases const&() const>("getNamespaceAliases", &_::getNamespaceAliases)
             .method<Symbols const&() const>("getSymbols", &_::getSymbols)
-            .method<String(char) const>("asPath", &_::asPath)["'/'"]
-            .method<bool(Symbol*) const, virtual_|override_>("isSymbolHidden", &_::isSymbolHidden)
-            .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)
-            .method<void(Symbol*, Symbols&) const, virtual_|override_>("getElementDoubles", &_::getElementDoubles)
-            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
+            .method<String(char) const>("asPath", &_::asPath)({"separator"})["'/'"]
+            .method<bool(Symbol*) const, virtual_|override_>("isSymbolHidden", &_::isSymbolHidden)({"a_pSymbol"})
+            .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)({"a_Name","a_Symbols"})
+            .method<void(Symbol*, Symbols&) const, virtual_|override_>("getElementDoubles", &_::getElementDoubles)({"a_pElement","out"})
+            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)({"a_pOther"})
             .using_("Symbol::getQualifiedName")
             .using_("Symbol::getQualifiedDecoratedName")
             .using_("Symbol::getRelativeName")
             .using_("Symbol::getRelativeDecoratedName")
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)
-            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)
-            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)({"a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)({"a_pTo","a_Buf"})
+            .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"a_pTo","a_Buf"})
+            .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedDecoratedName", &_::getQualifiedDecoratedName)({"a_Buf"})
         
         .protected_()
-            .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)
-            .method<void(Symbol*), virtual_|override_>("onScopeSymbolRemoving", &_::onScopeSymbolRemoving)
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolAdded", &_::onScopeSymbolAdded)({"a_pSym"})
+            .method<void(Symbol*), virtual_|override_>("onScopeSymbolRemoving", &_::onScopeSymbolRemoving)({"a_pSym"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

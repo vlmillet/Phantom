@@ -13,17 +13,22 @@ struct ThreadSafeArrayView
 {
     using const_iterator = T const*;
 
+    ThreadSafeArrayView() = default;
+
     ThreadSafeArrayView(T const* a_Data, size_t a_Size, Mutex& a_Mutex)
-        : m_Data(a_Data), m_Size(a_Size), m_Mutex(a_Mutex)
+        : m_Data(a_Data), m_Size(a_Size), m_Mutex(&a_Mutex)
     {
         a_Mutex.lock();
     }
     ~ThreadSafeArrayView()
     {
-        if (!m_bMoved)
-            m_Mutex.unlock();
+        if (m_Mutex)
+            m_Mutex->unlock();
     }
-    ThreadSafeArrayView(ThreadSafeArrayView&& a_Tmp) : m_Data(a_Tmp.m_Data), m_Mutex(a_Tmp.m_Mutex), m_bMoved(true) {}
+    ThreadSafeArrayView(ThreadSafeArrayView&& a_Tmp) : m_Data(a_Tmp.m_Data), m_Mutex(a_Tmp.m_Mutex)
+    {
+        a_Tmp.m_Mutex = nullptr;
+    }
     ThreadSafeArrayView(ThreadSafeArrayView const&) = delete;
     ThreadSafeArrayView& operator=(ThreadSafeArrayView const&) = delete;
     ThreadSafeArrayView& operator=(ThreadSafeArrayView&&) = delete;
@@ -35,10 +40,9 @@ struct ThreadSafeArrayView
     T const* end() const { return m_Data + m_Size; }
 
 private:
-    T const* m_Data;
-    size_t   m_Size;
-    Mutex&   m_Mutex;
-    bool     m_bMoved = false;
+    T const* m_Data{};
+    size_t   m_Size{};
+    Mutex*   m_Mutex{};
 };
 
 template<class Container, class Mutex>

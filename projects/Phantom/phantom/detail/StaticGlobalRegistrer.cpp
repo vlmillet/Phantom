@@ -56,6 +56,22 @@ void _PHNTM_StaticGlobalRegistrer::_PHNTM_detach()
     }
 }
 
+void _PHNTM_StaticGlobalRegistrer::_PHNTM_forwardSourcePackagePush()
+{
+    if (!_PHNTM_package.empty())
+        dynamic_initializer_()->pushPackage(_PHNTM_package);
+    if (!_PHNTM_source.empty())
+        dynamic_initializer_()->pushSource(_PHNTM_source);
+}
+
+void _PHNTM_StaticGlobalRegistrer::_PHNTM_forwardSourcePackagePop()
+{
+    if (!_PHNTM_source.empty())
+        dynamic_initializer_()->popSource();
+    if (!_PHNTM_package.empty())
+        dynamic_initializer_()->popPackage();
+}
+
 _PHNTM_StaticGlobalRegistrer::~_PHNTM_StaticGlobalRegistrer()
 {
     _PHNTM_detach();

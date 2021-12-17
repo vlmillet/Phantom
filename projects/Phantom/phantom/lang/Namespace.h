@@ -47,7 +47,13 @@ public:
     /// \brief  Adds an unknown kind of symbol.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void addCustomSymbol(Symbol* a_pSymbol) { a_pSymbol->setNamespace(this); }
+    void addCustomSymbol(Symbol* a_pSymbol);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Removes an unknown kind of symbol.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void removeCustomSymbol(Symbol* a_pSymbol);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the root namespace.
@@ -95,6 +101,18 @@ public:
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Namespace* getOrCreateNamespace(StringView a_strNamespaceName, const char* separatorPattern = ":");
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Searches for an existing namespace or type, or creates a namespace if not existing recursively or create
+    /// it if not found.
+    ///
+    /// \param  a_strNamespaceName  Name of the namespace.
+    /// \param  separatorPattern    (optional) a pattern specifying the separator.
+    ///
+    /// \return null if it fails, else the found or create namespace cascade.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Scope* getScopeOrCreateNamespace(StringView a_strScopeName, const char* separatorPattern);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Searches for a namespace recursively or create it if not found.
@@ -213,7 +231,8 @@ protected:
 
 private:
     Namespace* getNamespaceCascade(Strings&) const;
-    Namespace* getOrCreateNamespace(Strings*);
+    Namespace* getOrCreateNamespace(StringViews&);
+    Scope*     getScopeOrCreateNamespace(StringViews&);
     void       onNamespaceChanging(Namespace*) override final;
     void       onNamespaceChanged(Namespace*) override final;
     void       _registerSymbol(Symbol* a_pSym)

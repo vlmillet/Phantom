@@ -441,16 +441,6 @@ ____58, ____59, ____60, ____61, ____62, ____63, ____64, ____65, ____66, ____67, 
 #define PHANTOM_PP_BY_LIST(name, l0) PHANTOM_PP_BY_LIST_BIS_2(name, l0)
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__)), (__VA_ARGS__))
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#else
-#    define _PHNTM_MK_CLASS_T_SIGN(...)                                                                                \
-        PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_SIGN_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))(__VA_ARGS__)
-#    define _PHNTM_MK_CLASS_T_ARGS(...) PHANTOM_PP_CAT(_PHNTM_MK_CLASS_T_ARGS_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__))
-#endif
-
-#if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define PHANTOM_PP_ADD_PREFIX_EACH(prefix, ...)                                                                    \
         PHANTOM_PP_CAT(PHANTOM_PP_CAT(PHANTOM_PP_ADD_PREFIX_EACH_, PHANTOM_PP_ARGCOUNT(__VA_ARGS__)),                  \
                        (prefix, ##__VA_ARGS__))

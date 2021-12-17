@@ -35,7 +35,7 @@ struct MemberAnonymousSectionRoot<MemberAnonymousSectionBuilderT<Meta, Top>>
 };
 
 template<class Meta, class Top>
-struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
+struct MemberAnonymousSectionBuilderT : ReleasableBuilder
 {
     _PHNTM_REG_FRIENDS;
 
@@ -46,19 +46,12 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     using ReflectedType = PHANTOM_TYPENAME    Top::ReflectedType;
     using BuilderProxyType = PHANTOM_TYPENAME Top::_PHNTM_Proxy;
 
-    MemberAnonymousSectionBuilderT(Top* a_pTop)
-        : m_pMeta(a_pTop->_PHNTM_getOwnerScope()->New<Meta>(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)),
+    MemberAnonymousSectionBuilderT(BuilderReleaser _releaser, Top* a_pTop)
+        : ReleasableBuilder(_releaser, a_pTop),
+          m_pMeta(a_pTop->_PHNTM_getOwnerScope()->New<Meta>(lang::Modifier::None, PHANTOM_R_FLAG_NATIVE)),
           m_pTop(a_pTop)
     {
         m_pTop->_PHNTM_getOwnerScope()->addMemberAnonymousSection(m_pMeta);
-    }
-
-    ~MemberAnonymousSectionBuilderT() override
-    {
-        for (auto pSec : m_MASections)
-        {
-            phantom::deleteVirtual(pSec);
-        }
     }
 
     Meta* _PHNTM_getOwnerScope() { return m_pMeta; }
@@ -70,8 +63,9 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         _PHNTM_REG_STATIC_ASSERT((std::is_same<DontTouchThis, void>::value),
                                  "struct_<>() requires empty template signature if no name provided");
-        auto pSec = new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>>(this);
-        this->m_MASections.push_back(pSec);
+        auto pSec =
+        new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousStruct, SelfType>>(BuilderReleaser{}, this);
+        addSubBuilder(pSec);
         return *pSec;
     }
 
@@ -82,8 +76,8 @@ struct MemberAnonymousSectionBuilderT : PhantomBuilderBase
     {
         _PHNTM_REG_STATIC_ASSERT(std::is_same<DontTouchThis, void>::value,
                                  "union_<>() requires empty template signature if no name provided");
-        auto pSec = new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>>(this);
-        this->m_MASections.push_back(pSec);
+        auto pSec = new_<MemberAnonymousSectionBuilderT<lang::MemberAnonymousUnion, SelfType>>(BuilderReleaser{}, this);
+        addSubBuilder(pSec);
         return *pSec;
     }
 
@@ -112,9 +106,8 @@ private:
     auto _root() { return MemberAnonymousSectionRoot<Top>::Root(m_pTop); }
 
 private:
-    Top*                             m_pTop;
-    Meta*                            m_pMeta;
-    SmallVector<PhantomBuilderBase*> m_MASections;
+    Top*  m_pTop;
+    Meta* m_pMeta;
 };
 } // namespace lang
 } // namespace phantom

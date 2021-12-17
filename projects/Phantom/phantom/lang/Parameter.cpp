@@ -20,12 +20,12 @@ Parameter::Parameter(Type* a_pValueType, StringView a_strName, Modifiers a_Modif
 }
 
 Parameter::Parameter(Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Parameter(PHANTOM_TYPEOF(void), "", a_Modifiers, a_uiFlags)
+    : Parameter(PHANTOM_TYPEOF(void), {}, a_Modifiers, a_uiFlags)
 {
 }
 
 Parameter::Parameter(Type* a_pType, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : Parameter(a_pType, "", a_Modifiers, a_uiFlags)
+    : Parameter(a_pType, {}, a_Modifiers, a_uiFlags)
 {
 }
 
@@ -42,11 +42,6 @@ bool Parameter::isEllipsis() const
 void Parameter::setNativeDefaultArgumentStr(StringView a_DefaultArgument)
 {
     m_NativeDefaultArgumentStr = a_DefaultArgument;
-}
-
-void Parameter::setDefinitionName(StringView a_strName)
-{
-    setName(a_strName);
 }
 
 bool Parameter::hasDefaultArgument() const

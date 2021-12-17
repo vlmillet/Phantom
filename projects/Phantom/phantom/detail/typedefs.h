@@ -304,6 +304,16 @@ PHANTOM_FORCEINLINE t_Output union_cast(t_Input i)
     u.i = i;
     return u.o;
 }
+template<typename t_Output, typename t_Input>
+PHANTOM_FORCEINLINE t_Output union_cast_nosizecheck(t_Input i)
+{
+    union {
+        t_Output o;
+        t_Input  i;
+    } u;
+    u.i = i;
+    return u.o;
+}
 
 } // namespace phantom
 

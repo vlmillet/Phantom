@@ -47,7 +47,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::ValueMember>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
         
@@ -55,28 +55,28 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
-            .constructor<void(Type*, StringView, uint, Modifiers, uint)>()["PHANTOM_R_FILTER_PROPERTY"]["0"]["0"]
+            .constructor<void(Type*, StringView, uint, Modifiers, uint)>()({"a_pFunctionsType","a_strName","a_uiFilterMask","a_Modifiers","a_uiFlags"})["PHANTOM_R_FILTER_PROPERTY"]["0"]["0"]
         
         .protected_()
-            .constructor<void(Type*, StringView, uint, Modifiers, uint, int)>()
+            .constructor<void(Type*, StringView, uint, Modifiers, uint, int)>()({"a_pFunctionsType","a_strName","a_uiFilterMask","a_Modifiers","a_uiFlags","nativeTag"})
         
         .public_()
-            .method<void(void const*, void*) const, virtual_|override_>("getValue", &_::getValue)
-            .method<void(void*, void const*) const, virtual_|override_>("setValue", &_::setValue)
+            .method<void(void const*, void*) const, virtual_|override_>("getValue", &_::getValue)({"a_pObject","a_pDest"})
+            .method<void(void*, void const*) const, virtual_|override_>("setValue", &_::setValue)({"a_pObject","a_pSrc"})
             .method<Type*() const>("getFunctionsType", &_::getFunctionsType)
             .method<Property*() const, virtual_|override_>("asProperty", &_::asProperty)
             .method<Method*() const>("getSet", &_::getSet)
-            .method<Method*(StringView)>("addSet", &_::addSet)["\"\""]
-            .method<Method*(StringView)>("addGet", &_::addGet)["\"\""]
+            .method<Method*(StringView)>("addSet", &_::addSet)({"a_strName"})["\"\""]
+            .method<Method*(StringView)>("addGet", &_::addGet)({"a_strName"})["\"\""]
             .method<Method*() const>("getGet", &_::getGet)
             /// missing symbol(s) reflection (phantom::lang::Signal) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<Signal*() const>("getSignal", &_::getSignal)
-            .method<void(Method*)>("setSet", &_::setSet)
-            .method<void(Method*)>("setGet", &_::setGet)
+            .method<void(Method*)>("setSet", &_::setSet)({"a_pFunc"})
+            .method<void(Method*)>("setGet", &_::setGet)({"a_pFunc"})
             .method<bool() const, virtual_|override_>("isWrittable", &_::isWrittable)
             .method<bool() const, virtual_|override_>("isReadable", &_::isReadable)
-            .method<void(StringViews)>("setTouchedFieldNames", &_::setTouchedFieldNames)
-            .method<void(ArrayView<String>)>("setTouchedFieldNames", &_::setTouchedFieldNames)
+            .method<void(StringViews)>("setTouchedFieldNames", &_::setTouchedFieldNames)({"_touchedFields"})
+            .method<void(ArrayView<String>)>("setTouchedFieldNames", &_::setTouchedFieldNames)({"_touchedFields"})
             .method<ArrayView<String>() const>("getTouchedFieldNames", &_::getTouchedFieldNames)
             ;
         }

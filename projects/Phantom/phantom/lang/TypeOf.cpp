@@ -14,6 +14,38 @@ namespace phantom
 {
 namespace lang
 {
+namespace
+{
+bool g_LogTypeOfByName = false;
+}
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogFailed(StringView _qn)
+{
+    PHANTOM_LOG(Warning,
+                "cannot find type '%.*s' in any module, ensure it has lang "
+                "declared or, if it is a template instance, ensure the lang is "
+                "available above in the compilation unit (.hxx included for example)",
+                PHANTOM_STRING_AS_PRINTF_ARG(_qn));
+}
+
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogModuleFailed(StringView _qn, StringView _foundModule, StringView _currModule)
+{
+    PHANTOM_LOG(Warning,
+                "type '%.*s' was found in module '%.*s' which is not a dependency of the current "
+                "module '%.*s'. This can cause undefined behavior when unloading modules.",
+                PHANTOM_STRING_AS_PRINTF_ARG(_qn), PHANTOM_STRING_AS_PRINTF_ARG(_foundModule),
+                PHANTOM_STRING_AS_PRINTF_ARG(_currModule));
+}
+
+PHANTOM_EXPORT_PHANTOM bool TypeOfByNameLogEnabled()
+{
+    return g_LogTypeOfByName;
+}
+
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogEnabled(bool _enabled)
+{
+    g_LogTypeOfByName = _enabled;
+}
+
 PHANTOM_EXPORT_PHANTOM FunctionType* functionType(Type* a_pReturnType, TypesView a_ParameterTypes,
                                                   Modifiers a_Qualifiers)
 {

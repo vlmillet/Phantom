@@ -8,6 +8,7 @@ std::size_t=
 std::ptrdiff_t=
 std::intptr_t=
 std::uintptr_t=
+std::nullptr_t=
 int8_t=
 int16_t=
 int32_t=

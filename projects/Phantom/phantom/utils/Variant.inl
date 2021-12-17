@@ -151,7 +151,7 @@ namespace phantom {
         PHANTOM_ASSERT(pType);
         if (m_pType == pType)
         {
-            *(t_Ty*)_buffer() = a_In;
+			m_pType->copyAssign(_buffer(), &a_In);
         }
         else
         {
@@ -161,7 +161,7 @@ namespace phantom {
                 ? (m_Buffer.dynamicBuffer = _Alloc(sizeof(t_Ty), alignof(t_Ty)))
                 : m_Buffer.staticBuffer;
             m_pType = pType;
-            new (pBuffer) t_Ty(a_In);
+            m_pType->copyConstruct(pBuffer, &a_In);
         }
         return *this;
     }

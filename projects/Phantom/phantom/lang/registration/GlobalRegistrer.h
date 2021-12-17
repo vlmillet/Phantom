@@ -45,17 +45,11 @@ public:
     _PHNTM_GlobalRegistrer(_PHNTM_GlobalRegistrer&&) = delete;
     ~_PHNTM_GlobalRegistrer();
 
-    lang::Namespace* _PHNTM_getNamingScope();
-    lang::Source*    _PHNTM_getOwnerScope();
+    lang::Scope*  _PHNTM_getNamingScope();
+    lang::Source* _PHNTM_getOwnerScope();
 
-    void _PHNTM_setLastSymbol(lang::Symbol* a_pSym)
-    {
-        _PHNTM_pLastSymbol = a_pSym;
-    }
-    lang::Symbol* _PHNTM_getLastSymbol() const
-    {
-        return _PHNTM_pLastSymbol;
-    }
+    void          _PHNTM_setLastSymbol(lang::Symbol* a_pSym) { _PHNTM_pLastSymbol = a_pSym; }
+    lang::Symbol* _PHNTM_getLastSymbol() const { return _PHNTM_pLastSymbol; }
 
 private:
     void              _PHNTM_process(phantom::RegistrationStep) override = 0;
@@ -63,10 +57,10 @@ private:
     static StringView _PHNTM_currentPackageName();
 
 private:
-    TypeInfosGetter        _PHNTM_TypeInfosGetter;
-    lang::Namespace* _PHNTM_pNamingScope = nullptr;
-    lang::Source*    _PHNTM_pOwnerScope = nullptr;
-    lang::Symbol*    _PHNTM_pLastSymbol = nullptr;
+    TypeInfosGetter _PHNTM_TypeInfosGetter;
+    lang::Scope*    _PHNTM_pNamingScope = nullptr;
+    lang::Source*   _PHNTM_pOwnerScope = nullptr;
+    lang::Symbol*   _PHNTM_pLastSymbol = nullptr;
 };
 
 } // namespace lang

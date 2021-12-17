@@ -31,7 +31,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("random")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Functions) { this_().function<void(char*, StringView)>("str", str)["\"%%%%%%%%-%%%%-%%%%-%%%%%%%%%%%%\""];}
+        PHANTOM_REGISTER(Functions) { this_().function<void(char*, StringView)>("str", str)({"a_OutBuffer","model"})["\"%%%%%%%%-%%%%-%%%%-%%%%%%%%%%%%\""];}
         PHANTOM_REGISTER(Functions) { this_().function<uint64_t()>("integer", integer);}
         PHANTOM_REGISTER(Functions) { this_().function<double()>("normalized", normalized);}
         #endif // PHANTOM_NOT_TEMPLATE

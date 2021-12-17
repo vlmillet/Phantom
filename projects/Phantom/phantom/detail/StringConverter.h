@@ -6,7 +6,6 @@
 
 #pragma once
 
-
 #include <phantom/detail/core.h>
 #include <phantom/lang/Array.h>
 #include <phantom/lang/Class.h>
@@ -29,60 +28,52 @@ struct MetaTypeIdOf;
 }
 } // namespace lang
 
-namespace detail 
+namespace detail
 {
-enum 
+enum
 {
-	string_converter_default,
-	string_converter_array,
-	string_converter_enum,
-	string_converter_class,
-	string_converter_classtype,
+    string_converter_default,
+    string_converter_array,
+    string_converter_enum,
+    string_converter_class,
+    string_converter_classtype,
 };
 } // namespace detail
 
 template<typename t_Ty>
 struct literal_suffix
 {
-    static void suffix(StringBuffer&)
-    {
-    }
+    static void suffix(StringBuffer&) {}
+};
+
+template<>
+struct literal_suffix<unsigned int>
+{
+    static void suffix(StringBuffer& a_Buf) { a_Buf += "u"; }
 };
 
 template<>
 struct literal_suffix<unsigned long>
 {
-    static void suffix(StringBuffer& a_Buf)
-    {
-        a_Buf += "ul";
-    }
+    static void suffix(StringBuffer& a_Buf) { a_Buf += "ul"; }
 };
 
 template<>
 struct literal_suffix<unsigned long long>
 {
-    static void suffix(StringBuffer& a_Buf)
-    {
-        a_Buf += "ull";
-    }
+    static void suffix(StringBuffer& a_Buf) { a_Buf += "ull"; }
 };
 
 template<>
 struct literal_suffix<long>
 {
-    static void suffix(StringBuffer& a_Buf)
-    {
-        a_Buf += 'l';
-    }
+    static void suffix(StringBuffer& a_Buf) { a_Buf += 'l'; }
 };
 
 template<>
 struct literal_suffix<long long>
 {
-    static void suffix(StringBuffer& a_Buf)
-    {
-        a_Buf += "ll";
-    }
+    static void suffix(StringBuffer& a_Buf) { a_Buf += "ll"; }
 };
 
 template<>
@@ -99,10 +90,7 @@ struct literal_suffix<float>
 template<>
 struct literal_suffix<wchar_t>
 {
-    static void suffix(StringBuffer& a_Buf)
-    {
-        a_Buf += 'L';
-    }
+    static void suffix(StringBuffer& a_Buf) { a_Buf += 'L'; }
 };
 
 template<typename t_Ty, int t_MetaClassId>
@@ -195,44 +183,35 @@ struct StringConverterH<t_Ty, detail::string_converter_array>
 
 template<typename t_Ty>
 struct StringConverter
-    : public StringConverterH<t_Ty,
-                              std::is_array<t_Ty>::value ? detail::string_converter_array
-                                                         : std::is_enum<t_Ty>::value ? detail::string_converter_enum
-                                                                                     : (std::is_void<t_Ty>::value)
-                              ? detail::string_converter_default
-                              : phantom::IsDataPointer<t_Ty>::value ? detail::string_converter_default
-                                                                    : std::is_pointer<t_Ty>::value
-                              ? detail::string_converter_default
-                              : ::std::is_floating_point<t_Ty>::value ? detail::string_converter_default
-                                                                      : ::phantom::IsNullptrT<t_Ty>::value
-                              ? detail::string_converter_default
-                              : ::std::is_integral<t_Ty>::value ? detail::string_converter_default
-                                                                : ::std::is_member_function_pointer<t_Ty>::value
-                              ? detail::string_converter_default
-                              : ::std::is_member_object_pointer<t_Ty>::value ? detail::string_converter_default
-                                                                             : std::is_union<t_Ty>::value
-                              ? detail::string_converter_classtype
-                              : std::is_class<t_Ty>::value ? IsStructure<t_Ty>::value ? detail::string_converter_classtype
-                                                                                      : detail::string_converter_class
-                                                           : detail::string_converter_default>
+    : public StringConverterH<
+      t_Ty,
+      std::is_array<t_Ty>::value
+      ? detail::string_converter_array
+      : std::is_enum<t_Ty>::value ? detail::string_converter_enum
+                                  : (std::is_void<t_Ty>::value) ? detail::string_converter_default
+                                                                : phantom::IsDataPointer<t_Ty>::value
+      ? detail::string_converter_default
+      : std::is_pointer<t_Ty>::value ? detail::string_converter_default
+                                     : ::std::is_floating_point<t_Ty>::value ? detail::string_converter_default
+                                                                             : ::phantom::IsNullptrT<t_Ty>::value
+      ? detail::string_converter_default
+      : ::std::is_integral<t_Ty>::value ? detail::string_converter_default
+                                        : ::std::is_member_function_pointer<t_Ty>::value
+      ? detail::string_converter_default
+      : ::std::is_member_object_pointer<t_Ty>::value ? detail::string_converter_default
+                                                     : std::is_union<t_Ty>::value ? detail::string_converter_classtype
+                                                                                  : std::is_class<t_Ty>::value
+      ? IsStructure<t_Ty>::value ? detail::string_converter_classtype : detail::string_converter_class
+      : detail::string_converter_default>
 {
 };
 
 template<>
 struct StringConverter<void>
 {
-    static void to(const lang::Type*, StringBuffer&, const void*)
-    {
-        PHANTOM_ASSERT_NO_IMPL();
-    }
-    static void toLiteral(const lang::Type*, StringBuffer&, const void*)
-    {
-        PHANTOM_ASSERT_NO_IMPL();
-    }
-    static void from(const lang::Type*, StringView, void*)
-    {
-        PHANTOM_ASSERT_NO_IMPL();
-    }
+    static void to(const lang::Type*, StringBuffer&, const void*) { PHANTOM_ASSERT_NO_IMPL(); }
+    static void toLiteral(const lang::Type*, StringBuffer&, const void*) { PHANTOM_ASSERT_NO_IMPL(); }
+    static void from(const lang::Type*, StringView, void*) { PHANTOM_ASSERT_NO_IMPL(); }
 };
 
 template<>
@@ -309,14 +288,8 @@ struct StringConverter<char>
         }
         a_Buf += '\'';
     }
-    static void to(const lang::Type*, StringBuffer& a_Buf, const char* a_pSrc)
-    {
-        a_Buf += *a_pSrc;
-    }
-    static void from(const lang::Type*, StringView a_strIn, char* a_pDest)
-    {
-        *a_pDest = a_strIn[0];
-    }
+    static void to(const lang::Type*, StringBuffer& a_Buf, const char* a_pSrc) { a_Buf += *a_pSrc; }
+    static void from(const lang::Type*, StringView a_strIn, char* a_pDest) { *a_pDest = a_strIn[0]; }
 };
 
 template<>
@@ -489,10 +462,7 @@ struct StringConverter<std::basic_string<char, std::char_traits<char>, t_Alloc> 
         }
         a_Buf += '\"';
     }
-    static void to(const lang::Type*, StringBuffer& a_Buf, const self_type* a_pSrc)
-    {
-        a_Buf += a_pSrc->c_str();
-    }
+    static void to(const lang::Type*, StringBuffer& a_Buf, const self_type* a_pSrc) { a_Buf += a_pSrc->c_str(); }
     static void from(const lang::Type*, StringView a_strIn, self_type* a_pDest)
     {
         a_pDest->insert(a_pDest->end(), a_strIn.begin(), a_strIn.end());
@@ -535,14 +505,8 @@ struct StringConverter<SmallString<char, S> >
         }
         a_Buf += '\"';
     }
-    static void to(const lang::Type*, StringBuffer& a_Buf, const InputType* a_pSrc)
-    {
-        a_Buf += *a_pSrc;
-    }
-    static void from(const lang::Type*, StringView a_In, InputType* a_pDest)
-    {
-        (*a_pDest) += a_In;
-    }
+    static void to(const lang::Type*, StringBuffer& a_Buf, const InputType* a_pSrc) { a_Buf += *a_pSrc; }
+    static void from(const lang::Type*, StringView a_In, InputType* a_pDest) { (*a_pDest) += a_In; }
 };
 
 } // namespace phantom

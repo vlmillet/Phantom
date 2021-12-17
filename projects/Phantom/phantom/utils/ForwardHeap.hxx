@@ -30,29 +30,29 @@ PHANTOM_PACKAGE("phantom.utils")
         {
             this_()
         .public_()
-            .constructor<void(size_t)>()
-            .method<ForwardHeap&(ForwardHeap const&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            .constructor<void(ForwardHeap const&)>()
-            .method<ForwardHeap&(ForwardHeap&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)
-            .constructor<void(ForwardHeap&&)>()
+            .constructor<void(size_t)>()({"_heapSize"})
+            .method<ForwardHeap&(ForwardHeap const&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)({""})
+            .constructor<void(ForwardHeap const&)>()({""})
+            .method<ForwardHeap&(ForwardHeap&&)>("operator=", &PHANTOM_REFLECTED_TYPE::operator=)({""})
+            .constructor<void(ForwardHeap&&)>()({"_temp"})
         
         .public_()
             .method<void()>("reset", &_::reset)
         
         .public_()
-            .method<void*(size_t, size_t)>("allocate", &_::allocate)
-            .method<void(void*)>("deallocate", &_::deallocate)
+            .method<void*(size_t, size_t)>("allocate", &_::allocate)({"_size","_align"})
+            .method<void(void*)>("deallocate", &_::deallocate)({"_ptr"})
             ;
         }
         PHANTOM_CLASS(ForwardHeapSequence)
         {
             this_()
         .public_()
-            .constructor<void(size_t)>()
-            .method<void*(size_t, size_t)>("allocate", &_::allocate)
-            .method<void(void*)>("deallocate", &_::deallocate)
+            .constructor<void(size_t)>()({"a_HeapSize"})
+            .method<void*(size_t, size_t)>("allocate", &_::allocate)({"_s","_a"})
+            .method<void(void*)>("deallocate", &_::deallocate)({"_ptr"})
             .method<void()>("reset", &_::reset)
-            .method<void(ForwardHeapSequence&)>("swap", &_::swap)
+            .method<void(ForwardHeapSequence&)>("swap", &_::swap)({"a_Other"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

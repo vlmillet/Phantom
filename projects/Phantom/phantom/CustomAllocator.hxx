@@ -40,7 +40,7 @@ PHANTOM_PACKAGE("phantom")
             using DeallocFunc = typedef_<_::DeallocFunc>;
             using ReallocFunc = typedef_<_::ReallocFunc>;
             this_()
-            .staticMethod<void(CustomAllocator)>("Push", &_::Push)
+            .staticMethod<void(CustomAllocator)>("Push", &_::Push)({"a_func"})
             .staticMethod<void()>("Pop", &_::Pop)
             .staticMethod<const ::phantom::CustomAllocator &()>("CurrentOrDefault", &_::CurrentOrDefault)
             .staticMethod<const ::phantom::CustomAllocator &()>("Current", &_::Current)
@@ -53,7 +53,7 @@ PHANTOM_PACKAGE("phantom")
             .field("allocFunc", &_::allocFunc)
             .field("deallocFunc", &_::deallocFunc)
             .field("reallocFunc", &_::reallocFunc)
-            .method<bool(CustomAllocator const&) const>("operator==", &_::operator==)
+            .method<bool(CustomAllocator const&) const>("operator==", &_::operator==)({"o"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

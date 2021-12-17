@@ -483,10 +483,9 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
     return pTemplateSpecialization;
 }
 
-TemplateSpecialization*
-Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpecialization,
-                                const LanguageElements& a_Arguments,
-                                const PlaceholderMap&   a_PartialSpecializationParameterDeductions)
+TemplateSpecialization* Scope::addTemplateInstantiation(TemplateSpecialization*     a_pInstantiationSpecialization,
+                                                        const LanguageElements&     a_Arguments,
+                                                        const TemplateSubstitution& a_Substitutions)
 {
     TemplateSpecialization* pTemplateSpecialization;
     if (!(m_pThisElement->isNative()) &&
@@ -498,7 +497,7 @@ Scope::addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpeciali
         return nullptr;
     }
     addTemplateSpecialization(pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
-                              a_pInstantiationSpecialization, a_Arguments, a_PartialSpecializationParameterDeductions));
+                              a_pInstantiationSpecialization, a_Arguments, a_Substitutions));
     // pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE*m_pThisElement->isNative());
     return pTemplateSpecialization;
 }

@@ -13,17 +13,15 @@ namespace phantom
 {
 namespace lang
 {
-_PHNTM_GlobalRegistrer::~_PHNTM_GlobalRegistrer()
-{
-}
+_PHNTM_GlobalRegistrer::~_PHNTM_GlobalRegistrer() {}
 
-lang::Namespace* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
+lang::Scope* _PHNTM_GlobalRegistrer::_PHNTM_getNamingScope()
 {
     if (!_PHNTM_pNamingScope)
     {
         StringView scope = _PHNTM_TypeInfosGetter().scope();
         if (!scope.empty())
-            _PHNTM_pNamingScope = phantom::lang::Namespace::Global()->getOrCreateNamespace(scope);
+            _PHNTM_pNamingScope = phantom::lang::Namespace::Global()->getScopeOrCreateNamespace(scope, "::");
         else
             _PHNTM_pNamingScope = phantom::lang::Namespace::Global();
     }

@@ -108,9 +108,9 @@ public:
 
     /// @brief connects a lambda or other functor object
     template<class T, class = typename FunctorType::template EnableIfCustomArg<T>>
-    FunctorID connect(T&& a_Functor, void* a_pLambdaDiscriminant = nullptr)
+    FunctorID connect(T&& a_Functor)
     {
-        return connect(FunctorType(a_Functor, a_pLambdaDiscriminant));
+        return connect(FunctorType(a_Functor));
     }
 
     FunctorID connect(OpaqueDynDelegate&& a_ODynDelegate) { return connect(FunctorType(std::move(a_ODynDelegate))); }
@@ -191,25 +191,15 @@ public:
         return connect(Functor<R(Parms...)>(a_pThis, _Signal::SlotCaster<R(Parms...)>::PHANTOM_T Cast<T>(a_Func)));
     }
 
-    void disconnect(OpaqueDynDelegate const& a_ODynDelegate)
-    {
-        if (auto&& od = a_ODynDelegate.getOpaqueDelegate())
-            return _disconnect(od.getID());
-        return _disconnect(a_ODynDelegate.getID());
-    }
+    void disconnect(OpaqueDynDelegate const& a_ODynDelegate) { return _disconnect(a_ODynDelegate.getID()); }
 
-    void disconnect(OpaqueDynDelegate&& a_ODynDelegate)
-    {
-        if (auto&& od = a_ODynDelegate.getOpaqueDelegate())
-            return _disconnect(od.getID());
-        return _disconnect(a_ODynDelegate.getID());
-    }
+    void disconnect(OpaqueDynDelegate&& a_ODynDelegate) { return _disconnect(a_ODynDelegate.getID()); }
 
     // @brief disconnects a lambda
     template<class T, class = typename FunctorType::template EnableIfCustomArg<T>>
-    void disconnect(T&& a_Functor, void* a_pLambdaDiscriminant = nullptr)
+    void disconnect(T&& a_Functor)
     {
-        _disconnect(FunctorType(a_Functor, a_pLambdaDiscriminant).getID());
+        _disconnect(FunctorType(a_Functor).getID());
     }
 
     // @brief disconnects a compatible functor

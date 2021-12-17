@@ -60,21 +60,26 @@ void Property::setSet(Method* a_pFunc)
 {
     PHANTOM_ASSERT(!a_pFunc || a_pFunc->getParameters().size() == 1);
     PHANTOM_ASSERT(
-    !a_pFunc || a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers() == getValueType());
+    !a_pFunc ||
+    a_pFunc->getParameters()[0]->getValueType()->removeReference()->removeQualifiers()->isSame(getValueType()));
     m_pSet = a_pFunc;
+    if (m_pSet)
+        m_pSet->m_pProperty = this;
 }
 
 void Property::setGet(Method* a_pFunc)
 {
-    PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers() == getValueType());
+    PHANTOM_ASSERT(!a_pFunc || a_pFunc->getReturnType()->removeReference()->removeQualifiers()->isSame(getValueType()));
     m_pGet = a_pFunc;
+    if (m_pGet)
+        m_pGet->m_pProperty = this;
 }
 
 void Property::setTouchedFieldNames(StringViews _touchedFields)
 {
-	m_TouchedFieldNames.reserve(_touchedFields.size());
-	for (auto tf : _touchedFields)
-		m_TouchedFieldNames.push_back(tf);
+    m_TouchedFieldNames.reserve(_touchedFields.size());
+    for (auto tf : _touchedFields)
+        m_TouchedFieldNames.push_back(tf);
 }
 
 void Property::setTouchedFieldNames(ArrayView<String> _touchedFields)

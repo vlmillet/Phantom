@@ -87,36 +87,6 @@ public:
              PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::End)>
     m_RegistrersById;
 
-#define _PHNTM_CASE_STEP(macro, step)                                                                                  \
-    case RegistrationStep::step:                                                                                       \
-    {                                                                                                                  \
-        macro(m_##step##_Registrers)                                                                                   \
-    }                                                                                                                  \
-    break;
-
-#define _PHNTM_APPLY_TO_REGISTRERS(stepVar, macro)                                                                     \
-    switch (stepVar)                                                                                                   \
-    {                                                                                                                  \
-        _PHNTM_CASE_STEP(macro, _None)                                                                                 \
-        _PHNTM_CASE_STEP(macro, _Reserved)                                                                             \
-        _PHNTM_CASE_STEP(macro, Start)                                                                                 \
-        _PHNTM_CASE_STEP(macro, Namespaces)                                                                            \
-        _PHNTM_CASE_STEP(macro, Enums)                                                                                 \
-        _PHNTM_CASE_STEP(macro, Templates)                                                                             \
-        _PHNTM_CASE_STEP(macro, ClassTypes)                                                                            \
-        _PHNTM_CASE_STEP(macro, PostClassTypes)                                                                        \
-        _PHNTM_CASE_STEP(macro, Typedefs)                                                                              \
-        _PHNTM_CASE_STEP(macro, PostTypedefs)                                                                          \
-        _PHNTM_CASE_STEP(macro, TemplateSignatures)                                                                    \
-        _PHNTM_CASE_STEP(macro, PostTypes)                                                                             \
-        _PHNTM_CASE_STEP(macro, Variables)                                                                             \
-        _PHNTM_CASE_STEP(macro, PostVariables)                                                                         \
-        _PHNTM_CASE_STEP(macro, Functions)                                                                             \
-        _PHNTM_CASE_STEP(macro, End)                                                                                   \
-    default:                                                                                                           \
-        PHANTOM_UNREACHABLE();                                                                                         \
-    }
-
     SmallVector<phantom::detail::_PHNTM_StaticGlobalRegistrer*,
                 PHANTOM_CUSTOM_REGISTRATION_STATIC_MEMORY_FOR_STEP_HALF(RegistrationStep::_None)>
     m__None_Registrers;
@@ -183,3 +153,33 @@ private:
 
 } // namespace lang
 } // namespace phantom
+
+#define _PHNTM_CASE_STEP(macro, step)                                                                                  \
+    case RegistrationStep::step:                                                                                       \
+    {                                                                                                                  \
+        macro(m_##step##_Registrers)                                                                                   \
+    }                                                                                                                  \
+    break;
+
+#define _PHNTM_APPLY_TO_REGISTRERS(stepVar, macro)                                                                     \
+    switch (stepVar)                                                                                                   \
+    {                                                                                                                  \
+        _PHNTM_CASE_STEP(macro, _None)                                                                                 \
+        _PHNTM_CASE_STEP(macro, _Reserved)                                                                             \
+        _PHNTM_CASE_STEP(macro, Start)                                                                                 \
+        _PHNTM_CASE_STEP(macro, Namespaces)                                                                            \
+        _PHNTM_CASE_STEP(macro, Enums)                                                                                 \
+        _PHNTM_CASE_STEP(macro, Templates)                                                                             \
+        _PHNTM_CASE_STEP(macro, ClassTypes)                                                                            \
+        _PHNTM_CASE_STEP(macro, PostClassTypes)                                                                        \
+        _PHNTM_CASE_STEP(macro, Typedefs)                                                                              \
+        _PHNTM_CASE_STEP(macro, PostTypedefs)                                                                          \
+        _PHNTM_CASE_STEP(macro, TemplateSignatures)                                                                    \
+        _PHNTM_CASE_STEP(macro, PostTypes)                                                                             \
+        _PHNTM_CASE_STEP(macro, Variables)                                                                             \
+        _PHNTM_CASE_STEP(macro, PostVariables)                                                                         \
+        _PHNTM_CASE_STEP(macro, Functions)                                                                             \
+        _PHNTM_CASE_STEP(macro, End)                                                                                   \
+    default:                                                                                                           \
+        PHANTOM_UNREACHABLE();                                                                                         \
+    }

@@ -37,7 +37,7 @@ PHANTOM_PACKAGE("phantom.utils")
         /* PHANTOM_STRUCT_S((phantom::StringHash), hash)
         {
             this_()
-            // .method<size_t(const ::phantom::StringHash &)>("operator()", &_::operator())
+            // .method<size_t(const ::phantom::StringHash &)>("operator()", &_::operator())({"_hash"})
             ;
         } */
     PHANTOM_END("StringHash")
@@ -48,7 +48,7 @@ PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("StringHash")
 
         #if PHANTOM_NOT_TEMPLATE
-        PHANTOM_REGISTER(Functions) { this_().function<uint64_t(StringView)>("makeStringHash", makeStringHash);}
+        PHANTOM_REGISTER(Functions) { this_().function<uint64_t(StringView)>("makeStringHash", makeStringHash)({"a_Str"});}
         PHANTOM_STRUCT(StringHash)
         {
             using StringView = typedef_< phantom::StringView>;
@@ -56,14 +56,14 @@ PHANTOM_PACKAGE("phantom.utils")
         
         .public_()
             .constructor<void(), default_>()
-            .constructor<void(StringView), explicit_>()
-            .constructor<void(uint64_t), explicit_>()
+            .constructor<void(StringView), explicit_>()({"_string"})
+            .constructor<void(uint64_t), explicit_>()({"_hash"})
             .method<uint64_t() const, explicit_>("operator uint64_t", &_::operator notypedef<uint64_t>)
             .method<uint64_t() const>("get", &_::get)
             .method<StringView() const>("debugString", &_::debugString)
-            .method<bool(StringHash const&) const>("operator<", &_::operator<)
-            .method<bool(StringHash const&) const>("operator==", &_::operator==)
-            .method<bool(StringHash const&) const>("operator!=", &_::operator!=)
+            .method<bool(StringHash const&) const>("operator<", &_::operator<)({"_other"})
+            .method<bool(StringHash const&) const>("operator==", &_::operator==)({"_other"})
+            .method<bool(StringHash const&) const>("operator!=", &_::operator!=)({"_other"})
             .method<bool() const>("isNull", &_::isNull)
             .method<bool() const>("isValid", &_::isValid)
             ;

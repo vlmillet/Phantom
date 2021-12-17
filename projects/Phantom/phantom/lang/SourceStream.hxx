@@ -41,7 +41,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringView = typedef_< phantom::StringView>;
             this_()
         .public_()
-            .staticMethod<::phantom::lang::SourceStream *(StringView)>("CreateFromUrl", &_::CreateFromUrl)
+            .staticMethod<::phantom::lang::SourceStream *(StringView)>("CreateFromUrl", &_::CreateFromUrl)({"a_Url"})
         
         .public_()
             .method<::phantom::lang::SourceFile *(), virtual_>("asFile", &_::asFile)
@@ -49,7 +49,7 @@ PHANTOM_PACKAGE("phantom.lang")
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<::std::basic_istream<char> *(), pure_virtual>("createInputStream", &_::createInputStream)
             /// missing symbol(s) reflection (std::basic_istream) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<void(::std::basic_istream<char> *), pure_virtual>("destroyInputStream", &_::destroyInputStream)
+            // .method<void(::std::basic_istream<char> *), pure_virtual>("destroyInputStream", &_::destroyInputStream)({""})
             /// missing symbol(s) reflection (time_t) -> use the 'haunt.bind' to bind symbols with your custom haunt files
             // .method<time_t() const, pure_virtual>("getLastChangeTime", &_::getLastChangeTime)
             .method<StringView() const>("getPath", &_::getPath)
@@ -58,7 +58,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<::phantom::lang::SourceStream *() const, pure_virtual>("clone", &_::clone)
         
         .protected_()
-            .constructor<void(StringView, StringView)>()
+            .constructor<void(StringView, StringView)>()({"a_Protocol","a_Path"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

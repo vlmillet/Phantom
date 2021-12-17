@@ -325,6 +325,12 @@ struct id_tag
 {
 }; // To be used as a tag depending on current translation unit line
 
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogFailed(StringView _qn);
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogModuleFailed(StringView _qn, StringView _foundModule,
+                                                        StringView _currModule);
+PHANTOM_EXPORT_PHANTOM void TypeOfByNameLogEnabled(bool _enabled);
+PHANTOM_EXPORT_PHANTOM bool TypeOfByNameLogEnabled();
+
 template<typename t_Ty>
 struct TypeOfByName
 {
@@ -339,24 +345,16 @@ struct TypeOfByName
             if (pType)
             {
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-                if (detail::getModuleHandle(pType) != moduleHandle)
+                if (TypeOfByNameLogEnabled() && detail::getModuleHandle(pType) != moduleHandle)
                 {
-                    PHANTOM_LOG(Warning,
-                                "type '%.*s' was found in module '%.*s' which is not a dependency of the current "
-                                "module '%.*s'. This can cause undefined behavior when unloading modules.",
-                                PHANTOM_STRING_AS_PRINTF_ARG(infos.qualifiedDecoratedName()),
-                                PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(pType)),
-                                PHANTOM_STRING_AS_PRINTF_ARG(detail::getModuleName(moduleHandle)));
+                    TypeOfByNameLogModuleFailed(infos.qualifiedDecoratedName(), detail::getModuleName(pType),
+                                                detail::getModuleName(moduleHandle));
                 }
 #endif
             }
-            else if (phantom::detail::installed())
+            else if (TypeOfByNameLogEnabled() && phantom::detail::installed())
             {
-                PHANTOM_LOG(Warning,
-                            "cannot find type '%.*s' in any module, ensure it has lang "
-                            "declared or, if it is a template instance, ensure the lang is "
-                            "available above in the compilation unit (.hxx included for example)",
-                            PHANTOM_STRING_AS_PRINTF_ARG(infos.qualifiedDecoratedName()));
+                TypeOfByNameLogFailed(infos.qualifiedDecoratedName());
             }
         }
         return pType;

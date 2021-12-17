@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Array.h"
+#include "ArrayClass.h"
 #include "Class.h"
 #include "ConstType.h"
 #include "ConstVolatileType.h"
@@ -309,6 +310,8 @@ public:
             return traverse(InstanceT<MapClass>((MapClass*)a_Input.getMeta(), a_Input.getAddress()));
         case TypeKind::StringClass:
             return traverse(InstanceT<StringClass>((StringClass*)a_Input.getMeta(), a_Input.getAddress()));
+        case TypeKind::ArrayClass:
+            return traverse(InstanceT<ArrayClass>((ArrayClass*)a_Input.getMeta(), a_Input.getAddress()));
 
         case TypeKind::Union:
             return traverse(InstanceT<Union>((Union*)a_Input.getMeta(), a_Input.getAddress()));
@@ -988,6 +991,43 @@ public:
         return this_()->walkUpEndFromArray(a_Input);
     };
 
+    // ArrayClass
+
+    bool visitArrayClass(InstanceT<ArrayClass> a_Input) { return true; }
+    bool endArrayClass(InstanceT<ArrayClass> a_Input) { return true; }
+    bool walkUpVisitFromArrayClass(InstanceT<ArrayClass> a_Input)
+    {
+        if (!(this_()->walkUpVisitFromClass(a_Input)))
+            return false;
+        return this_()->visitArrayClass(a_Input);
+    }
+    bool walkUpEndFromArrayClass(InstanceT<ArrayClass> a_Input)
+    {
+        if (!(this_()->endArrayClass(a_Input)))
+            return false;
+        return this_()->walkUpEndFromClass(a_Input);
+    }
+    bool traverse(InstanceT<ArrayClass> a_Input) { return this_()->traverseArrayClass(a_Input); }
+    bool traverseArrayClass(InstanceT<ArrayClass> a_Input)
+    {
+        if (!(this_()->walkUpVisitFromArrayClass(a_Input)))
+            return false;
+        Type*  pValueType = a_Input.getMeta()->getItemType();
+        size_t typeSz = pValueType->getSize();
+        size_t count = a_Input.getMeta()->getItemCount();
+        char*  data = (char*)a_Input.getAddress();
+        if (!this_()->visitContainer(a_Input))
+            return false;
+        for (size_t i = 0; i < count; ++i)
+        {
+            if (!(this_()->traverseContainerElement(InstanceT<Type>(pValueType, data + i * typeSz), i)))
+                return false;
+        };
+        if (!this_()->endContainer(a_Input))
+            return false;
+        return this_()->walkUpEndFromArrayClass(a_Input);
+    };
+
     // ClassType
 
     bool visitClassType(InstanceT<ClassType> a_Input) { return true; }
@@ -1219,6 +1259,8 @@ public:
             return traverse(a_Input.staticCast<SetClass>());
         case TypeKind::StringClass:
             return traverse(a_Input.staticCast<StringClass>());
+        case TypeKind::ArrayClass:
+            return traverse(a_Input.staticCast<ArrayClass>());
         default:
             return this_()->traverseClass(a_Input);
         }

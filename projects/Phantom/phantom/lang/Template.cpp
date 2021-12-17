@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "Constant.h"
+#include "Module.h"
 #include "Placeholder.h"
 #include "Source.h"
 #include "TemplateParameter.h"
@@ -50,9 +51,11 @@ Template* Template::Parse(LanguageElement* a_pOwner, StringView a_strTemplateTyp
                           StringView a_strName, LanguageElement* a_pContextScope, Modifiers a_Modifiers /*= 0*/,
                           uint a_uiFlags /*= 0*/)
 {
-    return a_pOwner->NewDeferred<Template>(TemplateSignature::Parse(a_pOwner, a_strTemplateTypes, a_strTemplateParam,
-                                                                    a_pContextScope, a_uiFlags & PHANTOM_R_FLAG_NATIVE),
-                                           a_strName, a_Modifiers, a_uiFlags);
+    auto pTS = TemplateSignature::Parse(a_pOwner, a_strTemplateTypes, a_strTemplateParam, a_pContextScope,
+                                        a_uiFlags & PHANTOM_R_FLAG_NATIVE);
+    if (!pTS)
+        return nullptr;
+    return a_pOwner->NewDeferred<Template>(pTS, a_strName, a_Modifiers, a_uiFlags);
 }
 
 Template::Template(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
@@ -122,8 +125,9 @@ void Template::addTemplateParameterAliasName(size_t a_uiIndex, StringView a_strA
 
 void Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature)
 {
-    a_pTemplateSignature->NewDeferred<TemplateSpecialization>(
+    auto pSpec = a_pTemplateSignature->NewDeferred<TemplateSpecialization>(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), getFlags() & PHANTOM_R_FLAG_NATIVE);
+    pSpec->setVisibility(Visibility::Private);
 }
 
 TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSignature* a_pTemplateSignature,
@@ -132,6 +136,7 @@ TemplateSpecialization* Template::createEmptyTemplateSpecialization(TemplateSign
     PHANTOM_ASSERT(a_pBody && !isNative());
     TemplateSpecialization* pSpec = a_pTemplateSignature->New<TemplateSpecialization>(
     this, a_pTemplateSignature, a_pTemplateSignature->getPlaceholders(), a_pBody, getFlags() & PHANTOM_R_FLAG_NATIVE);
+    pSpec->setVisibility(Visibility::Private);
     return pSpec;
 }
 
@@ -169,6 +174,23 @@ TemplateSpecialization* Template::getTemplateSpecialization(const PlaceholderMap
     return getTemplateSpecialization(contiguous);
 }
 
+TemplateSpecialization* Template::getTemplateSpecializationForModule(LanguageElementsView a_Arguments,
+                                                                     Module*              a_pModule,
+                                                                     bool _acceptsDependencies /*= true*/) const
+{
+    for (TemplateSpecialization* pSpec : m_TemplateSpecializations)
+    {
+        auto pSrc = pSpec->getSource();
+        if (pSrc && pSrc->getVisibility() == Visibility::Private)
+            continue;
+        auto pMod = pSrc->getModule();
+        if (pSpec->isNative() || a_pModule == pMod || (_acceptsDependencies && a_pModule->hasDependencyCascade(pMod)))
+            if (pSpec->matches(a_Arguments))
+                return pSpec;
+    }
+    return nullptr;
+}
+
 TemplateSpecialization* Template::getTemplateInstantiation(LanguageElementsView a_Arguments) const
 {
     TemplateSignature* pSign = getTemplateSignature();
@@ -193,7 +215,12 @@ void Template::addTemplateSpecialization(TemplateSpecialization* a_pTemplateSpec
 {
     PHANTOM_ASSERT(a_pTemplateSpecialization && a_pTemplateSpecialization->getTemplate() == this);
     TemplateSpecialization* pEqual = getTemplateSpecialization(a_pTemplateSpecialization->getArguments());
-    PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule());
+
+    /// if you get an assert here, it problably mean you included a "<template>.hxx" in two or more different places
+    /// without <phantom/template-only-push> / <phantom/template-only-pop> enclosing
+
+    PHANTOM_ASSERT(!pEqual || pEqual->getModule() != a_pTemplateSpecialization->getModule(),
+                   "duplicate template specialization found");
     if (getNamespace()) /// template specialization belongs so same namespace as their template (even
                         /// if they can belong to different owners)
     {

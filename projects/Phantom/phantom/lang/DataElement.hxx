@@ -34,15 +34,15 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<size_t() const, pure_virtual>("getAlignment", &_::getAlignment)
             .method<size_t() const, pure_virtual>("getSize", &_::getSize)
             .method<size_t() const, pure_virtual>("getOffset", &_::getOffset)
-            .method<void(size_t), pure_virtual>("setOffset", &_::setOffset)
+            .method<void(size_t), pure_virtual>("setOffset", &_::setOffset)({"a_uiOffset"})
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .method<void(Fields&) const, pure_virtual>("fetchFields", &_::fetchFields)
+            // .method<void(Fields&) const, pure_virtual>("fetchFields", &_::fetchFields)({"a_Out"})
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
             // .method<int*() const>("asSymbol", &_::asSymbol)
         
         .protected_()
             /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .constructor<void(Symbol*)>()
+            // .constructor<void(Symbol*)>()({"a_pThis"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

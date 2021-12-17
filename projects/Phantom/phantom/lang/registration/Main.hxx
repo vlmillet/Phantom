@@ -28,6 +28,7 @@
 
 #include <phantom/utils/Functor.hxx>
 #include <phantom/utils/StringView.hxx>
+#include <std/initializer_list.hxx>
 
 #include <phantom/template-only-pop>
 
@@ -60,16 +61,12 @@ PHANTOM_PACKAGE("phantom.lang.registration")
             this_()
         .public_()
             .staticMethod<::phantom::lang::Main *()>("Get", &_::Get)
-            .constructor<void(int (*)(int, char**), StringView, int, char**, CustomAllocator, ClassHookFunc, StringView, uint)>()["0"]["nullptr"]["CustomAllocator::Default()"]["ClassHookFunc()"]["\"\""]["0"]
-            .constructor<void(int (*)(), StringView, int, char**, CustomAllocator, ClassHookFunc, StringView, uint)>()["0"]["nullptr"]["CustomAllocator::Default()"]["ClassHookFunc()"]["\"\""]["0"]
-            .constructor<void(void*, StringView, int, char**, CustomAllocator, ClassHookFunc, StringView, uint)>()["0"]["nullptr"]["CustomAllocator::Default()"]["ClassHookFunc()"]["\"\""]["0"]
-            .constructor<void(size_t, StringView, int, char**, CustomAllocator, ClassHookFunc, StringView, uint)>()["0"]["nullptr"]["CustomAllocator::Default()"]["ClassHookFunc()"]["\"\""]["0"]
-            .method<void(MessageReportFunc)>("setAssertFunc", &_::setAssertFunc)
-            .method<void(MessageReportFunc)>("setErrorFunc", &_::setErrorFunc)
-            .method<void(LogFunc const&)>("setLogFunc", &_::setLogFunc)
-            .method<void(MessageReportFunc)>("setWarningFunc", &_::setWarningFunc)
-            .method<MessageReportFunc const&(MessageReportFunc) const>("getAssertFunc", &_::getAssertFunc)
-            .method<MessageReportFunc const&(MessageReportFunc) const>("getErrorFunc", &_::getErrorFunc)
+            .method<void(MessageReportFunc)>("setAssertFunc", &_::setAssertFunc)({"a_func"})
+            .method<void(MessageReportFunc)>("setErrorFunc", &_::setErrorFunc)({"a_func"})
+            .method<void(LogFunc const&)>("setLogFunc", &_::setLogFunc)({"a_func"})
+            .method<void(MessageReportFunc)>("setWarningFunc", &_::setWarningFunc)({"a_func"})
+            .method<MessageReportFunc const&(MessageReportFunc) const>("getAssertFunc", &_::getAssertFunc)({"a_func"})
+            .method<MessageReportFunc const&(MessageReportFunc) const>("getErrorFunc", &_::getErrorFunc)({"a_func"})
             .method<LogFunc const&() const>("getLogFunc", &_::getLogFunc)
             .method<MessageReportFunc const&() const>("getWarningFunc", &_::getWarningFunc)
             ;

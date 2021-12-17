@@ -35,7 +35,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()(PHANTOM_R_FLAG_NO_COPY)
             .inherits<::phantom::lang::Reference>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
@@ -43,13 +43,13 @@ PHANTOM_PACKAGE("phantom.lang")
         .public_()
         
         .public_()
-            .constructor<void(Type*)>()
+            .constructor<void(Type*)>()({"a_pReferencedType"})
             .method<RValueReference*() const, virtual_|override_>("asClassRValueReference", &_::asClassRValueReference)
-            .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)
+            .method<Type*(Type*) const, virtual_|override_>("replicate", &_::replicate)({"a_pInput"})
             .method<hash64() const, virtual_|override_>("computeLocalHash", &_::computeLocalHash)
             .method<bool() const, virtual_|override_>("isCopyable", &_::isCopyable)
-            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)
-            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)
+            .method<bool(Type*, size_t&, PlaceholderMap&) const, virtual_|override_>("partialAccepts", &_::partialAccepts)({"a_pType","a_Score","a_DeducedConstants"})
+            .method<bool(Symbol*) const, virtual_|override_>("isSame", &_::isSame)({"a_pOther"})
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

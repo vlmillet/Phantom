@@ -42,7 +42,7 @@ PHANTOM_PACKAGE("phantom.lang")
             this_()
             .inherits<::phantom::lang::Method>()
         .public_()
-            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)
+            .method<void(::phantom::lang::LanguageElementVisitor *, ::phantom::lang::VisitorData), virtual_|override_>("visit", &_::visit)({"a_pVisitor","a_Data"})
         
         .public_()
         
@@ -51,9 +51,9 @@ PHANTOM_PACKAGE("phantom.lang")
         
         .public_()
             .constructor<void()>()
-            .constructor<void(StringView, Signature*, Modifiers, uint)>()["0"]["0"]
-            .method<void(void*, void**) const>("construct", &_::construct)
-            .method<void(size_t, void*, void**)>("construct", &_::construct)
+            .constructor<void(StringView, Signature*, Modifiers, uint)>()({"a_strName","a_pSignature","a_Modifiers","a_uiFlags"})["0"]["0"]
+            .method<void(void*, void**) const>("construct", &_::construct)({"a_pAddress","a_ppArgs"})
+            .method<void(size_t, void*, void**)>("construct", &_::construct)({"a_uiCount","a_pAddress","a_ppArgs"})
             .method<Constructor*() const, virtual_|override_>("asConstructor", &_::asConstructor)
         
         .protected_()

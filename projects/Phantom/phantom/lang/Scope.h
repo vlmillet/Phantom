@@ -18,6 +18,7 @@ namespace phantom
 {
 namespace lang
 {
+struct TemplateSubstitution;
 /// \brief  Base class for non-abstract scopes (class scope, namespace scope, block...)
 class PHANTOM_EXPORT_PHANTOM Scope
 {
@@ -155,9 +156,9 @@ public:
     /// instantiation argument, T is int, not int[5]).
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TemplateSpecialization* addTemplateInstantiation(TemplateSpecialization* a_pInstantiationSpecialization,
-                                                     const LanguageElements& a_Arguments,
-                                                     const PlaceholderMap& a_PartialSpecializationParameterDeductions);
+    TemplateSpecialization* addTemplateInstantiation(TemplateSpecialization*     a_pInstantiationSpecialization,
+                                                     const LanguageElements&     a_Arguments,
+                                                     const TemplateSubstitution& a_Substitutions);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the template specializations declared in this scope.

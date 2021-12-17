@@ -82,8 +82,6 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pIn
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times
     {
-        if (getTemplate()->getName() == "VariantT")
-            printf("");
         SmallSet<Placeholder*> encountered;
         auto                   substCount = a_ArgumentSubstitution.size();
         for (size_t i = 0; i < substCount; ++i)

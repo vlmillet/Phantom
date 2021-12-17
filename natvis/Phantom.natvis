@@ -90,8 +90,8 @@
     </Type>
 
     <Type Name="phantom::Delegate&lt;*&gt;">
-      <DisplayString Condition="m_Closure.m_pFunction == nullptr &amp;&amp; m_Closure.m_pThis != nullptr">
-          Function | {m_Closure.m_pThis}
+      <DisplayString Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000)" >
+        Function | {m_Closure.m_pThis}
       </DisplayString>
       <DisplayString Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr">
           ThisCall | ({m_Closure.m_pThis})->[{m_Closure.m_pFunction, na}]
@@ -100,13 +100,13 @@
           Empty
       </DisplayString>
       <Expand>
-        <Item Name="Function" Condition="m_Closure.m_pFunction == nullptr">
+        <Item Name="Function" Condition="m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000)">
           m_Closure.m_pThis
         </Item>
-        <Item Name="This" Condition="m_Closure.m_pFunction != nullptr">
+        <Item Name="This" Condition="!(m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000))">
           m_Closure.m_pThis
         </Item>
-        <Item Name="Method" Condition="m_Closure.m_pFunction != nullptr">
+        <Item Name="Method" Condition="!(m_Closure.m_pFunction != nullptr &amp;&amp; m_Closure.m_pThis != nullptr  &amp;&amp; ((size_t)m_Closure.m_pFunction &amp; 0xFFFFFFFF00000000) == ((size_t)m_Closure.m_pThis &amp; 0xFFFFFFFF00000000))">
           m_Closure.m_pFunction
         </Item>
       </Expand>

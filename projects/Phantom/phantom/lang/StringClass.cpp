@@ -13,12 +13,14 @@ namespace lang
 {
 StringClass::StringClass(StringView a_strName, size_t a_uiSize, size_t a_uiAlignment, Modifiers a_Modifiers,
                          uint a_uiFlags)
-    : SequentialContainerClass(TypeKind::StringClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags)
+    : SequentialContainerClass(TypeKind::StringClass, a_strName, a_uiSize, a_uiAlignment, a_Modifiers, a_uiFlags),
+#pragma message("TODO : move m_pData init to .h")
+      m_pData{}
 {
 }
 
 StringClass::StringClass(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : SequentialContainerClass(TypeKind::StringClass, a_strName, a_Modifiers, a_uiFlags)
+    : SequentialContainerClass(TypeKind::StringClass, a_strName, a_Modifiers, a_uiFlags), m_pData{}
 {
 }
 

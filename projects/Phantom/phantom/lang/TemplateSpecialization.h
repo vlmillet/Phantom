@@ -181,6 +181,8 @@ public:
 
     Source* getCodeLocationSource() const override;
 
+    bool isInstantiated() const { return m_instantiated; }
+
 private:
     void _updateName();
 
@@ -193,6 +195,7 @@ private:
     TemplateSpecialization* m_pExtendedSpecialization{};
     TemplateSpecialization* m_pInstantiationSpecialization{};
     TemplateSubstitution    m_ArgumentSubstitution;
+    bool                    m_instantiated{};
 };
 
 } // namespace lang

@@ -54,12 +54,10 @@ PHANTOM_PACKAGE("phantom.utils")
             .staticMethod<String(uint16, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             .staticMethod<String(sint32, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             .staticMethod<String(uint32, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
-            .staticMethod<String(longlong, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
-            .staticMethod<String(ulonglong, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .staticMethod<String(sint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
-            /// invalid declaration, some symbols have not been parsed correctly probably due to missing include path or missing #include in the .h
-            // .staticMethod<String(uint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(long, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(ulong, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(sint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
+            .staticMethod<String(uint64, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             .staticMethod<String(long double, const char*)>("ToString", &_::ToString)({"_val","_fmt"})["nullptr"]
             ;
         }

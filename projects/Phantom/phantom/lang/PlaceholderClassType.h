@@ -47,6 +47,10 @@ public:
     virtual void getQualifiedName(StringBuffer& a_Buf) const override { getName(a_Buf); }
     virtual void getRelativeDecoratedName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
     virtual void getRelativeName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
+    bool         isPack() const override { return m_isPack; }
+
+private:
+    bool m_isPack{};
 };
 
 } // namespace lang

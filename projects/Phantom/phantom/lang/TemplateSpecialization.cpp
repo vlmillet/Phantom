@@ -78,6 +78,7 @@ TemplateSpecialization::TemplateSpecialization(TemplateSpecialization*     a_pIn
       m_pInstantiationSpecialization(a_pInstantiationSpecialization),
       m_ArgumentSubstitution(a_ArgumentSubstitution)
 {
+    a_pInstantiationSpecialization->m_instantiated = true;
 #if PHANTOM_DEBUG_LEVEL
     // ensure placeholders belongs to the instantiation specialization and are not used multiple
     // times

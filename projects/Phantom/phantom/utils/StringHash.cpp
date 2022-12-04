@@ -67,4 +67,13 @@ StringHash::StringHash(uint64_t _hash) : m_value(_hash)
 #endif
 }
 
+phantom::StringView StringHash::debugString() const
+{
+    return
+#if !defined(PHANTOM_NO_STRINGHASH_STRING)
+    m_pdebugString ? StringView(*m_pdebugString) :
+#endif
+                   StringView();
+}
+
 } // namespace phantom

@@ -32,6 +32,7 @@ public:
 
     bool         accepts(LanguageElement* a_pLanguageElement) const override;
     virtual bool isA(Type*) const { return true; }
+    bool         isPack() const override { return false; }
 
     Symbol*              asSymbol() const override { return (PlaceholderTemplate*)this; }
     Placeholder*         asPlaceholder() const override { return (PlaceholderTemplate*)this; }

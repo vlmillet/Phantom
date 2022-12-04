@@ -177,7 +177,7 @@ public:
 
     SelfType& operator=(const SelfType& other)
     {
-        reserve(other.m_capacity);
+        reserve(other.m_size);
         auto d = m_data;
         auto od = other.m_data;
         Helper::destroy(begin(), end());
@@ -267,7 +267,7 @@ public:
     template<size_type S>
     SelfType& operator=(const SmallVector<T, S>& other)
     {
-        reserve(other.m_capacity);
+        reserve(other.m_size);
         auto d = m_data;
         auto od = other.m_data;
         Helper::destroy(begin(), end());
@@ -308,9 +308,9 @@ public:
         return m_data[i];
     }
 
-    size_type         size() const { return m_size; }
-    size_type         capacity() const { return m_capacity; }
-    bool              empty() const { return m_size == 0; }
+    inline size_type  size() const { return m_size; }
+    inline size_type  capacity() const { return m_capacity; }
+    inline bool       empty() const { return m_size == 0; }
     value_type const& front() const
     {
         PHANTOM_ASSERT(size());

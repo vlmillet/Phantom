@@ -16,7 +16,9 @@ namespace lang
 PlaceholderClassType::PlaceholderClassType(PlaceholderType* a_pPlaceholderType)
     : PlaceholderClassType(a_pPlaceholderType->getName(), a_pPlaceholderType->getModifiers(),
                            a_pPlaceholderType->getFlags())
+
 {
+    m_isPack = a_pPlaceholderType->isPack();
 }
 
 PlaceholderClassType::PlaceholderClassType(StringView a_Name, Modifiers a_Modifiers, uint a_Flags)

@@ -65,7 +65,7 @@ template<typename t_Ty, size_t t_Size>
 class VariableT<t_Ty[t_Size]> : public Variable
 {
 public:
-    typedef typename std::remove_extent<t_Ty>::type ValueTypeNoArray;
+    using ValueTypeNoExtent = std::remove_all_extents_t<t_Ty>;
 
 public:
     VariableT(Type* a_pContentType, StringView a_strName, t_Ty (*a_pPointer)[t_Size], Modifiers a_Modifiers = 0,
@@ -80,11 +80,11 @@ public:
 
     virtual void getValue(void* dest) const
     {
-        ::phantom::Copier<t_Ty[t_Size]>::copy((t_Ty*)dest, (const t_Ty*)m_pAddress);
+        ::phantom::Copier<t_Ty[t_Size]>::copy((ValueTypeNoExtent*)dest, (const ValueTypeNoExtent*)m_pAddress);
     }
     virtual void setValue(void const* src) const
     {
-        ::phantom::Copier<t_Ty[t_Size]>::copy((t_Ty*)m_pAddress, (const t_Ty*)src);
+        ::phantom::Copier<t_Ty[t_Size]>::copy((ValueTypeNoExtent*)m_pAddress, (const ValueTypeNoExtent*)src);
     }
 };
 
@@ -104,10 +104,7 @@ public:
         : Variable(PHANTOM_TYPEOF(t_Ty[]), a_strName, a_pPointer, a_Modifiers, a_uiFlags | PHANTOM_R_FLAG_NATIVE)
     {
     }
-    virtual void getValue(void* dest) const
-    {
-        ::phantom::Copier<t_Ty*>::copy((t_Ty**)dest, (t_Ty* const*)m_pAddress);
-    }
+    virtual void getValue(void* dest) const { ::phantom::Copier<t_Ty*>::copy((t_Ty**)dest, (t_Ty* const*)m_pAddress); }
     virtual void setValue(void const* src) const
     {
         ::phantom::Copier<t_Ty*>::copy((t_Ty**)m_pAddress, (t_Ty* const*)src);

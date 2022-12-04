@@ -54,7 +54,8 @@ class PHANTOM_EXPORT_PHANTOM Symbol : public LanguageElement
 
 public:
     static bool   IsCppIdentifier(StringView a_Name);
-    static hash64 ComputeHash(const char* a_Str, size_t a_Len);
+    static hash64 ComputeHash(const char* a_Str, size_t a_Len) { return makeStringHash(StringView(a_Str, a_Len)); }
+    static hash64 ComputeHash(StringView _strName) { return makeStringHash(_strName); }
     static void   CombineHash(hash64& a_rSeed, hash64 a_Value)
     {
         a_rSeed ^= a_Value + 0x9e3779b99e3779b9 + (a_rSeed << 6) + (a_rSeed >> 2); // inspired from boost
@@ -160,6 +161,7 @@ public:
 
     PHANTOM_FORCEINLINE StringView getName() const { return m_strName; }
     void                           setName(StringView a_strName);
+    PHANTOM_FORCEINLINE hash64     getNameHash() const { return m_NameHash; }
 
     hash64 getHash() const;
     hash64 getLocalHash() const;
@@ -473,6 +475,7 @@ private:
     ExtraData*     m_pExtraData{};
     mutable hash64 m_Hash{};
     mutable hash64 m_LocalHash{};
+    mutable hash64 m_NameHash{};
     Modifiers      m_Modifiers{};
     Access         m_eAccess = Access::Undefined;
     Visibility     m_eVisibility = Visibility::Private;

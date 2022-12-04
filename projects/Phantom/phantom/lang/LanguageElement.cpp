@@ -301,9 +301,13 @@ void LanguageElement::setOwner(LanguageElement* a_pOwner)
 
 void LanguageElement::_addSourceDependency(LanguageElement* a_pRef)
 {
-    // if any referenced element is template dependant, we become template dependant too
+    static auto s_DefaultSource = Application::Get()->getDefaultSource();
     if (a_pRef->m_pSource)
+    {
+        if (a_pRef->m_pSource == s_DefaultSource)
+            return;
         m_pSource->addDependency(a_pRef->m_pSource);
+    }
     else
     {
         PHANTOM_ASSERT(a_pRef->asPackage());

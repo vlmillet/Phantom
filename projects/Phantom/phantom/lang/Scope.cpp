@@ -137,7 +137,11 @@ void Scope::addType(Type* a_pType)
 {
     if (a_pType->asClassType() || a_pType->asEnum())
     {
-        PHANTOM_ASSERT(std::find(m_Types->begin(), m_Types->end(), a_pType) == m_Types->end());
+        PHANTOM_ASSERT_DEBUG(std::find_if(m_Types->begin(), m_Types->end(), [&](Type* pType) {
+                                 return (a_pType->getModule() == nullptr ||
+                                         (a_pType->getModule() == pType->getModule())) &&
+                                 a_pType->getDecoratedName() == pType->getDecoratedName();
+                             }) == m_Types->end());
         m_Types->push_back(a_pType);
     }
     onScopeSymbolAdded(a_pType);
@@ -463,6 +467,7 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
     pTemplateSpecialization = m_pUnit->NewDeferred<TemplateSpecialization>(
     a_pTemplate, a_pTemplateSignature, a_Arguments, a_pBody, a_pTemplate->getFlags() & PHANTOM_R_FLAG_NATIVE));
     pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative());
+    pTemplateSpecialization->setVisibility(Visibility::Private);
     return pTemplateSpecialization;
 }
 
@@ -480,6 +485,7 @@ TemplateSpecialization* Scope::addTemplateSpecialization(Template* a_pTemplate, 
     addTemplateSpecialization(
     pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
     a_pTemplate, a_pTemplateSignature, a_Arguments, (PHANTOM_R_FLAG_NATIVE * m_pThisElement->isNative())));
+    pTemplateSpecialization->setVisibility(Visibility::Private);
     return pTemplateSpecialization;
 }
 
@@ -499,6 +505,7 @@ TemplateSpecialization* Scope::addTemplateInstantiation(TemplateSpecialization* 
     addTemplateSpecialization(pTemplateSpecialization = m_pUnit->New<TemplateSpecialization>(
                               a_pInstantiationSpecialization, a_Arguments, a_Substitutions));
     // pTemplateSpecialization->setFlags(PHANTOM_R_FLAG_NATIVE*m_pThisElement->isNative());
+    pTemplateSpecialization->setVisibility(Visibility::Private);
     return pTemplateSpecialization;
 }
 

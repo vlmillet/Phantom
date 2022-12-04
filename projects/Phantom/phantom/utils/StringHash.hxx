@@ -25,10 +25,26 @@
 
 #include <phantom/template-only-push>
 
+#include "SmallString.hxx"
 #include "StringView.hxx"
 
 #include <phantom/template-only-pop>
 
+namespace std {
+PHANTOM_PACKAGE("phantom.utils")
+    PHANTOM_SOURCE("StringHash")
+
+        /// missing symbol(s) reflection (std::hash) -> use the 'haunt.bind' to bind symbols with your custom haunt files
+        /* PHANTOM_STRUCT_S((phantom::SmallString<char, 16>), hash)
+        {
+            using String = typedef_< phantom::String>;
+            this_()
+            // .method<size_t(const ::phantom::String &) const>("operator()", &_::operator())({"_str"})
+            ;
+        } */
+    PHANTOM_END("StringHash")
+PHANTOM_END("phantom.utils")
+}
 namespace std {
 PHANTOM_PACKAGE("phantom.utils")
     PHANTOM_SOURCE("StringHash")

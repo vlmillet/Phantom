@@ -21,19 +21,13 @@ template<typename t_Ty, bool t_copy_assignable>
 struct CopierH
 {
     typedef PHANTOM_TYPENAME std::remove_cv<t_Ty>::type t_Ty_no_cv;
-    static void                                         copy(t_Ty* a_pDest, t_Ty const* a_pSrc)
-    {
-        *((t_Ty_no_cv*)a_pDest) = *((t_Ty_no_cv const*)a_pSrc);
-    }
+    static void copy(t_Ty* a_pDest, t_Ty const* a_pSrc) { *((t_Ty_no_cv*)a_pDest) = *((t_Ty_no_cv const*)a_pSrc); }
 };
 
 template<typename t_Ty>
 struct CopierH<t_Ty, false>
 {
-    static void copy(t_Ty*, t_Ty const*)
-    {
-        PHANTOM_ASSERT(false, "not copy assignable");
-    }
+    static void copy(t_Ty*, t_Ty const*) { PHANTOM_ASSERT(false, "not copy assignable"); }
 };
 } // namespace detail
 
@@ -53,17 +47,26 @@ struct Copier : public detail::CopierH<t_Ty, IsCopyAssignable<t_Ty>::value>
     PHANTOM_REBIND(Copier)
 };
 
-template<typename t_Ty, size_t t_Size>
-struct Copier<t_Ty[t_Size]>
+template<typename t_Ty, size_t t_Acc>
+struct ArrayCopier
 {
-    typedef PHANTOM_TYPENAME std::remove_const<t_Ty>::type t_Ty_no_const;
-    static void                                            copy(t_Ty* a_pDest, t_Ty const* a_pSrc)
+    static void copy(t_Ty* a_pDest, t_Ty const* a_pSrc)
     {
-        for (size_t i = 0; i < t_Size; ++i)
+        for (size_t i = 0; i < t_Acc; ++i)
         {
             Copier<t_Ty>::copy(a_pDest + i, a_pSrc + i);
         }
     }
+};
+
+template<typename t_Ty, size_t t_Size, size_t t_Acc>
+struct ArrayCopier<t_Ty[t_Size], t_Acc> : public ArrayCopier<t_Ty, t_Size + t_Acc>
+{
+};
+
+template<typename t_Ty, size_t t_Size>
+struct Copier<t_Ty[t_Size]> : public ArrayCopier<t_Ty, t_Size>
+{
 };
 
 } // namespace phantom

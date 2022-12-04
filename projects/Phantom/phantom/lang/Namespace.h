@@ -29,6 +29,7 @@ public:
     friend class Type;
     friend class Symbol;
     friend class Source;
+    using SymbolsMap = SmallMap<hash64, SmallVector<Symbol*, 1>>;
 
 public:
     static Namespace* Global();
@@ -186,7 +187,15 @@ public:
     /// \return the namespace aliases list.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Symbols const& getSymbols() const { return m_Symbols; }
+    SymbolsMap const& getSymbols() const { return m_Symbols; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the namespace aliases referenced in this namespace.
+    ///
+    /// \return the namespace aliases list.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ArrayView<Symbol*> getSymbols(hash64 _hash) const;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Converts this namespace name to a path with given separator.
@@ -237,20 +246,21 @@ private:
     void       onNamespaceChanged(Namespace*) override final;
     void       _registerSymbol(Symbol* a_pSym)
     {
-        PHANTOM_ASSERT(std::find(m_Symbols.begin(), m_Symbols.end(), a_pSym) == m_Symbols.end());
-        m_Symbols.push_back(a_pSym);
+        auto& syms = m_Symbols[a_pSym->getNameHash()];
+        PHANTOM_ASSERT(std::find(syms.begin(), syms.end(), a_pSym) == syms.end());
+        syms.push_back(a_pSym);
     }
     void _unregisterSymbol(Symbol* a_pSym)
     {
-        auto found = std::next(std::find(m_Symbols.rbegin(), m_Symbols.rend(), a_pSym)).base();
-        PHANTOM_ASSERT(found != m_Symbols.end());
-        m_Symbols.erase_unsorted(found);
+        auto& syms = m_Symbols[a_pSym->getNameHash()];
+        PHANTOM_ASSERT(!syms.empty());
+        syms.erase_unsorted(std::find(syms.begin(), syms.end(), a_pSym));
     }
 
 private:
     Namespaces m_Namespaces;
     Aliases    m_NamespaceAliases;
-    Symbols    m_Symbols;
+    SymbolsMap m_Symbols;
 };
 
 } // namespace lang

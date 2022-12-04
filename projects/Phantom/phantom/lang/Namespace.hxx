@@ -21,12 +21,16 @@
 #include <phantom/method>
 #include <phantom/static_method>
 #include <phantom/constructor>
+#include <phantom/typedef>
 #include <phantom/using>
 #include <phantom/friend>
 
 #include <phantom/template-only-push>
 
+#include <phantom/utils/ArrayView.hxx>
+#include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -46,6 +50,7 @@ PHANTOM_PACKAGE("phantom.lang")
             using StringBuffer = typedef_< phantom::StringBuffer>;
             using StringView = typedef_< phantom::StringView>;
             using Symbols = typedef_< phantom::lang::Symbols>;
+            using SymbolsMap = typedef_<_::SymbolsMap>;
             this_()
             .inherits<::phantom::lang::Symbol, ::phantom::lang::Scope>()
         .public_()
@@ -55,6 +60,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .staticMethod<::phantom::lang::Class *()>("MetaClass", &_::MetaClass)
         
         .public_()
+            .typedef_<SymbolsMap>("SymbolsMap")
         
         .public_()
             .staticMethod<::phantom::lang::Namespace *()>("Global", &_::Global)
@@ -81,7 +87,8 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<Namespace*(StringView) const>("getNamespaceAliased", &_::getNamespaceAliased)({"a_strAlias"})
             .method<Namespaces const&() const>("getNamespaces", &_::getNamespaces)
             .method<Aliases const&() const>("getNamespaceAliases", &_::getNamespaceAliases)
-            .method<Symbols const&() const>("getSymbols", &_::getSymbols)
+            .method<SymbolsMap const&() const>("getSymbols", &_::getSymbols)
+            .method<ArrayView<Symbol*>(hash64) const>("getSymbols", &_::getSymbols)({"_hash"})
             .method<String(char) const>("asPath", &_::asPath)({"separator"})["'/'"]
             .method<bool(Symbol*) const, virtual_|override_>("isSymbolHidden", &_::isSymbolHidden)({"a_pSymbol"})
             .method<void(StringView, Symbols&) const, virtual_|override_>("getScopedSymbolsWithName", &_::getScopedSymbolsWithName)({"a_Name","a_Symbols"})

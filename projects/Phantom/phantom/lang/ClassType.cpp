@@ -454,9 +454,16 @@ Field* ClassType::addField(Type* a_pValueType, StringView a_strName, uint a_uiFi
 {
     if (hasSymbol(a_strName))
     {
-        PHANTOM_LOG(Error, "a symbol with name '%.*s' already exists in this class type",
+        if (getField(a_strName))
+        {
+            PHANTOM_LOG(Error, "a field with name '%.*s' already exists in this class type",
+                        PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
+
+            return nullptr;
+        }
+
+        PHANTOM_LOG(Warning, "a symbol with name '%.*s' already exists in this class type",
                     PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
-        return nullptr;
     }
     Field* pField = NewDeferred<Field>(a_pValueType, a_strName, a_uiFilterFlag, a_Modifiers, a_uiFlags);
     addField(pField);
@@ -717,6 +724,15 @@ void ClassType::_onNativeElementsAccessImpl()
         phantom::lang::detail::popInstallation();
     if (!pCurrentSource)
         phantom::lang::detail::popSource();
+}
+
+bool ClassType::_checkTemplateSpecializationNotHasBeenInstantiated() const
+{
+    return true;
+    //     TemplateSpecialization* tspec{};
+    //     (void)tspec;
+    //     return ((tspec = getTemplateSpecialization()) == nullptr || tspec->isNative() || tspec->isFull() ||
+    //             !tspec->isInstantiated());
 }
 
 void ClassType::_onNativeElementsAccess()

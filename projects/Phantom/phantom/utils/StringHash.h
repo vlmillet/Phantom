@@ -26,45 +26,17 @@ public:
     explicit StringHash(StringView _string);
     explicit StringHash(uint64_t _hash);
 
-    explicit operator uint64_t() const
-    {
-        return m_value;
-    }
-    uint64_t get() const
-    {
-        return m_value;
-    }
+    explicit operator uint64_t() const { return m_value; }
+    uint64_t get() const { return m_value; }
 
-    StringView debugString() const
-    {
-        return
-#if !defined(PHANTOM_NO_STRINGHASH_STRING)
-        m_pdebugString ? StringView(*m_pdebugString) :
-#endif
-                       StringView();
-    }
+    StringView debugString() const;
 
-    bool operator<(StringHash const& _other) const
-    {
-        return m_value < _other.m_value;
-    }
-    bool operator==(StringHash const& _other) const
-    {
-        return m_value == _other.m_value;
-    }
-    bool operator!=(StringHash const& _other) const
-    {
-        return m_value != _other.m_value;
-    }
+    bool operator<(StringHash const& _other) const { return m_value < _other.m_value; }
+    bool operator==(StringHash const& _other) const { return m_value == _other.m_value; }
+    bool operator!=(StringHash const& _other) const { return m_value != _other.m_value; }
 
-    bool isNull() const
-    {
-        return m_value == 0;
-    }
-    bool isValid() const
-    {
-        return m_value != 0;
-    }
+    bool isNull() const { return m_value == 0; }
+    bool isValid() const { return m_value != 0; }
 
 private:
     uint64_t m_value = 0;
@@ -75,14 +47,18 @@ private:
 };
 } // namespace phantom
 
+#include "String.h"
+
 namespace std
 {
 template<>
 struct hash<phantom::StringHash>
 {
-    size_t operator()(phantom::StringHash const& _hash)
-    {
-        return _hash.get();
-    }
+    size_t operator()(phantom::StringHash const& _hash) { return _hash.get(); }
+};
+template<>
+struct hash<phantom::String>
+{
+    size_t operator()(phantom::String const& _str) const { return phantom::makeStringHash(_str); }
 };
 } // namespace std

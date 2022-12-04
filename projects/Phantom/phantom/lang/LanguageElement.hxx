@@ -32,6 +32,7 @@
 #include <phantom/utils/SmallMap.hxx>
 #include <phantom/utils/SmallSet.hxx>
 #include <phantom/utils/SmallString.hxx>
+#include <phantom/utils/SmallVector.hxx>
 #include <phantom/utils/StringView.hxx>
 
 #include <phantom/template-only-pop>
@@ -112,8 +113,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<::phantom::lang::MapClass *() const, virtual_>("asMapClass", &_::asMapClass)
             .method<::phantom::lang::SetClass *() const, virtual_>("asSetClass", &_::asSetClass)
             .method<::phantom::lang::StringClass *() const, virtual_>("asStringClass", &_::asStringClass)
-            /// missing symbol(s) reflection (phantom::lang::ArrayClass) -> use the 'haunt.bind' to bind symbols with your custom haunt files
-            // .method<::phantom::lang::ArrayClass *() const, virtual_>("asArrayClass", &_::asArrayClass)
+            .method<::phantom::lang::ArrayClass *() const, virtual_>("asArrayClass", &_::asArrayClass)
             .method<::phantom::lang::Constant *() const, virtual_>("asConstant", &_::asConstant)
             .method<::phantom::lang::ConstType *() const, virtual_>("asConstClass", &_::asConstClass)
             .method<::phantom::lang::Pointer *() const, virtual_>("asConstClassPointer", &_::asConstClassPointer)

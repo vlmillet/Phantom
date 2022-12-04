@@ -1318,7 +1318,7 @@ public:
     /// \return The extended type count.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    TypesView getExtendedTypes() const { return m_pExtendedTypes ? *m_pExtendedTypes : TypesView{}; }
+    TypesView getExtendedTypes() const { return m_pExtendedTypes ? TypesView(*m_pExtendedTypes) : TypesView{}; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Gets the common base ancestor of this type and the given one if they are class (i.e.

@@ -13,6 +13,7 @@
 #include "AnonymousUnion.h"
 #include "Application.h"
 #include "Array.h"
+#include "ArrayClass.h"
 #include "Class.h"
 #include "ClassType.h"
 #include "ConstType.h"
@@ -108,6 +109,10 @@ void LanguageElementVisitor::visit(Application* a_pInput, VisitorData a_Data)
 void LanguageElementVisitor::visit(Array* a_pInput, VisitorData a_Data)
 {
     visit(static_cast<Type*>(a_pInput), a_Data);
+}
+void LanguageElementVisitor::visit(ArrayClass* a_pInput, VisitorData a_Data)
+{
+    visit(static_cast<Class*>(a_pInput), a_Data);
 }
 void LanguageElementVisitor::visit(Class* a_pInput, VisitorData a_Data)
 {

@@ -56,7 +56,10 @@ Symbol::Symbol(Modifiers a_Modifiers /* = 0*/, uint a_uiFlags /*=0*/)
 }
 
 Symbol::Symbol(StringView a_strName, Modifiers a_Modifiers /*= 0*/, uint a_uiFlags /*= 0*/)
-    : LanguageElement(a_uiFlags | PHANTOM_R_INTERNAL_FLAG_SYMBOL), m_strName(a_strName), m_Modifiers(a_Modifiers)
+    : LanguageElement(a_uiFlags | PHANTOM_R_INTERNAL_FLAG_SYMBOL),
+      m_strName(a_strName),
+      m_NameHash(ComputeHash(a_strName.data(), a_strName.size())),
+      m_Modifiers(a_Modifiers)
 {
     PHANTOM_ASSERT(!(isProtected() && isPrivate()), "o_private_access and o_protected_access cannot co-exist");
 }
@@ -106,11 +109,6 @@ hash64 Symbol::computeHash() const
             CombineHash(h, pNSSym->getHash());
     }
     return h;
-}
-
-hash64 Symbol::ComputeHash(const char* a_Str, size_t a_Len)
-{
-    return makeStringHash(StringView(a_Str, a_Len));
 }
 
 void Symbol::formatAnonymousName(StringBuffer& a_Buf) const

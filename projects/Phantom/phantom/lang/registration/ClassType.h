@@ -29,6 +29,8 @@ HAUNT_STOP;
 #include <phantom/utils/StaticIf.h>
 #include <phantom/utils/StringUtil.h>
 
+PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement();
+
 namespace phantom
 {
 namespace lang
@@ -531,7 +533,7 @@ struct ClassTypeBuilderT : TypeBuilderT<T, Top, MostDerived>, ScopeBuilderT<Most
     template<bool Cond, typename F>
     MostDerived& if_(F const& a_F)
     {
-        phantom::static_if<Cond>([&](auto a_Idtty) { a_F(a_Idtty(this_())); });
+        phantom::static_if<Cond>([&](auto a_Idtty) { a_F(a_Idtty(this->this_())); });
         return static_cast<MostDerived&>(*this);
     }
 
@@ -822,7 +824,7 @@ struct TemplateParamValueH
     template<class T>
     auto operator*(T c)
     {
-        return __PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<T>>(c, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
+        return ::__PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<T>>(c, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     }
 };
 struct TemplateParamValueUnsignedH
@@ -830,7 +832,7 @@ struct TemplateParamValueUnsignedH
     template<class T>
     auto operator*(T c)
     {
-        return __PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<std::make_unsigned_t<T>>>(
+        return ::__PHNTM_ApplicationAsElement()->NewMeta<lang::ConstantT<std::make_unsigned_t<T>>>(
         (std::make_unsigned_t<T>)c, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
     }
 };
@@ -954,7 +956,7 @@ PHANTOM_EXPORT_PHANTOM bool _PHTNM_moduleHasDependency(phantom::lang::Module* _m
 template<class RegistrerType>
 auto _PHTNM_TemplateTypeOfH()
 {
-    using MetaPtr = decltype(reinterpret_cast<RegistrerType*>(nullptr)->this_()._PHNTM_getMeta());
+    using MetaPtr = decltype(static_cast<RegistrerType*>(nullptr)->this_()._PHNTM_getMeta());
     using Meta = std::remove_pointer_t<MetaPtr>;
     if (auto inAnotherModule = phantom::lang::TypeOfUndefined<typename RegistrerType::_PHNTM_ThisType>::object())
     {
@@ -1163,8 +1165,6 @@ PHANTOM_PP_CAT(RegName, _PHANTOM_).this_()._PHNTM_setFullSpec();                
 #define _PHNTM_TemplateParamValue_long(V) phantom::lang::TemplateParamValueH() * V
 #define _PHNTM_TemplateParamValue_size_t(V) phantom::lang::TemplateParamValueH() * V
 #define _PHNTM_TemplateParamValue_ptrdiff_t(V) phantom::lang::TemplateParamValueH() * V
-
-PHANTOM_EXPORT_PHANTOM phantom::lang::LanguageElement* __PHNTM_ApplicationAsElement();
 
 namespace _PHNTM_TemplateParamValue_std
 {

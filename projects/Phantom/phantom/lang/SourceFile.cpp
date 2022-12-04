@@ -17,7 +17,10 @@
 #endif
 #if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_LINUX
 #    include <sys/stat.h>
+#else
+#    include <sys/stat.h>
 #endif
+
 /* *********************************************** */
 namespace phantom
 {
@@ -58,11 +61,19 @@ SourceFile* SourceFile::CreateOnDisk(StringView a_strPath, bool a_bOverwrite /*=
 
 time_t SourceFile::getLastChangeTime() const
 {
+#if defined(_MSC_VER)
+    struct _stat64 s = {};
+    if (_stat64(getPath().data(), &s) == -1)
+    {
+        return -1;
+    }
+#else
     struct stat s = {};
     if (stat(getPath().data(), &s) == -1)
     {
         return -1;
     }
+#endif
     return s.st_mtime;
 }
 

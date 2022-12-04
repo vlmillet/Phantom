@@ -57,7 +57,7 @@ public:
         return this->m_storage.insert(it, value_type(_key, V()))->second;
     }
 
-    void setAllocator(CustomAllocator const* a_pAlloc) { m_storage.setAllocator(a_pAlloc); }
+    void setAllocator(CustomAllocator const* a_pAlloc) { this->m_storage.setAllocator(a_pAlloc); }
 
     const_iterator find(K const& _key) const
     {

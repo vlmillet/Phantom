@@ -161,6 +161,12 @@ bool defaultAssert(StringView expression, StringView file, int line, StringView 
     {
     default:
     case IDYES:
+        if (!::IsDebuggerPresent())
+        {
+            // ensure, if no debugger connected, a real crash so that we can have a dmp generated
+            char* nullp = nullptr;
+            (*nullp) = 0;
+        }
         return true;
     case IDCANCEL:
     {

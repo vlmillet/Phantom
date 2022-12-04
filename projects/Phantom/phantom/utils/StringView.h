@@ -100,12 +100,12 @@ public:
         return (a_Str.size() <= size()) && memcmp(a_Str.begin(), begin(), a_Str.size()) == 0;
     }
 
-    const CharT& operator[](size_t Idx) const { return *(begin() + Idx); }
-    const CharT* data() const { return m_pBegin; }
-    const CharT* begin() const { return m_pBegin; }
-    const CharT* end() const { return m_pEnd; }
-    size_t       size() const { return static_cast<size_t>(m_pEnd - m_pBegin); }
-    bool         empty() const { return m_pBegin == m_pEnd; }
+    inline const CharT& operator[](size_t Idx) const { return *(begin() + Idx); }
+    inline const CharT* data() const { return m_pBegin; }
+    inline const CharT* begin() const { return m_pBegin; }
+    inline const CharT* end() const { return m_pEnd; }
+    inline size_t       size() const { return static_cast<size_t>(m_pEnd - m_pBegin); }
+    inline bool         empty() const { return m_pBegin == m_pEnd; }
 
     NullTerminatedType nullTerminated() const { return *this; }
 
@@ -287,12 +287,12 @@ private:
 
 inline bool operator==(BasicStringView<char> a_Left, BasicStringView<char> a_Right)
 {
-    return a_Left.compare(a_Right) == 0;
+    return a_Left.size() == a_Right.size() && a_Left.compare(a_Right) == 0;
 }
 
 inline bool operator!=(BasicStringView<char> a_Left, BasicStringView<char> a_Right)
 {
-    return a_Left.compare(a_Right) != 0;
+    return a_Left.size() != a_Right.size() || a_Left.compare(a_Right) != 0;
 }
 
 inline bool operator<(BasicStringView<char> a_Left, BasicStringView<char> a_Right)

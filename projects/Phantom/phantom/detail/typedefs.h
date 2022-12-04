@@ -22,7 +22,7 @@ HAUNT_SOURCE("phantom.String");
 namespace phantom
 {
 #if !defined(PHANTOM_STRING_STATIC_SIZE)
-#    define PHANTOM_STRING_STATIC_SIZE 16
+#    define PHANTOM_STRING_STATIC_SIZE 16u
 #endif
 #if !defined(PHANTOM_STRING_EXPAND_SIZE)
 #    define PHANTOM_STRING_EXPAND_SIZE 16
@@ -41,7 +41,7 @@ HAUNT_END("phantom.String");
 HAUNT_SOURCE("phantom.StringBuffer");
 namespace phantom
 {
-using StringBuffer = SmallString<char, 128>;
+using StringBuffer = SmallString<char, 128u>;
 }
 HAUNT_END("phantom.StringBuffer");
 

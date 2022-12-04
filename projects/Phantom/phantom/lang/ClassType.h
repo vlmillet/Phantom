@@ -937,7 +937,9 @@ private:
         if (a_pSymbol->getAccess() == Access::Undefined)
             a_pSymbol->setAccess(m_CurrentAccess);
         a_pSymbol->setVisibility(Visibility::Public); // expose to lookup
+        PHANTOM_ASSERT(_checkTemplateSpecializationNotHasBeenInstantiated());
     }
+    bool        _checkTemplateSpecializationNotHasBeenInstantiated() const;
     inline void _removeSymbol(Symbol* a_pSymbol)
     {
         a_pSymbol->setVisibility(Visibility::Private);                        // hide from lookup

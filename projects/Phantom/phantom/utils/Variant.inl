@@ -5,6 +5,7 @@
 // ]
 
 #include <phantom/lang/TypeOf.h>
+#include <phantom/lang/StringClass.h>
 
 namespace phantom {
 
@@ -274,12 +275,11 @@ namespace phantom {
     inline const char* Variant::c_str() const
     {
         PHANTOM_ASSERT(isString());
-        return (*(String*)_buffer()).c_str();
+        return reinterpret_cast<const char*>(static_cast<lang::StringClass*>(m_pType)->c_str(_buffer()));
     }
 
     inline bool Variant::isString() const {
-        PHANTOM_ASSERT(phantom::lang::BuiltInTypes::TYPE_STRING);
-        return m_pType == phantom::lang::BuiltInTypes::TYPE_STRING;
+        return m_pType->getTypeKind() == lang::TypeKind::StringClass;
     }
 
     inline bool Variant::_as(lang::Type* a_pType, void* a_pDest) const

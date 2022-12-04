@@ -9,6 +9,7 @@
 #include <haunt>
 HAUNT_STOP;
 #include <phantom/detail/core.h>
+#include <phantom/traits/IsDestructible.h>
 #include <phantom/traits/indices.h>
 
 /// @cond ADVANCED
@@ -24,9 +25,7 @@ template<typename t_Ty, class... v_Params>
 struct ConstructorCallerNonFinal<t_Ty, void(v_Params...)> : public t_Ty
 {
 public:
-    PHANTOM_FORCEINLINE ConstructorCallerNonFinal(v_Params... args) : t_Ty(std::forward<v_Params>(args)...)
-    {
-    }
+    PHANTOM_FORCEINLINE ConstructorCallerNonFinal(v_Params... args) : t_Ty(std::forward<v_Params>(args)...) {}
 
     template<size_t... Is>
     PHANTOM_FORCEINLINE static void apply(void* a_pAddress, void** a_pParams, Indices<Is...>)
@@ -40,28 +39,19 @@ public:
         apply(a_pAddress, a_pParams, BuildIndices<sizeof...(v_Params)>{});
     }
 
-    void closure(v_Params... args)
-    {
-        new (this) ConstructorCallerNonFinal(std::forward<v_Params>(args)...);
-    }
+    void closure(v_Params... args) { new (this) ConstructorCallerNonFinal(std::forward<v_Params>(args)...); }
 };
 
-template<typename t_Class, typename t_Signature, bool t_is_abstract, bool t_is_final>
+template<typename t_Class, typename t_Signature, bool t_is_abstract, bool t_is_final_or_not_destructible>
 struct ConstructorCallerH;
 
 // abstract
-template<typename t_Class, typename t_Signature, bool t_is_final>
-struct ConstructorCallerH<t_Class, t_Signature, true, t_is_final>
+template<typename t_Class, typename t_Signature, bool t_is_final_or_not_destructible>
+struct ConstructorCallerH<t_Class, t_Signature, true, t_is_final_or_not_destructible>
 {
-    PHANTOM_FORCEINLINE static void apply(void*, void**)
-    {
-        PHANTOM_ASSERT(false, "calling abstract constructor");
-    }
+    PHANTOM_FORCEINLINE static void apply(void*, void**) { PHANTOM_ASSERT(false, "calling abstract constructor"); }
 
-    void closure()
-    {
-        PHANTOM_ASSERT(false, "calling abstract constructor");
-    }
+    void closure() { PHANTOM_ASSERT(false, "calling abstract constructor"); }
 };
 
 // final abstract
@@ -80,10 +70,7 @@ struct ConstructorCallerH<t_Class, void(v_Params...), true, true>
         apply(a_pAddress, a_pParams, BuildIndices<sizeof...(v_Params)>{});
     }
 
-    void closure(v_Params... args)
-    {
-        new (this) t_Class(std::forward<v_Params>(args)...);
-    }
+    void closure(v_Params... args) { new (this) t_Class(std::forward<v_Params>(args)...); }
 };
 
 // final non abstract
@@ -102,10 +89,7 @@ struct ConstructorCallerH<t_Class, void(v_Params...), false, true>
         apply(a_pAddress, a_pParams, BuildIndices<sizeof...(v_Params)>{});
     }
 
-    void closure(v_Params... args)
-    {
-        new (this) t_Class(std::forward<v_Params>(args)...);
-    }
+    void closure(v_Params... args) { new (this) t_Class(std::forward<v_Params>(args)...); }
 };
 
 // default
@@ -120,7 +104,8 @@ struct ConstructorCallerH<t_Class, t_Signature, false, false> : public Construct
 template<typename t_Class, typename t_Signature>
 struct ConstructorCaller
     : public detail::ConstructorCallerH<t_Class, t_Signature, std::is_abstract<t_Class>::value,
-                                        !std::is_class<t_Class>::value || std::is_final<t_Class>::value>
+                                        !std::is_class<t_Class>::value || std::is_final<t_Class>::value ||
+                                        !IsPublicOrProtectedDestructible<t_Class>::value>
 {
 };
 

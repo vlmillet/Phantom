@@ -47,6 +47,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(LanguageElement*, StringBuffer&) const>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"","a_Buf"})
             .method<bool(LanguageElement*) const, virtual_>("accepts", &_::accepts)({""})
             .method<::phantom::lang::Placeholder *(LanguageElement*, uint) const, pure_virtual>("clone", &_::clone)({"a_pElem","a_Flags"})["0"]
+            .method<bool() const, pure_virtual>("isPack", &_::isPack)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

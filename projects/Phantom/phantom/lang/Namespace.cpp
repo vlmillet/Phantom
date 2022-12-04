@@ -144,9 +144,9 @@ Scope* Namespace::getScopeOrCreateNamespace(StringView a_strScopeName, const cha
 Namespace* Namespace::newNamespace(StringView a_strName)
 {
 #if PHANTOM_DEBUG_LEVEL
-    for (auto pSym : m_Symbols)
-        PHANTOM_ASSERT(pSym->getName() != a_strName, "namespace name '%.*s' collides with previous symbol",
-                       PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
+
+    PHANTOM_ASSERT(m_Symbols.find(Symbol::ComputeHash(a_strName)) == m_Symbols.end(),
+                   "namespace name '%.*s' collides with previous symbol", PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
 #endif
     Namespace* pNS = phantom::new_<Namespace>(a_strName);
     pNS->m_pSource = m_pSource;
@@ -259,6 +259,12 @@ Namespace* Namespace::getNamespaceAliased(StringView a_strAlias) const
     return pAlias ? static_cast<Namespace*>(pAlias->getAliasedSymbol()) : nullptr;
 }
 
+ArrayView<Symbol*> Namespace::getSymbols(hash64 _hash) const
+{
+    auto found = m_Symbols.find(_hash);
+    return found == m_Symbols.end() ? ArrayView<Symbol*>() : ArrayView<Symbol*>(found->second);
+}
+
 String Namespace::asPath(char separator) const
 {
     Namespace* pParent = getOwner() ? getOwner()->asNamespace() : nullptr;
@@ -268,16 +274,19 @@ String Namespace::asPath(char separator) const
 
 void Namespace::getElementDoubles(Symbol* a_pElement, Symbols& out) const
 {
-    for (auto pSym : m_Symbols)
+    auto foundSyms = m_Symbols.find(a_pElement->getNameHash());
+    if (foundSyms != m_Symbols.end())
     {
-        // Browse namespace elements to find doubles of given element
-        if (pSym == a_pElement)
-            continue;
-        Symbol* pSymbol = a_pElement->asSymbol();
-        if (pSymbol && a_pElement->getDecoratedName() == pSymbol->getDecoratedName())
+        for (auto pSym : foundSyms->second)
         {
-            PHANTOM_ASSERT(a_pElement->getModule() != pSymbol->getModule());
-            out.push_back(pSymbol);
+            // Browse namespace elements to find doubles of given element
+            if (pSym == a_pElement)
+                continue;
+            if (a_pElement->getDecoratedName() == pSym->getDecoratedName())
+            {
+                PHANTOM_ASSERT(a_pElement->getModule() != pSym->getModule());
+                out.push_back(pSym);
+            }
         }
     }
 }
@@ -319,7 +328,7 @@ bool Namespace::isSymbolHidden(Symbol* a_pSymbol) const
 {
     if (a_pSymbol->getNamespace() == this || a_pSymbol->getOwner() == this)
         return false;
-    for (auto pRef : getSymbols())
+    for (auto pRef : getSymbols(a_pSymbol->getNameHash()))
     {
         if (pRef->asSymbol() && a_pSymbol->getName() == static_cast<Symbol*>(pRef)->getName())
             return true;
@@ -335,10 +344,14 @@ void Namespace::getScopedSymbolsWithName(StringView a_Name, Symbols& a_Symbols) 
         a_Symbols.push_back(pTemplate);
         return;
     }
-    for (auto pSymbol : m_Symbols)
+    auto found = m_Symbols.find(Symbol::ComputeHash(a_Name));
+    if (found != m_Symbols.end())
     {
-        if (pSymbol->getName() == a_Name)
-            a_Symbols.push_back(pSymbol);
+        for (auto pSymbol : found->second)
+        {
+            if (pSymbol->getName() == a_Name)
+                a_Symbols.push_back(pSymbol);
+        }
     }
 }
 

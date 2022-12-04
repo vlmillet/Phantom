@@ -187,8 +187,11 @@
 #        else
 #            error unsupported CPU architecture
 #        endif
-
-#        define PHANTOM_COMPILER_NAME "CLANG"
+#        if defined(_MSC_VER)
+#            define PHANTOM_COMPILER_NAME "CLANG-CL"
+#        else
+#            define PHANTOM_COMPILER_NAME "CLANG"
+#        endif
 #        define PHANTOM_COMPILER PHANTOM_COMPILER_CLANG
 #        define PHANTOM_COMPILER_VERSION
 #        define PHANTOM_COMPILER_MAJOR_VERSION __clang__
@@ -686,13 +689,7 @@
 #    error C++11 alias templates are required, please use a more recent version of your compiler (MSVC >= 2015 or clang >= 3.7)
 #endif
 
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_ORBIS
-#    define PHANTOM_SIZE_OF_LONG 8
-#    define PHANTOM_SIZE_OF_LONGLONG 8
-#    define PHANTOM_INT64_IS_LONGLONG 0
-#    define PHANTOM_INT64_IS_LONG 1
-
-#elif PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
+#if defined(_MSC_VER)
 #    define PHANTOM_SIZE_OF_LONG 4
 #    define PHANTOM_SIZE_OF_LONGLONG 8
 #    define PHANTOM_INT64_IS_LONGLONG 1
@@ -787,4 +784,8 @@ __cplusplus != 199711L,
 
 #else
 #    define PHANTOM_MAYBE_UNUSED
+#endif
+
+#if PHANTOM_COMPILER == PHANTOM_COMPILER_CLANG
+#    include "config-clang.h"
 #endif

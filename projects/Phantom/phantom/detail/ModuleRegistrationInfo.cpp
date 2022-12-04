@@ -179,9 +179,9 @@ void ModuleRegistrationInfo::installTypes(TypeInstallationStep step)
                         struct FakeClassType : public lang::ClassType
                         {
                         public:
-                            using ClassType::_onElementsAccess;
+                            using ClassType::onElementsAccess;
                         };
-                        static_cast<FakeClassType*>(pTii->type)->_onElementsAccess();
+                        static_cast<FakeClassType*>(pTii->type)->onElementsAccess();
                     }
                     else
                         pTii->exec(step);

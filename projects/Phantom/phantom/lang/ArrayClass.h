@@ -42,8 +42,8 @@ public:
     void initialize();
     void terminate() override;
 
-    Type*  getItemType() const { return m_pItemType; }
-    size_t getItemCount() const { return m_ItemCount; }
+    Type*  getItemType() const;
+    size_t getItemCount() const;
 
     virtual void setItemValue(void* a_pContainer, size_t a_uiIndex, void const* a_pSrc)
     {
@@ -93,7 +93,7 @@ private:
 private:
     mutable RTData* m_pData = nullptr;
     mutable Type*   m_pItemType = nullptr;
-    size_t          m_ItemCount{};
+    mutable size_t  m_ItemCount{};
 };
 
 } // namespace lang

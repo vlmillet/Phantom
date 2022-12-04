@@ -62,8 +62,14 @@ public:
     virtual void getRelativeDecoratedName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
     virtual void getRelativeName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
 
+    bool isPack() const override { return m_isPack; }
+
 private:
     Constant* cloneImpl(LanguageElement* a_pOwner) const override;
+    void      setPack() { m_isPack = true; }
+
+private:
+    bool m_isPack{};
 };
 
 } // namespace lang

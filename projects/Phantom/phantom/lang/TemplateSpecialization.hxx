@@ -108,6 +108,7 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<TemplateSpecialization*() const>("getInstantiationSpecialization", &_::getInstantiationSpecialization)
             .method<TemplateSubstitution const&() const>("getArgumentSubstitution", &_::getArgumentSubstitution)
             .method<Source*() const, virtual_|override_>("getCodeLocationSource", &_::getCodeLocationSource)
+            .method<bool() const>("isInstantiated", &_::isInstantiated)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

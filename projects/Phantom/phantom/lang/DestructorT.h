@@ -46,28 +46,40 @@ public:
         return Delegate<void()>(reinterpret_cast<t_Ty*>(a_pObject), (ptr)&self_type::closure_wrapper).getOpaque();
     }
 
-    virtual void invoke(void* a_pInstance, void**) const override { Dtor<t_Ty>::apply(a_pInstance); }
+    virtual void invoke(void* a_pInstance, void**) const override
+    {
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(a_pInstance));
+    }
 
-    virtual void invoke(void* a_pInstance, void**, void*) const override { Dtor<t_Ty>::apply(a_pInstance); }
+    virtual void invoke(void* a_pInstance, void**, void*) const override
+    {
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(a_pInstance));
+    }
 
-    virtual void call(void** a_pArgs) const override { Dtor<t_Ty>::apply(*(void**)(a_pArgs[0])); }
+    virtual void call(void** a_pArgs) const override
+    {
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(*(void**)(a_pArgs[0])));
+    }
 
-    virtual void call(void** a_pArgs, void*) const override { Dtor<t_Ty>::apply(*(void**)(a_pArgs[0])); }
+    virtual void call(void** a_pArgs, void*) const override
+    {
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(*(void**)(a_pArgs[0])));
+    }
 
     virtual void call(ExecutionContext& a_Context, void** a_pArgs) const override
     {
         PHANTOM_ASSERT(a_Context.resultPointer() == nullptr, "expecting return address from a void function call");
-        Dtor<t_Ty>::apply(*(void**)(a_pArgs[0]));
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(*(void**)(a_pArgs[0])));
     }
 
     virtual void placementCall(ExecutionContext& a_Context, void** a_pArgs) const override
     {
         PHANTOM_ASSERT(a_Context.resultPointer() == nullptr, "expecting return address from a void function call");
-        Dtor<t_Ty>::apply(*(void**)(a_pArgs[0]));
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(*(void**)(a_pArgs[0])));
     }
 
 private:
-    void closure_wrapper() { Dtor<t_Ty>::apply(this); }
+    void closure_wrapper() { phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(this)); }
 };
 
 } // namespace lang

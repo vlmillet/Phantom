@@ -7,7 +7,9 @@
 /* ******************* Includes ****************** */
 #include "ArrayClass.h"
 
+#include "Constant.h"
 #include "Method.h"
+#include "TemplateSpecialization.h"
 
 /* *********************************************** */
 namespace phantom
@@ -48,6 +50,37 @@ void ArrayClass::terminate()
     if (m_pData)
         delete_<RTData>(m_pData);
     Class::terminate();
+}
+
+Type* ArrayClass::getItemType() const
+{
+    if (!isNative() && m_pItemType == nullptr)
+    {
+        Alias* pAlias = getAlias("value_type");
+        while (!m_pItemType && pAlias && pAlias->getAliasedSymbol())
+        {
+            Symbol* pAliased = pAlias->getAliasedSymbol();
+            if (!(m_pItemType = pAliased->asType()))
+                pAlias = pAliased->asAlias();
+        }
+        PHANTOM_ASSERT(
+        m_pItemType,
+        "unable to evaluate vector class value type, ensure 'value_type' alias has been defined as the standard states "
+        "for std::array equivalents. If not, ensure your template instance has been built in the proper stage with "
+        "your Semantic "
+        "instance (ex: semantic->buildClass(...)");
+    }
+    return m_pItemType;
+}
+
+size_t ArrayClass::getItemCount() const
+{
+    if (!isNative() && m_ItemCount == 0)
+    {
+        if (getTemplateSpecialization()->isFull())
+            getTemplateSpecialization()->getArgument(1)->asConstant()->getValue(&m_ItemCount);
+    }
+    return m_ItemCount;
 }
 
 void const* ArrayClass::data(void const* a_pContainer) const

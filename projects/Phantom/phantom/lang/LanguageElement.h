@@ -44,8 +44,8 @@ public:                                                                         
                                                                                                                        \
 private:
 
-typedef SmallMap<Placeholder*, LanguageElement*> PlaceholderMap;
-typedef SmallSet<Module*>                        ModuleSet;
+using PlaceholderMap = SmallMap<Placeholder*, SmallVector<LanguageElement*, 1>>;
+typedef SmallSet<Module*> ModuleSet;
 
 /// \brief  Base implementation of every language element.
 class PHANTOM_EXPORT_PHANTOM LanguageElement : public Object

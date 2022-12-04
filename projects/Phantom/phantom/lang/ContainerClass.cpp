@@ -45,12 +45,17 @@ Type* ContainerClass::getValueType() const
     if (!isNative() && m_pValueType == nullptr)
     {
         Alias* pAlias = getAlias("value_type");
-        if (pAlias && pAlias->getAliasedSymbol())
+        while (!m_pValueType && pAlias && pAlias->getAliasedSymbol())
         {
             Symbol* pAliased = pAlias->getAliasedSymbol();
             if (!(m_pValueType = pAliased->asType()))
                 pAlias = pAliased->asAlias();
         }
+        PHANTOM_ASSERT(
+        m_pValueType,
+        "unable to evaluate vector class value type, ensure 'value_type' alias has been defined as the standard states "
+        "it to be. If not, ensure your template instance has been built in the proper stage with your Semantic "
+        "instance (ex: semantic->buildClass(...)");
     }
     return m_pValueType;
 }

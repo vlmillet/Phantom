@@ -317,11 +317,14 @@ private:
         };
         DynDelegateT m_dyndgt;
     };
+#if PHANTOM_COMPILER != PHANTOM_COMPILER_CLANG
+    char __dummy[16];
+#endif
     uint32_t m_size{};
     uint32_t m_align{};
     char     m_smallBuffer[SmallBufferSize] = {};
 };
-static_assert(sizeof(Functor<int()>) == 64, "prout");
+static_assert(sizeof(Functor<int()>) == 80, "sizeof(Functor<int()>) == 64");
 
 template<class T, class U, class R, class... Params>
 auto makeFunctor(T* a_pThis, R (U::*a_Func)(Params...))

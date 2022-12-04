@@ -163,8 +163,8 @@ void VirtualMethodTable::setMethod(size_t a_uiIndex, Method* a_pMethod)
         copyOnWrite();
     m_pMethods->resize(std::max(a_uiIndex + 1, getMethodCount()));
     (*m_pMethods)[a_uiIndex] = a_pMethod;
-    if (!a_pMethod->isNative())
-        a_pMethod->buildBlock();
+    //     if (!a_pMethod->isNative())
+    //         a_pMethod->buildBlock();
 }
 
 bool VirtualMethodTable::insertMethod(Method* a_pMethod, bool a_bOnlyIfOverrides)

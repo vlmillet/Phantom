@@ -30,9 +30,9 @@ namespace
 {
 int _ComparePart(const String& _s0, const String& _s1)
 {
-#if PHANTOM_OPERATING_SYSTEM == PHANTOM_OPERATING_SYSTEM_WINDOWS
+#if defined(_MSC_VER)
 #    pragma warning(disable : 4996)
-    return stricmp(_s0.c_str(), _s1.c_str());
+    return _stricmp(_s0.c_str(), _s1.c_str());
 #    pragma warning(default : 4996)
 #else
     return strcmp(_s0.c_str(), _s1.c_str());
@@ -729,7 +729,14 @@ bool Path::Remove(const Path& p, std::error_code& ec)
     else
     {
 #pragma warning(disable : 4996)
-        result = (IsSymLink(p) ? ::unlink(p.platformString().c_str()) : ::remove(p.platformString().c_str())) == 0;
+        if (IsSymLink(p))
+#if defined(_MSC_VER)
+            result = ::_unlink(p.platformString().c_str());
+#else
+            result = ::unlink(p.platformString().c_str());
+#endif
+        else
+            result = ::remove(p.platformString().c_str()) == 0;
 #pragma warning(default : 4996)
         if (!result)
         {

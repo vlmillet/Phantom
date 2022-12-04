@@ -19,8 +19,10 @@ HAUNT_STOP;
 
 #if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
 #    define PHANTOM_DBL_TYPENAME PHANTOM_TYPENAME PHANTOM_TYPENAME
+#    define PHANTOM_FRIEND_USING(class_) friend class_
 #else
 #    define PHANTOM_DBL_TYPENAME PHANTOM_TYPENAME
+#    define PHANTOM_FRIEND_USING(class_) friend
 #endif
 
 //  ==================================================================================================
@@ -414,8 +416,8 @@ HAUNT_STOP;
 #define PHANTOM_R_ALWAYS_VALID 0x00000200
 #define PHANTOM_R_INCOMPLETE 0x00000400
 #define PHANTOM_R_FLAG_TEMPLATE_DEPENDANT 0x00000800
-#define PHANTOM_R_FLAG_INHERITED 0x00001000 /// for inherited constructors
-#define PHANTOM_R_FLAG_IMPLICIT 0x00002000  /// for trivial member functions
+#define PHANTOM_R_FLAG_INHERITED 0x00001000             /// for inherited constructors
+#define PHANTOM_R_FLAG_IMPLICIT 0x00002000              /// for trivial member functions
 #define PHANTOM_R_FLAG_COMPILATION_REQUESTED 0x00004000 /// for lazy compilation
 
 // META SPECIFIERS
@@ -661,10 +663,11 @@ struct converter<0> : public false_type
 #endif // PHANTOM_DEBUG_LEVEL
 
 #define PHANTOM_LOG(msgType, ...)                                                                                      \
-    ::phantom::log PHANTOM_PREVENT_MACRO_SUBSTITUTION (::phantom::MessageType::msgType, __FILE__, __LINE__, __VA_ARGS__)
+    ::phantom::log PHANTOM_PREVENT_MACRO_SUBSTITUTION(::phantom::MessageType::msgType, __FILE__, __LINE__, __VA_ARGS__)
 
-#define PHANTOM_LOGV(msgType, text, va_list)                                                                                      \
-    ::phantom::logv PHANTOM_PREVENT_MACRO_SUBSTITUTION (::phantom::MessageType::msgType, __FILE__, __LINE__, text, va_list)
+#define PHANTOM_LOGV(msgType, text, va_list)                                                                           \
+    ::phantom::logv PHANTOM_PREVENT_MACRO_SUBSTITUTION(::phantom::MessageType::msgType, __FILE__, __LINE__, text,      \
+                                                       va_list)
 
 #define _PHNTM_ERROR_1(condition) _PHNTM_ERROR_X(condition, "no detail about the error")
 

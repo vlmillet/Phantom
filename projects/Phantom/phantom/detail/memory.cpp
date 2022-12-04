@@ -109,10 +109,10 @@ PHANTOM_EXPORT_PHANTOM void* reallocate(void* mem, size_t size, size_t align)
 
 #if !defined(PHANTOM_STATIC_LINK_PHANTOM)
 
-#    if PHANTOM_COMPILER == PHANTOM_COMPILER_VISUAL_STUDIO
-#        define PHANTOM_NEW_THROW
-#    else
+#    if __cplusplus > 201703L
 #        define PHANTOM_NEW_THROW throw(std::bad_alloc)
+#    else
+#        define PHANTOM_NEW_THROW
 #    endif
 
 void* operator new(size_t _size) PHANTOM_NEW_THROW

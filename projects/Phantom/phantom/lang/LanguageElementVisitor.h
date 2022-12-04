@@ -43,6 +43,7 @@ public:
     virtual void visit(AnonymousUnion* a_pInput, VisitorData a_Data);
     virtual void visit(Application* a_pInput, VisitorData a_Data);
     virtual void visit(Array* a_pInput, VisitorData a_Data);
+    virtual void visit(ArrayClass* a_pInput, VisitorData a_Data);
     virtual void visit(Class* a_pInput, VisitorData a_Data);
     virtual void visit(ClassType* a_pInput, VisitorData a_Data);
     virtual void visit(Constant* a_pInput, VisitorData a_Data);

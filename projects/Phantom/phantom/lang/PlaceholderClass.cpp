@@ -17,6 +17,7 @@ PlaceholderClass::PlaceholderClass(PlaceholderType* a_pPlaceholderType)
     : PlaceholderClass(a_pPlaceholderType->getName(), a_pPlaceholderType->getModifiers(),
                        a_pPlaceholderType->getFlags())
 {
+    m_isPack = a_pPlaceholderType->isPack();
 }
 
 PlaceholderClass::PlaceholderClass(StringView a_Name, Modifiers a_Modifiers, uint a_Flags)

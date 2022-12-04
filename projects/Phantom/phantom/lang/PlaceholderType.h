@@ -47,10 +47,15 @@ public:
     virtual void getRelativeDecoratedName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
     virtual void getRelativeName(LanguageElement*, StringBuffer& a_Buf) const override { getName(a_Buf); }
 
+    bool isPack() const override { return m_isPack; }
+
+private:
+    void setPack() { m_isPack = true; }
+
 protected:
     mutable Class*     m_pAsClass;
     mutable ClassType* m_pAsClassType;
+    bool               m_isPack{};
 };
-
 } // namespace lang
 } // namespace phantom

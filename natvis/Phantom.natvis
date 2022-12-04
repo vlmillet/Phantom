@@ -159,6 +159,25 @@
       <DisplayString IncludeView="name">{m_strName, sb} {*this,view(template)}</DisplayString>
       <DisplayString>{*this,view(name)}{*this, view(native)}</DisplayString>
     </Type>
+    <Type Name="phantom::lang::FunctionType">
+      <DisplayString IncludeView="retType">{*m_pReturnType, view(name)}</DisplayString>
+      <DisplayString IncludeView="parm0" Condition="m_ParameterTypes.m_size &lt; 1"></DisplayString>
+      <DisplayString IncludeView="parm0">{*m_ParameterTypes.m_data[0], view(name)}{*this,view(parm1)nd}</DisplayString>
+      <DisplayString IncludeView="parm1" Condition="m_ParameterTypes.m_size &lt; 2"></DisplayString>
+      <DisplayString IncludeView="parm1">, {*m_ParameterTypes.m_data[1], view(name)}{*this,view(parm2)nd}</DisplayString>
+      <DisplayString IncludeView="parm2" Condition="m_ParameterTypes.m_size &lt; 3"></DisplayString>
+      <DisplayString IncludeView="parm2">, {*m_ParameterTypes.m_data[2], view(name)}{*this,view(parm3)nd}</DisplayString>
+      <DisplayString IncludeView="parm3" Condition="m_ParameterTypes.m_size &lt; 4"></DisplayString>
+      <DisplayString IncludeView="parm3">, {*m_ParameterTypes.m_data[3], view(name)}{*this,view(parm4)nd}</DisplayString>
+      <DisplayString IncludeView="parm4" Condition="m_ParameterTypes.m_size &lt; 5"></DisplayString>
+      <DisplayString IncludeView="parm4">, {*m_ParameterTypes.m_data[4], view(name)}{*this,view(parm5)nd}</DisplayString>
+      <DisplayString>{*this,view(retType)nd} ({*this,view(parm0)nd})</DisplayString>
+      <Expand>
+        <Item Name="Parameters">
+          m_ParameterTypes
+        </Item>
+      </Expand>
+    </Type>
     <Type Name="phantom::lang::Signature">
         <DisplayString IncludeView="retType">{*m_pReturnType, view(name)}</DisplayString>
         <DisplayString IncludeView="parm0" Condition="m_Parameters.m_size &lt; 1"></DisplayString>

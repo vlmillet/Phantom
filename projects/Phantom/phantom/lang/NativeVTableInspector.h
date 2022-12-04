@@ -31,10 +31,7 @@ class PHANTOM_EXPORT_PHANTOM NativeVTableInspector
 {
 public:
 #if PHANTOM_DEBUG_LEVEL == PHANTOM_DEBUG_LEVEL_FULL
-    static void NativeVTableInspector_setResultIndex(size_t value)
-    {
-        sm_ResultIndex = value;
-    }
+    static void NativeVTableInspector_setResultIndex(size_t value) { sm_ResultIndex = value; }
 #endif
     static size_t sm_ResultIndex;
     void*         m_vptr_impostor;
@@ -99,10 +96,7 @@ PHANTOM_FORCEINLINE static void* extract_mfp_closure(t_MemberFuncPtrTy ptr)
     }
 
 #define NativeVTableInspector_hack_member_function_0_void(z, count, signature)                                         \
-    void hack_member_function_0_##count signature                                                                      \
-    {                                                                                                                  \
-        NativeVTableInspector_setResultIndex(count);                                                                   \
-    }
+    void hack_member_function_0_##count signature { NativeVTableInspector_setResultIndex(count); }
 
 #define NativeVTableInspector_hack_member_function_1_void(z, count, signature)                                         \
     void hack_member_function_1_##count signature                                                                      \
@@ -199,7 +193,7 @@ public:
     size_t getDestructorIndex()
     {
         PHANTOM_ASSERT(sm_ResultIndex == ~size_t(0));
-        reinterpret_cast<t_Ty*>(&m_vptr_impostor)->~t_Ty();
+        phantom::Constructor<t_Ty>::destroy(reinterpret_cast<t_Ty*>(&m_vptr_impostor));
         PHANTOM_ASSERT(sm_ResultIndex != ~size_t(0));
         size_t result = sm_ResultIndex;
         sm_ResultIndex = ~size_t(0);
@@ -219,19 +213,13 @@ namespace phantom
 template<typename t_Ty, bool t_has_virtual_destructor_recursive>
 struct VirtualDtorIndexProviderH
 {
-    static size_t apply()
-    {
-        return phantom::lang::NativeDestructorInspector().getDestructorIndex<t_Ty>();
-    }
+    static size_t apply() { return phantom::lang::NativeDestructorInspector().getDestructorIndex<t_Ty>(); }
 };
 
 template<typename t_Ty>
 struct VirtualDtorIndexProviderH<t_Ty, false>
 {
-    static size_t apply()
-    {
-        return ~size_t(0);
-    }
+    static size_t apply() { return ~size_t(0); }
 };
 
 template<typename t_Ty>

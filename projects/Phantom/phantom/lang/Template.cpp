@@ -167,9 +167,18 @@ TemplateSpecialization* Template::getTemplateSpecialization(LanguageElementsView
 TemplateSpecialization* Template::getTemplateSpecialization(const PlaceholderMap& arguments) const
 {
     LanguageElements contiguous = getEmptyTemplateSpecialization()->getArguments();
-    for (auto it = arguments.begin(); it != arguments.end(); ++it)
+    size_t           count = contiguous.size();
+    for (auto ph_elem : arguments)
     {
-        contiguous[static_cast<TemplateParameter*>(it->first->asSymbol()->getOwner())->getIndex()] = it->second;
+        size_t index = static_cast<TemplateParameter*>(ph_elem.first->asSymbol()->getOwner())->getIndex();
+        for (auto& deduc : ph_elem.second)
+            if (index >= count)
+            {
+                PHANTOM_ASSERT(ph_elem.first->isPack());
+                contiguous.push_back(deduc);
+            }
+            else
+                contiguous[index] = deduc;
     }
     return getTemplateSpecialization(contiguous);
 }
@@ -252,15 +261,28 @@ bool Template::mapArguments(const LanguageElements& a_Arguments, PlaceholderMap&
 {
     size_t i = 0;
     size_t count = getTemplateSignature()->getTemplateParameters().size();
-    for (; i < count; ++i)
+    for (; i < std::max(a_Arguments.size(), count); ++i)
     {
-        if (i < a_Arguments.size())
+        Placeholder* ph{};
+        if (i >= count)
         {
-            a_Out[getTemplateSignature()->getTemplateParameters()[i]->getPlaceholder()] = a_Arguments[i];
+            ph = getTemplateSignature()->getTemplateParameters()[i]->getPlaceholder();
         }
         else
         {
-            a_Out[getTemplateSignature()->getTemplateParameters()[i]->getPlaceholder()] = getDefaultArgument(i);
+            i = count - 1;
+            ph = getTemplateSignature()->getTemplateParameters().back()->getPlaceholder();
+            if (!ph->isPack())
+                return false;
+        }
+
+        if (i < a_Arguments.size())
+        {
+            a_Out[ph].push_back(a_Arguments[i]);
+        }
+        else
+        {
+            a_Out[ph].push_back(getDefaultArgument(i));
         }
     }
     return true;

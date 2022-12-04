@@ -66,10 +66,12 @@ PHANTOM_PACKAGE("phantom.lang")
             .method<void(StringBuffer&) const, virtual_|override_>("getQualifiedName", &_::getQualifiedName)({"a_Buf"})
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeDecoratedName", &_::getRelativeDecoratedName)({"","a_Buf"})
             .method<void(LanguageElement*, StringBuffer&) const, virtual_|override_>("getRelativeName", &_::getRelativeName)({"","a_Buf"})
+            .method<bool() const, virtual_|override_>("isPack", &_::isPack)
         
         .protected_()
             .field("m_pAsClass", &_::m_pAsClass)
             .field("m_pAsClassType", &_::m_pAsClassType)
+            .field("m_isPack", &_::m_isPack)
             ;
         }
         #endif // PHANTOM_NOT_TEMPLATE

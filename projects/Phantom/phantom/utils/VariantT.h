@@ -58,7 +58,7 @@ struct SelectFirstType<T>
 template<class... Ts>
 struct VariantT : _VariantT::VariantT_Recursive<VariantT<Ts...>, Ts...>
 {
-    template<class Base, class T, class... Ts>
+    template<class, class, class...>
     friend struct _VariantT::VariantT_Recursive;
 
     using FirstType = typename _VariantT::SelectFirstType<Ts...>::type;

@@ -32,6 +32,7 @@ PHANTOM_PACKAGE("phantom.lang.registration")
 
         #if PHANTOM_NOT_TEMPLATE
         PHANTOM_REGISTER(Functions) { this_().function<void(TemplateSignature*, StringView)>("SolveAliasTemplateDefaultArguments", SolveAliasTemplateDefaultArguments)({"a_pTS","a_Defaults"});}
+        PHANTOM_REGISTER(Functions) { this_().function<::phantom::lang::Alias *(StringView&, Template*&, Source*, StringView)>("BuildAliasTemplate", BuildAliasTemplate)({"a_TemplateDep","a_rpTemplate","a_pSource","a_Name"});}
         #endif // PHANTOM_NOT_TEMPLATE
     PHANTOM_END("AliasTemplate")
 PHANTOM_END("phantom.lang.registration")

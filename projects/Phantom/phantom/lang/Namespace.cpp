@@ -143,11 +143,12 @@ Scope* Namespace::getScopeOrCreateNamespace(StringView a_strScopeName, const cha
 
 Namespace* Namespace::newNamespace(StringView a_strName)
 {
-#if PHANTOM_DEBUG_LEVEL
-
-    PHANTOM_ASSERT(m_Symbols.find(Symbol::ComputeHash(a_strName)) == m_Symbols.end(),
-                   "namespace name '%.*s' collides with previous symbol", PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
-#endif
+    // #if PHANTOM_DEBUG_LEVEL
+    //
+    //     PHANTOM_ASSERT(m_Symbols.find(Symbol::ComputeHash(a_strName)) == m_Symbols.end(),
+    //                    "namespace name '%.*s' collides with previous symbol",
+    //                    PHANTOM_STRING_AS_PRINTF_ARG(a_strName));
+    // #endif
     Namespace* pNS = phantom::new_<Namespace>(a_strName);
     pNS->m_pSource = m_pSource;
     pNS->rtti.instance = pNS;

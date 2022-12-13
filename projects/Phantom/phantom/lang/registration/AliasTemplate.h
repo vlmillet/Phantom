@@ -34,6 +34,9 @@ namespace lang
 {
 PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature* a_pTS, StringView a_Defaults);
 
+PHANTOM_EXPORT_PHANTOM Alias* BuildAliasTemplate(StringView& a_TemplateDep, Template*& a_rpTemplate, Source* a_pSource,
+                                                 StringView a_Name);
+
 template<class T>
 void SolveAliasTemplate(Source* a_pSource, RegistrationStep a_Step, Template*& a_rpTemplate, T& a_Builder,
                         StringView a_TemplateTypes, StringView a_TemplateParams, StringView a_Name,
@@ -48,23 +51,16 @@ void SolveAliasTemplate(Source* a_pSource, RegistrationStep a_Step, Template*& a
 
         a_rpTemplate = a_pSource->New<Template>(pTS, a_Name, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
 
-        a_Builder._PHNTM_getSource()->addTemplate(a_rpTemplate);
         a_Builder._PHNTM_getMeta()->addTemplate(a_rpTemplate);
+        a_Builder._PHNTM_getSource()->addTemplate(a_rpTemplate);
         a_Builder._PHNTM_getSource()->addTemplateSpecialization(a_rpTemplate->getEmptyTemplateSpecialization());
     }
     else // PostTypes
     {
         SolveAliasTemplateDefaultArguments(a_rpTemplate->getTemplateSignature(), a_Defaults);
-        while (::isspace(a_TemplateDep.front()))
-            a_TemplateDep.dropFront();
-        if (a_TemplateDep.startsWith("typename "))
-            a_TemplateDep = a_TemplateDep.substr(9);
-        Type* pType = Application::Get()->findCppType(a_TemplateDep, a_rpTemplate->getTemplateSignature());
-        PHANTOM_ASSERT(pType, "cannot resolve template dependant type '%.*s'",
-                       PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateDep));
-        Alias* pAlias = a_pSource->NewDeferred<Alias>(pType, a_Name, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
-        if (std::is_same<T, NamespaceBuilder>::value)
-            ((Namespace*)a_Builder._PHNTM_getNamingScope())->addAlias(pAlias);
+        auto pAlias = BuildAliasTemplate(a_TemplateDep, a_rpTemplate, a_pSource, a_Name);
+        //         if (std::is_same<T, NamespaceBuilder>::value)
+        //             ((Namespace*)a_Builder._PHNTM_getNamingScope())->addAlias(pAlias);
         a_rpTemplate->getEmptyTemplateSpecialization()->setTemplated(pAlias);
     }
     a_Builder._PHNTM_getRegistrer()->_PHNTM_setLastSymbol(a_rpTemplate);

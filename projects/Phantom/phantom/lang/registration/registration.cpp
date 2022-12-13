@@ -120,9 +120,9 @@ TypeBuilderBase::TypeBuilderBase(BuilderReleaser _releaser, PhantomBuilderBase* 
         a_pType->addFlags(PHANTOM_R_FLAG_TEMPLATE_ELEM);
     else
     {
-        a_pSource->addType(a_pType);
         if (a_pNamingScope != a_pSource)
             a_pNamingScope->addType(a_pType);
+        a_pSource->addType(a_pType);
     }
 }
 
@@ -353,9 +353,14 @@ NamespaceBuilder& NamespaceBuilder::using_(StringView a_Name)
 NamespaceBuilder& NamespaceBuilder::namespace_alias(StringView a_Name, StringView a_Namespace)
 {
     Symbol* pSymbol = phantom::lang::Application::Get()->findCppSymbol(a_Namespace, _PHNTM_pNamespace);
-    PHANTOM_ASSERT(pSymbol && pSymbol->asNamespace(), "cannot find namespace '%.*s' use in namespace alias '%.*s'",
-                   PHANTOM_STRING_AS_PRINTF_ARG(a_Name), PHANTOM_STRING_AS_PRINTF_ARG(a_Namespace));
-
+    if (pSymbol == nullptr)
+    {
+        PHANTOM_LOG(Warning,
+                    "cannot find namespace '%.*s' used in namespace alias '%.*s', by default we create this namespace "
+                    "in the global namespace",
+                    PHANTOM_STRING_AS_PRINTF_ARG(a_Namespace), PHANTOM_STRING_AS_PRINTF_ARG(a_Name));
+        pSymbol = Namespace::Global()->getOrCreateNamespace(a_Namespace);
+    }
     _PHNTM_pNamespace->addNamespaceAlias(a_Name, static_cast<Namespace*>(pSymbol));
     return *this;
 }
@@ -367,24 +372,24 @@ Source* NamespaceBuilder::_PHNTM_getSource()
 
 void NamespaceBuilder::_addFunction(Function* a_pFunc)
 {
-    _PHNTM_pSource->addFunction(a_pFunc);
     _PHNTM_pNamespace->addFunction(a_pFunc);
+    _PHNTM_pSource->addFunction(a_pFunc);
     _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pFunc);
     m_Symbols.push_back(a_pFunc);
 }
 
 void NamespaceBuilder::_addConstant(Constant* a_pConst)
 {
-    _PHNTM_pSource->addConstant(a_pConst);
     _PHNTM_pNamespace->addConstant(a_pConst);
+    _PHNTM_pSource->addConstant(a_pConst);
     _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pConst);
     m_Symbols.push_back(a_pConst);
 }
 
 void NamespaceBuilder::_addVariable(Variable* a_pVar)
 {
-    _PHNTM_pSource->addVariable(a_pVar);
     _PHNTM_pNamespace->addVariable(a_pVar);
+    _PHNTM_pSource->addVariable(a_pVar);
     _PHNTM_pRegistrer->_PHNTM_setLastSymbol(a_pVar);
     m_Symbols.push_back(a_pVar);
 }
@@ -407,8 +412,9 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
 
     if (a_pType)
     {
-        auto pAlias = _PHNTM_pSource->addAlias(a_pType, a_Name);
+        Alias* pAlias = _PHNTM_pSource->NewDeferred<Alias>(a_pType, a_Name);
         _PHNTM_pNamespace->addAlias(pAlias);
+        _PHNTM_pSource->addAlias(pAlias);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         auto foundDeferred = MultiLevelTypedefs->find(a_Hash);
@@ -422,8 +428,9 @@ NamespaceBuilder& NamespaceBuilder::_PHNTM_typedef(StringView a_Name, uint64_t a
     }
     else
     {
-        auto pAlias = _PHNTM_pSource->addAlias(phantom::lang::BuiltInTypes::TYPE_INT, a_Name);
+        Alias* pAlias = _PHNTM_pSource->NewDeferred<Alias>(phantom::lang::BuiltInTypes::TYPE_INT, a_Name);
         _PHNTM_pNamespace->addAlias(pAlias);
+        _PHNTM_pSource->addAlias(pAlias);
         pAlias->setFlag(PHANTOM_R_FLAG_NATIVE);
         _PHNTM_pRegistrer->_PHNTM_setLastSymbol(pAlias);
         (*MultiLevelTypedefs)[a_Hash].push_back(pAlias);
@@ -625,8 +632,8 @@ void TemplateRegistrer::_PHNTM_process(phantom::RegistrationStep _step)
         {
             /// At source scope
             if (pOwnerScope != pNamingScope)
-                pOwnerScope->addTemplate(pTemplate);
-            pNamingScope->addTemplate(pTemplate);
+                pNamingScope->addTemplate(pTemplate);
+            pOwnerScope->addTemplate(pTemplate);
             pOwnerScope->addTemplateSpecialization(pTemplate->getEmptyTemplateSpecialization());
         }
         else
@@ -1076,6 +1083,20 @@ PHANTOM_EXPORT_PHANTOM void SolveAliasTemplateDefaultArguments(TemplateSignature
             params[params.size() - defaultParams.size() + i]->setDefaultArgument(sym);
         }
     }
+}
+
+PHANTOM_EXPORT_PHANTOM Alias* BuildAliasTemplate(StringView& a_TemplateDep, Template*& a_rpTemplate, Source* a_pSource,
+                                                 StringView a_Name)
+{
+    while (::isspace(a_TemplateDep.front()))
+        a_TemplateDep.dropFront();
+    if (a_TemplateDep.startsWith("typename "))
+        a_TemplateDep = a_TemplateDep.substr(9);
+    Type* pType = Application::Get()->findCppType(a_TemplateDep, a_rpTemplate->getTemplateSignature());
+    PHANTOM_ASSERT(pType, "cannot resolve template dependant type '%.*s'", PHANTOM_STRING_AS_PRINTF_ARG(a_TemplateDep));
+    Alias* pAlias = a_pSource->NewDeferred<Alias>(pType, a_Name, PHANTOM_R_NONE, PHANTOM_R_FLAG_NATIVE);
+    pAlias->setVisibility(Visibility::Public);
+    return pAlias;
 }
 
 void ReleasableBuilder::release()

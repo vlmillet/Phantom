@@ -200,7 +200,6 @@ Template* Scope::addAliasTemplate(TemplateSignature* a_pSignature, StringView a_
                                   uint a_uiFlags /*= 0*/)
 {
     PHANTOM_ASSERT(m_pUnit, "a pure referencing scope cannot create new objects ; if namespace use the source instead");
-
     a_pSignature->setOwner(m_pUnit);
     Type* pType = Application::Get()->findCppType(a_TemplateDependantType, a_pSignature);
     a_pSignature->setOwner(nullptr);

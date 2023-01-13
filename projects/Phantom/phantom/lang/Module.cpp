@@ -71,7 +71,9 @@ void Module::initialize()
         pDefaultPackage->setFlag(PHANTOM_R_FLAG_NATIVE);
     m_pAnonymousSource = pDefaultPackage->getOrCreateSource("default");
     if (isNative())
+    {
         m_pAnonymousSource->setFlag(PHANTOM_R_FLAG_NATIVE);
+    }
 }
 
 bool Module::canBeUnloaded() const
@@ -161,7 +163,8 @@ bool Module::isPlugin() const
 
 bool Module::isInstalled() const
 {
-    return dynamic_initializer_()->getModuleRegistrationInfo((size_t)m_pBaseAddress)->m_bInstalled;
+    return (!isNative() && m_bInstalled) ||
+    (isNative() && dynamic_initializer_()->getModuleRegistrationInfo((size_t)m_pBaseAddress)->m_bInstalled);
 }
 
 StringView Module::getLibraryFullName() const
@@ -313,6 +316,13 @@ Type* Module::findUsableType(hash64 a_Hash) const
 {
     SmallSet<Module const*> treated;
     return Module_findUsableType(this, a_Hash, treated);
+}
+
+void Module::setInstalled()
+{
+    PHANTOM_ASSERT(!m_bInstalled);
+    m_bInstalled = true;
+    PHANTOM_EMIT installed();
 }
 
 hash64 Module::computeHash() const

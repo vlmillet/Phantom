@@ -102,7 +102,7 @@ protected:
     /// 'file:C:/MyDev/MySource.cpplite'").
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SourceStream(StringView a_Protocol, StringView a_Path) : m_Path(a_Path), m_Protocol(a_Protocol) {}
+    SourceStream(StringView a_Protocol, StringView a_Path);
 
 private:
     String m_Path;

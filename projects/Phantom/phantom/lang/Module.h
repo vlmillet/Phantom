@@ -225,6 +225,12 @@ public:
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \brief  Gets the dependents of this module.
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ArrayView<Module*> getDependents() const { return ArrayView<Module*>(m_Dependents.data(), m_Dependents.size()); }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief  Add a dependency to this module.
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -344,10 +350,13 @@ public:
 
     CustomAllocator const* getAllocator() const override { return &CustomAllocator::CurrentOrDefault(); }
 
+    void setInstalled();
+
 public:
     phantom::Signal<void(Package*)> packageAdded;
     phantom::Signal<void(Package*)> packageAboutToBeRemoved;
     phantom::Signal<void()>         changed;
+    phantom::Signal<void()>         installed;
 
 protected:
     hash64 computeHash() const override;
@@ -390,6 +399,7 @@ private:
     MemoryContext           m_MemoryContext;
     ForwardHeapSequence     m_FWH;
     bool                    m_bOutdated = false;
+    bool                    m_bInstalled{};
 };
 
 struct ModuleReverseDependencySorter

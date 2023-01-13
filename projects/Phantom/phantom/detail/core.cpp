@@ -731,8 +731,8 @@ void DynamicCppInitializerH::installModules()
             continue;
         /// END OF INSTALLATION
         it->m_pModule->checkCompleteness();
-
         it->m_bInstalled = true;
+        it->m_pModule->setInstalled();
         if (it->m_pModule->getOnLoadFunc())
             it->m_pModule->getOnLoadFunc()();
         lang::Application::Get()->_moduleAdded(it->m_pModule);
